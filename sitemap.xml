@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://xieydd.github.io/links/</loc>
+    <lastmod>2017-12-28T10:21:36+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/about/</loc>
+    <lastmod>2017-12-28T10:39:35+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/post/new_start/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/xieydd/me/</loc>
+    <lastmod>2017-12-27T20:02:20+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/deeplearning/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/kreas/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/kubeflow/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/kubernetes/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/post/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/tensorflow/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/</loc>
+    <lastmod>2017-12-28T10:21:36+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/xieydd/</loc>
+    <lastmod>2017-12-27T20:02:20+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/%E5%81%A5%E8%BA%AB/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/%E5%BC%A0%E5%93%88%E5%93%88/</loc>
+    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

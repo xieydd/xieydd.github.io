@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Deeplearning on Xieydd Blog</title>
+    <link>https://xieydd.github.io/tags/deeplearning/</link>
+    <description>Recent content in Deeplearning on Xieydd Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
+    <lastBuildDate>Thu, 28 Dec 2017 16:37:10 +0800</lastBuildDate>
+    
+	<atom:link href="https://xieydd.github.io/tags/deeplearning/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>New_Year_Start</title>
+      <link>https://xieydd.github.io/post/new_start/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/new_start/</guid>
+      <description> 新一年的开始&amp;hellip; 新的一年要做的事情(最重要的事放最后面&amp;hellip;)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于Apple MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 强化对Java和Python语言的理解&amp;hellip; 健身、健身、健身&amp;hellip;&amp;hellip; 2018最重要的就是和张哈哈把小窝搭起来，haha&amp;hellip;  </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Xieydd Blog</title>
+    <link>https://xieydd.github.io/</link>
+    <description>Recent content on Xieydd Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
+    <lastBuildDate>Thu, 28 Dec 2017 10:21:36 +0800</lastBuildDate>
+    
+	<atom:link href="https://xieydd.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>友链</title>
+      <link>https://xieydd.github.io/links/</link>
+      <pubDate>Thu, 28 Dec 2017 10:21:36 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/links/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://xieydd.github.io/about/</link>
+      <pubDate>Thu, 28 Dec 2017 10:39:35 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/about/</guid>
+      <description> INFO  xieydd (谢远东) Lover: 张淑贞 Zhengzhou University (郑州大学) Major in Mechatronic Engineering Career  expert(恩普特)  Zhengzhou, China CN  GitHub  FullSpectrum_CNN_Tensorflow Base of FullSpectrum CNN with Tensorflow(待完善&amp;hellip;)
+ Andrew_Ng_deeplearning.ai_programming DeepLearning.ai的完成的课后作业和提供的资料(第五节课还没上&amp;hellip;)
+ xieydd_Kubernetes Kubenetes的配置文件和学习记录(继续努力&amp;hellip;)
+ xieydd_Tensorflow_Action_DeepLearning Tensorflow实战Google深度学习框架读书笔记的一些代码实现
+ xieydd-s-respository 机器学习算法及Java基础(待回顾&amp;hellip;)
+ xieydd_netty Netty小项目(未完成&amp;hellip;)
+  Concat  Wechat:13253537292 Linkedin Email: xieydd@gmail.com Twriter@xieydd_ Facebook@xieydd  关于谢远东的一切（未完待续&amp;hellip;）  </description>
+    </item>
+    
+    <item>
+      <title>New_Year_Start</title>
+      <link>https://xieydd.github.io/post/new_start/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/new_start/</guid>
+      <description> 新一年的开始&amp;hellip; 新的一年要做的事情(最重要的事放最后面&amp;hellip;)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于Apple MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 强化对Java和Python语言的理解&amp;hellip; 健身、健身、健身&amp;hellip;&amp;hellip; 2018最重要的就是和张哈哈把小窝搭起来，haha&amp;hellip;  </description>
+    </item>
+    
+    <item>
+      <title>Me</title>
+      <link>https://xieydd.github.io/xieydd/me/</link>
+      <pubDate>Wed, 27 Dec 2017 20:02:20 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/xieydd/me/</guid>
+      <description> 关于我  Name:谢远东 Lover:张淑贞 University:郑州大学 Company:恩普特 Address:郑州大学  </description>
+    </item>
+    
+  </channel>
+</rss>

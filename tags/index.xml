@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Xieydd Blog</title>
+    <link>https://xieydd.github.io/tags/</link>
+    <description>Recent content in Tags on Xieydd Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
+    <lastBuildDate>Thu, 28 Dec 2017 16:37:10 +0800</lastBuildDate>
+    
+	<atom:link href="https://xieydd.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Deeplearning</title>
+      <link>https://xieydd.github.io/tags/deeplearning/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/deeplearning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kreas</title>
+      <link>https://xieydd.github.io/tags/kreas/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/kreas/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kubeflow</title>
+      <link>https://xieydd.github.io/tags/kubeflow/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/kubeflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kubernetes</title>
+      <link>https://xieydd.github.io/tags/kubernetes/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tensorflow</title>
+      <link>https://xieydd.github.io/tags/tensorflow/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/tensorflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>云原生</title>
+      <link>https://xieydd.github.io/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>健身</title>
+      <link>https://xieydd.github.io/tags/%E5%81%A5%E8%BA%AB/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/%E5%81%A5%E8%BA%AB/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>张哈哈</title>
+      <link>https://xieydd.github.io/tags/%E5%BC%A0%E5%93%88%E5%93%88/</link>
+      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/%E5%BC%A0%E5%93%88%E5%93%88/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
