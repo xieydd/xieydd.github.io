@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Xieydd Blog</title>
-    <link>https://xieydd.github.io/post/</link>
-    <description>Recent content in Posts on Xieydd Blog</description>
+    <title>Pca on Xieydd Blog</title>
+    <link>https://xieydd.github.io/tags/pca/</link>
+    <description>Recent content in Pca on Xieydd Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
     <lastBuildDate>Fri, 29 Dec 2017 14:25:44 +0800</lastBuildDate>
     
-	<atom:link href="https://xieydd.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://xieydd.github.io/tags/pca/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -20,15 +20,6 @@
       <guid>https://xieydd.github.io/post/t-sne/</guid>
       <description>T-SNE 什么是T-SNE？  全名: t分布随机邻域嵌入
  应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:[10.0:1000.0]   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy.spati.distance选项或者metric listed in pairwise.PAIRWISE_DISTANCE_FUNCTIONS，其中如果metric is “precomputed”) 或 callable 默认为欧几里得距离   init 可能的选项是“random”、“pca”和一个numpy数组(n_samples,n_components)PCA初始化不能与预先计算的距离一起使用，而且通常比随机初始化更为全局稳定。 默认:random   verbose 冗长水平 默认:0   random_state int或者随机状态实例 默认:None 注意不同初始化可能会导致成本函数不同的局部最小值   method 默认的算法为barnes_hut时在O(NlogN)运行，默认算法为exact时准确但是慢时间在O(N^2) 默认:barnes_hut(String)   angle 默认:0.</description>
-    </item>
-    
-    <item>
-      <title>New_Year_Start</title>
-      <link>https://xieydd.github.io/post/new_start/</link>
-      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
-      
-      <guid>https://xieydd.github.io/post/new_start/</guid>
-      <description> 新一年的开始&amp;hellip; 新的一年要做的事情(最重要的事放最后面&amp;hellip;)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于IOS MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 强化对Java和Python语言的理解&amp;hellip; 健身、健身、健身&amp;hellip;&amp;hellip; 2018最重要的就是和张哈哈把小窝搭起来，haha&amp;hellip;  </description>
     </item>
     
   </channel>
