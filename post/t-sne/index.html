@@ -364,220 +364,217 @@
 </table>
 
 <h2 id="t-sne-官方示例-http-scikit-learn-org-stable-auto-examples-manifold-plot-lle-digits-html-sphx-glr-auto-examples-manifold-plot-lle-digits-py-识别手写数字">T-SNE<a href="http://scikit-learn.org/stable/auto_examples/manifold/plot_lle_digits.html#sphx-glr-auto-examples-manifold-plot-lle-digits-py">官方示例</a>(识别手写数字)</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Authors: Fabian Pedregosa &lt;fabian.pedregosa@inria.fr&gt;</span>
+<span style="color:#75715e">#          Olivier Grisel &lt;olivier.grisel@ensta.org&gt;</span>
+<span style="color:#75715e">#          Mathieu Blondel &lt;mathieu@mblondel.org&gt;</span>
+<span style="color:#75715e">#          Gael Varoquaux</span>
+<span style="color:#75715e"># License: BSD 3 clause (C) INRIA 2011</span>
 
-<pre><code># Authors: Fabian Pedregosa &lt;fabian.pedregosa@inria.fr&gt;
-#          Olivier Grisel &lt;olivier.grisel@ensta.org&gt;
-#          Mathieu Blondel &lt;mathieu@mblondel.org&gt;
-#          Gael Varoquaux
-# License: BSD 3 clause (C) INRIA 2011
+<span style="color:#66d9ef">print</span>(__doc__)
+<span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> time
 
-print(__doc__)
-from time import time
-
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import offsetbox
-from sklearn import (manifold, datasets, decomposition, ensemble,
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">from</span> matplotlib <span style="color:#f92672">import</span> offsetbox
+<span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> (manifold, datasets, decomposition, ensemble,
                      discriminant_analysis, random_projection)
 
-digits = datasets.load_digits(n_class=6)
-X = digits.data
-y = digits.target
-n_samples, n_features = X.shape
-n_neighbors = 30
+digits <span style="color:#f92672">=</span> datasets<span style="color:#f92672">.</span>load_digits(n_class<span style="color:#f92672">=</span><span style="color:#ae81ff">6</span>)
+X <span style="color:#f92672">=</span> digits<span style="color:#f92672">.</span>data
+y <span style="color:#f92672">=</span> digits<span style="color:#f92672">.</span>target
+n_samples, n_features <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>shape
+n_neighbors <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>
 
 
-#----------------------------------------------------------------------
-# Scale and visualize the embedding vectors
-def plot_embedding(X, title=None):
-    x_min, x_max = np.min(X, 0), np.max(X, 0)
-    X = (X - x_min) / (x_max - x_min)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Scale and visualize the embedding vectors</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">plot_embedding</span>(X, title<span style="color:#f92672">=</span>None):
+    x_min, x_max <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>min(X, <span style="color:#ae81ff">0</span>), np<span style="color:#f92672">.</span>max(X, <span style="color:#ae81ff">0</span>)
+    X <span style="color:#f92672">=</span> (X <span style="color:#f92672">-</span> x_min) <span style="color:#f92672">/</span> (x_max <span style="color:#f92672">-</span> x_min)
 
-    plt.figure()
-    ax = plt.subplot(111)
-    for i in range(X.shape[0]):
-        plt.text(X[i, 0], X[i, 1], str(digits.target[i]),
-                 color=plt.cm.Set1(y[i] / 10.),
-                 fontdict={'weight': 'bold', 'size': 9})
+    plt<span style="color:#f92672">.</span>figure()
+    ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">111</span>)
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(X<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]):
+        plt<span style="color:#f92672">.</span>text(X[i, <span style="color:#ae81ff">0</span>], X[i, <span style="color:#ae81ff">1</span>], str(digits<span style="color:#f92672">.</span>target[i]),
+                 color<span style="color:#f92672">=</span>plt<span style="color:#f92672">.</span>cm<span style="color:#f92672">.</span>Set1(y[i] <span style="color:#f92672">/</span> <span style="color:#ae81ff">10.</span>),
+                 fontdict<span style="color:#f92672">=</span>{<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;weight&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;bold&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;size&#39;</span>: <span style="color:#ae81ff">9</span>})
 
-    if hasattr(offsetbox, 'AnnotationBbox'):
-        # only print thumbnails with matplotlib &gt; 1.0
-        shown_images = np.array([[1., 1.]])  # just something big
-        for i in range(digits.data.shape[0]):
-            dist = np.sum((X[i] - shown_images) ** 2, 1)
-            if np.min(dist) &lt; 4e-3:
-                # don't show points that are too close
-                continue
-            shown_images = np.r_[shown_images, [X[i]]]
-            imagebox = offsetbox.AnnotationBbox(
-                offsetbox.OffsetImage(digits.images[i], cmap=plt.cm.gray_r),
+    <span style="color:#66d9ef">if</span> hasattr(offsetbox, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;AnnotationBbox&#39;</span>):
+        <span style="color:#75715e"># only print thumbnails with matplotlib &gt; 1.0</span>
+        shown_images <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([[<span style="color:#ae81ff">1.</span>, <span style="color:#ae81ff">1.</span>]])  <span style="color:#75715e"># just something big</span>
+        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(digits<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]):
+            dist <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sum((X[i] <span style="color:#f92672">-</span> shown_images) <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>)
+            <span style="color:#66d9ef">if</span> np<span style="color:#f92672">.</span>min(dist) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4e-3</span>:
+                <span style="color:#75715e"># don&#39;t show points that are too close</span>
+                <span style="color:#66d9ef">continue</span>
+            shown_images <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>r_[shown_images, [X[i]]]
+            imagebox <span style="color:#f92672">=</span> offsetbox<span style="color:#f92672">.</span>AnnotationBbox(
+                offsetbox<span style="color:#f92672">.</span>OffsetImage(digits<span style="color:#f92672">.</span>images[i], cmap<span style="color:#f92672">=</span>plt<span style="color:#f92672">.</span>cm<span style="color:#f92672">.</span>gray_r),
                 X[i])
-            ax.add_artist(imagebox)
-    plt.xticks([]), plt.yticks([])
-    if title is not None:
-        plt.title(title)
+            ax<span style="color:#f92672">.</span>add_artist(imagebox)
+    plt<span style="color:#f92672">.</span>xticks([]), plt<span style="color:#f92672">.</span>yticks([])
+    <span style="color:#66d9ef">if</span> title <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
+        plt<span style="color:#f92672">.</span>title(title)
 
 
-#----------------------------------------------------------------------
-# Plot images of the digits
-n_img_per_row = 20
-img = np.zeros((10 * n_img_per_row, 10 * n_img_per_row))
-for i in range(n_img_per_row):
-    ix = 10 * i + 1
-    for j in range(n_img_per_row):
-        iy = 10 * j + 1
-        img[ix:ix + 8, iy:iy + 8] = X[i * n_img_per_row + j].reshape((8, 8))
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Plot images of the digits</span>
+n_img_per_row <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>
+img <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros((<span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> n_img_per_row, <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> n_img_per_row))
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(n_img_per_row):
+    ix <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(n_img_per_row):
+        iy <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> j <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+        img[ix:ix <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>, iy:iy <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>] <span style="color:#f92672">=</span> X[i <span style="color:#f92672">*</span> n_img_per_row <span style="color:#f92672">+</span> j]<span style="color:#f92672">.</span>reshape((<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>))
 
-plt.imshow(img, cmap=plt.cm.binary)
-plt.xticks([])
-plt.yticks([])
-plt.title('A selection from the 64-dimensional digits dataset')
-
-
-#----------------------------------------------------------------------
-# Random 2D projection using a random unitary matrix
-print(&quot;Computing random projection&quot;)
-rp = random_projection.SparseRandomProjection(n_components=2, random_state=42)
-X_projected = rp.fit_transform(X)
-plot_embedding(X_projected, &quot;Random Projection of the digits&quot;)
+plt<span style="color:#f92672">.</span>imshow(img, cmap<span style="color:#f92672">=</span>plt<span style="color:#f92672">.</span>cm<span style="color:#f92672">.</span>binary)
+plt<span style="color:#f92672">.</span>xticks([])
+plt<span style="color:#f92672">.</span>yticks([])
+plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;A selection from the 64-dimensional digits dataset&#39;</span>)
 
 
-#----------------------------------------------------------------------
-# Projection on to the first 2 principal components
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Random 2D projection using a random unitary matrix</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing random projection&#34;</span>)
+rp <span style="color:#f92672">=</span> random_projection<span style="color:#f92672">.</span>SparseRandomProjection(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
+X_projected <span style="color:#f92672">=</span> rp<span style="color:#f92672">.</span>fit_transform(X)
+plot_embedding(X_projected, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Random Projection of the digits&#34;</span>)
 
-print(&quot;Computing PCA projection&quot;)
-t0 = time()
-X_pca = decomposition.TruncatedSVD(n_components=2).fit_transform(X)
+
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Projection on to the first 2 principal components</span>
+
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing PCA projection&#34;</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_pca <span style="color:#f92672">=</span> decomposition<span style="color:#f92672">.</span>TruncatedSVD(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)<span style="color:#f92672">.</span>fit_transform(X)
 plot_embedding(X_pca,
-               &quot;Principal Components projection of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Principal Components projection of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
-#----------------------------------------------------------------------
-# Projection on to the first 2 linear discriminant components
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Projection on to the first 2 linear discriminant components</span>
 
-print(&quot;Computing Linear Discriminant Analysis projection&quot;)
-X2 = X.copy()
-X2.flat[::X.shape[1] + 1] += 0.01  # Make X invertible
-t0 = time()
-X_lda = discriminant_analysis.LinearDiscriminantAnalysis(n_components=2).fit_transform(X2, y)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing Linear Discriminant Analysis projection&#34;</span>)
+X2 <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>copy()
+X2<span style="color:#f92672">.</span>flat[::X<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">+=</span> <span style="color:#ae81ff">0.01</span>  <span style="color:#75715e"># Make X invertible</span>
+t0 <span style="color:#f92672">=</span> time()
+X_lda <span style="color:#f92672">=</span> discriminant_analysis<span style="color:#f92672">.</span>LinearDiscriminantAnalysis(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)<span style="color:#f92672">.</span>fit_transform(X2, y)
 plot_embedding(X_lda,
-               &quot;Linear Discriminant projection of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Linear Discriminant projection of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
 
-#----------------------------------------------------------------------
-# Isomap projection of the digits dataset
-print(&quot;Computing Isomap embedding&quot;)
-t0 = time()
-X_iso = manifold.Isomap(n_neighbors, n_components=2).fit_transform(X)
-print(&quot;Done.&quot;)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Isomap projection of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing Isomap embedding&#34;</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_iso <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>Isomap(n_neighbors, n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)<span style="color:#f92672">.</span>fit_transform(X)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Done.&#34;</span>)
 plot_embedding(X_iso,
-               &quot;Isomap projection of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Isomap projection of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
 
-#----------------------------------------------------------------------
-# Locally linear embedding of the digits dataset
-print(&quot;Computing LLE embedding&quot;)
-clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=2,
-                                      method='standard')
-t0 = time()
-X_lle = clf.fit_transform(X)
-print(&quot;Done. Reconstruction error: %g&quot; % clf.reconstruction_error_)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Locally linear embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing LLE embedding&#34;</span>)
+clf <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>LocallyLinearEmbedding(n_neighbors, n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>,
+                                      method<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;standard&#39;</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_lle <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>fit_transform(X)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Done. Reconstruction error: </span><span style="color:#e6db74">%g</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> clf<span style="color:#f92672">.</span>reconstruction_error_)
 plot_embedding(X_lle,
-               &quot;Locally Linear Embedding of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Locally Linear Embedding of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
 
-#----------------------------------------------------------------------
-# Modified Locally linear embedding of the digits dataset
-print(&quot;Computing modified LLE embedding&quot;)
-clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=2,
-                                      method='modified')
-t0 = time()
-X_mlle = clf.fit_transform(X)
-print(&quot;Done. Reconstruction error: %g&quot; % clf.reconstruction_error_)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Modified Locally linear embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing modified LLE embedding&#34;</span>)
+clf <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>LocallyLinearEmbedding(n_neighbors, n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>,
+                                      method<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;modified&#39;</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_mlle <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>fit_transform(X)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Done. Reconstruction error: </span><span style="color:#e6db74">%g</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> clf<span style="color:#f92672">.</span>reconstruction_error_)
 plot_embedding(X_mlle,
-               &quot;Modified Locally Linear Embedding of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Modified Locally Linear Embedding of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
 
-#----------------------------------------------------------------------
-# HLLE embedding of the digits dataset
-print(&quot;Computing Hessian LLE embedding&quot;)
-clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=2,
-                                      method='hessian')
-t0 = time()
-X_hlle = clf.fit_transform(X)
-print(&quot;Done. Reconstruction error: %g&quot; % clf.reconstruction_error_)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># HLLE embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing Hessian LLE embedding&#34;</span>)
+clf <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>LocallyLinearEmbedding(n_neighbors, n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>,
+                                      method<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;hessian&#39;</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_hlle <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>fit_transform(X)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Done. Reconstruction error: </span><span style="color:#e6db74">%g</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> clf<span style="color:#f92672">.</span>reconstruction_error_)
 plot_embedding(X_hlle,
-               &quot;Hessian Locally Linear Embedding of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Hessian Locally Linear Embedding of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
 
-#----------------------------------------------------------------------
-# LTSA embedding of the digits dataset
-print(&quot;Computing LTSA embedding&quot;)
-clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=2,
-                                      method='ltsa')
-t0 = time()
-X_ltsa = clf.fit_transform(X)
-print(&quot;Done. Reconstruction error: %g&quot; % clf.reconstruction_error_)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># LTSA embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing LTSA embedding&#34;</span>)
+clf <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>LocallyLinearEmbedding(n_neighbors, n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>,
+                                      method<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;ltsa&#39;</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_ltsa <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>fit_transform(X)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Done. Reconstruction error: </span><span style="color:#e6db74">%g</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> clf<span style="color:#f92672">.</span>reconstruction_error_)
 plot_embedding(X_ltsa,
-               &quot;Local Tangent Space Alignment of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Local Tangent Space Alignment of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
-#----------------------------------------------------------------------
-# MDS  embedding of the digits dataset
-print(&quot;Computing MDS embedding&quot;)
-clf = manifold.MDS(n_components=2, n_init=1, max_iter=100)
-t0 = time()
-X_mds = clf.fit_transform(X)
-print(&quot;Done. Stress: %f&quot; % clf.stress_)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># MDS  embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing MDS embedding&#34;</span>)
+clf <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>MDS(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, n_init<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, max_iter<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_mds <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>fit_transform(X)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Done. Stress: </span><span style="color:#e6db74">%f</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> clf<span style="color:#f92672">.</span>stress_)
 plot_embedding(X_mds,
-               &quot;MDS embedding of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;MDS embedding of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
-#----------------------------------------------------------------------
-# Random Trees embedding of the digits dataset
-print(&quot;Computing Totally Random Trees embedding&quot;)
-hasher = ensemble.RandomTreesEmbedding(n_estimators=200, random_state=0,
-                                       max_depth=5)
-t0 = time()
-X_transformed = hasher.fit_transform(X)
-pca = decomposition.TruncatedSVD(n_components=2)
-X_reduced = pca.fit_transform(X_transformed)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Random Trees embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing Totally Random Trees embedding&#34;</span>)
+hasher <span style="color:#f92672">=</span> ensemble<span style="color:#f92672">.</span>RandomTreesEmbedding(n_estimators<span style="color:#f92672">=</span><span style="color:#ae81ff">200</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,
+                                       max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_transformed <span style="color:#f92672">=</span> hasher<span style="color:#f92672">.</span>fit_transform(X)
+pca <span style="color:#f92672">=</span> decomposition<span style="color:#f92672">.</span>TruncatedSVD(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+X_reduced <span style="color:#f92672">=</span> pca<span style="color:#f92672">.</span>fit_transform(X_transformed)
 
 plot_embedding(X_reduced,
-               &quot;Random forest embedding of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Random forest embedding of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
-#----------------------------------------------------------------------
-# Spectral embedding of the digits dataset
-print(&quot;Computing Spectral embedding&quot;)
-embedder = manifold.SpectralEmbedding(n_components=2, random_state=0,
-                                      eigen_solver=&quot;arpack&quot;)
-t0 = time()
-X_se = embedder.fit_transform(X)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># Spectral embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing Spectral embedding&#34;</span>)
+embedder <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>SpectralEmbedding(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,
+                                      eigen_solver<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;arpack&#34;</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_se <span style="color:#f92672">=</span> embedder<span style="color:#f92672">.</span>fit_transform(X)
 
 plot_embedding(X_se,
-               &quot;Spectral embedding of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Spectral embedding of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
-#----------------------------------------------------------------------
-# t-SNE embedding of the digits dataset
-print(&quot;Computing t-SNE embedding&quot;)
-tsne = manifold.TSNE(n_components=2, init='pca', random_state=0)
-t0 = time()
-X_tsne = tsne.fit_transform(X)
+<span style="color:#75715e">#----------------------------------------------------------------------</span>
+<span style="color:#75715e"># t-SNE embedding of the digits dataset</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Computing t-SNE embedding&#34;</span>)
+tsne <span style="color:#f92672">=</span> manifold<span style="color:#f92672">.</span>TSNE(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, init<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;pca&#39;</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+t0 <span style="color:#f92672">=</span> time()
+X_tsne <span style="color:#f92672">=</span> tsne<span style="color:#f92672">.</span>fit_transform(X)
 
 plot_embedding(X_tsne,
-               &quot;t-SNE embedding of the digits (time %.2fs)&quot; %
-               (time() - t0))
+               <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;t-SNE embedding of the digits (time </span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">s)&#34;</span> <span style="color:#f92672">%</span>
+               (time() <span style="color:#f92672">-</span> t0))
 
-plt.show()
-</code></pre>
-
+plt<span style="color:#f92672">.</span>show()</code></pre></div>
 <h2 id="t-sne应用于我的模型">T-SNE应用于我的模型</h2>
 
 <p>前提:已获得全连接层2的数据，shape为(,)</p>
