@@ -5,11 +5,7 @@
   <meta charset="utf-8" />
 
   
-  <title>
-  Tag → t-sne
-  
-   | Xieydd Blog
-</title>
+  <title>Kubernetes_frame</title>
 
   
   
@@ -20,20 +16,25 @@
 
   
   <meta name="author" content="Xieydd" />
-  <meta name="description" content="谢远东的博客，基于Hugp和Github搭建" />
+  <meta name="description" content="CNCF云原生应用的三大特性: &amp;nbsp;1. 容器化包装：软件的应用进程需要包装在容器内独立运行 &amp;nbsp;2. 动态管理: 通过集中式的调度编排系统来动态管理和调度 &amp;nbsp;3. 微服务化 :明确服务之间的依赖，相互解耦
+Kuberneres核心组件:  1. etcd:保存整个集群的状态 2. kube-apiserver:资源调度的唯一入口，提供认证、授权、限制、API注册和发现机制 3." />
 
   
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:site" content="@xieydd_" />
-  <meta name="twitter:title" content="Xieydd Blog" />
-  <meta name="twitter:description" content="谢远东的博客，基于Hugp和Github搭建" />
-  <meta name="twitter:image" content="https://xieydd.github.io/img/avatar.jpg" />
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Kubernetes_frame" />
+    <meta name="twitter:description" content="CNCF云原生应用的三大特性: &amp;nbsp;1. 容器化包装：软件的应用进程需要包装在容器内独立运行 &amp;nbsp;2. 动态管理: 通过集中式的调度编排系统来动态管理和调度 &amp;nbsp;3. 微服务化 :明确服务之间的依赖，相互解耦
+Kuberneres核心组件:  1. etcd:保存整个集群的状态 2. kube-apiserver:资源调度的唯一入口，提供认证、授权、限制、API注册和发现机制 3." />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/avatar.jpg" />
+  
 
   
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Xieydd Blog" />
-  <meta property="og:description" content="谢远东的博客，基于Hugp和Github搭建" />
-  <meta property="og:url" content="https://xieydd.github.io/tags/t-sne/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Kubernetes_frame" />
+  <meta property="og:description" content="CNCF云原生应用的三大特性: &amp;nbsp;1. 容器化包装：软件的应用进程需要包装在容器内独立运行 &amp;nbsp;2. 动态管理: 通过集中式的调度编排系统来动态管理和调度 &amp;nbsp;3. 微服务化 :明确服务之间的依赖，相互解耦
+Kuberneres核心组件:  1. etcd:保存整个集群的状态 2. kube-apiserver:资源调度的唯一入口，提供认证、授权、限制、API注册和发现机制 3." />
+  <meta property="og:url" content="https://xieydd.github.io/post/kubernetes_frame/" />
   <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
 
 
@@ -42,7 +43,7 @@
 <meta name="generator" content="Hugo 0.31.1" />
 
 
-<link rel="canonical" href="https://xieydd.github.io/tags/t-sne/" />
+<link rel="canonical" href="https://xieydd.github.io/post/kubernetes_frame/" />
 <link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
 
 
@@ -106,6 +107,10 @@
     <div class="suspension">
       <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
       
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
     </div>
     
     
@@ -128,6 +133,8 @@
         <li class="menu-item
             
             
+            
+              is-active
             ">
             <a href="https://xieydd.github.io/">首页</a>
           </li>
@@ -234,30 +241,51 @@
   </nav>
 </header>
 
-  <section class="main post-list">
-    <header class="list-header offscreen">
-      <h2 class="list-label">Posts List</h2>
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes_frame</h1>
+      <p class="post-meta">@Xieydd · Jan 2, 2018 · 1 min read</p>
     </header>
-    
-    
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="https://xieydd.github.io/post/t-sne/" class="post-link">T-SNE(高维降维)应用在全矢卷积神经网络模型</a></h3>
-    <p class="post-meta">@Xieydd · Dec 29, 2017 · 4 min read</p>
-  </header>
-  
-    <img class="post-cover" src="img/cover.jpg" alt="T-SNE(高维降维)应用在全矢卷积神经网络模型">
-  
-  <p class="post-summary">T-SNE 什么是T-SNE？  全名: t分布随机邻域嵌入
- 应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:[10.0:1000.0]   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy.spati.distance选项或者metric listed in pairwise.PAIRWISE_DISTANCE_FUNCTIONS，其中如果metric is “precomputed”) 或 callable 默认为欧几里得距离   init 可能的选项是“random”、“pca”和一个numpy数组(n_samples,n_components)PCA初始化不能与预先计算的距离一起使用，而且通常比随机初始化更为全局稳定。 默认:random   verbose 冗长水平 默认:0   random_state int或者随机状态实例 默认:None 注意不同初始化可能会导致成本函数不同的局部最小值   method 默认的算法为barnes_hut时在O(NlogN)运行，默认算法为exact时准确但是慢时间在O(N^2) 默认:barnes_hut(String)   angle 默认:0.</p>
-  <footer class="post-footer">
-    <a class="read-more" href="https://xieydd.github.io/post/t-sne/">Read More →</a>
-  </footer>
-</article>
+    <article class="post-content"><p>CNCF云原生应用的三大特性:<br/>
+&nbsp;1. <strong>容器化包装</strong>：软件的应用进程需要包装在容器内独立运行<br/>
+&nbsp;2. <strong>动态管理</strong>: 通过集中式的调度编排系统来动态管理和调度<br/>
+&nbsp;3. <strong>微服务化</strong> :明确服务之间的依赖，相互解耦<br/></p>
 
+<p><img src="....themeshugo-nuostaticimgkubernetes-architecture.png" alt="Kubernetes框架  -来自于jimmysong.io" /></p>
+
+<p>Kuberneres核心组件: <br/>
+ 1. etcd:保存整个集群的状态<br/>
+ 2. kube-apiserver:资源调度的唯一入口，提供认证、授权、限制、API注册和发现机制<br/>
+ 3. <br/></p>
+</article>
+    <footer class="post-footer">
       
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
     
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
     
   </section>
   <footer class="site-footer">
