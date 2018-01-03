@@ -17,7 +17,7 @@
   
   <meta name="author" content="Xieydd" />
   <meta name="description" content="T-SNE 什么是T-SNE？  全名: t分布随机邻域嵌入
- 应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:[10.0:1000.0]   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy.spati.distance选项或者metric listed in pairwise.PAIRWISE_DISTANCE_FUNCTIONS，其中如果metric is “precomputed”) 或 callable 默认为欧几里得距离   init 可能的选项是“random”、“pca”和一个numpy数组(n_samples,n_components)PCA初始化不能与预先计算的距离一起使用，而且通常比随机初始化更为全局稳定。 默认:random   verbose 冗长水平 默认:0   random_state int或者随机状态实例 默认:None 注意不同初始化可能会导致成本函数不同的局部最小值   method 默认的算法为barnes_hut时在O(NlogN)运行，默认算法为exact时准确但是慢时间在O(N^2) 默认:barnes_hut(String)   angle 默认:0." />
+ 应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API TSNE(n_components=2, perplexity=30.0, early_exaggeration=12.0, learning_rate=200.0, n_iter=1000, n_iter_without_progress=300, min_grad_norm=1e-07, metric=’euclidean’, init=’random’, verbose=0, random_state=None, method=’barnes_hut’, angle=0.5)     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:10.0:1000.0   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy." />
 
   
   
@@ -25,7 +25,7 @@
     <meta name="twitter:site" content="@xieydd_" />
     <meta name="twitter:title" content="T-SNE(高维降维)应用在全矢卷积神经网络模型" />
     <meta name="twitter:description" content="T-SNE 什么是T-SNE？  全名: t分布随机邻域嵌入
- 应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:[10.0:1000.0]   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy.spati.distance选项或者metric listed in pairwise.PAIRWISE_DISTANCE_FUNCTIONS，其中如果metric is “precomputed”) 或 callable 默认为欧几里得距离   init 可能的选项是“random”、“pca”和一个numpy数组(n_samples,n_components)PCA初始化不能与预先计算的距离一起使用，而且通常比随机初始化更为全局稳定。 默认:random   verbose 冗长水平 默认:0   random_state int或者随机状态实例 默认:None 注意不同初始化可能会导致成本函数不同的局部最小值   method 默认的算法为barnes_hut时在O(NlogN)运行，默认算法为exact时准确但是慢时间在O(N^2) 默认:barnes_hut(String)   angle 默认:0." />
+ 应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API TSNE(n_components=2, perplexity=30.0, early_exaggeration=12.0, learning_rate=200.0, n_iter=1000, n_iter_without_progress=300, min_grad_norm=1e-07, metric=’euclidean’, init=’random’, verbose=0, random_state=None, method=’barnes_hut’, angle=0.5)     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:10.0:1000.0   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy." />
     <meta name="twitter:image" content="https://xieydd.github.io/img/cover.jpg" />
   
 
@@ -33,7 +33,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="T-SNE(高维降维)应用在全矢卷积神经网络模型" />
   <meta property="og:description" content="T-SNE 什么是T-SNE？  全名: t分布随机邻域嵌入
- 应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:[10.0:1000.0]   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy.spati.distance选项或者metric listed in pairwise.PAIRWISE_DISTANCE_FUNCTIONS，其中如果metric is “precomputed”) 或 callable 默认为欧几里得距离   init 可能的选项是“random”、“pca”和一个numpy数组(n_samples,n_components)PCA初始化不能与预先计算的距离一起使用，而且通常比随机初始化更为全局稳定。 默认:random   verbose 冗长水平 默认:0   random_state int或者随机状态实例 默认:None 注意不同初始化可能会导致成本函数不同的局部最小值   method 默认的算法为barnes_hut时在O(NlogN)运行，默认算法为exact时准确但是慢时间在O(N^2) 默认:barnes_hut(String)   angle 默认:0." />
+ 应用: 将多个维度映射到适合人类观察的二维或者多个维度  T-SNE API TSNE(n_components=2, perplexity=30.0, early_exaggeration=12.0, learning_rate=200.0, n_iter=1000, n_iter_without_progress=300, min_grad_norm=1e-07, metric=’euclidean’, init=’random’, verbose=0, random_state=None, method=’barnes_hut’, angle=0.5)     Parameters Description     n_components 嵌入空间的维度 默认:2(int)   perplexity 大数据集需要的更大(Not Important) 默认:30 范围:5-50(float)   early_exaggeration 控制集群在空间中的紧密程度(Not Important) 默认:12(float)   learning_rate 学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:10.0:1000.0   n_iter 最大循环次数 默认:1000(int) 最小250   n_iter_without_progress 相当于EarlyStop即不再优化的轮数 在250轮后才使用且每50次迭代检查一次 默认:300(int)   min_grad_norm 梯度小于这个值将停止优化 默认:1e-7(float)   metric string(scipy." />
   <meta property="og:url" content="https://xieydd.github.io/post/t-sne/" />
   <meta property="og:image" content="https://xieydd.github.io/img/cover.jpg" />
 
@@ -258,7 +258,7 @@
 </ol>
 
 <h2 id="t-sne-api">T-SNE API</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">TSNE(n_components<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, perplexity<span style="color:#f92672">=</span><span style="color:#ae81ff">30.0</span>, early_exaggeration<span style="color:#f92672">=</span><span style="color:#ae81ff">12.0</span>, learning_rate<span style="color:#f92672">=</span><span style="color:#ae81ff">200.0</span>, n_iter<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, n_iter_without_progress<span style="color:#f92672">=</span><span style="color:#ae81ff">300</span>, min_grad_norm<span style="color:#f92672">=</span><span style="color:#ae81ff">1e-07</span>, metric<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">’</span>euclidean<span style="color:#960050;background-color:#1e0010">’</span>, init<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">’</span>random<span style="color:#960050;background-color:#1e0010">’</span>, verbose<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, random_state<span style="color:#f92672">=</span>None, method<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">’</span>barnes_hut<span style="color:#960050;background-color:#1e0010">’</span>, angle<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>)</code></pre></div>
 <blockquote>
 <table>
 <thead>
@@ -286,7 +286,7 @@
 
 <tr>
 <td><strong>learning_rate</strong></td>
-<td>学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:[10.0:1000.0]</td>
+<td>学习速率过高可能会造成数据看起来像个球，过低会造成大多数点被压缩在一起；如果成本函数被卡在局部最小值，可以适当增大速率 默认:200 范围:10.0:1000.0</td>
 </tr>
 
 <tr>

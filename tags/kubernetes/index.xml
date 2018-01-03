@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
-    <lastBuildDate>Thu, 28 Dec 2017 16:37:10 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jan 2018 17:31:03 +0800</lastBuildDate>
     
 	<atom:link href="https://xieydd.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes_frame</title>
+      <link>https://xieydd.github.io/post/kubernetes_frame/</link>
+      <pubDate>Tue, 02 Jan 2018 17:31:03 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/kubernetes_frame/</guid>
+      <description>CNCF云原生应用的三大特性: &amp;nbsp;1. 容器化包装：软件的应用进程需要包装在容器内独立运行 &amp;nbsp;2. 动态管理: 通过集中式的调度编排系统来动态管理和调度 &amp;nbsp;3. 微服务化 :明确服务之间的依赖，相互解耦
+Kuberneres核心组件:  1. etcd:保存整个集群的状态 2. kube-apiserver:资源调度的唯一入口，提供认证、授权、限制、API注册和发现机制 3.</description>
+    </item>
     
     <item>
       <title>New_Year_Start</title>
@@ -18,7 +28,7 @@
       <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
       
       <guid>https://xieydd.github.io/post/new_start/</guid>
-      <description> 新一年的开始&amp;hellip; 新的一年要做的事情(最重要的事放最后面&amp;hellip;)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于IOS MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 强化对Java和Python语言的理解&amp;hellip; 健身、健身、健身&amp;hellip;&amp;hellip; 2018最重要的就是和张哈哈把小窝搭起来，haha&amp;hellip;  </description>
+      <description> 新一年的开始&amp;hellip; 新的一年要做的事情(最重要的事放最后面&amp;hellip;)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于Apple MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 发表小论文以及着手准备大论文 强化对Java和Python语言的理解&amp;hellip; 健身、健身、健身&amp;hellip;&amp;hellip; 2018最重要的就是和张哈哈把小窝搭起来，haha&amp;hellip;  </description>
     </item>
     
   </channel>
