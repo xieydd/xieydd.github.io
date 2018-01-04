@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kubernetes_ML</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="Machine Learning &#43; Kubernetes = ?  Translate from Michael Hausenblas`s Blog
+ Machine Learning  公共云服务商  Machine Learning on AWS Azure Machine Learning Studio Google Cloud AI aliyun Caicloud  开源解决方案(不限于)  R—the data scientist&amp;rsquo;s go-to workhorse 基于Python的scikit-learn、PyTorch、Numpy、pandas、and Jupyter Notebook 基于Java的机器学习系统例如：Apache Spark的MLlib和FlinkML 基于C的Tensorflow,在Github上以极快的速度上升，在2015年被Google开源。    在进行机器学习的时候会遇到什么问题? 当你在笔记本上进行机器学习，不可避免的需要分布式处理，这就意味着需要类似于GPGPUs、FPGAs这些硬件进行并行计算。但是对于一个开发人员或者数据科学家，深入了解分布式操作系统是很难的，当然现在有一些云提供这样的的环境，但是这样会将我们局限其中。
+Kubernetes 我的笔记 Kubenetes-frame
+ Kuberbnetes特征 Kubernetes可以很容易地在一组服务器上以标准化的方式运行几乎任何编程语言编写的应用程序。在标准化的情况下，我的意思是，应用程序的打包、部署和操作在不同的环境下都有良好的定义和可移植性——不管你是在你的笔记本上运行一个应用，还是在公共云环境中运行。另外，Kubernetes的架构是模块化和可扩展的。
+ 公有云支持Kubernetes
+ Google Kubernetes Engine Azure Container Service Amazon Elastic Container Service for Kubernetes (preview) 阿里容器服务 Kubernetes版(公测中) Caicloud OpenShift     Everyone who&amp;rsquo;s into ML can confirm that north of 70% of the hard work actually is around cleaning up the data." />
+
+  
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Kubernetes_ML" />
+    <meta name="twitter:description" content="Machine Learning &#43; Kubernetes = ?  Translate from Michael Hausenblas`s Blog
+ Machine Learning  公共云服务商  Machine Learning on AWS Azure Machine Learning Studio Google Cloud AI aliyun Caicloud  开源解决方案(不限于)  R—the data scientist&amp;rsquo;s go-to workhorse 基于Python的scikit-learn、PyTorch、Numpy、pandas、and Jupyter Notebook 基于Java的机器学习系统例如：Apache Spark的MLlib和FlinkML 基于C的Tensorflow,在Github上以极快的速度上升，在2015年被Google开源。    在进行机器学习的时候会遇到什么问题? 当你在笔记本上进行机器学习，不可避免的需要分布式处理，这就意味着需要类似于GPGPUs、FPGAs这些硬件进行并行计算。但是对于一个开发人员或者数据科学家，深入了解分布式操作系统是很难的，当然现在有一些云提供这样的的环境，但是这样会将我们局限其中。
+Kubernetes 我的笔记 Kubenetes-frame
+ Kuberbnetes特征 Kubernetes可以很容易地在一组服务器上以标准化的方式运行几乎任何编程语言编写的应用程序。在标准化的情况下，我的意思是，应用程序的打包、部署和操作在不同的环境下都有良好的定义和可移植性——不管你是在你的笔记本上运行一个应用，还是在公共云环境中运行。另外，Kubernetes的架构是模块化和可扩展的。
+ 公有云支持Kubernetes
+ Google Kubernetes Engine Azure Container Service Amazon Elastic Container Service for Kubernetes (preview) 阿里容器服务 Kubernetes版(公测中) Caicloud OpenShift     Everyone who&amp;rsquo;s into ML can confirm that north of 70% of the hard work actually is around cleaning up the data." />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/google_deepmind.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Kubernetes_ML" />
+  <meta property="og:description" content="Machine Learning &#43; Kubernetes = ?  Translate from Michael Hausenblas`s Blog
+ Machine Learning  公共云服务商  Machine Learning on AWS Azure Machine Learning Studio Google Cloud AI aliyun Caicloud  开源解决方案(不限于)  R—the data scientist&amp;rsquo;s go-to workhorse 基于Python的scikit-learn、PyTorch、Numpy、pandas、and Jupyter Notebook 基于Java的机器学习系统例如：Apache Spark的MLlib和FlinkML 基于C的Tensorflow,在Github上以极快的速度上升，在2015年被Google开源。    在进行机器学习的时候会遇到什么问题? 当你在笔记本上进行机器学习，不可避免的需要分布式处理，这就意味着需要类似于GPGPUs、FPGAs这些硬件进行并行计算。但是对于一个开发人员或者数据科学家，深入了解分布式操作系统是很难的，当然现在有一些云提供这样的的环境，但是这样会将我们局限其中。
+Kubernetes 我的笔记 Kubenetes-frame
+ Kuberbnetes特征 Kubernetes可以很容易地在一组服务器上以标准化的方式运行几乎任何编程语言编写的应用程序。在标准化的情况下，我的意思是，应用程序的打包、部署和操作在不同的环境下都有良好的定义和可移植性——不管你是在你的笔记本上运行一个应用，还是在公共云环境中运行。另外，Kubernetes的架构是模块化和可扩展的。
+ 公有云支持Kubernetes
+ Google Kubernetes Engine Azure Container Service Amazon Elastic Container Service for Kubernetes (preview) 阿里容器服务 Kubernetes版(公测中) Caicloud OpenShift     Everyone who&amp;rsquo;s into ML can confirm that north of 70% of the hard work actually is around cleaning up the data." />
+  <meta property="og:url" content="https://xieydd.github.io/post/kubernetes_ml/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/google_deepmind.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.31.1" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/kubernetes_ml/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes_ML</h1>
+      <p class="post-meta">@Xieydd · Jan 4, 2018 · 1 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="machine-learning-kubernetes">Machine Learning + Kubernetes = ?</h1>
+
+<blockquote>
+<p>Translate from <a href="http://kube-machine-learning.rocks/welcome/">Michael Hausenblas`s Blog</a></p>
+</blockquote>
+
+<h2 id="machine-learning">Machine Learning</h2>
+
+<ol>
+<li>公共云服务商
+
+<ul>
+<li><a href="https://aws.amazon.com/cn/machine-learning/">Machine Learning on AWS</a></li>
+<li><a href="https://azure.microsoft.com/en-us/services/machine-learning-studio/"> Azure Machine Learning Studio</a></li>
+<li><a href="https://cloud.google.com/products/machine-learning/">Google Cloud AI</a></li>
+<li><a href="https://data.aliyun.com/product/learn?spm=5176.167023.765261.592.763967f4kRCsRo">aliyun</a></li>
+<li><a href="https://caicloud.io/products/clever">Caicloud</a></li>
+</ul></li>
+<li>开源解决方案(不限于)
+
+<ul>
+<li><a href="https://www.r-project.org/about.html">R</a>—the data scientist&rsquo;s go-to workhorse</li>
+<li>基于Python的<a href="http://scikit-learn.github.io/stable">scikit-learn</a>、<a href="http://pytorch.org/">PyTorch</a>、<a href="http://www.numpy.org/">Numpy</a>、<a href="https://pandas.pydata.org/">pandas</a>、and <a href="https://ipython.org/notebook.html">Jupyter Notebook</a></li>
+<li>基于Java的机器学习系统例如：Apache Spark的<a href="https://spark.apache.org/mllib/">MLlib</a>和<a href="https://github.com/FlinkML">FlinkML</a></li>
+<li>基于C的<a href="https://www.tensorflow.org/">Tensorflow</a>,在Github上以极快的速度上升，在2015年被Google开源。
+<br /></li>
+</ul></li>
+</ol>
+
+<h6 id="在进行机器学习的时候会遇到什么问题">在进行机器学习的时候会遇到什么问题?</h6>
+
+<p>当你在笔记本上进行机器学习，不可避免的需要分布式处理，这就意味着需要类似于<a href="https://en.wikipedia.org/wiki/General-purpose_computing_on_graphics_processing_units">GPGPUs</a>、<a href="https://en.wikipedia.org/wiki/Field-programmable_gate_array">FPGAs</a>这些硬件进行并行计算。但是对于一个开发人员或者数据科学家，深入了解分布式操作系统是很难的，当然现在有一些云提供这样的的环境，但是这样会将我们局限其中。</p>
+
+<h2 id="kubernetes-https-github-com-xieydd-kubernetes"><a href="https://github.com/xieydd/kubernetes">Kubernetes</a></h2>
+
+<p><a href="https://xieydd.github.io/">我的笔记</a> <a href="https://xieydd.github.io/post/kubernetes_frame/">Kubenetes-frame</a></p>
+
+<ul>
+<li><p>Kuberbnetes特征<br/>
+Kubernetes可以很容易地在一组服务器上以标准化的方式运行几乎任何编程语言编写的应用程序。在标准化的情况下，我的意思是，应用程序的打包、部署和操作在不同的环境下都有良好的定义和可移植性——不管你是在你的笔记本上运行一个应用，还是在公共云环境中运行。另外，Kubernetes的架构是模块化和可扩展的。</p></li>
+
+<li><p>公有云支持Kubernetes</p>
+
+<ol>
+<li><a href="https://cloud.google.com/kubernetes-engine/">Google Kubernetes Engine</a></li>
+<li><a href="https://azure.microsoft.com/en-us/services/container-service/">Azure Container Service</a></li>
+<li><a href="https://aws.amazon.com/cn/eks/"> Amazon Elastic Container Service for Kubernetes (preview)</a></li>
+<li><a href="https://www.aliyun.com/product/kubernetes?spm=5176.11065253.765261.431.1bc84745gqvKvC">阿里容器服务 Kubernetes版</a>(公测中)</li>
+<li><a href="https://caicloud.io/products/clever">Caicloud</a></li>
+<li><a href="https://www.openshift.org/">OpenShift</a>
+<br /></li>
+</ol></li>
+</ul>
+
+<blockquote>
+<p>Everyone who&rsquo;s into ML can confirm that north of 70% of the hard work actually is around cleaning up the data.</p>
+</blockquote>
+
+<h2 id="kuberflow-https-github-com-google-kubeflow"><a href="https://github.com/google/kubeflow">Kuberflow</a></h2>
+
+<h5 id="1-背景">1.背景</h5>
+
+<p>2017年12月初，Google推出Kuberflow,一个在Kubernetes运行的标准的ML栈，绑定JupyterHub以及TensorFlow。</p>
+
+<h5 id="2-介绍">2.介绍</h5>
+
+<ul>
+<li><a href="http://blog.kubernetes.io/2017/12/introducing-kubeflow-composable.html"> Introducing Kubeflow - A Composable, Portable, Scalable ML Stack Built for Kubernetes</a></li>
+<li>wide support and a number of entities plan to contribute: from <a href="https://caicloud.io/products/clever">CaiCloud</a>, <a href="https://blog.openshift.com/machine-learning-openshift-kubernetes/">Red Hat&rsquo;s OpenShift</a>, Canonical, <a href="https://www.weave.works/blog/kubeflow-and-weave-cloud">Weaveworks</a>, to <a href="https://container-solutions.com/tensorflow-on-kubernetes-kubeflow/">Container Solutions</a> and CoreOS</li>
+<li>部署Kubeflow
+
+<ol>
+<li>Free, online <a href="https://www.katacoda.com/kubeflow/scenarios/deploying-kubeflow">Kubeflow sandbox</a> via Katacoda</li>
+<li>Join the <a href="https://kubeflow.slack.com/join/shared_invite/enQtMjgyMzMxNDgyMTQ5LWUwMTIxNmZlZTk2NGU0MmFiNDE4YWJiMzFiOGNkZGZjZmRlNTExNmUwMmQ2NzMwYzk5YzQxOWQyODBlZGY2OTg">Kubeflow Slack</a> community or follow <a href="https://twitter.com/kubeflow">Kubeflow on Twitter</a></li>
+<li>[Kuberflow部署记录]()，未完成&hellip;..</li>
+</ol></li>
+</ul>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="https://xieydd.github.io/tags/kubernetes"><span class="tag">Kubernetes</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/machine-learning"><span class="tag">Machine Learning</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/kubeflow"><span class="tag">Kubeflow</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>

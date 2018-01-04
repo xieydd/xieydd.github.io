@@ -33,7 +33,7 @@
     <item>
       <title>Kubeflow</title>
       <link>https://xieydd.github.io/tags/kubeflow/</link>
-      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      <pubDate>Thu, 04 Jan 2018 10:29:37 +0800</pubDate>
       
       <guid>https://xieydd.github.io/tags/kubeflow/</guid>
       <description></description>
@@ -42,9 +42,18 @@
     <item>
       <title>Kubernetes</title>
       <link>https://xieydd.github.io/tags/kubernetes/</link>
-      <pubDate>Tue, 02 Jan 2018 17:31:03 +0800</pubDate>
+      <pubDate>Thu, 04 Jan 2018 10:29:37 +0800</pubDate>
       
       <guid>https://xieydd.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>https://xieydd.github.io/tags/machine-learning/</link>
+      <pubDate>Thu, 04 Jan 2018 10:29:37 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/machine-learning/</guid>
       <description></description>
     </item>
     
