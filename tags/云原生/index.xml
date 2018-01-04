@@ -19,6 +19,7 @@
       
       <guid>https://xieydd.github.io/post/kubernetes_frame/</guid>
       <description>CNCF云原生应用的三大特性: &amp;nbsp;1. 容器化包装：软件的应用进程需要包装在容器内独立运行 &amp;nbsp;2. 动态管理: 通过集中式的调度编排系统来动态管理和调度 &amp;nbsp;3. 微服务化 :明确服务之间的依赖，相互解耦
+[&amp;mdash;来自于jimmysong.io]
 Kuberneres核心组件:  1. etcd:保存整个集群的状态 2. kube-apiserver:资源调度的唯一入口，提供认证、授权、限制、API注册和发现机制 3.</description>
     </item>
     
