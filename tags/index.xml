@@ -22,11 +22,29 @@
     </item>
     
     <item>
+      <title>Deploy</title>
+      <link>https://xieydd.github.io/tags/deploy/</link>
+      <pubDate>Wed, 10 Jan 2018 17:41:48 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/deploy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Docker</title>
       <link>https://xieydd.github.io/tags/docker/</link>
       <pubDate>Mon, 08 Jan 2018 17:51:07 +0800</pubDate>
       
       <guid>https://xieydd.github.io/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gan</title>
+      <link>https://xieydd.github.io/tags/gan/</link>
+      <pubDate>Wed, 10 Jan 2018 17:41:48 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/gan/</guid>
       <description></description>
     </item>
     
@@ -51,7 +69,7 @@
     <item>
       <title>Kubernetes</title>
       <link>https://xieydd.github.io/tags/kubernetes/</link>
-      <pubDate>Thu, 04 Jan 2018 10:29:37 +0800</pubDate>
+      <pubDate>Wed, 10 Jan 2018 17:41:48 +0800</pubDate>
       
       <guid>https://xieydd.github.io/tags/kubernetes/</guid>
       <description></description>
@@ -96,7 +114,7 @@
     <item>
       <title>Tensorflow</title>
       <link>https://xieydd.github.io/tags/tensorflow/</link>
-      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
+      <pubDate>Wed, 10 Jan 2018 17:41:48 +0800</pubDate>
       
       <guid>https://xieydd.github.io/tags/tensorflow/</guid>
       <description></description>

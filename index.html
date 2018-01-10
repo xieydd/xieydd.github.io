@@ -239,6 +239,27 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="https://xieydd.github.io/post/tensorflow_model_deploy/" class="post-link">Tensorflow_Model_Deploy</a></h3>
+    <p class="post-meta">@Xieydd · Jan 10, 2018 · 5 min read</p>
+  </header>
+  
+    <img class="post-cover" src="img/Tensorflow_Model_Deploy.jpg" alt="Tensorflow_Model_Deploy">
+  
+  <p class="post-summary">[部署TensorFlow模型]  来自于Vitaly Bezgachev
+ 1.第一部分:准备模型 Tensorflow是为生产而生，所以Tensorflow提供解决方案Tensorflow Serving,基本流程，创建模型 -&gt; 本地测试 -&gt; 创建web服务 -&gt; 使用web服务创建部署容器 -&gt; 测试容器 -&gt;放入生产，具体步骤如下: - 使用TensorFlow创建模型 - 使用Docker来镜像化 - 使用TensorFlow Serving托管模型 - 部署到生产环境的Kubernetes
+这里使用Udacity深度学习基础课程中的GAN Model for Semi-Supervised learning,这里我们将做以下几个方面: - 在The Street View House Numbers (SVHN) Dataset数据集上训练GAN Model for Semi-Supervised - 使用GAN discriminator预测门牌号，即0-9的数对应的分数 - 将Tensorflow构建的模型集成到Docker容器中 - 创建客户端，提交数字照片 - 部署到云上
+基于Jupyter notebook，将功能集成到python文件里:测试保存的模型、模型的输出(使用Protobuf格式)、客户端的服务请求，具体细节见
+Tensorflow Serving  实现GRPC接口，所以不能直接发送请求，而是创建一个通过GRPC通信的客户端 TensorFlow Serving 已经提供将模型转换成Protobuf的操作 也可以创建自己的模型转换格式实现将其转换成其他格式，但是grpc很快  Tensorflow Serving提供类为SavedModelBuilder
+这个模型的输入为(batch_num,width,height,channels)的张量图片为32x32x3且像素点缩放到(-1,1);服务必须接受JPEG图像
+#图像转换 #序列化传入图像占位符 serialized_tf_example = tf.</p>
+  <footer class="post-footer">
+    <a class="read-more" href="https://xieydd.github.io/post/tensorflow_model_deploy/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="https://xieydd.github.io/post/docker/" class="post-link">Docker</a></h3>
     <p class="post-meta">@Xieydd · Jan 8, 2018 · 44 min read</p>
   </header>

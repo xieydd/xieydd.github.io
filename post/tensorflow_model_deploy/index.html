@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Tensorflow_Model_Deploy</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[部署TensorFlow模型]  来自于Vitaly Bezgachev
+ 1.第一部分:准备模型 Tensorflow是为生产而生，所以Tensorflow提供解决方案Tensorflow Serving,基本流程，创建模型 -&amp;gt; 本地测试 -&amp;gt; 创建web服务 -&amp;gt; 使用web服务创建部署容器 -&amp;gt; 测试容器 -&amp;gt;放入生产，具体步骤如下: - 使用TensorFlow创建模型 - 使用Docker来镜像化 - 使用TensorFlow Serving托管模型 - 部署到生产环境的Kubernetes
+这里使用Udacity深度学习基础课程中的GAN Model for Semi-Supervised learning,这里我们将做以下几个方面: - 在The Street View House Numbers (SVHN) Dataset数据集上训练GAN Model for Semi-Supervised - 使用GAN discriminator预测门牌号，即0-9的数对应的分数 - 将Tensorflow构建的模型集成到Docker容器中 - 创建客户端，提交数字照片 - 部署到云上
+基于Jupyter notebook，将功能集成到python文件里:测试保存的模型、模型的输出(使用Protobuf格式)、客户端的服务请求，具体细节见
+Tensorflow Serving  实现GRPC接口，所以不能直接发送请求，而是创建一个通过GRPC通信的客户端 TensorFlow Serving 已经提供将模型转换成Protobuf的操作 也可以创建自己的模型转换格式实现将其转换成其他格式，但是grpc很快  Tensorflow Serving提供类为SavedModelBuilder
+这个模型的输入为(batch_num,width,height,channels)的张量图片为32x32x3且像素点缩放到(-1,1);服务必须接受JPEG图像
+#图像转换 #序列化传入图像占位符 serialized_tf_example = tf." />
+
+  
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Tensorflow_Model_Deploy" />
+    <meta name="twitter:description" content="[部署TensorFlow模型]  来自于Vitaly Bezgachev
+ 1.第一部分:准备模型 Tensorflow是为生产而生，所以Tensorflow提供解决方案Tensorflow Serving,基本流程，创建模型 -&amp;gt; 本地测试 -&amp;gt; 创建web服务 -&amp;gt; 使用web服务创建部署容器 -&amp;gt; 测试容器 -&amp;gt;放入生产，具体步骤如下: - 使用TensorFlow创建模型 - 使用Docker来镜像化 - 使用TensorFlow Serving托管模型 - 部署到生产环境的Kubernetes
+这里使用Udacity深度学习基础课程中的GAN Model for Semi-Supervised learning,这里我们将做以下几个方面: - 在The Street View House Numbers (SVHN) Dataset数据集上训练GAN Model for Semi-Supervised - 使用GAN discriminator预测门牌号，即0-9的数对应的分数 - 将Tensorflow构建的模型集成到Docker容器中 - 创建客户端，提交数字照片 - 部署到云上
+基于Jupyter notebook，将功能集成到python文件里:测试保存的模型、模型的输出(使用Protobuf格式)、客户端的服务请求，具体细节见
+Tensorflow Serving  实现GRPC接口，所以不能直接发送请求，而是创建一个通过GRPC通信的客户端 TensorFlow Serving 已经提供将模型转换成Protobuf的操作 也可以创建自己的模型转换格式实现将其转换成其他格式，但是grpc很快  Tensorflow Serving提供类为SavedModelBuilder
+这个模型的输入为(batch_num,width,height,channels)的张量图片为32x32x3且像素点缩放到(-1,1);服务必须接受JPEG图像
+#图像转换 #序列化传入图像占位符 serialized_tf_example = tf." />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/Tensorflow_Model_Deploy.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Tensorflow_Model_Deploy" />
+  <meta property="og:description" content="[部署TensorFlow模型]  来自于Vitaly Bezgachev
+ 1.第一部分:准备模型 Tensorflow是为生产而生，所以Tensorflow提供解决方案Tensorflow Serving,基本流程，创建模型 -&amp;gt; 本地测试 -&amp;gt; 创建web服务 -&amp;gt; 使用web服务创建部署容器 -&amp;gt; 测试容器 -&amp;gt;放入生产，具体步骤如下: - 使用TensorFlow创建模型 - 使用Docker来镜像化 - 使用TensorFlow Serving托管模型 - 部署到生产环境的Kubernetes
+这里使用Udacity深度学习基础课程中的GAN Model for Semi-Supervised learning,这里我们将做以下几个方面: - 在The Street View House Numbers (SVHN) Dataset数据集上训练GAN Model for Semi-Supervised - 使用GAN discriminator预测门牌号，即0-9的数对应的分数 - 将Tensorflow构建的模型集成到Docker容器中 - 创建客户端，提交数字照片 - 部署到云上
+基于Jupyter notebook，将功能集成到python文件里:测试保存的模型、模型的输出(使用Protobuf格式)、客户端的服务请求，具体细节见
+Tensorflow Serving  实现GRPC接口，所以不能直接发送请求，而是创建一个通过GRPC通信的客户端 TensorFlow Serving 已经提供将模型转换成Protobuf的操作 也可以创建自己的模型转换格式实现将其转换成其他格式，但是grpc很快  Tensorflow Serving提供类为SavedModelBuilder
+这个模型的输入为(batch_num,width,height,channels)的张量图片为32x32x3且像素点缩放到(-1,1);服务必须接受JPEG图像
+#图像转换 #序列化传入图像占位符 serialized_tf_example = tf." />
+  <meta property="og:url" content="https://xieydd.github.io/post/tensorflow_model_deploy/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/Tensorflow_Model_Deploy.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.31.1" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/tensorflow_model_deploy/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Tensorflow_Model_Deploy</h1>
+      <p class="post-meta">@Xieydd · Jan 10, 2018 · 5 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="部署tensorflow模型">[部署TensorFlow模型]</h1>
+
+<blockquote>
+<p>来自于<a href="https://towardsdatascience.com/@vitaly.bezgachev">Vitaly Bezgachev</a></p>
+</blockquote>
+
+<h3 id="1-第一部分-准备模型">1.第一部分:准备模型</h3>
+
+<p>Tensorflow是为生产而生，所以Tensorflow提供解决方案<a href="https://www.tensorflow.org/serving/">Tensorflow Serving</a>,基本流程，创建模型 -&gt; 本地测试 -&gt; 创建web服务 -&gt; 使用web服务创建部署容器 -&gt; 测试容器 -&gt;放入生产，具体步骤如下:
+- 使用TensorFlow创建模型
+- 使用<a href="https://xieydd.github.io/post/docker/">Docker</a>来镜像化
+- 使用TensorFlow Serving托管模型
+- 部署到生产环境的<a href="https://xieydd.github.io/post/kubernetes_frame/">Kubernetes</a></p>
+
+<p>这里使用Udacity深度学习基础课程中的<a href="https://github.com/udacity/deep-learning/tree/master/semi-supervised">GAN Model for Semi-Supervised learning</a>,这里我们将做以下几个方面:
+- 在<a href="http://ufldl.stanford.edu/housenumbers/">The Street View House Numbers (SVHN) Dataset</a>数据集上训练GAN Model for Semi-Supervised
+- 使用GAN discriminator预测门牌号，即0-9的数对应的分数
+- 将Tensorflow构建的模型集成到Docker容器中
+- 创建客户端，提交数字照片
+- 部署到云上</p>
+
+<p>基于Jupyter notebook，将功能集成到python文件里:测试保存的模型、模型的输出(使用Protobuf格式)、客户端的服务请求，具体<a href="https://github.com/xieydd/tf_serving_example">细节</a>见</p>
+
+<h5 id="tensorflow-serving">Tensorflow Serving</h5>
+
+<ul>
+<li>实现<a href="https://github.com/grpc">GRPC</a>接口，所以不能直接发送请求，而是创建一个通过GRPC通信的客户端</li>
+<li>TensorFlow Serving 已经提供将模型转换成Protobuf的操作</li>
+<li>也可以创建自己的模型转换格式实现将其转换成其他格式，但是grpc很快</li>
+</ul>
+
+<p>Tensorflow Serving提供类为<a href="https://www.tensorflow.org/api_docs/python/tf/saved_model/builder/SavedModelBuilder">SavedModelBuilder</a></p>
+
+<p>这个模型的输入为(batch_num,width,height,channels)的张量图片为32x32x3且像素点缩放到(-1,1);服务必须接受JPEG图像</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#图像转换</span>
+<span style="color:#75715e">#序列化传入图像占位符</span>
+serialized_tf_example <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>placeholder(tf<span style="color:#f92672">.</span>string,name <span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;input_image&#39;</span>)
+<span style="color:#75715e">#字典名到功能的配置</span>
+feature_configs <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;image/encoded&#39;</span><span style="color:#960050;background-color:#1e0010">：</span>tf<span style="color:#f92672">.</span>FixedLenFeature(shape <span style="color:#f92672">=</span> [],dtype <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>string),}
+<span style="color:#75715e">#解析序列化例子</span>
+tf_example <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>parse_example(serialized_tf_example,feature_configs)
+<span style="color:#75715e">#得到图像张量</span>
+jpegs <span style="color:#f92672">=</span> tf_example [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;image/encoded&#39;</span>] 
+images <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>map_fn(preprocess_image,jpegs,dtype <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>float32) 
+images <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>squeeze(images,[<span style="color:#ae81ff">0</span>])
+<span style="color:#75715e">#现在形状是[1,x,x,3]</span></code></pre></div>
+<p>具体代码<a href="https://github.com/Vetal1977/tf_serving_example/blob/master/svnh_semi_supervised_model_saved.py">参见</a>的preprocess_image方法</p>
+
+<p>使用图像张量作为GAN模型加载保存的监测点</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">net <span style="color:#f92672">=</span> GAN(images,z_size,learning_rate,drop_out<span style="color:#f92672">=</span><span style="color:#ae81ff">0.</span>)
+saver <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>train<span style="color:#f92672">.</span>Saver()
+<span style="color:#66d9ef">with</span> tf<span style="color:#f92672">.</span>Session() <span style="color:#66d9ef">as</span> sess:
+    <span style="color:#75715e">#从上一个检查点恢复模型</span>
+    ckpt <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>train<span style="color:#f92672">.</span>get_checkpoint_state(FLAGS<span style="color:#f92672">.</span>checkpoint_dir)
+    save<span style="color:#f92672">.</span>restore(sess,model_checkpoint_path)</code></pre></div>
+<p>使用SavedModelBuilder方法将模型转换成Protobuf格式</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">builder <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>saved_model<span style="color:#f92672">.</span>SavedModelBuilder(export_path)</code></pre></div>
+<p>你必须用输入、输出、和(预测还是分类)创建签名，TensorFlow提供了一个方法tf.saved_model.utils.build_tensor_info来创建张量信息</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">predict_tensor_inputs_info <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>saved_model<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>build_tensor_info(jpegs)
+predict_tensor_scores_info <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>saved_model<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>build_tensor_info(net<span style="color:#f92672">.</span>discriminator_out)
+
+prediction_signature <span style="color:#f92672">=</span> (
+    tf<span style="color:#f92672">.</span>saved_model<span style="color:#f92672">.</span>signature_def_utils<span style="color:#f92672">.</span>build_signature_def(
+    inputs <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;images&#34;</span>:predict_tensor_inputs_info},
+    outputs <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;scores&#34;</span>:predict_tensor_scores_info},
+    mether_name <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>saved_model<span style="color:#f92672">.</span>signature_constants<span style="color:#f92672">.</span>PREDICT_METHOD_NAME
+    )
+)</code></pre></div>
+<p>在教程中创建两个签名：分类和预测，最后保存模型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">legacy_init_op <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>group(tf<span style="color:#f92672">.</span>tables_initializer(),name <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;legacy_init_op&#39;</span>)
+builder<span style="color:#f92672">.</span>add_meta_graph_and_variables(
+    sess,
+    [tf<span style="color:#f92672">.</span>saved_model<span style="color:#f92672">.</span>tag_constants<span style="color:#f92672">.</span>SERVING],
+    signature_def_map <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;predict_images&#39;</span><span style="color:#960050;background-color:#1e0010">：</span>prediction_signature},
+    legacy_init_op <span style="color:#f92672">=</span> legacy_init_op
+)
+builder<span style="color:#f92672">.</span>save()</code></pre></div>
+<p>这样模型被存储为Protobuf格式，导出结构如下:
+- 变量文件夹variables.data-xxx-of-yyy and variables.index
+- saved_model.pb 文件</p>
+
+<p><strong>配置:</strong>
+- GPU-powered PC (NVidia GeForce GTX 1060 6 GB)
+- Ubuntu 16.04
+- Anaconda 4.3.14
+- Python 3.5
+- TensorFlow 1.1, GPU build. 注意:TensorFlow 1.2可能会出问题</p>
+
+<h5 id="尝试">尝试</h5>
+
+<ul>
+<li>克隆下来</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">~</span>
+<span style="color:#960050;background-color:#1e0010">$</span> git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>Vetal1977<span style="color:#f92672">/</span>tf_serving_example<span style="color:#f92672">.</span>git
+<span style="color:#960050;background-color:#1e0010">$</span> cd tf_serving_example</code></pre></div>
+<ul>
+<li>训练模型</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#大概会花费5-10分钟来下载街道门牌号的train和test数据集，另外可能需要20分钟训练自己的模型</span>
+<span style="color:#960050;background-color:#1e0010">$</span> python svnh_semi_supervised_model_train<span style="color:#f92672">.</span>py</code></pre></div>
+<ul>
+<li>检查和保存模型节点</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#将得到数据，index和metadata文件</span>
+<span style="color:#960050;background-color:#1e0010">$</span> ls <span style="color:#f92672">./</span>checkpoints</code></pre></div>
+<ul>
+<li>将模型转换成Tensorflow Serving接受的Protobuf格式</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> python svnh_semi_supervised_model_saved<span style="color:#f92672">.</span>py <span style="color:#f92672">--</span>checkpoint<span style="color:#f92672">-</span>dir<span style="color:#f92672">=./</span>checkpoints <span style="color:#f92672">--</span>output_dir<span style="color:#f92672">=./</span>gan<span style="color:#f92672">-</span>export <span style="color:#f92672">--</span>model<span style="color:#f92672">-</span>version<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+Successfully exported GAN model version <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;1&#39;</span> into <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;./gan-export&#39;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> ls <span style="color:#f92672">./</span>gan<span style="color:#f92672">-</span>export<span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>
+saved_model<span style="color:#f92672">.</span>pb</code></pre></div>
+<h3 id="2-第二部分-容器化">2.第二部分:容器化</h3>
+
+<p>Tensorflow Serving将处理传入的请求转发给模型的服务器，该服务器可能在公有云（例如Amazon AWS，Google云平台，Microsoft Azure）上运行</p>
+
+<p>通常的做法是将这样的服务器和相关的依赖全部打包部署。但是这样的一个虚拟机镜像是很重的。这里我们使用容器创建可部署的构件，这样我们可以部署到本地，内网，以及云上。这样的容器将包括你的服务和所有的依赖，您只需要安装在操作系统上并运行容器，我们会现在本地进行测试。</p>
+
+<p><em>注意</em>
+- Docker命令使用sudo(也可以直接使用docker)，添加docker组，将$User加入到docker组中,然后从其电脑</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo group add docker
+<span style="color:#960050;background-color:#1e0010">$</span> sudo usermod <span style="color:#f92672">-</span>aG docker <span style="color:#960050;background-color:#1e0010">$</span>USER</code></pre></div>
+<h5 id="创建tensorflow-serving容器">创建Tensorflow Serving容器</h5>
+
+<ul>
+<li>获取Tensorflow Serving</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#不但可以获得TensorFlow服务来源，还可以获得TensorFlow本身和TensorFlow模型作为子模块</span>
+<span style="color:#960050;background-color:#1e0010">$</span> cd<span style="color:#960050;background-color:#1e0010">〜</span>
+<span style="color:#960050;background-color:#1e0010">$</span> git clone <span style="color:#f92672">--</span>recurse<span style="color:#f92672">-</span>submodules https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">/</span>serving<span style="color:#f92672">.</span>git</code></pre></div>
+<ul>
+<li>Tensorflow Serving提供两个Dockerfile用于创建镜像，一个用于CPU构建Dockerfile.devel，一个用于GPU构建Dockerfile.devel-gpu，在/ tensorflow_serving/tools/docker中，这里我们注释掉了Bazel构建</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Build TensorFlow Serving and Install it in /usr/local/bin</span>
+WORKDIR <span style="color:#f92672">/</span>serving
+<span style="color:#75715e">#RUN bazel build -c opt — config=cuda \</span>
+<span style="color:#75715e"># --crosstool_top=@local_config_cuda//crosstool:toolchain \</span>
+<span style="color:#75715e"># tensorflow_serving/model_servers:tensorflow_model_server &amp;&amp; \</span>
+<span style="color:#75715e"># cp bazel-bin/tensorflow_serving/model_servers/tensorflow_model_server /usr/local/bin/ &amp;&amp; \</span>
+<span style="color:#75715e"># bazel clean --expunge</span>
+CMD [<span style="color:#960050;background-color:#1e0010">“</span><span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>bash<span style="color:#960050;background-color:#1e0010">”</span>]</code></pre></div>
+<p><em>注意</em>:接下来使用的都是GPU，也可以修改并创建CPU，方式相同</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd serving
+<span style="color:#960050;background-color:#1e0010">$</span> docker build <span style="color:#f92672">--</span>pull <span style="color:#f92672">-</span>t <span style="color:#960050;background-color:#1e0010">$</span>USER<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>devel<span style="color:#f92672">-</span>gpu <span style="color:#f92672">-</span>f tensorflow_serving<span style="color:#f92672">/</span>tools<span style="color:#f92672">/</span>docker<span style="color:#f92672">/</span>Dockerfile<span style="color:#f92672">.</span>devel<span style="color:#f92672">-</span>gpu <span style="color:#f92672">.</span></code></pre></div>
+<p>将花费10-20分钟下载构建镜像的依赖</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> docker run <span style="color:#f92672">--</span>name<span style="color:#f92672">=</span>tf_container_gpu <span style="color:#f92672">-</span>it <span style="color:#960050;background-color:#1e0010">$</span>USER<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>devel<span style="color:#f92672">-</span>gpu</code></pre></div>
+<p>这样就可以进入TensorFlow Serving Docker container的命令行中；<strong>注意:</strong>当使用exit退出后可以docker start -i tf_container_gpu来重新启动，但是不要移除镜像，这样会导致你做的改变都失效</p>
+
+<ul>
+<li>在镜像中，所需要的组件例如python和Bazel等都已经安装好</li>
+</ul>
+
+<h5 id="在构建好的容器中-构建并启动tensorflow-serving">在构建好的容器中，构建并启动Tensorflow Serving</h5>
+
+<p><strong>注意在运行的容器中</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">/</span>serving<span style="color:#f92672">/</span>tensorflow
+<span style="color:#75715e">#构建配置，但这里只是接受默认的配置</span>
+<span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">./</span>configure
+
+<span style="color:#75715e">#等待30-40分钟，运行</span>
+<span style="color:#960050;background-color:#1e0010">$</span> bazel<span style="color:#f92672">-</span>bin<span style="color:#f92672">/</span>tensorflow_serving<span style="color:#f92672">/</span>model_servers<span style="color:#f92672">/</span>tensorflow_model_server</code></pre></div>
+<ul>
+<li>将第一步中得到的输出的模型，导入到容器中；<strong>注意在本地而不是容器上</strong></li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">&lt;</span>path to GAN project<span style="color:#f92672">&gt;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> docker cp <span style="color:#f92672">./</span>gan<span style="color:#f92672">-</span>export tf_container_gpu:<span style="color:#f92672">/</span>serving</code></pre></div>
+<ul>
+<li><strong>在容器上</strong>会发现saved_model.pd文件</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">/</span>serving
+<span style="color:#960050;background-color:#1e0010">$</span> ls <span style="color:#f92672">./</span>gan<span style="color:#f92672">-</span>export<span style="color:#f92672">/</span><span style="color:#ae81ff">1</span></code></pre></div>
+<ul>
+<li>通过TensorFlow Serving托管模型</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#TensorFlow Serving现在需要保存模型的绝对路径</span>
+<span style="color:#960050;background-color:#1e0010">$</span> bazel<span style="color:#f92672">-</span>bin<span style="color:#f92672">/</span>tensorflow_serving<span style="color:#f92672">/</span>model_servers<span style="color:#f92672">/</span>tensorflow_model_server <span style="color:#f92672">--</span>port<span style="color:#f92672">=</span><span style="color:#ae81ff">9000</span> <span style="color:#f92672">--</span>model_name<span style="color:#f92672">=</span>gan <span style="color:#f92672">--</span>model_base_path<span style="color:#f92672">=/</span>serving<span style="color:#f92672">/</span>gan<span style="color:#f92672">-</span>export <span style="color:#f92672">&amp;&gt;</span> gan_log <span style="color:#f92672">&amp;</span>
+
+
+<span style="color:#75715e">#查看log</span>
+<span style="color:#960050;background-color:#1e0010">$</span> cat gan_log
+I tensorflow_serving<span style="color:#f92672">/</span>model_servers<span style="color:#f92672">/</span>main<span style="color:#f92672">.</span>cc:<span style="color:#ae81ff">298</span>] Running ModelServer at <span style="color:#ae81ff">0.0</span><span style="color:#f92672">.</span><span style="color:#ae81ff">0.0</span>:<span style="color:#ae81ff">9000</span> <span style="color:#960050;background-color:#1e0010">…</span></code></pre></div>
+<ul>
+<li><p>将容器和我们的更改一起保存，稍后部署到cloud，在这之前，我们需要确定我们的模型接受请求和响应，这时候需要一个客户端</p>
+
+<h5 id="创建客户端">创建客户端</h5></li>
+
+<li><p><a href="https://www.tensorflow.org/serving/serving_advanced">这里</a>在容器中创建客户端，这里我们在本机上创建客户端，向Tensorflow Serving托管的模型发送请求，<strong>注意这里我们已经下TensorFlow Serving repository</strong></p></li>
+
+<li><p>这里还需要另外的python库</p></li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#python使用GPPC库</span>
+<span style="color:#960050;background-color:#1e0010">$</span> pip install grpcio grpcio<span style="color:#f92672">-</span>tools</code></pre></div>
+<ul>
+<li>对于我们的客户端需要TensorFlow服务API，但是API是作为Protobuf提供的(它可以在服务/tensorflow_serving/apis下找到)如果我们想在客户端使用它们，我们需要从这些Protobuf生成<a href="https://github.com/Vetal1977/tf_serving_example/tree/master/tensorflow_serving/apis">Python文件</a>。</li>
+</ul>
+
+<p>如果自己生成，如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 1</span>
+<span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">&lt;</span>tensorflow serving source folder<span style="color:#f92672">&gt;</span>
+<span style="color:#75715e"># 2 TensorFlow Serving使用核心框架Protobuf（服务/张量流/张量流/核心/框架），但是服务中定义的导入路径不正确。所以我不得不将tensorflow/tensorflow文件夹移动一层</span>
+<span style="color:#960050;background-color:#1e0010">$</span> mv <span style="color:#f92672">./</span>tensorflow <span style="color:#f92672">./</span>tensorflow_
+<span style="color:#960050;background-color:#1e0010">$</span> mv <span style="color:#f92672">./</span>tensorflow_<span style="color:#f92672">/</span>tensorflow <span style="color:#f92672">.</span>
+<span style="color:#75715e"># 3 我们从Protobuf为我们的客户端生成Python文件</span>
+<span style="color:#960050;background-color:#1e0010">$</span> python <span style="color:#f92672">-</span>m grpc<span style="color:#f92672">.</span>tools<span style="color:#f92672">.</span>protoc <span style="color:#f92672">./</span>tensorflow_serving<span style="color:#f92672">/</span>apis<span style="color:#f92672">/*.</span>proto <span style="color:#f92672">--</span>python_out<span style="color:#f92672">=&lt;</span>path to GAN project<span style="color:#f92672">&gt;</span> <span style="color:#f92672">--</span>grpc_python_out<span style="color:#f92672">=&lt;</span>path to GAN project<span style="color:#f92672">&gt;</span> <span style="color:#f92672">--</span>proto_path<span style="color:#f92672">=.</span>
+<span style="color:#75715e"># 4 从2恢复更改</span>
+<span style="color:#960050;background-color:#1e0010">$</span> mv <span style="color:#f92672">./</span>tensorflow <span style="color:#f92672">./</span>tensorflow_
+<span style="color:#960050;background-color:#1e0010">$</span> mv <span style="color:#f92672">./</span>tensorflow_ <span style="color:#f92672">./</span>tensorflow</code></pre></div>
+<ul>
+<li><a href="https://github.com/Vetal1977/tf_serving_example/blob/master/svnh_semi_supervised_client.py">客户端</a>已实现，在这里，您只需使用GRPC和TensorFlow服务API来发出请求。最有趣的部分是:</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"> <span style="color:#75715e"># Send request</span>
+ <span style="color:#66d9ef">with</span> open(FLAGS<span style="color:#f92672">.</span>image,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;rb&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    <span style="color:#75715e">#1 打开JPEG文件</span>
+    data <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+    <span style="color:#75715e">#2 创建预测请求对象</span>
+    request <span style="color:#f92672">=</span> predict_pb2<span style="color:#f92672">.</span>PredictRequest()
+    
+    <span style="color:#75715e">#3 对我们的GAN模型初始化预测请求，这里需要制定模型的名字(必须和开启tensorflow_model_server时设定的model_name参数相同)</span>
+    request<span style="color:#f92672">.</span>model_spec<span style="color:#f92672">.</span>name <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;gan&#39;</span> 
+    request<span style="color:#f92672">.</span>model_spec<span style="color:#f92672">.</span>signature_name <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;predict_images&#39;</span>
+    request<span style="color:#f92672">.</span>inputs[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;images&#39;</span>]<span style="color:#f92672">.</span>CopyFrom(tf<span style="color:#f92672">.</span>contrib<span style="color:#f92672">.</span>util<span style="color:#f92672">.</span>make_tensor_proto(data, shape<span style="color:#f92672">=</span>[<span style="color:#ae81ff">1</span>]))
+    
+    <span style="color:#75715e">#4 调用得到结果</span>
+    result <span style="color:#f92672">=</span> stub<span style="color:#f92672">.</span>Predict(request,<span style="color:#ae81ff">60.0</span>)</code></pre></div>
+<ul>
+<li>现在我们可以调用在Docker容器上的模型，首先获取容器IP地址</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> docker network inspect bridge <span style="color:#f92672">|</span> grep IPv4Address</code></pre></div>
+<ul>
+<li>接下来需要测试容器，从Street View House Numbers测试集数据集中提取一些<a href="https://github.com/Vetal1977/tf_serving_example/tree/master/svnh_test_images">testdata</a>,现在发出客户请求</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">&lt;</span>path to GAN project<span style="color:#f92672">&gt;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> python svnh_semi_supervised_client<span style="color:#f92672">.</span>py <span style="color:#f92672">--</span>server<span style="color:#f92672">=</span><span style="color:#ae81ff">172.17</span><span style="color:#f92672">.</span><span style="color:#ae81ff">0.2</span>:<span style="color:#ae81ff">9000</span> <span style="color:#f92672">--</span>image<span style="color:#f92672">=./</span>svnh_test_images<span style="color:#f92672">/</span>image_3<span style="color:#f92672">.</span>jpg
+
+outputs {
+  key: <span style="color:#960050;background-color:#1e0010">“</span>scores<span style="color:#960050;background-color:#1e0010">”</span>
+  value {
+    dtype: DT_FLOAT
+    tensor_shape {
+      dim {
+        size: <span style="color:#ae81ff">1</span>
+      }
+      dim {
+        size: <span style="color:#ae81ff">10</span>
+      }
+    }
+    float_val: <span style="color:#ae81ff">8.630897802584857e-17</span>
+    float_val: <span style="color:#ae81ff">1.219293777054986e-09</span>
+    float_val: <span style="color:#ae81ff">6.613714575998131e-10</span>
+    float_val: <span style="color:#ae81ff">1.5203355241411032e-09</span>
+    float_val: <span style="color:#ae81ff">0.9999998807907104</span>
+    float_val: <span style="color:#ae81ff">9.070973139291283e-12</span>
+    float_val: <span style="color:#ae81ff">1.5690838628401593e-09</span>
+    float_val: <span style="color:#ae81ff">9.12262028080068e-17</span>
+    float_val: <span style="color:#ae81ff">1.0587883991775016e-07</span>
+    float_val: <span style="color:#ae81ff">1.0302327879685436e-08</span>
+  }
+}</code></pre></div>
+<p><strong>注意</strong>：可能在MacOS上，你应该运行Docker容器有点不同 - 从端口发布开始：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> docker run <span style="color:#f92672">--</span>name<span style="color:#f92672">=</span>tf_container_gpu <span style="color:#f92672">-</span>it <span style="color:#f92672">-</span>p <span style="color:#ae81ff">9000</span>:<span style="color:#ae81ff">9000</span> <span style="color:#960050;background-color:#1e0010">$</span>USER<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>devel<span style="color:#f92672">-</span>gpu
+<span style="color:#960050;background-color:#1e0010">$</span> python svnh_semi_supervised_client<span style="color:#f92672">.</span>py <span style="color:#f92672">--</span>server<span style="color:#f92672">=</span>localhost:<span style="color:#ae81ff">9000</span> <span style="color:#f92672">--</span>image<span style="color:#f92672">=./</span>svnh_test_images<span style="color:#f92672">/</span>image_3<span style="color:#f92672">.</span>jpg</code></pre></div>
+<h3 id="3-上云">3.上云</h3>
+
+<ul>
+<li>实现Web服务(这里是预测服务)，第一是将其部署到公有云平台保证可用性；第二自动化，即自动部署、拓展、管理服务，即Kubernetes发挥作用</li>
+
+<li><p>这里使用的是Microsoft Azure(提供30天的200美元的试用)</p>
+
+<h5 id="准备docker镜像">准备Docker镜像</h5></li>
+
+<li><p>进入kubernetes之前，我们需要将所做修改的容器保存下来，得获取容器号</p></li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> docker ps <span style="color:#f92672">--</span>all</code></pre></div>
+<ul>
+<li>我不想在云中安装昂贵的GPU驱动的虚拟机，我使用了TensorFlow Serving CPU Docker容器</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> docker commit <span style="color:#ae81ff">35027</span>f92f2f8 <span style="color:#960050;background-color:#1e0010">$</span>USER<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>gan:v1<span style="color:#f92672">.</span><span style="color:#ae81ff">0</span></code></pre></div>
+<p>使用docker images命令得到新创建的容器$User /ensorflow-serving-gan:v1.0 大概是原来镜像的5倍</p>
+
+<h4 id="kubernetes部分">Kubernetes部分</h4>
+
+<ul>
+<li>这里我们创建一个主节点一个工作节点，POD只运行在工作节点，主节点负责调度</li>
+<li>Pod内可以有多个容器，这里我们只放TensorFlow GAN Serving容器，创建两个Pod</li>
+<li>Replication controllers动态控制Pod的创建和销毁，虽然每个Pod都有自己的IP地址，但是是没法进行通信的，这里使用Service接入相同的网络</li>
+</ul>
+
+<h5 id="在microsoft-azure上安装kubernetes集群">在Microsoft Azure上安装Kubernetes集群</h5>
+
+<ul>
+<li>通过<a href="https://azure.microsoft.com/free/">网站</a>获取Azure免费试用帐户。如果您已经有Microsoft帐户，则可以使用它</li>
+<li>转到<a href="https://portal.azure.com/">Azure</a>门户并检查您是否拥有完全访问权限</li>
+<li>在您的PC上本地安装<a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli">Azure命令行</a>界面。在Ubuntu 64位，你可以从终端做到这一点:</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> echo <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main&#34;</span> <span style="color:#f92672">|</span> \
+<span style="color:#960050;background-color:#1e0010">$</span> sudo tee <span style="color:#f92672">/</span>etc<span style="color:#f92672">/</span>apt<span style="color:#f92672">/</span>sources<span style="color:#f92672">.</span>list<span style="color:#f92672">.</span>d<span style="color:#f92672">/</span>azure<span style="color:#f92672">-</span>cli<span style="color:#f92672">.</span>list
+<span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>key adv <span style="color:#f92672">--</span>keyserver packages<span style="color:#f92672">.</span>microsoft<span style="color:#f92672">.</span>com <span style="color:#f92672">--</span>recv<span style="color:#f92672">-</span>keys <span style="color:#ae81ff">417</span>A0893
+<span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install apt<span style="color:#f92672">-</span>transport<span style="color:#f92672">-</span>https
+<span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get update <span style="color:#f92672">&amp;&amp;</span> sudo apt<span style="color:#f92672">-</span>get install azure<span style="color:#f92672">-</span>cli
+
+<span style="color:#75715e">#检查安装的版本，最好在2.0.x上</span>
+<span style="color:#960050;background-color:#1e0010">$</span> az <span style="color:#f92672">--</span>version</code></pre></div>
+<h5 id="创建kubernetes集群">创建Kubernetes集群</h5>
+
+<ul>
+<li>登录到Azure,创建资源组，可以在其中部署资源（例如虚拟机）并对其进行管理</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> az login
+<span style="color:#960050;background-color:#1e0010">$</span> az group create <span style="color:#f92672">--</span>name ganRG <span style="color:#f92672">--</span>location eastus</code></pre></div>
+<ul>
+<li>创建集群,在Azure免费试用版中，我们最多可以使用4个内核，因此我们只能创建一个Master和一个Worker; 他们每个人都有2个核心。主节点自动创建，agent-count指定工作（或代理）节点的数量</li>
+<li>如果它们不存在，您将收到在默认位置生成的SSH密钥。等几分钟&hellip;如果一切正常，那么你应该看到很长和详细的JSON文件与集群信息</li>
+<li>在Azure中可以看到，我们有两个虚拟机，k8s-master-… and k8s-agent-…在ganRG这个资源组中</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> az acs create <span style="color:#f92672">--</span>orchestrator<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>kubernetes \
+<span style="color:#f92672">--</span>resource<span style="color:#f92672">-</span>group ganRG \
+<span style="color:#f92672">--</span>name<span style="color:#f92672">=</span>ganK8sCluster \
+<span style="color:#f92672">--</span>agent<span style="color:#f92672">-</span>count<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> \
+<span style="color:#f92672">--</span>generate<span style="color:#f92672">-</span>ssh<span style="color:#f92672">-</span>keys
+
+{ 
+<span style="color:#f92672">.........</span> 
+  <span style="color:#960050;background-color:#1e0010">“</span>resourceGroup<span style="color:#960050;background-color:#1e0010">”：“</span>ganRG<span style="color:#960050;background-color:#1e0010">”</span> 
+}</code></pre></div>
+<p><strong>注意:</strong> 不要使用很长的名字，我通过创建Kubernetes服务来得到一个错误，该服务抱怨太长的名字（Azure为集群名称添加了相当长的后缀）</p>
+
+<p><strong>警告:</strong> 如果不使用虚拟一避免额外成本，请停止或取消分配虚拟机</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> az vm [stop<span style="color:#f92672">|</span>deallocate] <span style="color:#960050;background-color:#1e0010">—</span> resource<span style="color:#f92672">-</span>group<span style="color:#f92672">=</span>ganRG <span style="color:#960050;background-color:#1e0010">—</span> name<span style="color:#f92672">=</span>k8s<span style="color:#f92672">-</span>agent<span style="color:#f92672">-</span><span style="color:#960050;background-color:#1e0010">…</span>
+<span style="color:#960050;background-color:#1e0010">$</span> az vm [stop<span style="color:#f92672">|</span>deallocate] <span style="color:#960050;background-color:#1e0010">—</span> resource<span style="color:#f92672">-</span>group<span style="color:#f92672">=</span>ganRG <span style="color:#960050;background-color:#1e0010">—</span> name<span style="color:#f92672">=</span>k8s<span style="color:#f92672">-</span>master<span style="color:#f92672">-</span><span style="color:#960050;background-color:#1e0010">…</span>
+
+<span style="color:#75715e"># 再次启动</span>
+<span style="color:#960050;background-color:#1e0010">$</span> az vm start <span style="color:#960050;background-color:#1e0010">—</span> resource<span style="color:#f92672">-</span>group<span style="color:#f92672">=</span>ganRG <span style="color:#960050;background-color:#1e0010">—</span> name<span style="color:#f92672">=</span>k8s<span style="color:#f92672">-</span>agent<span style="color:#f92672">-</span><span style="color:#960050;background-color:#1e0010">…</span>
+<span style="color:#960050;background-color:#1e0010">$</span> az vm start <span style="color:#960050;background-color:#1e0010">—</span> resource<span style="color:#f92672">-</span>group<span style="color:#f92672">=</span>ganRG <span style="color:#960050;background-color:#1e0010">—</span> name<span style="color:#f92672">=</span>k8s<span style="color:#f92672">-</span>master<span style="color:#f92672">-</span><span style="color:#960050;background-color:#1e0010">…</span></code></pre></div>
+<ul>
+<li>将Docker镜像上传到<a href="https://azure.microsoft.com/en-us/services/container-registry/">Azure容器注册表</a>,我们需要这个注册表将容器拉到Kubernetes中，我感觉也可以上传到Harbor私人仓库</li>
+<li>创建容器注册表，启动管理员</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> az acr create <span style="color:#f92672">--</span>name<span style="color:#f92672">=</span>ganEcr <span style="color:#f92672">--</span>resource<span style="color:#f92672">-</span>group<span style="color:#f92672">=</span>ganRG <span style="color:#f92672">--</span>sku<span style="color:#f92672">=</span>Basic
+
+<span style="color:#75715e">#第一个告诉你，注册表没有管理员，第二个是给资源组中服务器的名称</span>
+{
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;adminUserEnabled&#34;</span>: false,
+  <span style="color:#f92672">.........</span>
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;loginServer&#34;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;ganecr.azurecr.io&#34;</span>,
+  <span style="color:#f92672">.........</span>
+}
+
+
+<span style="color:#960050;background-color:#1e0010">$</span> az acr create <span style="color:#f92672">--</span>name<span style="color:#f92672">=</span>ganEcr <span style="color:#f92672">--</span>resource<span style="color:#f92672">-</span>group<span style="color:#f92672">=</span>ganRG <span style="color:#f92672">--</span>sku<span style="color:#f92672">=</span>Basic
+
+<span style="color:#960050;background-color:#1e0010">$</span> az acr update <span style="color:#f92672">-</span>n ganEcr <span style="color:#f92672">--</span>admin<span style="color:#f92672">-</span>enabled true</code></pre></div>
+<h5 id="上传镜像">上传镜像</h5>
+
+<ul>
+<li>提供上传凭证</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> az acr update <span style="color:#f92672">-</span>n ganEcr <span style="color:#f92672">--</span>admin<span style="color:#f92672">-</span>enabled true
+
+{
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;passwords&#34;</span>: [
+    {
+      <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;password&#34;</span>,
+      <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;=bh5wXWOUSrJtKPHReTAgi/bijQCkjsq&#34;</span>
+    },
+    {
+      <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;password2&#34;</span>,
+      <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;OV0Va1QXv=GPL+sGm9ZossmvgIoYBdif&#34;</span>
+    }
+  ],
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;username&#34;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;ganEcr&#34;</span>
+}</code></pre></div>
+<ul>
+<li>您使用用户名和密码之一登录到Docker的注册表容器中</li>
+<li>标记GAN Docker镜像,推入Azure容器注册表！</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> docker login ganecr<span style="color:#f92672">.</span>azurecr<span style="color:#f92672">.</span>io <span style="color:#f92672">-</span>u<span style="color:#f92672">=</span>ganEcr <span style="color:#f92672">-</span>p<span style="color:#f92672">=&lt;</span>password value <span style="color:#f92672">from</span> credentials<span style="color:#f92672">&gt;</span>
+
+<span style="color:#960050;background-color:#1e0010">$</span> docker tag <span style="color:#960050;background-color:#1e0010">$</span>USER<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>gan:v1<span style="color:#f92672">.</span><span style="color:#ae81ff">0</span> ganecr<span style="color:#f92672">.</span>azurecr<span style="color:#f92672">.</span>io<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>gan
+
+<span style="color:#960050;background-color:#1e0010">$</span> docker push ganecr<span style="color:#f92672">.</span>azurecr<span style="color:#f92672">.</span>io<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>gan</code></pre></div>
+<h5 id="在kubernetes集群上运行">在Kubernetes集群上运行</h5>
+
+<ul>
+<li>具体参考<a href="https://kubernetes.io/docs/reference/kubectl/overview/">kubectl文档</a></li>
+<li>从配置文件创建Pods和Services</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 分别获取有关Kubernetes节点，Pods和服务的信息</span>
+<span style="color:#960050;background-color:#1e0010">$</span> kubectl get [nodes<span style="color:#f92672">|</span>pods<span style="color:#f92672">|</span>services] 
+
+<span style="color:#75715e"># 从配置文件创建Pods和Services</span>
+<span style="color:#960050;background-color:#1e0010">$</span> kubectl create <span style="color:#f92672">...</span></code></pre></div>
+<ul>
+<li>将kubectl连接到Azure,首先从Azure获取凭据</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> az acs kubernetes get<span style="color:#f92672">-</span>credentials <span style="color:#f92672">--</span>resource<span style="color:#f92672">-</span>group<span style="color:#f92672">=</span>ganRG <span style="color:#f92672">--</span>name<span style="color:#f92672">=</span>ganK8sCluster
+
+<span style="color:#960050;background-color:#1e0010">$</span> kubctl get nodes
+NAME                    STATUS                     AGE       VERSION
+k8s<span style="color:#f92672">-</span>agent<span style="color:#f92672">-</span>bb8987c3<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>    Ready                      <span style="color:#ae81ff">7</span>m        v1<span style="color:#f92672">.</span><span style="color:#ae81ff">6.6</span>
+k8s<span style="color:#f92672">-</span>master<span style="color:#f92672">-</span>bb8987c3<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>   Ready,SchedulingDisabled   <span style="color:#ae81ff">7</span>m        v1<span style="color:#f92672">.</span><span style="color:#ae81ff">6.6</span></code></pre></div>
+<ul>
+<li>部署配置,<a href="https://github.com/Vetal1977/tf_serving_example/blob/master/gan_k8s.yaml">这里有配置文件</a>在那里我定义了一个部署RC和一个Service;也可以使用kubectl命令部署Pods和Services ，但是将所需的部署配置写入此类YAML文件并稍后使用它会更方便</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">......</span>
+kind: Deployment
+metadata:
+  name: gan<span style="color:#f92672">-</span>deployment
+<span style="color:#f92672">......</span>
+<span style="color:#f92672">---</span>
+kind: Service
+metadata:
+  labels:
+    run: gan<span style="color:#f92672">-</span>service
+  name: gan<span style="color:#f92672">-</span>service
+  
+<span style="color:#75715e">#将镜像部署到两个Pod上</span>
+spec:
+replicas: <span style="color:#ae81ff">2</span>
+<span style="color:#75715e">#将所有的从Azure容器注册表中拉出来</span>
+spec:
+  containers:
+  <span style="color:#f92672">-</span> name: gan<span style="color:#f92672">-</span>container
+    image: ganecr<span style="color:#f92672">.</span>azurecr<span style="color:#f92672">.</span>io<span style="color:#f92672">/</span>tensorflow<span style="color:#f92672">-</span>serving<span style="color:#f92672">-</span>gan</code></pre></div>
+<ul>
+<li>部署后，Pod应该启动Shell并在Docker容器中启动服务于GAN模型的TensorFlow</li>
+<li>在9000端口</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">command:
+<span style="color:#f92672">-</span> <span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>sh
+<span style="color:#f92672">-</span> <span style="color:#f92672">-</span>c
+args:
+<span style="color:#f92672">-</span> <span style="color:#f92672">/</span>serving<span style="color:#f92672">/</span>bazel<span style="color:#f92672">-</span>bin<span style="color:#f92672">/</span>tensorflow_serving<span style="color:#f92672">/</span>model_servers<span style="color:#f92672">/</span>tensorflow_model_server          <span style="color:#f92672">--</span>port<span style="color:#f92672">=</span><span style="color:#ae81ff">9000</span> <span style="color:#f92672">--</span>model_name<span style="color:#f92672">=</span>gan <span style="color:#f92672">--</span>model_base_path<span style="color:#f92672">=/</span>serving<span style="color:#f92672">/</span>gan<span style="color:#f92672">-</span>export
+
+ports:
+<span style="color:#f92672">-</span> containerPort: <span style="color:#ae81ff">9000</span></code></pre></div>
+<ul>
+<li>服务必须接受端口9000上的外部请求，并将它们转发到Pod中的容器端口9000</li>
+<li>并提供2个底层Pod之间的负载平衡</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">ports:
+<span style="color:#f92672">-</span> port: <span style="color:#ae81ff">9000</span>
+  targetPort: <span style="color:#ae81ff">9000</span>
+  
+type: LoadBalancer</code></pre></div>
+<ul>
+<li>部署到Kubernetes集群</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">&lt;</span>path to GAN project<span style="color:#f92672">&gt;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> kubectl create <span style="color:#f92672">-</span>f gan_k8s<span style="color:#f92672">.</span>yaml
+deployment <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;gan-deployment&#34;</span> created
+service <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;gan-service&#34;</span> created
+
+
+<span style="color:#960050;background-color:#1e0010">$</span> kubectl get pods
+NAME                              READY     STATUS    RESTARTS   AGE
+gan<span style="color:#f92672">-</span>deployment<span style="color:#f92672">-</span><span style="color:#ae81ff">3500298660</span><span style="color:#f92672">-</span><span style="color:#ae81ff">3</span>gmkj   <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">24</span>m
+gan<span style="color:#f92672">-</span>deployment<span style="color:#f92672">-</span><span style="color:#ae81ff">3500298660</span><span style="color:#f92672">-</span>h9g3q   <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">24</span>m</code></pre></div>
+<p>状态为running可能需要一段时间</p>
+
+<ul>
+<li>kubectl获取服务</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> kubectl get services
+NAME          CLUSTER<span style="color:#f92672">-</span>IP     EXTERNAL<span style="color:#f92672">-</span>IP    PORT(S)          AGE
+gan<span style="color:#f92672">-</span>service   <span style="color:#ae81ff">10.0</span><span style="color:#f92672">.</span><span style="color:#ae81ff">134.234</span>   <span style="color:#ae81ff">40.87</span><span style="color:#f92672">.</span><span style="color:#ae81ff">62.198</span>   <span style="color:#ae81ff">9000</span>:<span style="color:#ae81ff">30694</span><span style="color:#f92672">/</span>TCP   <span style="color:#ae81ff">24</span>m
+kubernetes    <span style="color:#ae81ff">10.0</span><span style="color:#f92672">.</span><span style="color:#ae81ff">0.1</span>       <span style="color:#f92672">&lt;</span>none<span style="color:#f92672">&gt;</span>         <span style="color:#ae81ff">443</span><span style="color:#f92672">/</span>TCP          <span style="color:#ae81ff">7</span>h</code></pre></div>
+<p><strong>注意：</strong> gan-service的外部IP 必须是有效的IP（不是<pending>或<node>）。否则，该服务不可操作</p>
+
+<ul>
+<li>检查是否工作</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">&lt;</span>GAN项目路径<span style="color:#f92672">&gt;</span> 
+<span style="color:#960050;background-color:#1e0010">$</span> python svnh_semi_supervised_client<span style="color:#f92672">.</span>py <span style="color:#f92672">--</span>server <span style="color:#f92672">=</span> <span style="color:#ae81ff">40.87</span><span style="color:#f92672">.</span><span style="color:#ae81ff">62.198</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">9000</span> <span style="color:#f92672">--</span>image <span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">。</span><span style="color:#f92672">/</span> svnh_test_images <span style="color:#f92672">/</span> image_3<span style="color:#f92672">.</span>jpg
+
+{ 
+  key<span style="color:#960050;background-color:#1e0010">：“</span>scores<span style="color:#960050;background-color:#1e0010">”</span> 
+  value { 
+    dtype<span style="color:#960050;background-color:#1e0010">：</span>DT_FLOAT 
+    tensor_shape { 
+      dim { 
+        size<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">1</span> 
+      } 
+      dim { 
+        size<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">10</span> 
+      } 
+    } 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">8.630897802584857e-17</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">1.219293777054986e-09</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">6.613714575998131e-10</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">1.5203</span><span style="color:#960050;background-color:#1e0010">​​</span><span style="color:#ae81ff">355241411032</span>e<span style="color:#f92672">-</span> <span style="color:#ae81ff">09</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">0.9999998807907104</span>
+     float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">9.070973139291283e-12</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">1.5690838628401593e-09</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">9.12262028080068e-17</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">1.0587883991775016e-07</span> 
+    float_val<span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">1.0302327879685436e-08</span> 
+  } 
+}</code></pre></div>
+<h5 id="拓展说明使用-rest-api-https-medium-com-vitaly-bezgachev-creating-restful-api-to-tensorflow-models-c5c57b692c10-使用tensorflow-serving托管模型">拓展说明使用<a href="https://medium.com/@vitaly.bezgachev/creating-restful-api-to-tensorflow-models-c5c57b692c10">REST API</a>使用Tensorflow Serving托管模型</h5>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="https://xieydd.github.io/tags/kubernetes"><span class="tag">Kubernetes</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/tensorflow"><span class="tag">Tensorflow</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/gan"><span class="tag">GAN</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/deploy"><span class="tag">Deploy</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>

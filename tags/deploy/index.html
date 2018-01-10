@@ -6,7 +6,9 @@
 
   
   <title>
-  Tags | Xieydd Blog
+  Tag → deploy
+  
+   | Xieydd Blog
 </title>
 
   
@@ -31,7 +33,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Xieydd Blog" />
   <meta property="og:description" content="谢远东的博客，基于Hugp和Github搭建" />
-  <meta property="og:url" content="https://xieydd.github.io/tags/" />
+  <meta property="og:url" content="https://xieydd.github.io/tags/deploy/" />
   <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
 
 
@@ -40,7 +42,7 @@
 <meta name="generator" content="Hugo 0.31.1" />
 
 
-<link rel="canonical" href="https://xieydd.github.io/tags/" />
+<link rel="canonical" href="https://xieydd.github.io/tags/deploy/" />
 <link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
 
 
@@ -139,8 +141,6 @@
       
         <li class="menu-item
             
-              is-active
-            
             
             ">
             <a href="https://xieydd.github.io/tags/">标签</a>
@@ -234,71 +234,36 @@
   </nav>
 </header>
 
-  <section class="main post-detail terms-list">
-    <header class="post-header">
-      <h1 class="post-title">Tags</h1>
+  <section class="main post-list">
+    <header class="list-header offscreen">
+      <h2 class="list-label">Posts List</h2>
     </header>
-    <div class="tags-cloud">
+    
+    
       
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="https://xieydd.github.io/post/tensorflow_model_deploy/" class="post-link">Tensorflow_Model_Deploy</a></h3>
+    <p class="post-meta">@Xieydd · Jan 10, 2018 · 5 min read</p>
+  </header>
+  
+    <img class="post-cover" src="img/Tensorflow_Model_Deploy.jpg" alt="Tensorflow_Model_Deploy">
+  
+  <p class="post-summary">[部署TensorFlow模型]  来自于Vitaly Bezgachev
+ 1.第一部分:准备模型 Tensorflow是为生产而生，所以Tensorflow提供解决方案Tensorflow Serving,基本流程，创建模型 -&gt; 本地测试 -&gt; 创建web服务 -&gt; 使用web服务创建部署容器 -&gt; 测试容器 -&gt;放入生产，具体步骤如下: - 使用TensorFlow创建模型 - 使用Docker来镜像化 - 使用TensorFlow Serving托管模型 - 部署到生产环境的Kubernetes
+这里使用Udacity深度学习基础课程中的GAN Model for Semi-Supervised learning,这里我们将做以下几个方面: - 在The Street View House Numbers (SVHN) Dataset数据集上训练GAN Model for Semi-Supervised - 使用GAN discriminator预测门牌号，即0-9的数对应的分数 - 将Tensorflow构建的模型集成到Docker容器中 - 创建客户端，提交数字照片 - 部署到云上
+基于Jupyter notebook，将功能集成到python文件里:测试保存的模型、模型的输出(使用Protobuf格式)、客户端的服务请求，具体细节见
+Tensorflow Serving  实现GRPC接口，所以不能直接发送请求，而是创建一个通过GRPC通信的客户端 TensorFlow Serving 已经提供将模型转换成Protobuf的操作 也可以创建自己的模型转换格式实现将其转换成其他格式，但是grpc很快  Tensorflow Serving提供类为SavedModelBuilder
+这个模型的输入为(batch_num,width,height,channels)的张量图片为32x32x3且像素点缩放到(-1,1);服务必须接受JPEG图像
+#图像转换 #序列化传入图像占位符 serialized_tf_example = tf.</p>
+  <footer class="post-footer">
+    <a class="read-more" href="https://xieydd.github.io/post/tensorflow_model_deploy/">Read More →</a>
+  </footer>
+</article>
+
       
-        
-        <a href="https://xieydd.github.io/tags/kubernetes/" class="tag-l">kubernetes</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/kubeflow/" class="tag-m">kubeflow</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/tensorflow/" class="tag-m">tensorflow</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="tag-m">云原生</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/deeplearning/" class="tag-s">deeplearning</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/deploy/" class="tag-s">deploy</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/docker/" class="tag-s">docker</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/gan/" class="tag-s">gan</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/kreas/" class="tag-s">kreas</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/machine-learning/" class="tag-s">machine-learning</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/pca/" class="tag-s">pca</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/swarm/" class="tag-s">swarm</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/t-sne/" class="tag-s">t-sne</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/tools/" class="tag-s">tools</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/tutorials/" class="tag-s">tutorials</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%81%A5%E8%BA%AB/" class="tag-s">健身</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%85%A8%E7%9F%A2cnn%E6%A8%A1%E5%9E%8B/" class="tag-s">全矢cnn模型</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%AE%B9%E5%99%A8/" class="tag-s">容器</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%BC%A0%E5%93%88%E5%93%88/" class="tag-s">张哈哈</a>
-      
-    </div>
+    
+    
   </section>
   <footer class="site-footer">
   <p>© 2017-2018 Xieydd Blog</p>
