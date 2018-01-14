@@ -13,6 +13,11 @@
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/post/cross-lingual_end-to-end_product_search_with_tensorflow/</loc>
+    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/post/tensorflow_model_deploy/</loc>
     <lastmod>2018-01-10T17:41:48+08:00</lastmod>
   </url>
@@ -108,7 +113,7 @@
   
   <url>
     <loc>https://xieydd.github.io/post/</loc>
-    <lastmod>2018-01-10T17:41:48+08:00</lastmod>
+    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
     <priority>0</priority>
   </url>
   
