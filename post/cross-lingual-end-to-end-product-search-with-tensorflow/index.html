@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
 
   
-  <title>Cross Lingual_End to End_Product_Search_with_Tensorflow</title>
+  <title>Cross Lingual End to End Product Search with Tensorflow</title>
 
   
   
@@ -31,7 +31,7 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
   
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@xieydd_" />
-    <meta name="twitter:title" content="Cross Lingual_End to End_Product_Search_with_Tensorflow" />
+    <meta name="twitter:title" content="Cross Lingual End to End Product Search with Tensorflow" />
     <meta name="twitter:description" content="[使用Tensorflow构造跨语言端对端商品搜索]  Translator form Han Xiao`s Blog
  背景 商品搜索是网上零售商店的重要组成部分。从本质上说，您需要一个与文本查询(查询存储在您的商店中的产品)相匹配的系统。一个好的产品搜索可以理解用户的查询，检索尽可能多的相关产品，并最终将结果显示为一个列表，其中首选的产品应该位于顶部，而不相关的产品应该位于底部。
 不像文本检索(如Google web搜索)，产品是结构化数据。一种产品通常由一组键值对、一组图片和一些自由文本来描述。在开发者的世界Apache Solr和Elasticsearch被称为全文搜索的实际上的解决方案，使它们成为构建电子商务产品搜索的最有力竞争者。
@@ -47,7 +47,7 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
 
   
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Cross Lingual_End to End_Product_Search_with_Tensorflow" />
+  <meta property="og:title" content="Cross Lingual End to End Product Search with Tensorflow" />
   <meta property="og:description" content="[使用Tensorflow构造跨语言端对端商品搜索]  Translator form Han Xiao`s Blog
  背景 商品搜索是网上零售商店的重要组成部分。从本质上说，您需要一个与文本查询(查询存储在您的商店中的产品)相匹配的系统。一个好的产品搜索可以理解用户的查询，检索尽可能多的相关产品，并最终将结果显示为一个列表，其中首选的产品应该位于顶部，而不相关的产品应该位于底部。
 不像文本检索(如Google web搜索)，产品是结构化数据。一种产品通常由一组键值对、一组图片和一些自由文本来描述。在开发者的世界Apache Solr和Elasticsearch被称为全文搜索的实际上的解决方案，使它们成为构建电子商务产品搜索的最有力竞争者。
@@ -267,7 +267,7 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
 
   <section class="main post-detail">
     <header class="post-header">
-      <h1 class="post-title">Cross Lingual_End to End_Product_Search_with_Tensorflow</h1>
+      <h1 class="post-title">Cross Lingual End to End Product Search with Tensorflow</h1>
       <p class="post-meta">@Xieydd · Jan 14, 2018 · 2 min read</p>
     </header>
     <article class="post-content">
@@ -451,7 +451,9 @@ q_r <span style="color:#f92672">=</span> get_last_output_dRNN(input<span style="
 
 <p>在查询产品对所有三个编码器进行访问之后，就可以获得查询的向量表示q、图像表示u和产品的属性表示v。现在是把它们挤进一个共同的潜在空间的时候了。在度规层中，我们需要一个相似函数m它给正对的值大于负对例如:m(q,u+,v+) &gt; m(q,u-,v-)。m(q,u+,v+)的绝对值不会影响我们。我们只关心正和负对的相对距离。事实上，一个更大的差异对我们来说更好，因为正和负对的更清晰的分离可以增强系统的泛化能力。因此，我们需要一个损失函数l与m(q,u+,v+)和m(q,u-,v-)的距离成反比。通过将q(148维)分成q_img(128维)和q_attr(20维)，我们最小化这个:</p>
 
-<p>$$ {\begin{align}&amp;\sum<em>{\begin{array}{c} 0&lt;i&lt;N\ 0&lt;j&lt;|q</em>{i}^{+}| \ 0&lt;k&lt;|q_{i}^{-}|\end{array}}\lambda \ell\left(m(q^{\mathrm{img}}<em>i, u</em>{i,j}^{+}), m(q^{\mathrm{img}}<em>i, u</em>{i,k}^{-})\right) \ &amp;+ (1-\lambda)\ell\left(m(q^{\mathrm{attr}}<em>i, v</em>{i,j}^{+}), m(q^{\mathrm{attr}}<em>i, v</em>{i,k}^{-})\right),\end{align}} $$</p>
+<p>$$
+{\begin{align}&amp;\sum<em>{\begin{array}{c} 0&lt;i&lt;N\ 0&lt;j&lt;|q</em>{i}^{+}| \ 0&lt;k&lt;|q_{i}^{-}|\end{array}}\lambda \ell\left(m(q^{\mathrm{img}}<em>i, u</em>{i,j}^{+}), m(q^{\mathrm{img}}<em>i, u</em>{i,k}^{-})\right) \ &amp;+ (1-\lambda)\ell\left(m(q^{\mathrm{attr}}<em>i, v</em>{i,j}^{+}), m(q^{\mathrm{attr}}<em>i, v</em>{i,k}^{-})\right),\end{align}}
+$$</p>
 
 <p>N是总查询，|qi+|和|qi-|是与查询i相关的正面和负面产品的数量。超参数λ在图像信息和属性信息之间进行权衡。对于函数l和g，选项是:</p>
 
