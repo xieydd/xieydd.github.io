@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tensorflow on Xieydd Blog</title>
-    <link>https://xieydd.github.io/tags/tensorflow/</link>
-    <description>Recent content in Tensorflow on Xieydd Blog</description>
+    <title>Lstm on Xieydd Blog</title>
+    <link>https://xieydd.github.io/tags/lstm/</link>
+    <description>Recent content in Lstm on Xieydd Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
     <lastBuildDate>Sun, 14 Jan 2018 22:15:23 +0800</lastBuildDate>
     
-	<atom:link href="https://xieydd.github.io/tags/tensorflow/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://xieydd.github.io/tags/lstm/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -28,30 +28,6 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
 如果查询中没有找到属性，那么系统就会返回到精确的字符串匹配;例如:在数据库中搜索所有可能发生的事件。注意，对于每个传入的查询，都必须进行解析和匹配，而索引可以根据库存更新速度来减少。许多现有的解决方案，如Apache Solr和Elasticsearch都遵循这个简单的方法，除了他们为这三个任务使用了更复杂的算法(如Lucene)。得益于这些开源项目，许多电子商务企业能够自己构建产品搜索，并为客户提供数以百万计的请求。
 符号信息检索 注意，在本质上，solr/Elasticsearch 是一个符号信息检索系统，它依赖于查询和产品的有效字符串表示。通过解析或索引，系统知道查询或产品描述中的哪些令牌是重要的。这些令牌是用于匹配的原始构建块。从原始文本中提取重要的令牌通常由Lucene Analyzer实现，它由一系列NLP组件组成，例如:标记化、引理、拼写校正、名称/同义词替换、命名实体识别和查询扩展。
 一般给定一个查询q∈Q以及p∈P,可以将Lucene Analyzer看做一个预定的函数将Q或P映射到一个空间S，例如f:Q -&amp;gt; S 或者 g:P -&amp;gt; S 。对于一个匹配任务，我们需要一个度量: S x S -&amp;gt; [0,正无穷)，然后求m(f(q)，g(p))，如下图所示:</description>
-    </item>
-    
-    <item>
-      <title>Tensorflow_Model_Deploy</title>
-      <link>https://xieydd.github.io/post/tensorflow_model_deploy/</link>
-      <pubDate>Wed, 10 Jan 2018 17:41:48 +0800</pubDate>
-      
-      <guid>https://xieydd.github.io/post/tensorflow_model_deploy/</guid>
-      <description>[部署TensorFlow模型]  来自于Vitaly Bezgachev
- 1.第一部分:准备模型 Tensorflow是为生产而生，所以Tensorflow提供解决方案Tensorflow Serving,基本流程，创建模型 -&amp;gt; 本地测试 -&amp;gt; 创建web服务 -&amp;gt; 使用web服务创建部署容器 -&amp;gt; 测试容器 -&amp;gt;放入生产，具体步骤如下: - 使用TensorFlow创建模型 - 使用Docker来镜像化 - 使用TensorFlow Serving托管模型 - 部署到生产环境的Kubernetes
-这里使用Udacity深度学习基础课程中的GAN Model for Semi-Supervised learning,这里我们将做以下几个方面: - 在The Street View House Numbers (SVHN) Dataset数据集上训练GAN Model for Semi-Supervised - 使用GAN discriminator预测门牌号，即0-9的数对应的分数 - 将Tensorflow构建的模型集成到Docker容器中 - 创建客户端，提交数字照片 - 部署到云上
-基于Jupyter notebook，将功能集成到python文件里:测试保存的模型、模型的输出(使用Protobuf格式)、客户端的服务请求，具体细节见
-Tensorflow Serving  实现GRPC接口，所以不能直接发送请求，而是创建一个通过GRPC通信的客户端 TensorFlow Serving 已经提供将模型转换成Protobuf的操作 也可以创建自己的模型转换格式实现将其转换成其他格式，但是grpc很快  Tensorflow Serving提供类为SavedModelBuilder
-这个模型的输入为(batch_num,width,height,channels)的张量图片为32x32x3且像素点缩放到(-1,1);服务必须接受JPEG图像
-#图像转换 #序列化传入图像占位符 serialized_tf_example = tf.</description>
-    </item>
-    
-    <item>
-      <title>New_Year_Start</title>
-      <link>https://xieydd.github.io/post/new_start/</link>
-      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
-      
-      <guid>https://xieydd.github.io/post/new_start/</guid>
-      <description> 新一年的开始&amp;hellip; 新的一年要做的事情(最重要的事放最后面&amp;hellip;)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于Apple MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 发表小论文以及着手准备大论文 强化对Java和Python语言的理解&amp;hellip; 健身、健身、健身&amp;hellip;&amp;hellip; 2018最重要的就是和张哈哈把小窝搭起来，haha&amp;hellip;  </description>
     </item>
     
   </channel>

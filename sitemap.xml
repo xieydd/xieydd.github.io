@@ -13,7 +13,7 @@
   </url>
   
   <url>
-    <loc>https://xieydd.github.io/post/cross-lingual_end-to-end_product_search_with_tensorflow/</loc>
+    <loc>https://xieydd.github.io/post/cross-lingual-end-to-end-product-search-with-tensorflow/</loc>
     <lastmod>2018-01-14T22:15:23+08:00</lastmod>
   </url>
   
@@ -100,8 +100,20 @@
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/tags/lstm/</loc>
+    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/tags/machine-learning/</loc>
     <lastmod>2018-01-04T10:29:37+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/matchzoo/</loc>
+    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -137,7 +149,7 @@
   
   <url>
     <loc>https://xieydd.github.io/tags/tensorflow/</loc>
-    <lastmod>2018-01-10T17:41:48+08:00</lastmod>
+    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -168,6 +180,12 @@
   <url>
     <loc>https://xieydd.github.io/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/</loc>
     <lastmod>2018-01-02T17:31:03+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/%E4%BF%A1%E6%81%AF%E6%A3%80%E7%B4%A2%E7%B3%BB%E7%BB%9F/</loc>
+    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
     <priority>0</priority>
   </url>
   

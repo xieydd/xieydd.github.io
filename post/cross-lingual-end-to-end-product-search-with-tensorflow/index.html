@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Cross Lingual_End to End_Product_Search_with_Tensorflow</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[使用Tensorflow构造跨语言端对端商品搜索]  Translator form Han Xiao`s Blog
+ 背景 商品搜索是网上零售商店的重要组成部分。从本质上说，您需要一个与文本查询(查询存储在您的商店中的产品)相匹配的系统。一个好的产品搜索可以理解用户的查询，检索尽可能多的相关产品，并最终将结果显示为一个列表，其中首选的产品应该位于顶部，而不相关的产品应该位于底部。
+不像文本检索(如Google web搜索)，产品是结构化数据。一种产品通常由一组键值对、一组图片和一些自由文本来描述。在开发者的世界Apache Solr和Elasticsearch被称为全文搜索的实际上的解决方案，使它们成为构建电子商务产品搜索的最有力竞争者。
+solr/Elasticsearch 核心上是一种符号信息检索(symbolic information retrieval)系统。将查询和文档映射到公共字符串空间对于搜索质量至关重要。这个映射过程是由一个由Lucene Analyzer实现的NLP Pipeline.在这篇文章中，我将介绍这种象征性管道方法的一些缺点，然后介绍使用Tensorflow从查询日志中构建产品搜索系统的端到端方法。这种基于深度学习的系统不太容易出现拼写错误，更有效地利用底层语义，并且更容易扩展到多种语言。 - 回顾产品搜索的符号方法 - 指出符号信息检索的痛点 - 神经信息检索系统 - 符号 vs 神经信息检索系统 - 神经网络架构 - 训练和评估方案 - 定性分析结果 - 总结
+回顾产品搜索的符号方法 我们首先回顾一下传统的方法。一个信息检索系统可以分为3个任务:索引、解析、匹配。下面是一个简单的产品搜索系统:
+[图片-产品搜索系统]
+&amp;nbsp; &amp;nbsp; &amp;nbsp; 1.indexing:将产品存储在具有属性的数据库中，如:品牌、颜色、类别 &amp;nbsp; &amp;nbsp; &amp;nbsp; 2.pasing:从输入查询中提取属性项，例如红衬衫 - &amp;gt; {“颜色”：“红”，“类别”：“衬衫”}; &amp;nbsp; &amp;nbsp; &amp;nbsp; 3.matching:根据属性过滤产品数据库
+如果查询中没有找到属性，那么系统就会返回到精确的字符串匹配;例如:在数据库中搜索所有可能发生的事件。注意，对于每个传入的查询，都必须进行解析和匹配，而索引可以根据库存更新速度来减少。许多现有的解决方案，如Apache Solr和Elasticsearch都遵循这个简单的方法，除了他们为这三个任务使用了更复杂的算法(如Lucene)。得益于这些开源项目，许多电子商务企业能够自己构建产品搜索，并为客户提供数以百万计的请求。
+符号信息检索 注意，在本质上，solr/Elasticsearch 是一个符号信息检索系统，它依赖于查询和产品的有效字符串表示。通过解析或索引，系统知道查询或产品描述中的哪些令牌是重要的。这些令牌是用于匹配的原始构建块。从原始文本中提取重要的令牌通常由Lucene Analyzer实现，它由一系列NLP组件组成，例如:标记化、引理、拼写校正、名称/同义词替换、命名实体识别和查询扩展。
+一般给定一个查询q∈Q以及p∈P,可以将Lucene Analyzer看做一个预定的函数将Q或P映射到一个空间S，例如f:Q -&amp;gt; S 或者 g:P -&amp;gt; S 。对于一个匹配任务，我们需要一个度量: S x S -&amp;gt; [0,正无穷)，然后求m(f(q)，g(p))，如下图所示:" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Cross Lingual_End to End_Product_Search_with_Tensorflow" />
+    <meta name="twitter:description" content="[使用Tensorflow构造跨语言端对端商品搜索]  Translator form Han Xiao`s Blog
+ 背景 商品搜索是网上零售商店的重要组成部分。从本质上说，您需要一个与文本查询(查询存储在您的商店中的产品)相匹配的系统。一个好的产品搜索可以理解用户的查询，检索尽可能多的相关产品，并最终将结果显示为一个列表，其中首选的产品应该位于顶部，而不相关的产品应该位于底部。
+不像文本检索(如Google web搜索)，产品是结构化数据。一种产品通常由一组键值对、一组图片和一些自由文本来描述。在开发者的世界Apache Solr和Elasticsearch被称为全文搜索的实际上的解决方案，使它们成为构建电子商务产品搜索的最有力竞争者。
+solr/Elasticsearch 核心上是一种符号信息检索(symbolic information retrieval)系统。将查询和文档映射到公共字符串空间对于搜索质量至关重要。这个映射过程是由一个由Lucene Analyzer实现的NLP Pipeline.在这篇文章中，我将介绍这种象征性管道方法的一些缺点，然后介绍使用Tensorflow从查询日志中构建产品搜索系统的端到端方法。这种基于深度学习的系统不太容易出现拼写错误，更有效地利用底层语义，并且更容易扩展到多种语言。 - 回顾产品搜索的符号方法 - 指出符号信息检索的痛点 - 神经信息检索系统 - 符号 vs 神经信息检索系统 - 神经网络架构 - 训练和评估方案 - 定性分析结果 - 总结
+回顾产品搜索的符号方法 我们首先回顾一下传统的方法。一个信息检索系统可以分为3个任务:索引、解析、匹配。下面是一个简单的产品搜索系统:
+[图片-产品搜索系统]
+&amp;nbsp; &amp;nbsp; &amp;nbsp; 1.indexing:将产品存储在具有属性的数据库中，如:品牌、颜色、类别 &amp;nbsp; &amp;nbsp; &amp;nbsp; 2.pasing:从输入查询中提取属性项，例如红衬衫 - &amp;gt; {“颜色”：“红”，“类别”：“衬衫”}; &amp;nbsp; &amp;nbsp; &amp;nbsp; 3.matching:根据属性过滤产品数据库
+如果查询中没有找到属性，那么系统就会返回到精确的字符串匹配;例如:在数据库中搜索所有可能发生的事件。注意，对于每个传入的查询，都必须进行解析和匹配，而索引可以根据库存更新速度来减少。许多现有的解决方案，如Apache Solr和Elasticsearch都遵循这个简单的方法，除了他们为这三个任务使用了更复杂的算法(如Lucene)。得益于这些开源项目，许多电子商务企业能够自己构建产品搜索，并为客户提供数以百万计的请求。
+符号信息检索 注意，在本质上，solr/Elasticsearch 是一个符号信息检索系统，它依赖于查询和产品的有效字符串表示。通过解析或索引，系统知道查询或产品描述中的哪些令牌是重要的。这些令牌是用于匹配的原始构建块。从原始文本中提取重要的令牌通常由Lucene Analyzer实现，它由一系列NLP组件组成，例如:标记化、引理、拼写校正、名称/同义词替换、命名实体识别和查询扩展。
+一般给定一个查询q∈Q以及p∈P,可以将Lucene Analyzer看做一个预定的函数将Q或P映射到一个空间S，例如f:Q -&amp;gt; S 或者 g:P -&amp;gt; S 。对于一个匹配任务，我们需要一个度量: S x S -&amp;gt; [0,正无穷)，然后求m(f(q)，g(p))，如下图所示:" />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Cross Lingual_End to End_Product_Search_with_Tensorflow" />
+  <meta property="og:description" content="[使用Tensorflow构造跨语言端对端商品搜索]  Translator form Han Xiao`s Blog
+ 背景 商品搜索是网上零售商店的重要组成部分。从本质上说，您需要一个与文本查询(查询存储在您的商店中的产品)相匹配的系统。一个好的产品搜索可以理解用户的查询，检索尽可能多的相关产品，并最终将结果显示为一个列表，其中首选的产品应该位于顶部，而不相关的产品应该位于底部。
+不像文本检索(如Google web搜索)，产品是结构化数据。一种产品通常由一组键值对、一组图片和一些自由文本来描述。在开发者的世界Apache Solr和Elasticsearch被称为全文搜索的实际上的解决方案，使它们成为构建电子商务产品搜索的最有力竞争者。
+solr/Elasticsearch 核心上是一种符号信息检索(symbolic information retrieval)系统。将查询和文档映射到公共字符串空间对于搜索质量至关重要。这个映射过程是由一个由Lucene Analyzer实现的NLP Pipeline.在这篇文章中，我将介绍这种象征性管道方法的一些缺点，然后介绍使用Tensorflow从查询日志中构建产品搜索系统的端到端方法。这种基于深度学习的系统不太容易出现拼写错误，更有效地利用底层语义，并且更容易扩展到多种语言。 - 回顾产品搜索的符号方法 - 指出符号信息检索的痛点 - 神经信息检索系统 - 符号 vs 神经信息检索系统 - 神经网络架构 - 训练和评估方案 - 定性分析结果 - 总结
+回顾产品搜索的符号方法 我们首先回顾一下传统的方法。一个信息检索系统可以分为3个任务:索引、解析、匹配。下面是一个简单的产品搜索系统:
+[图片-产品搜索系统]
+&amp;nbsp; &amp;nbsp; &amp;nbsp; 1.indexing:将产品存储在具有属性的数据库中，如:品牌、颜色、类别 &amp;nbsp; &amp;nbsp; &amp;nbsp; 2.pasing:从输入查询中提取属性项，例如红衬衫 - &amp;gt; {“颜色”：“红”，“类别”：“衬衫”}; &amp;nbsp; &amp;nbsp; &amp;nbsp; 3.matching:根据属性过滤产品数据库
+如果查询中没有找到属性，那么系统就会返回到精确的字符串匹配;例如:在数据库中搜索所有可能发生的事件。注意，对于每个传入的查询，都必须进行解析和匹配，而索引可以根据库存更新速度来减少。许多现有的解决方案，如Apache Solr和Elasticsearch都遵循这个简单的方法，除了他们为这三个任务使用了更复杂的算法(如Lucene)。得益于这些开源项目，许多电子商务企业能够自己构建产品搜索，并为客户提供数以百万计的请求。
+符号信息检索 注意，在本质上，solr/Elasticsearch 是一个符号信息检索系统，它依赖于查询和产品的有效字符串表示。通过解析或索引，系统知道查询或产品描述中的哪些令牌是重要的。这些令牌是用于匹配的原始构建块。从原始文本中提取重要的令牌通常由Lucene Analyzer实现，它由一系列NLP组件组成，例如:标记化、引理、拼写校正、名称/同义词替换、命名实体识别和查询扩展。
+一般给定一个查询q∈Q以及p∈P,可以将Lucene Analyzer看做一个预定的函数将Q或P映射到一个空间S，例如f:Q -&amp;gt; S 或者 g:P -&amp;gt; S 。对于一个匹配任务，我们需要一个度量: S x S -&amp;gt; [0,正无穷)，然后求m(f(q)，g(p))，如下图所示:" />
+  <meta property="og:url" content="https://xieydd.github.io/post/cross-lingual-end-to-end-product-search-with-tensorflow/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.31.1" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/cross-lingual-end-to-end-product-search-with-tensorflow/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Cross Lingual_End to End_Product_Search_with_Tensorflow</h1>
+      <p class="post-meta">@Xieydd · Jan 14, 2018 · 2 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="使用tensorflow构造跨语言端对端商品搜索">[使用Tensorflow构造跨语言端对端商品搜索]</h1>
+
+<blockquote>
+<p>Translator form Han Xiao`s Blog</p>
+</blockquote>
+
+<h3 id="背景">背景</h3>
+
+<p>商品搜索是网上零售商店的重要组成部分。从本质上说，您需要一个与文本查询(查询存储在您的商店中的产品)相匹配的系统。一个好的产品搜索可以理解用户的查询，检索尽可能多的相关产品，并最终将结果显示为一个列表，其中首选的产品应该位于顶部，而不相关的产品应该位于底部。</p>
+
+<p>不像文本检索(如Google web搜索)，产品是结构化数据。一种产品通常由一组键值对、一组图片和一些自由文本来描述。在开发者的世界<a href="http://lucene.apache.org/solr/">Apache Solr</a>和<a href="https://www.elastic.co/">Elasticsearch</a>被称为全文搜索的实际上的解决方案，使它们成为构建电子商务产品搜索的最有力竞争者。</p>
+
+<p>solr/Elasticsearch 核心上是一种符号信息检索(symbolic information retrieval)系统。将查询和文档映射到公共字符串空间对于搜索质量至关重要。这个映射过程是由一个由<a href="http://lucene.apache.org/core/6_2_1/core/org/apache/lucene/analysis/Analyzer.html">Lucene Analyzer</a>实现的NLP Pipeline.在这篇文章中，我将介绍这种象征性管道方法的一些缺点，然后介绍使用Tensorflow从查询日志中构建产品搜索系统的端到端方法。这种基于深度学习的系统不太容易出现拼写错误，更有效地利用底层语义，并且更容易扩展到多种语言。
+ - 回顾产品搜索的符号方法
+ - 指出符号信息检索的痛点
+ - 神经信息检索系统
+ - 符号 vs 神经信息检索系统
+ - 神经网络架构
+ - 训练和评估方案
+ - 定性分析结果
+ - 总结</p>
+
+<h3 id="回顾产品搜索的符号方法">回顾产品搜索的符号方法</h3>
+
+<p>我们首先回顾一下传统的方法。一个信息检索系统可以分为3个任务:索引、解析、匹配。下面是一个简单的产品搜索系统:</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/simple_product_search_system.jpg" alt="产品搜索系统" />
+[图片-产品搜索系统]</p>
+
+<p>&nbsp; &nbsp; &nbsp;  1.<strong>indexing</strong>:将产品存储在具有属性的数据库中，如:品牌、颜色、类别<br/>
+&nbsp; &nbsp; &nbsp;  2.<strong>pasing</strong>:从输入查询中提取属性项，例如红衬衫 - &gt; {“颜色”：“红”，“类别”：“衬衫”};<br/>
+&nbsp; &nbsp; &nbsp;  3.<strong>matching</strong>:根据属性过滤产品数据库</p>
+
+<p>如果查询中没有找到属性，那么系统就会返回到精确的字符串匹配;例如:在数据库中搜索所有可能发生的事件。注意，对于每个传入的查询，都必须进行解析和匹配，而索引可以根据库存更新速度来减少。许多现有的解决方案，如Apache Solr和Elasticsearch都遵循这个简单的方法，除了他们为这三个任务使用了更复杂的算法(如Lucene)。得益于这些开源项目，许多电子商务企业能够自己构建产品搜索，并为客户提供数以百万计的请求。</p>
+
+<h3 id="符号信息检索">符号信息检索</h3>
+
+<p>注意，在本质上，solr/Elasticsearch 是一个符号信息检索系统，它依赖于查询和产品的有效字符串表示。通过解析或索引，系统知道查询或产品描述中的哪些令牌是重要的。这些令牌是用于匹配的原始构建块。从原始文本中提取重要的令牌通常由Lucene Analyzer实现，它由一系列NLP组件组成，例如:标记化、引理、拼写校正、名称/同义词替换、命名实体识别和查询扩展。</p>
+
+<p>一般给定一个查询q∈Q以及p∈P,可以将Lucene Analyzer看做一个预定的函数将Q或P映射到一个空间S，例如f:Q -&gt; S 或者 g:P -&gt; S 。对于一个匹配任务，我们需要一个度量: S x S -&gt; [0,正无穷)，然后求m(f(q)，g(p))，如下图所示:</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/Symbolic_IR_system.jpg" alt="符号信息检索系统" />
+[图片-符号信息检索系统]</p>
+
+<h3 id="指出符号信息检索的痛点">指出符号信息检索的痛点</h3>
+
+<p>如果你是一个机器学习爱好者，他相信所有的东西都应该从数据中学习，那么你肯定有很多关于最后一个数字的问题。举几例:
+- 为什么g和f函数需要提前定义?为什么f和g函数不能从数据中学习得到?
+- 为什么S是一个字段空间?为什么不能使用一个向量空间?
+- 为什么m是一个字段/key匹配函数?为什么不能使用更加明确的函数?例如:欧几里得距离,余弦函数等等？，我们为什么不学m呢?</p>
+
+<p>事实上，这揭示了符号信息检索的两个痛点</p>
+
+<h5 id="1-nlp管道很脆弱-不能扩展到多种语言">1.NLP管道很脆弱，不能扩展到多种语言</h5>
+
+<p>在solr/Elasticsearch中的NLP管道是基于Lucene Analyzer类的。一个简单的分析器，如标准分析器，将按空格分割序列，并删除一些停止词。通常，您必须通过添加越来越多的功能来扩展它，这最终将导致NLP组件的管道如下图所示:</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/pipeline_NLP_components.jpg" alt="NLP组件的管道" />
+[NLP组件的管道]</p>
+
+<p>虽然它看起来是合理的该系统是脆弱的。由于每个组件的输出都是下一个组件的输入，上游组件中的一个缺陷可以很容易地破坏整个系统，但我的经验是这样的NLP管道有以下缺点:
+- 该系统是脆弱的。由于每个组件的输出都是下一个组件的输入，上游组件中的一个缺陷可以很容易地破坏整个系统，例如一个单词被遮挡就不能被正确的分割
+- 组件之间的依赖关系可能比较复杂。一个组件可以输出到多个组件，形成一个有方向的无环图。因此，您可能需要引入一些异步机制来减少总体阻塞时间。
+- 改善整体搜索质量并非易事。一个或两个组件的改进并不一定会改善终端用户的搜索体验
+- 这个系统不会扩展到多种语言。为了支持跨语言的搜索，开发人员必须在每一种语言的管道中重写那些依赖语言的组件，从而增加维护成本。</p>
+
+<h5 id="2-符号系统不理解没有硬编码的语义">2.符号系统不理解没有硬编码的语义</h5>
+
+<p>没有人喜欢硬编码这些知识，尤其是机器学习的人
+一个好的符号信息检索系统应该通过使用一些语义知识来理解运动鞋。没有人喜欢硬编码这些知识，尤其是机器学习的人。不幸的是，除非您实现了同义词过滤类，否则很难Solr/Elasticsearch理解任何一个缩写/代名词，这基本上是一个基于规则的过滤器。由于S是符号系统中的字符串空间，所以只能用字符串表示查询/产品。这严重限制了系统的可扩展性和可伸缩性，因为您需要有人来维护一个硬编码语言依赖的词典。如果一个人能够使用向量表示查询/产品，那么在社区中就可以很容易地找到同义词和缩写词，而无需进行硬编码。</p>
+
+<h3 id="神经信息检索系统">神经信息检索系统</h3>
+
+<p>考虑到前面提到的问题，我的动机是双重的：
+- 消除NLP管道，使系统更加健壮和可扩展;
+- 为查询和产品找到一个可以更好地表示底层语义的空间.</p>
+
+<p>下一个图展示了一个神经信息检索框架，它看起来和它的符号对等物差不多，除了NLP管道被一个深的神经网络所取代，匹配的工作是在一个学习的公共空间中完成的。现在f作为一个查询编码器，g是一个产品编码器.</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/neural_information_retrieval_framework.jpg" alt="神经信息检索框架" />
+[神经信息检索框架]</p>
+
+<h5 id="端对端模型">端对端模型</h5>
+
+<p>有几种方法可以训练神经系统。最直接的(但不一定是最有效的)方法之一是端到端学习。也就是说，您的培训数据是一组查询-产品对，它们是在上一个图中右上和左上的块中进行的。所有其他的块，例如f、g、m和S都是从数据中学习的。根据工程需求或资源限制，您还可以修复或预培训某些组件。</p>
+
+<h5 id="查询-产品对从何而来">查询-产品对从何而来？</h5>
+
+<p>要以端对端方式对神经系统进行培训，您需要查询和产品之间的一些关联，比如查询日志。该日志应该包含用户在输入查询后与之交互的产品(单击，添加到愿望清单，购买)。通常，您可以从系统的查询/事件日志中获取这些信息。在进行分段(时间/会话)、清理和聚合之后，您可以获得相当准确的关联。实际上，任何用户生成的文本都可以是良好的关联数据。这包括评论、产品评论和众包注释。下一个图显示了一个例子，在Zalando的搜索中，德国和英国的用户点击了凤梨和菠萝后得到的什么。</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/searching_for_ananas_and_pineapple.jpg" alt="点击了凤梨和菠萝后" />
+[德国和英国用户点击了凤梨和菠萝后得到]</p>
+
+<p>增加训练数据源的多样性对神经系统是有好处的，因为你肯定希望系统能更广泛地推广，而不是模仿符号对应的行为。相反，如果您的唯一数据源是一个符号信息检索系统的查询日志，那么您的神经系统必然会有偏差。最终系统的性能高度依赖于符号系统的能力。例如，如果您当前的符号系统不纠正拼写错误，当用户键入adidaas时没有返回任何东西，那么您将不会发现任何与来自查询日志的adidaas相关的产品。因此，你的神经系统不太可能学习拼写检查的能力。</p>
+
+<p>从这个意义上说，我们正在“引导”一个符号信息检索系统来建立一个神经信息检索系统。有了足够的训练数据，我们希望一些以前硬编码的规则或手工编码的函数能够被深度神经网络接收和推广。</p>
+
+<h5 id="对于阴性的查询-商品对">对于阴性的查询-商品对?</h5>
+
+<p>在某一时刻，你可能需要负的查询产品对来更有效地训练神经系统。一般来说，否定意味着产品与查询无关。一种简单的方法就是随机抽样所有的产品，希望没有正面的产品会被意外的采样。它很容易实现，实际上在实践中并不是一个坏主意。更复杂的解决方案可能是收集那些能给客户留下印象的产品，但却没有收到任何负面的点击。这需要您，前端团队和日志团队之间的一些协作，确保那些没有点击的条目对用户真的不感兴趣，而不是因为屏幕分辨率、延迟加载等等</p>
+
+<p>如果你正在寻找一个更正式、更有意义的解决方案，那么积极无标记的学习(PU Learning)可能对你来说很有趣。不是依靠启发式来识别负面数据，PU Learning把没有标记的数据看作是负的数据，权重更小。<a href="https://arxiv.org/pdf/1703.00593.pdf">“Positive-Unlabeled Learning with Non-Negative Risk Estimator”</a>论文是在NIPS 2017发表的一篇关于无偏PU Learning。</p>
+
+<h3 id="符号-vs-神经信息检索系">符号 vs 神经信息检索系</h3>
+
+<p>在我深入了解细节之前，我们先休息一下。正如你所看到的，我花了相当多的精力来解释符号和神经系统。这是因为符号系统是一种很经典的方法来做IR，而开发人员已经习惯了它。在Apache Solr、Elasticsearch和Lucene的帮助下，中和小型电子商务公司能够在短时间内建立自己的产品搜索。这是实际上的解决方案。另一方面，神经IR是最近才出现的一个新概念。目前还没有现成的可用软件包。</p>
+
+<table>
+<thead>
+<tr>
+<th>&nbsp;</th>
+<th>符号信息检索系统</th>
+<th>神经信息检索系统</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Pros</td>
+<td>在查询时有效;<br/>简单的实现;<br/>结果是可翻译的;<br/>许多现成的软件包</td>
+<td>自动;<br/>有弹性的噪音;<br/>容易扩展;<br/>需要很少的领域知识。</td>
+</tr>
+
+<tr>
+<td>Cons</td>
+<td>脆弱,硬编码的知识;<br/>高维护成本。</td>
+<td>在查询时效率较低;<br/>很难添加业务规则;<br/>需要大量的数据。</td>
+</tr>
+</tbody>
+</table>
+
+<p>这不是一个团队的符号或团队的神经选择。这两种系统都有各自的优点，并且可以很好地相互补充。因此，一个更好的解决方案是将这两个系统结合起来，这样我们就可以享受双方的所有优势。</p>
+
+<h3 id="神经网络框架">神经网络框架</h3>
+
+<p>下图表示的是神经网络的框架。建议的体系结构由多个编码器、一个度量层和一个损失层组成。首先，输入数据被输入到生成向量表示的编码器。注意，产品信息是由图像编码器和属性编码器编码的。在度量层中，我们分别计算一个查询向量与一个图像向量和一个属性向量的相似性。最后，在损失层中，我们计算了正与负对的相似性，作为反馈，通过反向传播训练编码器。</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/Neural_Network_Architecture.jpg" alt="神经网络模型" />
+[神经网络模型]</p>
+
+<p>在图中，我为每个组件标记了一个可能的模型，但是选择是相当开放的。有那么多的神经网络可供选择。为了清晰起见，我将简要地介绍每个组件，并尽可能地保持模型的简单性。</p>
+
+<h5 id="查询编码器">查询编码器</h5>
+
+<p>这里我们需要一个模型，它接受一个序列并输出一个向量。除了序列的内容外，矢量表示还应该对语言信息进行编码，并对拼写错误有弹性。字符RNN(包括LSTM/GRU/SRU)是一个不错的选择。通过输入RNN的字符,模型对拼写错误变得有弹性,如添加/删除/替换字符。拼写错误的查询将导致类似的向量表示形式。此外，由于欧洲语言(例如德语和英语)共享一些Unicode字符，因此可以在一个RNN模型中对不同语言的查询进行训练。为了区分两种语言中相同的拼写但不同的意思，比如德语rot(颜色红)和英语rot，你可以用一个特殊的字符来表示序列的语言，例如:DE rot和GB rot</p>
+
+<p>使用字符而不是单词作为模型输入意味着系统不太可能遇到词汇表外的单词。任何输入都将被编码成一个矢量表示。因此，系统具有良好的回忆率，因为它总是返回一些结果，不管输入的是什么。当然，结果可能是毫无意义的。然而，如果一个客户足够友好并且耐心地点击一个相关的产品，系统就可以立即从查询日志中获取这个信号作为一个积极的联系，再训练这个模型并在下一轮中提供更好的结果。在这个意义上，我们关闭了反馈给用户和从用户中学习的循环。</p>
+
+<p>注意，查询可以是组合的。它可能包含多个单词，并描述多个属性，例如nike sneaker(品牌 + 分类)以及 nike aix max(品牌+产品名)。不幸的是，对于一个普通的字符来说，要捕获高阶的依赖和概念是困难的，因为它的解析仅限于一个字符。为了解决这个问题，我堆叠多层加宽带层次联系的循环层构造一个<a href="https://papers.nips.cc/paper/6613-dilated-recurrent-neural-networks.pdf"> Dilated Recurrent Neural Networks</a>,它能在不同的层上学习不同尺度的时间依赖性。下一个图显示了一个3层扩张RNN，扩张到4。</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/three-layer_DilatedRNN.jpg" alt="三层扩张RNN" />
+[三层扩张RNN]</p>
+
+<p>实现扩张RNN可以使用<a href="https://github.com/hanxiao/tf-best-practice/blob/master/utils/dilatedRNN.py">static_rnn</a>的API.查询表示是扩张的RNN的最后一个输出，它可以通过:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">num_hidden <span style="color:#f92672">=</span> <span style="color:#ae81ff">148</span>  <span style="color:#75715e"># 128+20 dims, this will become clear in the sequel</span>
+dilations <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">8</span>]
+encoder_cell <span style="color:#f92672">=</span> [LSTMCell(num_hidden) <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(len(dilations))]
+q_r <span style="color:#f92672">=</span> get_last_output_dRNN(input<span style="color:#f92672">=</span>X_query,
+                          cells<span style="color:#f92672">=</span>encoder_cell,
+                          dilations<span style="color:#f92672">=</span>dilations)</code></pre></div>
+<p>为了加快训练，你也可以取代Tensorflow的LSTMCell为最近提出的<a href="https://arxiv.org/pdf/1709.02755.pdf">Simple Recurrent Unit</a>.根据该论文，SRU比优化的LSTM实现快5-10倍。代码可以在这里找到<a href="https://github.com/hanxiao/tf-best-practice/blob/master/utils/sru.py">Code</a></p>
+
+<p>如果您对扩展查询编码器感兴趣，例如在每个递归步骤中添加更复杂的高阶依赖项或集成侧信息，请阅读我的博客文章<a href="https://hanxiao.github.io/2017/08/16/Why-I-use-raw-rnn-Instead-of-dynamic-rnn-in-Tensorflow-So-Should-You-0/"> “Why I Use raw_rnn Instead of dynamic_rnn in Tensorflow and So Should You”</a>.</p>
+
+<h5 id="图片编码器">图片编码器</h5>
+
+<p>图像编码器依赖于纯粹的视觉信息。一个产品的RGB图像数据被输入到一个基于ResNet体系结构的多层卷积神经网络中，从而产生了128维的图像矢量表示。
+图像编码器依赖于纯粹的视觉信息。一个产品的RGB图像数据被输入到一个基于ResNet体系结构的多层卷积神经网络中，从而产生了128维的图像矢量表示。</p>
+
+<h5 id="属性编码器">属性编码器</h5>
+
+<p>一个产品的属性可以组合成一个稀疏的一个热编码的向量。然后，它被提供给一个四层，完全连通的深层神经网络，并逐渐递减的层大小。通过标准ReLUs对激活进行了非线性处理，并将退出应用于处理超拟合。输出在20维中产生属性向量表示。</p>
+
+<p>有些读者可能会质疑同时拥有图像和属性编码器的必要性。难道不是一个属性编码器吗?如果你想搜索查询在电子商务背景下,特别是在我工作的时尚电子商务,查询可以大致分为两类:“属性”查询,如耐克红鞋的所有单词都已经呈现在产品数据库属性,和“视觉”查询如 tshirt logo on back,typical berlin表达更多的视觉或抽象意图从来没有出现在产品数据库的用户和这些话。前者只能通过属性编码器进行训练，而后者则需要图像编码器进行有效的训练。有了两个编码器，在训练期间允许它们之间进行一些知识转移，从而提高了整体性能。</p>
+
+<h5 id="度量和损失层">度量和损失层</h5>
+
+<p>在查询产品对所有三个编码器进行访问之后，就可以获得查询的向量表示q、图像表示u和产品的属性表示v。现在是把它们挤进一个共同的潜在空间的时候了。在度规层中，我们需要一个相似函数m它给正对的值大于负对例如:m(q,u+,v+) &gt; m(q,u-,v-)。m(q,u+,v+)的绝对值不会影响我们。我们只关心正和负对的相对距离。事实上，一个更大的差异对我们来说更好，因为正和负对的更清晰的分离可以增强系统的泛化能力。因此，我们需要一个损失函数l与m(q,u+,v+)和m(q,u-,v-)的距离成反比。通过将q(148维)分成q_img(128维)和q_attr(20维)，我们最小化这个:</p>
+
+<p>$$ {\begin{align}&amp;\sum<em>{\begin{array}{c} 0&lt;i&lt;N\ 0&lt;j&lt;|q</em>{i}^{+}| \ 0&lt;k&lt;|q_{i}^{-}|\end{array}}\lambda \ell\left(m(q^{\mathrm{img}}<em>i, u</em>{i,j}^{+}), m(q^{\mathrm{img}}<em>i, u</em>{i,k}^{-})\right) \ &amp;+ (1-\lambda)\ell\left(m(q^{\mathrm{attr}}<em>i, v</em>{i,j}^{+}), m(q^{\mathrm{attr}}<em>i, v</em>{i,k}^{-})\right),\end{align}} $$</p>
+
+<p>N是总查询，|qi+|和|qi-|是与查询i相关的正面和负面产品的数量。超参数λ在图像信息和属性信息之间进行权衡。对于函数l和g，选项是:</p>
+
+<ul>
+<li><strong>损失函数l</strong>: logistic, exponential, hinge loss等</li>
+<li><strong>度量函数m</strong>: 向量空间余弦相似度,欧几里得距离（l2_norm），MLP等</li>
+</ul>
+
+<p>为了理解如何使用上面的损失函数，我强烈建议您阅读我的另一篇博客文章<a href="https://hanxiao.github.io/2017/11/08/Optimizing-Contrastive-Rank-Triplet-Loss-in-Tensorflow-for-Neural/">“Optimizing Contrastive/Rank/Triplet Loss in Tensorflow for Neural Information Retrieval”</a>,它还详细解释了度量和损失层的实现。</p>
+
+<h5 id="引用">引用</h5>
+
+<p>对于神经系统，做推断意味着从用户中提供搜索请求。由于产品是定期更新的(比如一天一次)，我们可以预先计算所有产品的图像表示和属性表示，并存储它们。在推理过程中，我们首先使用查询编码器将用户输入表示为一个向量;然后迭代所有可用的产品，并计算查询向量和它们之间的度量;最后,对结果进行排序。根据得分的大小，度量的计算部分可能需要一段时间。幸运的是，这个过程可以很容易地并行化。</p>
+
+<h3 id="训练和评估方案">训练和评估方案</h3>
+
+<p>查询产品数据集被划分为4个集合，如图所示:</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/query-product_dataset.jpg" alt="商品查询数据" />
+[查询商品数据]</p>
+
+<p>橙色块中的数据用于训练模型，并且在测试I集中进行评估，这样，模型就不能观察在测试期间用于训练的任何查询或产品。对于评估，我们将查询提供给网络，并返回一个已排序的测试产品列表。然后，我们来看看在结果中，真实产品是如何排名的。一些广泛使用的测量包括:平均平均精度(MAP)、平均倒数排名(MRR)、precision@1,precision@1、负折现累积收益(NDCG)等。可以在这个<a href="https://people.cs.umass.edu/~jpjiang/cs646/03_eval_basics.pdf">幻灯片</a>找到对这些指标的全面解释.在Tensorflow 1.4中使用<a href="https://www.tensorflow.org/api_docs/python/tf/estimator">Estimator</a>和<a href="https://www.tensorflow.org/api_docs/python/tf/keras/datasets">Data</a> API，您可以轻松地定义培训和评估过程如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">model <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>estimator<span style="color:#f92672">.</span>Estimator(model_fn<span style="color:#f92672">=</span>neural_ir, params<span style="color:#f92672">=</span>params)
+train_spec <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>estimator<span style="color:#f92672">.</span>TrainSpec(input_fn<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span>: input_data<span style="color:#f92672">.</span>input_fn(ModeKeys<span style="color:#f92672">.</span>TRAIN))
+eval_spec <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>estimator<span style="color:#f92672">.</span>EvalSpec(input_fn<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span>: input_data<span style="color:#f92672">.</span>input_fn(ModeKeys<span style="color:#f92672">.</span>EVAL))
+tf<span style="color:#f92672">.</span>estimator<span style="color:#f92672">.</span>train_and_evaluate(model, train_spec, eval_spec)</code></pre></div>
+<p>测试2或测试3集也可以用于评估，以检查模型在未被发现的产品或未被发现的查询中是如何泛化的。</p>
+
+<h3 id="定性结果分析">定性结果分析</h3>
+
+<p>这里我不会给出任何定量的结果。毕竟，这是一个博客，而不是学术论文，其目的主要是介绍神经系统的新思想。让我们来看看一些对你的眼睛很容易的结果。这实际上提出了一个很好的问题:你怎么能通过视觉检查来判断一个信息检索系统是否有用?</p>
+
+<p>就我个人而言，如果它符合这两个基本条件，我就称它为“有用”：</p>
+
+<ul>
+<li>它可以理解由基本概念所描述的单例查询，例如:品牌、颜色、类别;</li>
+<li>它理解由多个概念所描述的组合查询，例如品牌颜色、品牌颜色类别产品名称。</li>
+</ul>
+
+<p>如果它不能满足这两个条件，那么我就不需要检查诸如拼写检查和跨语言这样的高级功能了。说得够多了，这里有一些搜索结果。</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/query_top_20.jpg" alt="查询前20结果" />
+[查询前20结果]</p>
+
+<p>在这里，我演示了不同类型查询的一些(精心挑选的)结果。似乎这个系统是朝着正确的方向发展的。令人兴奋的是，神经红外系统能够正确地解释没有任何NLP管道或硬编码规则的命名实体、拼写错误和多语言能力。但是，您也可以注意到一些顶级的产品与查询无关，这就留下了很大的改进空间。</p>
+
+<p>在速度方面，对30万产品的四核CPU的每次查询时间大约是2秒。通过使用模型压缩技术，可以进一步提高效率。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>如果你是一个搜索开发人员构建一个符号信息检索系统与Solr / Elasticsearch / Lucene,我希望我吸引了你的注意力到这样有缺陷的系统。这篇文章也应该回答你关于神经系统的问题、原因和问题。与符号相比较，新系统对输入噪声更有弹性，对产品和语言几乎不需要领域知识。尽管如此，我们不应该把它当作一个团队符号或者团队神经的选择。这两种系统都有各自的优点，并且可以很好地相互补充。一个更好的解决方案是将这两个系统结合起来，这样我们就可以享受双方的所有优势。</p>
+
+<p>这里省略了一些实现细节和技巧，但是可以在我的其他帖子中找到。我强烈建议读者继续阅读下面的文章:</p>
+
+<ul>
+<li><a href="https://hanxiao.github.io/2017/11/08/Optimizing-Contrastive-Rank-Triplet-Loss-in-Tensorflow-for-Neural/">“Optimizing Contrastive/Rank/Triplet Loss in Tensorflow for Neural Information Retrieval”</a></li>
+<li><a href="https://hanxiao.github.io/2017/08/16/Why-I-use-raw-rnn-Instead-of-dynamic-rnn-in-Tensorflow-So-Should-You-0/">“Why I Use raw_rnn Instead of dynamic_rnn in Tensorflow and So Should You”</a></li>
+</ul>
+
+<p>最后但并非最不重要的是，开源项目<a href="https://github.com/faneshion/MatchZoo">MatchZoo</a>包含了许多最先进的神经信息检索算法。除了产品搜索之外，你还可以在会话聊天机器人、问题答系统中找到它的应用。</p>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="https://xieydd.github.io/tags/tensorflow"><span class="tag">Tensorflow</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/matchzoo"><span class="tag">MatchZoo</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/lstm"><span class="tag">LSTM</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/%E4%BF%A1%E6%81%AF%E6%A3%80%E7%B4%A2%E7%B3%BB%E7%BB%9F"><span class="tag">信息检索系统</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>
