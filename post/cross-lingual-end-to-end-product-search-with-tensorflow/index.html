@@ -29,7 +29,7 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
 
   
   
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@xieydd_" />
     <meta name="twitter:title" content="Cross Lingual End to End Product Search with Tensorflow" />
     <meta name="twitter:description" content="[使用Tensorflow构造跨语言端对端商品搜索]  Translator form Han Xiao`s Blog
@@ -42,7 +42,7 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
 如果查询中没有找到属性，那么系统就会返回到精确的字符串匹配;例如:在数据库中搜索所有可能发生的事件。注意，对于每个传入的查询，都必须进行解析和匹配，而索引可以根据库存更新速度来减少。许多现有的解决方案，如Apache Solr和Elasticsearch都遵循这个简单的方法，除了他们为这三个任务使用了更复杂的算法(如Lucene)。得益于这些开源项目，许多电子商务企业能够自己构建产品搜索，并为客户提供数以百万计的请求。
 符号信息检索 注意，在本质上，solr/Elasticsearch 是一个符号信息检索系统，它依赖于查询和产品的有效字符串表示。通过解析或索引，系统知道查询或产品描述中的哪些令牌是重要的。这些令牌是用于匹配的原始构建块。从原始文本中提取重要的令牌通常由Lucene Analyzer实现，它由一系列NLP组件组成，例如:标记化、引理、拼写校正、名称/同义词替换、命名实体识别和查询扩展。
 一般给定一个查询q∈Q以及p∈P,可以将Lucene Analyzer看做一个预定的函数将Q或P映射到一个空间S，例如f:Q -&amp;gt; S 或者 g:P -&amp;gt; S 。对于一个匹配任务，我们需要一个度量: S x S -&amp;gt; [0,正无穷)，然后求m(f(q)，g(p))，如下图所示:" />
-    <meta name="twitter:image" content="https://xieydd.github.io/img/avatar.jpg" />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/Neural_Network_Architecture.jpg" />
   
 
   
@@ -59,7 +59,7 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
 符号信息检索 注意，在本质上，solr/Elasticsearch 是一个符号信息检索系统，它依赖于查询和产品的有效字符串表示。通过解析或索引，系统知道查询或产品描述中的哪些令牌是重要的。这些令牌是用于匹配的原始构建块。从原始文本中提取重要的令牌通常由Lucene Analyzer实现，它由一系列NLP组件组成，例如:标记化、引理、拼写校正、名称/同义词替换、命名实体识别和查询扩展。
 一般给定一个查询q∈Q以及p∈P,可以将Lucene Analyzer看做一个预定的函数将Q或P映射到一个空间S，例如f:Q -&amp;gt; S 或者 g:P -&amp;gt; S 。对于一个匹配任务，我们需要一个度量: S x S -&amp;gt; [0,正无穷)，然后求m(f(q)，g(p))，如下图所示:" />
   <meta property="og:url" content="https://xieydd.github.io/post/cross-lingual-end-to-end-product-search-with-tensorflow/" />
-  <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
+  <meta property="og:image" content="https://xieydd.github.io/img/Neural_Network_Architecture.jpg" />
 
 
 
