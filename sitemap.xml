@@ -13,6 +13,16 @@
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/</loc>
+    <lastmod>2018-01-19T15:32:44+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/post/kubernetes_tools/</loc>
+    <lastmod>2018-01-18T17:54:01+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/post/cross-lingual-end-to-end-product-search-with-tensorflow/</loc>
     <lastmod>2018-01-14T22:15:23+08:00</lastmod>
   </url>
@@ -82,14 +92,32 @@
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/tags/katacoda/</loc>
+    <lastmod>2018-01-19T15:32:44+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/tags/kreas/</loc>
     <lastmod>2017-12-28T16:37:10+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/tags/kube-shell/</loc>
+    <lastmod>2018-01-18T17:54:01+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/kubectl%E5%B7%A5%E5%85%B7/</loc>
+    <lastmod>2018-01-18T17:54:01+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/tags/kubeflow/</loc>
-    <lastmod>2018-01-04T10:29:37+08:00</lastmod>
+    <lastmod>2018-01-19T15:32:44+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -125,7 +153,7 @@
   
   <url>
     <loc>https://xieydd.github.io/post/</loc>
-    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
+    <lastmod>2018-01-19T15:32:44+08:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -239,6 +239,41 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/" class="post-link">Kubeflow in katacoda Sandbox</a></h3>
+    <p class="post-meta">@Xieydd · Jan 19, 2018 · 7 min read</p>
+  </header>
+  
+  <p class="post-summary">[Kubeflow] Kubeflow Components 在Github repository的kubeflow/components/
+1. TF Job Operator and Controll 对Kubernetes的扩展，以简化分布式的TensorFlow工作负载的部署。通过使用操作符，Kubeflow能够自动配置主、worker和参数化的服务器配置。工作负载可以用TFJob部署。
+2. TF Hub 使用Jupyter Notebook运行JupyterHub实例
+3. Model Server 为客户部署一个经过训练的TensorFlow模型，以获取和使用未来的预测
+1. TF Job #获得组件列表,三大组件 ls -lha kubeflow/components/drwxr-xr-x 5 root root 4.0K Jan 4 08:32 . drwxr-xr-x 5 root root 4.0K Jan 4 08:32 .. drwxr-xr-x 4 root root 4.0K Jan 4 08:32 jupyterhub drwxr-xr-x 4 root root 4.0K Jan 4 08:32 k8s-model-server drwxr-xr-x 2 root root 4.0K Jan 4 08:32 tf-controller#将其所有部署到Kubernetes kubectl apply -f kubeflow/components/ -Rconfigmap &#34;jupyterhub-config&#34; created service &#34;tf-hub-0&#34; created statefulset &#34;tf-hub&#34; created role &#34;edit-pod&#34; created rolebinding &#34;edit-pods&#34; created service &#34;tf-hub-lb&#34; created deployment &#34;model-server&#34; created service &#34;model-service&#34; created configmap &#34;tf-job-operator-config&#34; created serviceaccount &#34;tf-job-operator&#34; created clusterrole &#34;tf-job-operator&#34; created clusterrolebinding &#34;tf-job-operator&#34; created deployment &#34;tf-job-operator&#34; created#部署之后，可以发现额外的pod和服务已经在运行，处理kubeflow和Tensorflow工作负载 kubectl get allNAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT AGE statefulsets/tf-hub 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME READY STATUS RESTARTS AGE po/model-server-584cf76db9-44ktg 1/1 Running 0 5m po/model-server-584cf76db9-68h7f 1/1 Running 0 5m po/model-server-584cf76db9-l7k4q 1/1 Running 0 5m po/tf-hub-0 1/1 Running 0 5m po/tf-job-operator-6f7ccdfd4d-knhvq 1/1 Running 0 5m example</p>
+  <footer class="post-footer">
+    <a class="read-more" href="https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="https://xieydd.github.io/post/kubernetes_tools/" class="post-link">Kubernetes_tools</a></h3>
+    <p class="post-meta">@Xieydd · Jan 18, 2018 · 1 min read</p>
+  </header>
+  
+  <p class="post-summary">[Kubernetes的一些实用工具] 1.Kubectl工具 [图片-Kubectl增强工具 —来自于网络]
+ kubectx：用于切换kubernetes context kube-ps1：为命令行终端增加$PROMPT字段 kube-shell：交互式带命令提示的kubectl终端  kube-shell 特别推荐开源项目kube-shell可以为kubectl提供自动的命令提示和补全
+Kube-shell有以下特性：
+ 命令提示，给出命令的使用说明 自动补全，列出可选命令并可以通过tab键自动补全，支持模糊搜索 高亮 使用tab键可以列出可选的对象 vim模式  安装:
+$ pip install kube-shell --user -U 安装遇到问题:
+#提示报警说python2的低版本不支持kube-shell #更新python为3.6.1 #安装目录为~/home/xyd/export/software/ $ wget https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tar.xz $ xz -d Python-3.6.1.tar.xz $ tar xvf Python-3.6.1.tar #编译并安装 $ mkdir /usr/local/python3 $ cd Python-3.6.1 $ sudo ./configure --prefix=/usr/local/python3 --enable-optimizations #发现报错,没有安装GCC套件 configure: error: in `/root/expert/software/Python-3.6.1&#39;:configure: error: no acceptable C compiler found in $PATHSee `config.log&#39; for more details $ yum install gcc #重新运行 $ sudo .</p>
+  <footer class="post-footer">
+    <a class="read-more" href="https://xieydd.github.io/post/kubernetes_tools/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="https://xieydd.github.io/post/cross-lingual-end-to-end-product-search-with-tensorflow/" class="post-link">Cross Lingual End to End Product Search with Tensorflow</a></h3>
     <p class="post-meta">@Xieydd · Jan 14, 2018 · 2 min read</p>
   </header>

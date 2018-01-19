@@ -49,6 +49,15 @@
     </item>
     
     <item>
+      <title>Katacoda</title>
+      <link>https://xieydd.github.io/tags/katacoda/</link>
+      <pubDate>Fri, 19 Jan 2018 15:32:44 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/katacoda/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Kreas</title>
       <link>https://xieydd.github.io/tags/kreas/</link>
       <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
@@ -58,9 +67,27 @@
     </item>
     
     <item>
+      <title>Kube Shell</title>
+      <link>https://xieydd.github.io/tags/kube-shell/</link>
+      <pubDate>Thu, 18 Jan 2018 17:54:01 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/kube-shell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kubectl工具</title>
+      <link>https://xieydd.github.io/tags/kubectl%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Thu, 18 Jan 2018 17:54:01 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/tags/kubectl%E5%B7%A5%E5%85%B7/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Kubeflow</title>
       <link>https://xieydd.github.io/tags/kubeflow/</link>
-      <pubDate>Thu, 04 Jan 2018 10:29:37 +0800</pubDate>
+      <pubDate>Fri, 19 Jan 2018 15:32:44 +0800</pubDate>
       
       <guid>https://xieydd.github.io/tags/kubeflow/</guid>
       <description></description>

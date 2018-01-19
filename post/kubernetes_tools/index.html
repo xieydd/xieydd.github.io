@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kubernetes_tools</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[Kubernetes的一些实用工具] 1.Kubectl工具 [图片-Kubectl增强工具 &amp;mdash;来自于网络]
+ kubectx：用于切换kubernetes context kube-ps1：为命令行终端增加$PROMPT字段 kube-shell：交互式带命令提示的kubectl终端  kube-shell 特别推荐开源项目kube-shell可以为kubectl提供自动的命令提示和补全
+Kube-shell有以下特性：
+ 命令提示，给出命令的使用说明 自动补全，列出可选命令并可以通过tab键自动补全，支持模糊搜索 高亮 使用tab键可以列出可选的对象 vim模式  安装:
+$ pip install kube-shell --user -U 安装遇到问题:
+#提示报警说python2的低版本不支持kube-shell #更新python为3.6.1 #安装目录为~/home/xyd/export/software/ $ wget https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tar.xz $ xz -d Python-3.6.1.tar.xz $ tar xvf Python-3.6.1.tar #编译并安装 $ mkdir /usr/local/python3 $ cd Python-3.6.1 $ sudo ./configure --prefix=/usr/local/python3 --enable-optimizations #发现报错,没有安装GCC套件 configure: error: in `/root/expert/software/Python-3.6.1&amp;#39;:configure: error: no acceptable C compiler found in $PATHSee `config.log&amp;#39; for more details $ yum install gcc #重新运行 $ sudo ." />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Kubernetes_tools" />
+    <meta name="twitter:description" content="[Kubernetes的一些实用工具] 1.Kubectl工具 [图片-Kubectl增强工具 &amp;mdash;来自于网络]
+ kubectx：用于切换kubernetes context kube-ps1：为命令行终端增加$PROMPT字段 kube-shell：交互式带命令提示的kubectl终端  kube-shell 特别推荐开源项目kube-shell可以为kubectl提供自动的命令提示和补全
+Kube-shell有以下特性：
+ 命令提示，给出命令的使用说明 自动补全，列出可选命令并可以通过tab键自动补全，支持模糊搜索 高亮 使用tab键可以列出可选的对象 vim模式  安装:
+$ pip install kube-shell --user -U 安装遇到问题:
+#提示报警说python2的低版本不支持kube-shell #更新python为3.6.1 #安装目录为~/home/xyd/export/software/ $ wget https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tar.xz $ xz -d Python-3.6.1.tar.xz $ tar xvf Python-3.6.1.tar #编译并安装 $ mkdir /usr/local/python3 $ cd Python-3.6.1 $ sudo ./configure --prefix=/usr/local/python3 --enable-optimizations #发现报错,没有安装GCC套件 configure: error: in `/root/expert/software/Python-3.6.1&amp;#39;:configure: error: no acceptable C compiler found in $PATHSee `config.log&amp;#39; for more details $ yum install gcc #重新运行 $ sudo ." />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Kubernetes_tools" />
+  <meta property="og:description" content="[Kubernetes的一些实用工具] 1.Kubectl工具 [图片-Kubectl增强工具 &amp;mdash;来自于网络]
+ kubectx：用于切换kubernetes context kube-ps1：为命令行终端增加$PROMPT字段 kube-shell：交互式带命令提示的kubectl终端  kube-shell 特别推荐开源项目kube-shell可以为kubectl提供自动的命令提示和补全
+Kube-shell有以下特性：
+ 命令提示，给出命令的使用说明 自动补全，列出可选命令并可以通过tab键自动补全，支持模糊搜索 高亮 使用tab键可以列出可选的对象 vim模式  安装:
+$ pip install kube-shell --user -U 安装遇到问题:
+#提示报警说python2的低版本不支持kube-shell #更新python为3.6.1 #安装目录为~/home/xyd/export/software/ $ wget https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tar.xz $ xz -d Python-3.6.1.tar.xz $ tar xvf Python-3.6.1.tar #编译并安装 $ mkdir /usr/local/python3 $ cd Python-3.6.1 $ sudo ./configure --prefix=/usr/local/python3 --enable-optimizations #发现报错,没有安装GCC套件 configure: error: in `/root/expert/software/Python-3.6.1&amp;#39;:configure: error: no acceptable C compiler found in $PATHSee `config.log&amp;#39; for more details $ yum install gcc #重新运行 $ sudo ." />
+  <meta property="og:url" content="https://xieydd.github.io/post/kubernetes_tools/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.31.1" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/kubernetes_tools/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes_tools</h1>
+      <p class="post-meta">@Xieydd · Jan 18, 2018 · 1 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="kubernetes的一些实用工具">[Kubernetes的一些实用工具]</h1>
+
+<h3 id="1-kubectl工具">1.Kubectl工具</h3>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/tools-to-supercharge-kubectl.jpg" alt="Kubectl增强工具" />
+[图片-Kubectl增强工具  &mdash;来自于网络]</p>
+
+<ul>
+<li><a href="https://github.com/ahmetb/kubectx">kubectx</a>：用于切换kubernetes context</li>
+<li><a href="https://github.com/jonmosco/kube-ps1">kube-ps1</a>：为命令行终端增加$PROMPT字段</li>
+<li><a href="https://github.com/cloudnativelabs/kube-shell">kube-shell</a>：交互式带命令提示的kubectl终端</li>
+</ul>
+
+<h5 id="kube-shell">kube-shell</h5>
+
+<p>特别推荐开源项目kube-shell可以为kubectl提供自动的命令提示和补全</p>
+
+<p>Kube-shell有以下特性：</p>
+
+<ul>
+<li>命令提示，给出命令的使用说明</li>
+<li>自动补全，列出可选命令并可以通过tab键自动补全，支持模糊搜索</li>
+<li>高亮</li>
+<li>使用tab键可以列出可选的对象</li>
+<li>vim模式</li>
+</ul>
+
+<p>安装:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> pip install kube<span style="color:#f92672">-</span>shell <span style="color:#f92672">--</span>user <span style="color:#f92672">-</span>U</code></pre></div>
+<p>安装遇到问题:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#提示报警说python2的低版本不支持kube-shell</span>
+
+<span style="color:#75715e">#更新python为3.6.1</span>
+<span style="color:#75715e">#安装目录为~/home/xyd/export/software/</span>
+<span style="color:#960050;background-color:#1e0010">$</span> wget  https:<span style="color:#f92672">//</span>www<span style="color:#f92672">.</span>python<span style="color:#f92672">.</span>org<span style="color:#f92672">/</span>ftp<span style="color:#f92672">/</span>python<span style="color:#f92672">/</span><span style="color:#ae81ff">3.6</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1</span><span style="color:#f92672">/</span>Python<span style="color:#f92672">-</span><span style="color:#ae81ff">3.6</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1.</span>tar<span style="color:#f92672">.</span>xz
+
+<span style="color:#960050;background-color:#1e0010">$</span> xz <span style="color:#f92672">-</span>d Python<span style="color:#f92672">-</span><span style="color:#ae81ff">3.6</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1.</span>tar<span style="color:#f92672">.</span>xz
+
+<span style="color:#960050;background-color:#1e0010">$</span> tar xvf Python<span style="color:#f92672">-</span><span style="color:#ae81ff">3.6</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1.</span>tar
+
+<span style="color:#75715e">#编译并安装</span>
+<span style="color:#960050;background-color:#1e0010">$</span> mkdir <span style="color:#f92672">/</span>usr<span style="color:#f92672">/</span>local<span style="color:#f92672">/</span>python3
+
+<span style="color:#960050;background-color:#1e0010">$</span> cd Python<span style="color:#f92672">-</span><span style="color:#ae81ff">3.6</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1</span>
+
+<span style="color:#960050;background-color:#1e0010">$</span> sudo <span style="color:#f92672">./</span>configure <span style="color:#f92672">--</span>prefix<span style="color:#f92672">=/</span>usr<span style="color:#f92672">/</span>local<span style="color:#f92672">/</span>python3 <span style="color:#f92672">--</span>enable<span style="color:#f92672">-</span>optimizations
+
+<span style="color:#75715e">#发现报错,没有安装GCC套件</span>
+configure: error: <span style="color:#f92672">in</span> <span style="color:#960050;background-color:#1e0010">`</span><span style="color:#f92672">/</span>root<span style="color:#f92672">/</span>expert<span style="color:#f92672">/</span>software<span style="color:#f92672">/</span>Python<span style="color:#f92672">-</span><span style="color:#ae81ff">3.6</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;:</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">configure: error: no acceptable C compiler found in $PATH</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">See `config.log&#39;</span> <span style="color:#66d9ef">for</span> more details
+
+<span style="color:#960050;background-color:#1e0010">$</span> yum install gcc
+
+<span style="color:#75715e">#重新运行</span>
+<span style="color:#960050;background-color:#1e0010">$</span> sudo <span style="color:#f92672">./</span>configure <span style="color:#f92672">--</span>prefix<span style="color:#f92672">=/</span>usr<span style="color:#f92672">/</span>local<span style="color:#f92672">/</span>python3 <span style="color:#f92672">--</span>enable<span style="color:#f92672">-</span>optimizations
+
+config<span style="color:#f92672">.</span>status: creating Makefile<span style="color:#f92672">.</span>pre
+config<span style="color:#f92672">.</span>status: creating Modules<span style="color:#f92672">/</span>Setup<span style="color:#f92672">.</span>config
+config<span style="color:#f92672">.</span>status: creating Misc<span style="color:#f92672">/</span>python<span style="color:#f92672">.</span>pc
+config<span style="color:#f92672">.</span>status: creating Misc<span style="color:#f92672">/</span>python<span style="color:#f92672">-</span>config<span style="color:#f92672">.</span>sh
+config<span style="color:#f92672">.</span>status: creating Modules<span style="color:#f92672">/</span>ld_so_aix
+config<span style="color:#f92672">.</span>status: creating pyconfig<span style="color:#f92672">.</span>h
+creating Modules<span style="color:#f92672">/</span>Setup
+creating Modules<span style="color:#f92672">/</span>Setup<span style="color:#f92672">.</span>local
+creating Makefile
+
+<span style="color:#75715e">#需等待一段时间</span>
+<span style="color:#960050;background-color:#1e0010">$</span> sudo make
+
+<span style="color:#960050;background-color:#1e0010">$</span> sudo make install
+
+
+<span style="color:#75715e">#替换python</span>
+<span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">/</span>usr<span style="color:#f92672">/</span>bin
+
+<span style="color:#960050;background-color:#1e0010">$</span> mv python python<span style="color:#f92672">.</span>bak
+
+<span style="color:#960050;background-color:#1e0010">$</span> sudo ln <span style="color:#f92672">-</span>s <span style="color:#f92672">/</span>usr<span style="color:#f92672">/</span>local<span style="color:#f92672">/</span>python3<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>python3<span style="color:#f92672">.</span><span style="color:#ae81ff">6</span> <span style="color:#f92672">/</span>usr<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>python
+
+<span style="color:#960050;background-color:#1e0010">$</span> python <span style="color:#f92672">-</span>V
+<span style="color:#75715e">#之后可能会出现pip和yum不可用解决方法参考:</span>
+https:<span style="color:#f92672">//</span>segmentfault<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>a<span style="color:#f92672">/</span><span style="color:#ae81ff">1190000011024802</span></code></pre></div></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="https://xieydd.github.io/tags/kube-shell"><span class="tag">Kube-Shell</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/kubectl%E5%B7%A5%E5%85%B7"><span class="tag">Kubectl工具</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>

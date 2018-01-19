@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kubeflow in katacoda Sandbox</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[Kubeflow] Kubeflow Components 在Github repository的kubeflow/components/
+1. TF Job Operator and Controll 对Kubernetes的扩展，以简化分布式的TensorFlow工作负载的部署。通过使用操作符，Kubeflow能够自动配置主、worker和参数化的服务器配置。工作负载可以用TFJob部署。
+2. TF Hub 使用Jupyter Notebook运行JupyterHub实例
+3. Model Server 为客户部署一个经过训练的TensorFlow模型，以获取和使用未来的预测
+1. TF Job #获得组件列表,三大组件 ls -lha kubeflow/components/drwxr-xr-x 5 root root 4.0K Jan 4 08:32 . drwxr-xr-x 5 root root 4.0K Jan 4 08:32 .. drwxr-xr-x 4 root root 4.0K Jan 4 08:32 jupyterhub drwxr-xr-x 4 root root 4.0K Jan 4 08:32 k8s-model-server drwxr-xr-x 2 root root 4.0K Jan 4 08:32 tf-controller#将其所有部署到Kubernetes kubectl apply -f kubeflow/components/ -Rconfigmap &amp;#34;jupyterhub-config&amp;#34; created service &amp;#34;tf-hub-0&amp;#34; created statefulset &amp;#34;tf-hub&amp;#34; created role &amp;#34;edit-pod&amp;#34; created rolebinding &amp;#34;edit-pods&amp;#34; created service &amp;#34;tf-hub-lb&amp;#34; created deployment &amp;#34;model-server&amp;#34; created service &amp;#34;model-service&amp;#34; created configmap &amp;#34;tf-job-operator-config&amp;#34; created serviceaccount &amp;#34;tf-job-operator&amp;#34; created clusterrole &amp;#34;tf-job-operator&amp;#34; created clusterrolebinding &amp;#34;tf-job-operator&amp;#34; created deployment &amp;#34;tf-job-operator&amp;#34; created#部署之后，可以发现额外的pod和服务已经在运行，处理kubeflow和Tensorflow工作负载 kubectl get allNAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT AGE statefulsets/tf-hub 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME READY STATUS RESTARTS AGE po/model-server-584cf76db9-44ktg 1/1 Running 0 5m po/model-server-584cf76db9-68h7f 1/1 Running 0 5m po/model-server-584cf76db9-l7k4q 1/1 Running 0 5m po/tf-hub-0 1/1 Running 0 5m po/tf-job-operator-6f7ccdfd4d-knhvq 1/1 Running 0 5m example" />
+
+  
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Kubeflow in katacoda Sandbox" />
+    <meta name="twitter:description" content="[Kubeflow] Kubeflow Components 在Github repository的kubeflow/components/
+1. TF Job Operator and Controll 对Kubernetes的扩展，以简化分布式的TensorFlow工作负载的部署。通过使用操作符，Kubeflow能够自动配置主、worker和参数化的服务器配置。工作负载可以用TFJob部署。
+2. TF Hub 使用Jupyter Notebook运行JupyterHub实例
+3. Model Server 为客户部署一个经过训练的TensorFlow模型，以获取和使用未来的预测
+1. TF Job #获得组件列表,三大组件 ls -lha kubeflow/components/drwxr-xr-x 5 root root 4.0K Jan 4 08:32 . drwxr-xr-x 5 root root 4.0K Jan 4 08:32 .. drwxr-xr-x 4 root root 4.0K Jan 4 08:32 jupyterhub drwxr-xr-x 4 root root 4.0K Jan 4 08:32 k8s-model-server drwxr-xr-x 2 root root 4.0K Jan 4 08:32 tf-controller#将其所有部署到Kubernetes kubectl apply -f kubeflow/components/ -Rconfigmap &amp;#34;jupyterhub-config&amp;#34; created service &amp;#34;tf-hub-0&amp;#34; created statefulset &amp;#34;tf-hub&amp;#34; created role &amp;#34;edit-pod&amp;#34; created rolebinding &amp;#34;edit-pods&amp;#34; created service &amp;#34;tf-hub-lb&amp;#34; created deployment &amp;#34;model-server&amp;#34; created service &amp;#34;model-service&amp;#34; created configmap &amp;#34;tf-job-operator-config&amp;#34; created serviceaccount &amp;#34;tf-job-operator&amp;#34; created clusterrole &amp;#34;tf-job-operator&amp;#34; created clusterrolebinding &amp;#34;tf-job-operator&amp;#34; created deployment &amp;#34;tf-job-operator&amp;#34; created#部署之后，可以发现额外的pod和服务已经在运行，处理kubeflow和Tensorflow工作负载 kubectl get allNAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT AGE statefulsets/tf-hub 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME READY STATUS RESTARTS AGE po/model-server-584cf76db9-44ktg 1/1 Running 0 5m po/model-server-584cf76db9-68h7f 1/1 Running 0 5m po/model-server-584cf76db9-l7k4q 1/1 Running 0 5m po/tf-hub-0 1/1 Running 0 5m po/tf-job-operator-6f7ccdfd4d-knhvq 1/1 Running 0 5m example" />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/avatar.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Kubeflow in katacoda Sandbox" />
+  <meta property="og:description" content="[Kubeflow] Kubeflow Components 在Github repository的kubeflow/components/
+1. TF Job Operator and Controll 对Kubernetes的扩展，以简化分布式的TensorFlow工作负载的部署。通过使用操作符，Kubeflow能够自动配置主、worker和参数化的服务器配置。工作负载可以用TFJob部署。
+2. TF Hub 使用Jupyter Notebook运行JupyterHub实例
+3. Model Server 为客户部署一个经过训练的TensorFlow模型，以获取和使用未来的预测
+1. TF Job #获得组件列表,三大组件 ls -lha kubeflow/components/drwxr-xr-x 5 root root 4.0K Jan 4 08:32 . drwxr-xr-x 5 root root 4.0K Jan 4 08:32 .. drwxr-xr-x 4 root root 4.0K Jan 4 08:32 jupyterhub drwxr-xr-x 4 root root 4.0K Jan 4 08:32 k8s-model-server drwxr-xr-x 2 root root 4.0K Jan 4 08:32 tf-controller#将其所有部署到Kubernetes kubectl apply -f kubeflow/components/ -Rconfigmap &amp;#34;jupyterhub-config&amp;#34; created service &amp;#34;tf-hub-0&amp;#34; created statefulset &amp;#34;tf-hub&amp;#34; created role &amp;#34;edit-pod&amp;#34; created rolebinding &amp;#34;edit-pods&amp;#34; created service &amp;#34;tf-hub-lb&amp;#34; created deployment &amp;#34;model-server&amp;#34; created service &amp;#34;model-service&amp;#34; created configmap &amp;#34;tf-job-operator-config&amp;#34; created serviceaccount &amp;#34;tf-job-operator&amp;#34; created clusterrole &amp;#34;tf-job-operator&amp;#34; created clusterrolebinding &amp;#34;tf-job-operator&amp;#34; created deployment &amp;#34;tf-job-operator&amp;#34; created#部署之后，可以发现额外的pod和服务已经在运行，处理kubeflow和Tensorflow工作负载 kubectl get allNAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT AGE statefulsets/tf-hub 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME READY STATUS RESTARTS AGE po/model-server-584cf76db9-44ktg 1/1 Running 0 5m po/model-server-584cf76db9-68h7f 1/1 Running 0 5m po/model-server-584cf76db9-l7k4q 1/1 Running 0 5m po/tf-hub-0 1/1 Running 0 5m po/tf-job-operator-6f7ccdfd4d-knhvq 1/1 Running 0 5m example" />
+  <meta property="og:url" content="https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.31.1" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kubeflow in katacoda Sandbox</h1>
+      <p class="post-meta">@Xieydd · Jan 19, 2018 · 7 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="kubeflow">[Kubeflow]</h1>
+
+<h3 id="kubeflow-components">Kubeflow Components</h3>
+
+<p>在<a href="https://github.com/google/kubeflow">Github repository</a>的kubeflow/components/</p>
+
+<h5 id="1-tf-job-operator-and-controll">1. TF Job Operator and Controll</h5>
+
+<p>对Kubernetes的扩展，以简化分布式的TensorFlow工作负载的部署。通过使用操作符，Kubeflow能够自动配置主、worker和参数化的服务器配置。工作负载可以用TFJob部署。</p>
+
+<h5 id="2-tf-hub">2. TF Hub</h5>
+
+<p>使用Jupyter Notebook运行JupyterHub实例</p>
+
+<h5 id="3-model-server">3. Model Server</h5>
+
+<p>为客户部署一个经过训练的TensorFlow模型，以获取和使用未来的预测</p>
+
+<h4 id="1-tf-job">1. TF Job</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#获得组件列表,三大组件</span>
+ls <span style="color:#f92672">-</span>lha kubeflow<span style="color:#f92672">/</span>components<span style="color:#f92672">/</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">drwxr<span style="color:#f92672">-</span>xr<span style="color:#f92672">-</span>x <span style="color:#ae81ff">5</span> root root <span style="color:#ae81ff">4.0</span>K Jan  <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">32</span> <span style="color:#f92672">.</span>
+drwxr<span style="color:#f92672">-</span>xr<span style="color:#f92672">-</span>x <span style="color:#ae81ff">5</span> root root <span style="color:#ae81ff">4.0</span>K Jan  <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">32</span> <span style="color:#f92672">..</span>
+drwxr<span style="color:#f92672">-</span>xr<span style="color:#f92672">-</span>x <span style="color:#ae81ff">4</span> root root <span style="color:#ae81ff">4.0</span>K Jan  <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">32</span> jupyterhub
+drwxr<span style="color:#f92672">-</span>xr<span style="color:#f92672">-</span>x <span style="color:#ae81ff">4</span> root root <span style="color:#ae81ff">4.0</span>K Jan  <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">32</span> k8s<span style="color:#f92672">-</span>model<span style="color:#f92672">-</span>server
+drwxr<span style="color:#f92672">-</span>xr<span style="color:#f92672">-</span>x <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4.0</span>K Jan  <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">32</span> tf<span style="color:#f92672">-</span>controller</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#将其所有部署到Kubernetes</span>
+kubectl apply <span style="color:#f92672">-</span>f kubeflow<span style="color:#f92672">/</span>components<span style="color:#f92672">/</span> <span style="color:#f92672">-</span>R</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">configmap <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;jupyterhub-config&#34;</span> created
+service <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-hub-0&#34;</span> created
+statefulset <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-hub&#34;</span> created
+role <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;edit-pod&#34;</span> created
+rolebinding <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;edit-pods&#34;</span> created
+service <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-hub-lb&#34;</span> created
+deployment <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;model-server&#34;</span> created
+service <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;model-service&#34;</span> created
+configmap <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-job-operator-config&#34;</span> created
+serviceaccount <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-job-operator&#34;</span> created
+clusterrole <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-job-operator&#34;</span> created
+clusterrolebinding <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-job-operator&#34;</span> created
+deployment <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tf-job-operator&#34;</span> created</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#部署之后，可以发现额外的pod和服务已经在运行，处理kubeflow和Tensorflow工作负载</span>
+kubectl get all</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">NAME                     DESIRED   CURRENT   UP<span style="color:#f92672">-</span>TO<span style="color:#f92672">-</span>DATE   AVAILABLE   AGE
+deploy<span style="color:#f92672">/</span>model<span style="color:#f92672">-</span>server      <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>            <span style="color:#ae81ff">3</span>           <span style="color:#ae81ff">5</span>m
+deploy<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>operator   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           <span style="color:#ae81ff">5</span>m
+
+NAME                            DESIRED   CURRENT   READY     AGE
+rs<span style="color:#f92672">/</span>model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9      <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">5</span>m
+rs<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>operator<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>f7ccdfd4d   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">5</span>m
+
+NAME                     DESIRED   CURRENT   UP<span style="color:#f92672">-</span>TO<span style="color:#f92672">-</span>DATE   AVAILABLE   AGE
+deploy<span style="color:#f92672">/</span>model<span style="color:#f92672">-</span>server      <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>            <span style="color:#ae81ff">3</span>           <span style="color:#ae81ff">5</span>m
+deploy<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>operator   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           <span style="color:#ae81ff">5</span>m
+
+NAME                  DESIRED   CURRENT   AGE
+statefulsets<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>hub   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">5</span>m
+
+NAME                            DESIRED   CURRENT   READY     AGE
+rs<span style="color:#f92672">/</span>model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9      <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">5</span>m
+rs<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>operator<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>f7ccdfd4d   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">5</span>m
+
+NAME                                  READY     STATUS    RESTARTS   AGE
+po<span style="color:#f92672">/</span>model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span><span style="color:#ae81ff">44</span>ktg      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">5</span>m
+po<span style="color:#f92672">/</span>model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span><span style="color:#ae81ff">68</span>h7f      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">5</span>m
+po<span style="color:#f92672">/</span>model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span>l7k4q      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">5</span>m
+po<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>hub<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>                           <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">5</span>m
+po<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>operator<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>f7ccdfd4d<span style="color:#f92672">-</span>knhvq   <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">5</span>m</code></pre></div>
+<p><a href="https://github.com/tensorflow/k8s/tree/master/examples/tf_sample">example</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#我们将要部署一个使用Tensorflow实现矩阵乘法，在已经定义的work服务器和parameter服务器</span>
+<span style="color:#75715e">#主要执行代码如下:</span>
+<span style="color:#66d9ef">for</span> job_name <span style="color:#f92672">in</span> cluster_spec<span style="color:#f92672">.</span>keys():
+  <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(cluster_spec[job_name])):
+    d <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;/job:{0}/task:{1}&#34;</span><span style="color:#f92672">.</span>format(job_name, i)
+    <span style="color:#66d9ef">with</span> tf<span style="color:#f92672">.</span>device(d):
+      a <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>constant(range(width <span style="color:#f92672">*</span> height), shape<span style="color:#f92672">=</span>[height, width])
+      b <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>constant(range(width <span style="color:#f92672">*</span> height), shape<span style="color:#f92672">=</span>[height, width])
+      c <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>multiply(a, b)
+      results<span style="color:#f92672">.</span>append(c)</code></pre></div>
+<p>TfJob提供了一个Kubeflow自定义资源，它使得在Kubernetes上运行分布式或非分布式的TensorFlow作业变得容易。TFJob控制器接受一个YAML规范，用于主、参数服务器和工作人员来帮助运行分布式计算</p>
+
+<p>一个自定义资源定义(CRD)提供了以相同的方式创建和管理TF作业的能力，就像内置的Kubernetes资源一样。一旦部署完毕，CRD可以配置TensorFlow作业，允许用户关注机器学习而不是基础设施</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#创建TFJob部署定义,要部署前面步骤中描述的TensorFlow工作负载，Kubeflow需要一个TFJob定义</span>
+cat example<span style="color:#f92672">.</span>yaml
+<span style="color:#75715e">#部署TFJob</span>
+kubectl apply <span style="color:#f92672">-</span>f example<span style="color:#f92672">.</span>yaml
+<span style="color:#75715e">#tfjob &#34;example-job&#34; created</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">apiVersion: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;tensorflow.org/v1alpha1&#34;</span>
+kind: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;TfJob&#34;</span>
+metadata:
+  name: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;example-job&#34;</span>
+spec:
+  replicaSpecs:
+    <span style="color:#f92672">-</span> replicas: <span style="color:#ae81ff">1</span>
+      tfReplicaType: MASTER
+      template:
+        spec:
+          containers:
+            <span style="color:#f92672">-</span> image: gcr<span style="color:#f92672">.</span>io<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>on<span style="color:#f92672">-</span>k8s<span style="color:#f92672">-</span>dogfood<span style="color:#f92672">/</span>tf_sample:dc944ff
+              name: tensorflow
+          restartPolicy: OnFailure
+    <span style="color:#f92672">-</span> replicas: <span style="color:#ae81ff">1</span>
+      tfReplicaType: WORKER
+      template:
+        spec:
+          containers:
+            <span style="color:#f92672">-</span> image: gcr<span style="color:#f92672">.</span>io<span style="color:#f92672">/</span>tf<span style="color:#f92672">-</span>on<span style="color:#f92672">-</span>k8s<span style="color:#f92672">-</span>dogfood<span style="color:#f92672">/</span>tf_sample:dc944ff
+              name: tensorflow
+          restartPolicy: OnFailure
+    <span style="color:#f92672">-</span> replicas: <span style="color:#ae81ff">2</span>
+      tfReplicaType: PS</code></pre></div>
+<ul>
+<li>每一个Job需要一个master，协调work之间的操作<br/></li>
+<li>每一个Job可以有多个worker运行相同的模型，参数服务器提供参数<br/></li>
+<li>每一个Job多个参数服务器，参数服务器允许您在多台机器上拓展你的模型</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> kubectl get job
+
+<span style="color:#75715e">#一个master，一个worker，两个ps</span>
+NAME                        DESIRED   SUCCESSFUL   AGE
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>master<span style="color:#f92672">-</span>vnkh<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">34</span>s
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>vnkh<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">0</span>            <span style="color:#ae81ff">34</span>s
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>vnkh<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>       <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">0</span>            <span style="color:#ae81ff">34</span>s
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>worker<span style="color:#f92672">-</span>vnkh<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">0</span>            <span style="color:#ae81ff">34</span>s</code></pre></div>
+<p>Master负责协调执行和聚合结果</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> kubectl get pods <span style="color:#f92672">-</span>a <span style="color:#f92672">|</span> grep Completed
+
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>master<span style="color:#f92672">-</span>wod1<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>mlrc8    <span style="color:#ae81ff">0</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Completed   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">1</span>m</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#输出结果</span>
+<span style="color:#960050;background-color:#1e0010">$</span> kubectl logs <span style="color:#960050;background-color:#1e0010">$</span>(kubectl get pods <span style="color:#f92672">-</span>a <span style="color:#f92672">|</span> grep Completed <span style="color:#f92672">|</span> tr <span style="color:#f92672">-</span>s <span style="color:#e6db74"></span><span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">|</span> cut <span style="color:#f92672">-</span>d <span style="color:#e6db74"></span><span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">-</span>f <span style="color:#ae81ff">1</span>)</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">INFO:root:Tensorflow version: <span style="color:#ae81ff">1.3</span><span style="color:#f92672">.</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>rc2
+INFO:root:Tensorflow git version: v1<span style="color:#f92672">.</span><span style="color:#ae81ff">3.0</span><span style="color:#f92672">-</span>rc1<span style="color:#f92672">-</span><span style="color:#ae81ff">27</span><span style="color:#f92672">-</span>g2784b1c
+INFO:root:tf_config: {<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;environment&#39;</span>: <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;cloud&#39;</span>, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;cluster&#39;</span>: {<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;worker&#39;</span>: [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-worker-wod1-0:2222&#39;</span>], <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;ps&#39;</span>: [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-ps-wod1-0:2222&#39;</span>, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-ps-wod1-1:2222&#39;</span>], <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;master&#39;</span>: [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-master-wod1-0:2222&#39;</span>]}, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;task&#39;</span>: {<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;index&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;type&#39;</span>: <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;master&#39;</span>}}
+INFO:root:task: {<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;index&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;type&#39;</span>: <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;master&#39;</span>}
+INFO:root:cluster_spec: {<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;worker&#39;</span>: [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-worker-wod1-0:2222&#39;</span>], <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;ps&#39;</span>: [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-ps-wod1-0:2222&#39;</span>, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-ps-wod1-1:2222&#39;</span>], <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;master&#39;</span>: [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;example-job-master-wod1-0:2222&#39;</span>]}
+INFO:root:server_def: cluster {
+  job {
+    name: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;master&#34;</span>
+    tasks {
+      value: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;example-job-master-wod1-0:2222&#34;</span>
+    }
+  }
+  job {
+    name: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;ps&#34;</span>
+    tasks {
+      value: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;example-job-ps-wod1-0:2222&#34;</span>
+    }
+    tasks {
+      key: <span style="color:#ae81ff">1</span>
+      value: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;example-job-ps-wod1-1:2222&#34;</span>
+    }
+  }
+  job {
+    name: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;worker&#34;</span>
+    tasks {
+      value: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;example-job-worker-wod1-0:2222&#34;</span>
+    }
+  }
+}
+job_name: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;master&#34;</span>
+protocol: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;grpc&#34;</span>
+
+INFO:root:Building server<span style="color:#f92672">.</span>
+<span style="color:#ae81ff">2018</span><span style="color:#f92672">-</span><span style="color:#ae81ff">01</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span> <span style="color:#ae81ff">09</span>:<span style="color:#ae81ff">28</span>:<span style="color:#ae81ff">15.095277</span>: W tensorflow<span style="color:#f92672">/</span>core<span style="color:#f92672">/</span>platform<span style="color:#f92672">/</span>cpu_feature_guard<span style="color:#f92672">.</span>cc:<span style="color:#ae81ff">45</span>] The TensorFlow library wasn<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;t compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPUcomputations.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:15.095347: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn&#39;</span>t compiled to use SSE4<span style="color:#f92672">.</span><span style="color:#ae81ff">2</span> instructions, but these are available on your machine <span style="color:#f92672">and</span> could speed up CPUcomputations<span style="color:#f92672">.</span>
+<span style="color:#ae81ff">2018</span><span style="color:#f92672">-</span><span style="color:#ae81ff">01</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span> <span style="color:#ae81ff">09</span>:<span style="color:#ae81ff">28</span>:<span style="color:#ae81ff">15.095366</span>: W tensorflow<span style="color:#f92672">/</span>core<span style="color:#f92672">/</span>platform<span style="color:#f92672">/</span>cpu_feature_guard<span style="color:#f92672">.</span>cc:<span style="color:#ae81ff">45</span>] The TensorFlow library wasn<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;t compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:15.173209: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:215] Initialize GrpcChannelCache for job master -&gt; {0 -&gt; localhost:2222}</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:15.173264: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:215] Initialize GrpcChannelCache for job ps -&gt; {0 -&gt; example-job-ps-wod1-0:2222, 1 -&gt; example-job-ps-wod1-1:2222}</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:15.173274: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:215] Initialize GrpcChannelCache for job worker -&gt; {0 -&gt; example-job-worker-wod1-0:2222}</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:15.408745: I tensorflow/core/distributed_runtime/rpc/grpc_server_lib.cc:316] Started server with target: grpc://localhost:2222</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">INFO:root:Finished building server.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">INFO:root:Running master.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">WARNING:tensorflow:From /usr/local/lib/python2.7/dist-packages/tensorflow/python/util/tf_should_use.py:175: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Instructions for updating:</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Use `tf.global_variables_initializer` instead.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">WARNING:tensorflow:From /usr/local/lib/python2.7/dist-packages/tensorflow/python/util/tf_should_use.py:175: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Instructions for updating:</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Use `tf.global_variables_initializer` instead.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">INFO:root:Server target: grpc://localhost:2222</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.296945: I tensorflow/core/distributed_runtime/master_session.cc:998] Start master session a456ec7804a3bff8 with config: log_device_placement: true</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298166: I tensorflow/core/common_runtime/simple_placer.cc:872] init: (NoOp)/job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298202: I tensorflow/core/common_runtime/simple_placer.cc:872] Mul_3: (Mul)/job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298213: I tensorflow/core/common_runtime/simple_placer.cc:872] Mul_2: (Mul)/job:ps/replica:0/task:1/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298221: I tensorflow/core/common_runtime/simple_placer.cc:872] Mul_1: (Mul)/job:ps/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298230: I tensorflow/core/common_runtime/simple_placer.cc:872] Mul: (Mul)/job:worker/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298238: I tensorflow/core/common_runtime/simple_placer.cc:872] Const_7: (Const)/job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298246: I tensorflow/core/common_runtime/simple_placer.cc:872] Const_6: (Const)/job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298254: I tensorflow/core/common_runtime/simple_placer.cc:872] Const_5: (Const)/job:ps/replica:0/task:1/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298262: I tensorflow/core/common_runtime/simple_placer.cc:872] Const_4: (Const)/job:ps/replica:0/task:1/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298270: I tensorflow/core/common_runtime/simple_placer.cc:872] Const_3: (Const)/job:ps/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298278: I tensorflow/core/common_runtime/simple_placer.cc:872] Const_2: (Const)/job:ps/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298286: I tensorflow/core/common_runtime/simple_placer.cc:872] Const_1: (Const)/job:worker/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">2018-01-04 09:28:16.298294: I tensorflow/core/common_runtime/simple_placer.cc:872] Const: (Const)/job:worker/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">INFO:root:Result: [[   0    1    4    9   16   25   36   49   64   81]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 100  121  144  169  196  225  256  289  324  361]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 400  441  484  529  576  625  676  729  784  841]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 900  961 1024 1089 1156 1225 1296 1369 1444 1521]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [1600 1681 1764 1849 1936 2025 2116 2209 2304 2401]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [2500 2601 2704 2809 2916 3025 3136 3249 3364 3481]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [3600 3721 3844 3969 4096 4225 4356 4489 4624 4761]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [4900 5041 5184 5329 5476 5625 5776 5929 6084 6241]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [6400 6561 6724 6889 7056 7225 7396 7569 7744 7921]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [8100 8281 8464 8649 8836 9025 9216 9409 9604 9801]]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">INFO:root:Result: [[   0    1    4    9   16   25   36   49   64   81]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 100  121  144  169  196  225  256  289  324  361]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 400  441  484  529  576  625  676  729  784  841]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 900  961 1024 1089 1156 1225 1296 1369 1444 1521]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [1600 1681 1764 1849 1936 2025 2116 2209 2304 2401]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [2500 2601 2704 2809 2916 3025 3136 3249 3364 3481]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [3600 3721 3844 3969 4096 4225 4356 4489 4624 4761]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [4900 5041 5184 5329 5476 5625 5776 5929 6084 6241]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [6400 6561 6724 6889 7056 7225 7396 7569 7744 7921]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [8100 8281 8464 8649 8836 9025 9216 9409 9604 9801]]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">INFO:root:Result: [[   0    1    4    9   16   25   36   49   64   81]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 100  121  144  169  196  225  256  289  324  361]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 400  441  484  529  576  625  676  729  784  841]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 900  961 1024 1089 1156 1225 1296 1369 1444 1521]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [1600 1681 1764 1849 1936 2025 2116 2209 2304 2401]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [2500 2601 2704 2809 2916 3025 3136 3249 3364 3481]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [3600 3721 3844 3969 4096 4225 4356 4489 4624 4761]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [4900 5041 5184 5329 5476 5625 5776 5929 6084 6241]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [6400 6561 6724 6889 7056 7225 7396 7569 7744 7921]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [8100 8281 8464 8649 8836 9025 9216 9409 9604 9801]]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">INFO:root:Result: [[   0    1    4    9   16   25   36   49   64   81]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 100  121  144  169  196  225  256  289  324  361]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 400  441  484  529  576  625  676  729  784  841]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [ 900  961 1024 1089 1156 1225 1296 1369 1444 1521]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [1600 1681 1764 1849 1936 2025 2116 2209 2304 2401]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [2500 2601 2704 2809 2916 3025 3136 3249 3364 3481]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [3600 3721 3844 3969 4096 4225 4356 4489 4624 4761]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [4900 5041 5184 5329 5476 5625 5776 5929 6084 6241]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [6400 6561 6724 6889 7056 7225 7396 7569 7744 7921]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74"> [8100 8281 8464 8649 8836 9025 9216 9409 9604 9801]]</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">init: (NoOp): /job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Mul_3: (Mul): /job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Mul_2: (Mul): /job:ps/replica:0/task:1/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Mul_1: (Mul): /job:ps/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Mul: (Mul): /job:worker/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const_7: (Const): /job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const_6: (Const): /job:master/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const_5: (Const): /job:ps/replica:0/task:1/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const_4: (Const): /job:ps/replica:0/task:1/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const_3: (Const): /job:ps/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const_2: (Const): /job:ps/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const_1: (Const): /job:worker/replica:0/task:0/cpu:0</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">Const: (Const): /job:worker/replica:0/task:0/cpu:0</span></code></pre></div>
+<h4 id="2-部署jupyterhub">2. 部署JupyterHub</h4>
+
+<p>Kubeflow的第二个关键组件是通过JupyterHub运行Jupyter笔记本的能力。Jupyter笔记本是一个经典的数据科学工具，可以在浏览器中记录过程中运行内联脚本和代码片段</p>
+
+<p>在KubeFlow中，JupyterHub被部署到Kubernetes集群中。你可以找到负载均衡器IP地址</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">NAME                        TYPE           CLUSTER<span style="color:#f92672">-</span>IP       EXTERNAL<span style="color:#f92672">-</span>IP               PORT(S)          AGE
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>master<span style="color:#f92672">-</span>wod1<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>   ClusterIP      <span style="color:#ae81ff">10.109</span><span style="color:#f92672">.</span><span style="color:#ae81ff">163.190</span>   <span style="color:#f92672">&lt;</span>none<span style="color:#f92672">&gt;</span>                    <span style="color:#ae81ff">2222</span><span style="color:#f92672">/</span>TCP         <span style="color:#ae81ff">20</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>wod1<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>       ClusterIP      <span style="color:#ae81ff">10.103</span><span style="color:#f92672">.</span><span style="color:#ae81ff">36.252</span>    <span style="color:#f92672">&lt;</span>none<span style="color:#f92672">&gt;</span>                    <span style="color:#ae81ff">2222</span><span style="color:#f92672">/</span>TCP         <span style="color:#ae81ff">20</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>wod1<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>       ClusterIP      <span style="color:#ae81ff">10.104</span><span style="color:#f92672">.</span><span style="color:#ae81ff">142.107</span>   <span style="color:#f92672">&lt;</span>none<span style="color:#f92672">&gt;</span>                    <span style="color:#ae81ff">2222</span><span style="color:#f92672">/</span>TCP         <span style="color:#ae81ff">20</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>worker<span style="color:#f92672">-</span>wod1<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>   ClusterIP      <span style="color:#ae81ff">10.97</span><span style="color:#f92672">.</span><span style="color:#ae81ff">223.250</span>    <span style="color:#f92672">&lt;</span>none<span style="color:#f92672">&gt;</span>                    <span style="color:#ae81ff">2222</span><span style="color:#f92672">/</span>TCP         <span style="color:#ae81ff">20</span>m
+kubernetes                  ClusterIP      <span style="color:#ae81ff">10.96</span><span style="color:#f92672">.</span><span style="color:#ae81ff">0.1</span>        <span style="color:#f92672">&lt;</span>none<span style="color:#f92672">&gt;</span>                    <span style="color:#ae81ff">443</span><span style="color:#f92672">/</span>TCP          <span style="color:#ae81ff">23</span>m
+model<span style="color:#f92672">-</span>service               LoadBalancer   <span style="color:#ae81ff">10.101</span><span style="color:#f92672">.</span><span style="color:#ae81ff">77.78</span>     <span style="color:#f92672">&lt;</span>pending<span style="color:#f92672">&gt;</span>                 <span style="color:#ae81ff">9000</span>:<span style="color:#ae81ff">30205</span><span style="color:#f92672">/</span>TCP   <span style="color:#ae81ff">20</span>m
+tf<span style="color:#f92672">-</span>hub<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>                    ClusterIP      None             <span style="color:#f92672">&lt;</span>none<span style="color:#f92672">&gt;</span>                    <span style="color:#ae81ff">8000</span><span style="color:#f92672">/</span>TCP         <span style="color:#ae81ff">20</span>m
+tf<span style="color:#f92672">-</span>hub<span style="color:#f92672">-</span>lb                   LoadBalancer   <span style="color:#ae81ff">10.102</span><span style="color:#f92672">.</span><span style="color:#ae81ff">253.132</span>   <span style="color:#ae81ff">172.17</span><span style="color:#f92672">.</span><span style="color:#ae81ff">0.25</span>,<span style="color:#ae81ff">172.17</span><span style="color:#f92672">.</span><span style="color:#ae81ff">0.74</span>   <span style="color:#ae81ff">80</span>:<span style="color:#ae81ff">32286</span><span style="color:#f92672">/</span>TCP     <span style="color:#ae81ff">20</span>m</code></pre></div>
+<p>注意需要当前的Kubernetes环境运行<br/>
+打开<a href="https://2886795293-80-frugo01.environments.katacoda.com">Jupyter Notebook</a><br/> &ndash;&gt; start my server &ndash;&gt;配置镜像(gcr.io/kubeflow/tensorflow-notebook-cpu:v1)、CPU、GPU
+账号:admin 密码:空</p>
+
+<p>服务器启动器允许您配置其他选项，比如资源需求。在这种情况下，接受默认值并单击生成服务器启动服务器。现在，您可以看到Docker映像的内容，您可以使用它进行导航、扩展和使用Jupyter笔记本</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> kubectl get pod 
+
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>ukca<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>znrsq        <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">6</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>ukca<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span>nrcpc        <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">6</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>worker<span style="color:#f92672">-</span>ukca<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>kzllg    <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">6</span>m
+jupyter<span style="color:#f92672">-</span>admin                      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">1</span>m
+model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span>jftr2      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">7</span>m
+model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span>kqz2w      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">7</span>m
+model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span>mxljz      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">7</span>m
+tf<span style="color:#f92672">-</span>hub<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>                           <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">7</span>m
+tf<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>operator<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>f7ccdfd4d<span style="color:#f92672">-</span>smwkg   <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">7</span>m</code></pre></div>
+<h4 id="3-model-server-1">3. Model Server</h4>
+
+<p>最后一个组件是模型服务器。一旦经过训练，模型就可以用于对新数据发布时的预测。通过使用Kubeflow，可以通过将工作部署到Kubernetes的基础设施来访问服务器。</p>
+
+<ul>
+<li>Example：Image Classification</li>
+<li>Model:pre-train <a href="https://github.com/tensorflow/models/tree/master/research/inception">Inception V3</a></li>
+<li>DataSet: <a href="http://www.image-net.org/">ImageNet</a> dataset</li>
+</ul>
+
+<p>为了使用已经发布的模型，需要一个客户端</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cat model<span style="color:#f92672">-</span>client<span style="color:#f92672">-</span>job<span style="color:#f92672">.</span>yaml
+
+apiVersion: batch<span style="color:#f92672">/</span>v1
+kind: Job
+metadata:
+  name: model<span style="color:#f92672">-</span>client<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>katacoda
+spec:
+  template:
+    metadata:
+      name: model<span style="color:#f92672">-</span>client<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>katacoda
+    spec:
+      containers:
+      <span style="color:#f92672">-</span> name: model<span style="color:#f92672">-</span>client<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>katacoda
+        image: katacoda<span style="color:#f92672">/</span>tensorflow_serving
+        imagePullPolicy: Never
+        command:
+        <span style="color:#f92672">-</span> <span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>bash
+        <span style="color:#f92672">-</span> <span style="color:#f92672">-</span>c
+        args:
+        <span style="color:#f92672">-</span> <span style="color:#f92672">/</span>serving<span style="color:#f92672">/</span>bazel<span style="color:#f92672">-</span>bin<span style="color:#f92672">/</span>tensorflow_serving<span style="color:#f92672">/</span>example<span style="color:#f92672">/</span>inception_client
+          <span style="color:#f92672">--</span>server<span style="color:#f92672">=</span>model<span style="color:#f92672">-</span>service:<span style="color:#ae81ff">9000</span> <span style="color:#f92672">--</span>image<span style="color:#f92672">=/</span>data<span style="color:#f92672">/</span>katacoda<span style="color:#f92672">.</span>jpg
+        volumeMounts:
+        <span style="color:#f92672">-</span> name: inception<span style="color:#f92672">-</span>persistent<span style="color:#f92672">-</span>storage<span style="color:#f92672">-</span>katacoda
+          mountPath: <span style="color:#f92672">/</span>data
+      volumes:
+      <span style="color:#f92672">-</span> name: inception<span style="color:#f92672">-</span>persistent<span style="color:#f92672">-</span>storage<span style="color:#f92672">-</span>katacoda
+        hostPath:
+          path: <span style="color:#f92672">/</span>root
+      restartPolicy: Never</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> kubectl apply <span style="color:#f92672">-</span>f model<span style="color:#f92672">-</span>client<span style="color:#f92672">-</span>job<span style="color:#f92672">.</span>yaml
+
+job <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;model-client-job-katacoda&#34;</span> created</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> kubectl get pods <span style="color:#f92672">-</span>a
+
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>master<span style="color:#f92672">-</span>ukca<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>th6k    <span style="color:#ae81ff">0</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Completed   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>ukca<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>znrsq        <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>ps<span style="color:#f92672">-</span>ukca<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span>nrcpc        <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+example<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>worker<span style="color:#f92672">-</span>ukca<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>kzllg    <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+jupyter<span style="color:#f92672">-</span>admin                      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">15</span>m
+model<span style="color:#f92672">-</span>client<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>katacoda<span style="color:#f92672">-</span>g99z5    <span style="color:#ae81ff">0</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Completed   <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">2</span>m
+model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span>jftr2      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span>kqz2w      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+model<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span><span style="color:#ae81ff">584</span>cf76db9<span style="color:#f92672">-</span>mxljz      <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+tf<span style="color:#f92672">-</span>hub<span style="color:#f92672">-</span><span style="color:#ae81ff">0</span>                           <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m
+tf<span style="color:#f92672">-</span>job<span style="color:#f92672">-</span>operator<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>f7ccdfd4d<span style="color:#f92672">-</span>smwkg   <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>       Running     <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">21</span>m</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#获得分类的结果</span>
+<span style="color:#960050;background-color:#1e0010">$</span> kubectl logs <span style="color:#960050;background-color:#1e0010">$</span>(kubectl get pods <span style="color:#f92672">-</span>a <span style="color:#f92672">|</span> grep Completed <span style="color:#f92672">|</span> tail <span style="color:#f92672">-</span>n1 <span style="color:#f92672">|</span>  tr <span style="color:#f92672">-</span>s <span style="color:#e6db74"></span><span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">|</span> cut <span style="color:#f92672">-</span>d <span style="color:#e6db74"></span><span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">-</span>f <span style="color:#ae81ff">1</span>)
+
+D0104 <span style="color:#ae81ff">12</span>:<span style="color:#ae81ff">30</span>:<span style="color:#ae81ff">26.469023378</span>       <span style="color:#ae81ff">1</span> ev_posix<span style="color:#f92672">.</span>c:<span style="color:#ae81ff">101</span>]             Using polling engine: poll
+E0104 <span style="color:#ae81ff">12</span>:<span style="color:#ae81ff">30</span>:<span style="color:#ae81ff">31.814090953</span>       <span style="color:#ae81ff">1</span> chttp2_transport<span style="color:#f92672">.</span>c:<span style="color:#ae81ff">1810</span>]    close_transport: {<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;created&#34;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;@1515069031.814058789&#34;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;description&#34;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;FD shutdown&#34;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;file&#34;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;src/core/lib/iomgr/ev_poll_posix.c&#34;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;file_line&#34;</span>:<span style="color:#ae81ff">427</span>}
+outputs {
+  key: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;classes&#34;</span>
+  value {
+    dtype: DT_STRING
+    tensor_shape {
+      dim {
+        size: <span style="color:#ae81ff">1</span>
+      }
+      dim {
+        size: <span style="color:#ae81ff">5</span>
+      }
+    }
+    string_val: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;comic book&#34;</span>
+    string_val: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;rubber eraser, rubber, pencil eraser&#34;</span>
+    string_val: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;coffee mug&#34;</span>
+    string_val: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;pencil sharpener&#34;</span>
+    string_val: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;envelope&#34;</span>
+  }
+}
+outputs {
+  key: <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;scores&#34;</span>
+  value {
+    dtype: DT_FLOAT
+    tensor_shape {
+      dim {
+        size: <span style="color:#ae81ff">1</span>
+      }
+      dim {
+        size: <span style="color:#ae81ff">5</span>
+      }
+    }
+    float_val: <span style="color:#ae81ff">8.31655883789</span>
+    float_val: <span style="color:#ae81ff">5.18350791931</span>
+    float_val: <span style="color:#ae81ff">4.77944898605</span>
+    float_val: <span style="color:#ae81ff">4.31814956665</span>
+    float_val: <span style="color:#ae81ff">4.29243946075</span>
+  }
+}</code></pre></div></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="https://xieydd.github.io/tags/kubeflow"><span class="tag">Kubeflow</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/katacoda"><span class="tag">Katacoda</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>

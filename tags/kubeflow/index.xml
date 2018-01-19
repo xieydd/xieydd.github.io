@@ -7,10 +7,23 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
-    <lastBuildDate>Thu, 04 Jan 2018 10:29:37 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 19 Jan 2018 15:32:44 +0800</lastBuildDate>
     
 	<atom:link href="https://xieydd.github.io/tags/kubeflow/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubeflow in katacoda Sandbox</title>
+      <link>https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/</link>
+      <pubDate>Fri, 19 Jan 2018 15:32:44 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/</guid>
+      <description>[Kubeflow] Kubeflow Components 在Github repository的kubeflow/components/
+1. TF Job Operator and Controll 对Kubernetes的扩展，以简化分布式的TensorFlow工作负载的部署。通过使用操作符，Kubeflow能够自动配置主、worker和参数化的服务器配置。工作负载可以用TFJob部署。
+2. TF Hub 使用Jupyter Notebook运行JupyterHub实例
+3. Model Server 为客户部署一个经过训练的TensorFlow模型，以获取和使用未来的预测
+1. TF Job #获得组件列表,三大组件 ls -lha kubeflow/components/drwxr-xr-x 5 root root 4.0K Jan 4 08:32 . drwxr-xr-x 5 root root 4.0K Jan 4 08:32 .. drwxr-xr-x 4 root root 4.0K Jan 4 08:32 jupyterhub drwxr-xr-x 4 root root 4.0K Jan 4 08:32 k8s-model-server drwxr-xr-x 2 root root 4.0K Jan 4 08:32 tf-controller#将其所有部署到Kubernetes kubectl apply -f kubeflow/components/ -Rconfigmap &amp;#34;jupyterhub-config&amp;#34; created service &amp;#34;tf-hub-0&amp;#34; created statefulset &amp;#34;tf-hub&amp;#34; created role &amp;#34;edit-pod&amp;#34; created rolebinding &amp;#34;edit-pods&amp;#34; created service &amp;#34;tf-hub-lb&amp;#34; created deployment &amp;#34;model-server&amp;#34; created service &amp;#34;model-service&amp;#34; created configmap &amp;#34;tf-job-operator-config&amp;#34; created serviceaccount &amp;#34;tf-job-operator&amp;#34; created clusterrole &amp;#34;tf-job-operator&amp;#34; created clusterrolebinding &amp;#34;tf-job-operator&amp;#34; created deployment &amp;#34;tf-job-operator&amp;#34; created#部署之后，可以发现额外的pod和服务已经在运行，处理kubeflow和Tensorflow工作负载 kubectl get allNAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT AGE statefulsets/tf-hub 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME READY STATUS RESTARTS AGE po/model-server-584cf76db9-44ktg 1/1 Running 0 5m po/model-server-584cf76db9-68h7f 1/1 Running 0 5m po/model-server-584cf76db9-l7k4q 1/1 Running 0 5m po/tf-hub-0 1/1 Running 0 5m po/tf-job-operator-6f7ccdfd4d-knhvq 1/1 Running 0 5m example</description>
+    </item>
     
     <item>
       <title>Kubernetes_ML</title>

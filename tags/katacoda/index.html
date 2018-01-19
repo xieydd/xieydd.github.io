@@ -6,7 +6,7 @@
 
   
   <title>
-  Tag → kubeflow
+  Tag → katacoda
   
    | Xieydd Blog
 </title>
@@ -33,7 +33,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Xieydd Blog" />
   <meta property="og:description" content="谢远东的博客，基于Hugp和Github搭建" />
-  <meta property="og:url" content="https://xieydd.github.io/tags/kubeflow/" />
+  <meta property="og:url" content="https://xieydd.github.io/tags/katacoda/" />
   <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
 
 
@@ -42,7 +42,7 @@
 <meta name="generator" content="Hugo 0.31.1" />
 
 
-<link rel="canonical" href="https://xieydd.github.io/tags/kubeflow/" />
+<link rel="canonical" href="https://xieydd.github.io/tags/katacoda/" />
 <link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
 
 
@@ -254,41 +254,6 @@
 1. TF Job #获得组件列表,三大组件 ls -lha kubeflow/components/drwxr-xr-x 5 root root 4.0K Jan 4 08:32 . drwxr-xr-x 5 root root 4.0K Jan 4 08:32 .. drwxr-xr-x 4 root root 4.0K Jan 4 08:32 jupyterhub drwxr-xr-x 4 root root 4.0K Jan 4 08:32 k8s-model-server drwxr-xr-x 2 root root 4.0K Jan 4 08:32 tf-controller#将其所有部署到Kubernetes kubectl apply -f kubeflow/components/ -Rconfigmap &#34;jupyterhub-config&#34; created service &#34;tf-hub-0&#34; created statefulset &#34;tf-hub&#34; created role &#34;edit-pod&#34; created rolebinding &#34;edit-pods&#34; created service &#34;tf-hub-lb&#34; created deployment &#34;model-server&#34; created service &#34;model-service&#34; created configmap &#34;tf-job-operator-config&#34; created serviceaccount &#34;tf-job-operator&#34; created clusterrole &#34;tf-job-operator&#34; created clusterrolebinding &#34;tf-job-operator&#34; created deployment &#34;tf-job-operator&#34; created#部署之后，可以发现额外的pod和服务已经在运行，处理kubeflow和Tensorflow工作负载 kubectl get allNAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME DESIRED CURRENT UP-TO-DATE AVAILABLE AGE deploy/model-server 3 3 3 3 5m deploy/tf-job-operator 1 1 1 1 5m NAME DESIRED CURRENT AGE statefulsets/tf-hub 1 1 5m NAME DESIRED CURRENT READY AGE rs/model-server-584cf76db9 3 3 3 5m rs/tf-job-operator-6f7ccdfd4d 1 1 1 5m NAME READY STATUS RESTARTS AGE po/model-server-584cf76db9-44ktg 1/1 Running 0 5m po/model-server-584cf76db9-68h7f 1/1 Running 0 5m po/model-server-584cf76db9-l7k4q 1/1 Running 0 5m po/tf-hub-0 1/1 Running 0 5m po/tf-job-operator-6f7ccdfd4d-knhvq 1/1 Running 0 5m example</p>
   <footer class="post-footer">
     <a class="read-more" href="https://xieydd.github.io/post/kubeflow_in_katacoda_sandbox/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="https://xieydd.github.io/post/kubernetes_ml/" class="post-link">Kubernetes_ML</a></h3>
-    <p class="post-meta">@Xieydd · Jan 4, 2018 · 2 min read</p>
-  </header>
-  
-    <img class="post-cover" src="img/google_deepmind.jpg" alt="Kubernetes_ML">
-  
-  <p class="post-summary">[Machine Learning &#43; Kubernetes = ?]  Translate from Michael Hausenblas`s Blog
- Machine Learning  公共云服务商  Machine Learning on AWS Azure Machine Learning Studio Google Cloud AI aliyun Caicloud  开源解决方案(不限于)  R—the data scientist’s go-to workhorse 基于Python的scikit-learn、PyTorch、Numpy、pandas、and Jupyter Notebook 基于Java的机器学习系统例如：Apache Spark的MLlib和FlinkML 基于C的Tensorflow,在Github上以极快的速度上升，在2015年被Google开源。    在进行机器学习的时候会遇到什么问题? 当你在笔记本上进行机器学习，不可避免的需要分布式处理，这就意味着需要类似于GPGPUs、FPGAs这些硬件进行并行计算。但是对于一个开发人员或者数据科学家，深入了解分布式操作系统是很难的，当然现在有一些云提供这样的的环境，但是这样会将我们局限其中。
-Kubernetes 我的笔记 Kubenetes-frame
- Kuberbnetes特征 Kubernetes可以很容易地在一组服务器上以标准化的方式运行几乎任何编程语言编写的应用程序。在标准化的情况下，我的意思是，应用程序的打包、部署和操作在不同的环境下都有良好的定义和可移植性——不管你是在你的笔记本上运行一个应用，还是在公共云环境中运行。另外，Kubernetes的架构是模块化和可扩展的。
- 公有云支持Kubernetes
- Google Kubernetes Engine Azure Container Service Amazon Elastic Container Service for Kubernetes (preview) 阿里容器服务 Kubernetes版(公测中) Caicloud OpenShift     Everyone who’s into ML can confirm that north of 70% of the hard work actually is around cleaning up the data.</p>
-  <footer class="post-footer">
-    <a class="read-more" href="https://xieydd.github.io/post/kubernetes_ml/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="https://xieydd.github.io/post/new_start/" class="post-link">New_Year_Start</a></h3>
-    <p class="post-meta">@Xieydd · Dec 28, 2017 · 1 min read</p>
-  </header>
-  
-    <img class="post-cover" src="img/cover1.jpg" alt="New_Year_Start">
-  
-  <p class="post-summary"> 新一年的开始… 新的一年要做的事情(最重要的事放最后面…)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于Apple MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 发表小论文以及着手准备大论文 强化对Java和Python语言的理解… 健身、健身、健身…… 2018最重要的就是和张哈哈把小窝搭起来，haha…  </p>
-  <footer class="post-footer">
-    <a class="read-more" href="https://xieydd.github.io/post/new_start/">Read More →</a>
   </footer>
 </article>
 

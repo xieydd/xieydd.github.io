@@ -275,7 +275,7 @@ solr/Elasticsearch 核心上是一种符号信息检索(symbolic information ret
 <h1 id="使用tensorflow构造跨语言端对端商品搜索">[使用Tensorflow构造跨语言端对端商品搜索]</h1>
 
 <blockquote>
-<p>Translator form Han Xiao`s Blog</p>
+<p>Translator form <a href="https://hanxiao.github.io/">Han Xiao`s Blog</a></p>
 </blockquote>
 
 <h3 id="背景">背景</h3>
@@ -450,6 +450,8 @@ q_r <span style="color:#f92672">=</span> get_last_output_dRNN(input<span style="
 <h5 id="度量和损失层">度量和损失层</h5>
 
 <p>在查询产品对所有三个编码器进行访问之后，就可以获得查询的向量表示q、图像表示u和产品的属性表示v。现在是把它们挤进一个共同的潜在空间的时候了。在度规层中，我们需要一个相似函数m它给正对的值大于负对例如:m(q,u+,v+) &gt; m(q,u-,v-)。m(q,u+,v+)的绝对值不会影响我们。我们只关心正和负对的相对距离。事实上，一个更大的差异对我们来说更好，因为正和负对的更清晰的分离可以增强系统的泛化能力。因此，我们需要一个损失函数l与m(q,u+,v+)和m(q,u-,v-)的距离成反比。通过将q(148维)分成q_img(128维)和q_attr(20维)，我们最小化这个:</p>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
 
 <p>$$
 {\begin{align}&amp;\sum<em>{\begin{array}{c} 0&lt;i&lt;N\ 0&lt;j&lt;|q</em>{i}^{+}| \ 0&lt;k&lt;|q_{i}^{-}|\end{array}}\lambda \ell\left(m(q^{\mathrm{img}}<em>i, u</em>{i,j}^{+}), m(q^{\mathrm{img}}<em>i, u</em>{i,k}^{-})\right) \ &amp;+ (1-\lambda)\ell\left(m(q^{\mathrm{attr}}<em>i, v</em>{i,j}^{+}), m(q^{\mathrm{attr}}<em>i, v</em>{i,k}^{-})\right),\end{align}}

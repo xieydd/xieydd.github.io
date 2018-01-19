@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kube Shell on Xieydd Blog</title>
+    <link>https://xieydd.github.io/tags/kube-shell/</link>
+    <description>Recent content in Kube Shell on Xieydd Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
+    <lastBuildDate>Thu, 18 Jan 2018 17:54:01 +0800</lastBuildDate>
+    
+	<atom:link href="https://xieydd.github.io/tags/kube-shell/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Kubernetes_tools</title>
+      <link>https://xieydd.github.io/post/kubernetes_tools/</link>
+      <pubDate>Thu, 18 Jan 2018 17:54:01 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/kubernetes_tools/</guid>
+      <description>[Kubernetes的一些实用工具] 1.Kubectl工具 [图片-Kubectl增强工具 &amp;mdash;来自于网络]
+ kubectx：用于切换kubernetes context kube-ps1：为命令行终端增加$PROMPT字段 kube-shell：交互式带命令提示的kubectl终端  kube-shell 特别推荐开源项目kube-shell可以为kubectl提供自动的命令提示和补全
+Kube-shell有以下特性：
+ 命令提示，给出命令的使用说明 自动补全，列出可选命令并可以通过tab键自动补全，支持模糊搜索 高亮 使用tab键可以列出可选的对象 vim模式  安装:
+$ pip install kube-shell --user -U 安装遇到问题:
+#提示报警说python2的低版本不支持kube-shell #更新python为3.6.1 #安装目录为~/home/xyd/export/software/ $ wget https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tar.xz $ xz -d Python-3.6.1.tar.xz $ tar xvf Python-3.6.1.tar #编译并安装 $ mkdir /usr/local/python3 $ cd Python-3.6.1 $ sudo ./configure --prefix=/usr/local/python3 --enable-optimizations #发现报错,没有安装GCC套件 configure: error: in `/root/expert/software/Python-3.6.1&amp;#39;:configure: error: no acceptable C compiler found in $PATHSee `config.log&amp;#39; for more details $ yum install gcc #重新运行 $ sudo .</description>
+    </item>
+    
+  </channel>
+</rss>
