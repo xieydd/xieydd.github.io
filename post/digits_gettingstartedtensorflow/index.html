@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>DIGITS Getting Started Tensorflow</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
+ 帮助函数 在Tensorboard中进行可视化   例子
+ 简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
+  在DIGITS中启用对TensorFlow的支持 如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入
+如果DIGITS不支持tensorflow将会打印出TensorFlow support is disabled
+在DIGITS中建立模型的时候选择Tensorflow 在模型建立页，点击&amp;rdquo;Tensorflow&amp;rdquo;
+[图片-使用TensorFlow建立模型 &amp;mdash;来自于DIGITS]
+在DIGITS中定义TensorFlow模型 未来定义一个Tensorflow模型在DIGITS，你需要写一个python类遵循以下模板
+class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def inference(self): # Your code here return model @model_property#with tf.variable_scope(digits.GraphKeys.MODEL, reuse=None): def loss(self): # Your code here return loss 就像LeNet-5模型,由Yann Lecn创造的对数字进行识别分类的模型" />
+
+  
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="DIGITS Getting Started Tensorflow" />
+    <meta name="twitter:description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
+ 帮助函数 在Tensorboard中进行可视化   例子
+ 简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
+  在DIGITS中启用对TensorFlow的支持 如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入
+如果DIGITS不支持tensorflow将会打印出TensorFlow support is disabled
+在DIGITS中建立模型的时候选择Tensorflow 在模型建立页，点击&amp;rdquo;Tensorflow&amp;rdquo;
+[图片-使用TensorFlow建立模型 &amp;mdash;来自于DIGITS]
+在DIGITS中定义TensorFlow模型 未来定义一个Tensorflow模型在DIGITS，你需要写一个python类遵循以下模板
+class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def inference(self): # Your code here return model @model_property#with tf.variable_scope(digits.GraphKeys.MODEL, reuse=None): def loss(self): # Your code here return loss 就像LeNet-5模型,由Yann Lecn创造的对数字进行识别分类的模型" />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/NVIDIA.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="DIGITS Getting Started Tensorflow" />
+  <meta property="og:description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
+ 帮助函数 在Tensorboard中进行可视化   例子
+ 简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
+  在DIGITS中启用对TensorFlow的支持 如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入
+如果DIGITS不支持tensorflow将会打印出TensorFlow support is disabled
+在DIGITS中建立模型的时候选择Tensorflow 在模型建立页，点击&amp;rdquo;Tensorflow&amp;rdquo;
+[图片-使用TensorFlow建立模型 &amp;mdash;来自于DIGITS]
+在DIGITS中定义TensorFlow模型 未来定义一个Tensorflow模型在DIGITS，你需要写一个python类遵循以下模板
+class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def inference(self): # Your code here return model @model_property#with tf.variable_scope(digits.GraphKeys.MODEL, reuse=None): def loss(self): # Your code here return loss 就像LeNet-5模型,由Yann Lecn创造的对数字进行识别分类的模型" />
+  <meta property="og:url" content="https://xieydd.github.io/post/digits_gettingstartedtensorflow/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/NVIDIA.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.31.1" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/digits_gettingstartedtensorflow/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">DIGITS Getting Started Tensorflow</h1>
+      <p class="post-meta">@Xieydd · Jan 20, 2018 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="digits-getting-started-tensorflow">[DIGITS Getting   Started Tensorflow]</h1>
+
+<h2 id="目录">目录</h2>
+
+<ul>
+<li>在DIGITS中启用对TensorFlow的支持</li>
+<li>在DIGITS中创建模型时选择TensorFlow</li>
+<li>在DIGITS中定义TensorFlow模型
+
+<ul>
+<li>提供属性</li>
+<li>内部属性</li>
+<li>Tensors</li>
+</ul></li>
+
+<li><p>DIGITS的其他Tensorflow工具</p>
+
+<ul>
+<li>帮助函数</li>
+<li>在Tensorboard中进行可视化
+<br /></li>
+</ul></li>
+
+<li><p>例子</p>
+
+<ul>
+<li>简单自动编码网络</li>
+<li>通过重命名冻结预训练模型中的变量</li>
+<li>多GPU训练
+<br /></li>
+</ul></li>
+
+<li><p>安装DIGITS及Tensorflow</p></li>
+</ul>
+
+<h3 id="在digits中启用对tensorflow的支持">在DIGITS中启用对TensorFlow的支持</h3>
+
+<p>如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入</p>
+
+<p>如果DIGITS不支持tensorflow将会打印出TensorFlow support is disabled</p>
+
+<h3 id="在digits中建立模型的时候选择tensorflow">在DIGITS中建立模型的时候选择Tensorflow</h3>
+
+<p>在模型建立页，点击&rdquo;Tensorflow&rdquo;</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/DIGITS_Tensorflow.jpg" alt="使用TensorFlow建立模型" />
+[图片-使用TensorFlow建立模型  &mdash;来自于DIGITS]</p>
+
+<h3 id="在digits中定义tensorflow模型">在DIGITS中定义TensorFlow模型</h3>
+
+<p>未来定义一个Tensorflow模型在DIGITS，你需要写一个python类遵循以下模板</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserModel</span>(Tower):
+
+    <span style="color:#a6e22e">@model_propertyOther</span> TensorFlow Tools <span style="color:#f92672">in</span> DIGITS
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">inference</span>(self):
+        <span style="color:#75715e"># Your code here</span>
+        <span style="color:#66d9ef">return</span> model
+
+    <span style="color:#a6e22e">@model_property</span><span style="color:#75715e">#with tf.variable_scope(digits.GraphKeys.MODEL, reuse=None):</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">loss</span>(self):
+        <span style="color:#75715e"># Your code here</span>
+        <span style="color:#66d9ef">return</span> loss</code></pre></div>
+<p>就像<a href="http://yann.lecun.com/exdb/lenet/">LeNet-5</a>模型,由Yann Lecn创造的对数字进行识别分类的模型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserModel</span>(Tower):
+
+    <span style="color:#a6e22e">@model_property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">inference</span>(self):
+        x <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reshape(self<span style="color:#f92672">.</span>x, shape<span style="color:#f92672">=</span>[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">0</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">1</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">2</span>]])
+        <span style="color:#75715e"># scale (divide by MNIST std)</span>
+        x <span style="color:#f92672">=</span> x <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.0125</span>
+        <span style="color:#66d9ef">with</span> slim<span style="color:#f92672">.</span>arg_scope([slim<span style="color:#f92672">.</span>conv2d, slim<span style="color:#f92672">.</span>fully_connected],
+                            weights_initializer<span style="color:#f92672">=</span>tf<span style="color:#f92672">.</span>contrib<span style="color:#f92672">.</span>layers<span style="color:#f92672">.</span>xavier_initializer(),
+                            weights_regularizer<span style="color:#f92672">=</span>slim<span style="color:#f92672">.</span>l2_regularizer(<span style="color:#ae81ff">0.0005</span>) ):
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>conv2d(x, <span style="color:#ae81ff">20</span>, [<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>], padding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;VALID&#39;</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;conv1&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>max_pool2d(model, [<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>], padding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;VALID&#39;</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;pool1&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>conv2d(model, <span style="color:#ae81ff">50</span>, [<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>], padding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;VALID&#39;</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;conv2&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>max_pool2d(model, [<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>], padding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;VALID&#39;</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;pool2&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>flatten(model)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>fully_connected(model, <span style="color:#ae81ff">500</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc1&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>dropout(model, <span style="color:#ae81ff">0.5</span>, is_training<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>is_training, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;do1&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>fully_connected(model, self<span style="color:#f92672">.</span>nclasses, activation_fn<span style="color:#f92672">=</span>None, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc2&#39;</span>)
+            <span style="color:#66d9ef">return</span> model
+
+    <span style="color:#a6e22e">@model_property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">loss</span>(self):
+        loss <span style="color:#f92672">=</span> digits<span style="color:#f92672">.</span>classification_loss(self<span style="color:#f92672">.</span>inference, self<span style="color:#f92672">.</span>y)
+        accuracy <span style="color:#f92672">=</span> digits<span style="color:#f92672">.</span>classification_accuracy(self<span style="color:#f92672">.</span>inference, self<span style="color:#f92672">.</span>y)
+        self<span style="color:#f92672">.</span>summaries<span style="color:#f92672">.</span>append(tf<span style="color:#f92672">.</span>summary<span style="color:#f92672">.</span>scalar(accuracy<span style="color:#f92672">.</span>op<span style="color:#f92672">.</span>name, accuracy))
+        <span style="color:#66d9ef">return</span> loss</code></pre></div>
+<p>inference和loss一定要创建，类名必须为UserModel，必须继承Tower，这就是DIGITS和python代码交互的方式</p>
+
+<h4 id="提供的属性">提供的属性</h4>
+
+<p>通过self传递的参数</p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Property name</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>nclasses</td>
+<td>number</td>
+<td>分类数，对于不同的数据集，这个是不同的</td>
+</tr>
+
+<tr>
+<td>input_shape</td>
+<td>Tensor</td>
+<td>第一个输入张量的Shape(1D张量)。对于图像数据，0、1和2分别设置为的高度、宽度和通道</td>
+</tr>
+
+<tr>
+<td>is_training</td>
+<td>boolean</td>
+<td>是否是训练图</td>
+</tr>
+
+<tr>
+<td>is_inference</td>
+<td>boolean</td>
+<td>图是否是为推理/测试创建的</td>
+</tr>
+
+<tr>
+<td>x</td>
+<td>Tensor</td>
+<td>输入节点，shape为(N, H, W, C)</td>
+</tr>
+
+<tr>
+<td>y</td>
+<td>Tensor</td>
+<td>标签，N为标量标签，只有self.is_training是True的时候</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="内在属性">内在属性</h4>
+
+<p>这些属性在UserModel类中是由用户编写的</p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Property name</strong></th>
+<th><strong>Return Type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><em>init()</em></td>
+<td>None</td>
+<td>UserModel的构造函数</td>
+</tr>
+
+<tr>
+<td>infrence()</td>
+<td>Tensor</td>
+<td>训练和推理的时候调用</td>
+</tr>
+
+<tr>
+<td>loss()</td>
+<td>Tensor</td>
+<td>在培训期间回调来确定训练的损失和变量</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="张量">张量</h4>
+
+<p>这个网络使用(N,H,W,C)回馈给Tensorflow的Tensor对象</p>
+
+<h3 id="digits其他的tensorflow工具">DIGITS其他的Tensorflow工具</h3>
+
+<p>DIGITS提供了一些有用的工具来帮助您使用TensorFlow进行开发。</p>
+
+<h4 id="提供有用的函数">提供有用的函数</h4>
+
+<p>DIGITS提供了一些有用的功能来帮助您创建模型。这里是我们在digits内提供的功能</p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Property name</strong></th>
+<th><strong>Paraameter</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>classification_loss</td>
+<td>pred-图像被分类<br/>y-标签</td>
+<td>用于计算图像分类损失</td>
+</tr>
+
+<tr>
+<td>mse_loss</td>
+<td>lhs-左手边tensor<br/>rhs-右手边tensor</td>
+<td>计算两个Tensor的均方根</td>
+</tr>
+
+<tr>
+<td>constrastive_loss</td>
+<td>lhs-左手边tensor<br/>rhs-右手边tensor<br/>y-标签</td>
+<td>根据Caffe的定义计算出对比损失</td>
+</tr>
+
+<tr>
+<td>classification_accuracy</td>
+<td>red-图像被分类<br/>y-标签</td>
+<td>计算分类任务的准确性</td>
+</tr>
+
+<tr>
+<td>nhwc_to_nchw</td>
+<td>x-转换的Tensor</td>
+<td>将以前是NHWC格式的Tensor转换成NCHW，张量一定是4</td>
+</tr>
+
+<tr>
+<td>nchw_to_nhwc</td>
+<td>x-转换的Tensor</td>
+<td>将以前是NCHW格式的Tensor转换成NHWC，张量一定是4</td>
+</tr>
+
+<tr>
+<td>hwc_to_chw</td>
+<td>x-转换的Tensor</td>
+<td>把原来的HWC格式的张量转到CHW。张量一定是3</td>
+</tr>
+
+<tr>
+<td>chw_to_hwc</td>
+<td>x-转换的Tensor</td>
+<td>将最初CHW格式的张量转置为HWC。张量必须是3</td>
+</tr>
+
+<tr>
+<td>bgr_to_rgb</td>
+<td>x-转换的Tensor</td>
+<td>将原来在BGR通道中的张量转换为RGB</td>
+</tr>
+
+<tr>
+<td>rgb_to_bgr</td>
+<td>x-转换的Tensor</td>
+<td>将原来在RGB通道中的张量转换为BGR。</td>
+</tr>
+</tbody>
+</table>
+
+<p>TensorBoard是由TensorFlow提供的可视化工具，用于查看神经网络的图形。DIGITS为您的网络创建它提供了方便的访问网络可视化的可能。可以通过单击Custom Network中的Visualize按钮来访问，如下图所示。</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/DIGITS_Tensorboard.jpg" alt="使用DIGITS创建Tensorboard" />
+[图片-使用DIGITS创建Tensorboard  &mdash;来自于DIGITS]</p>
+
+<p>如果网络模型出现问题，数字将自动提供堆栈跟踪和错误消息，帮助您理解问题所在。</p>
+
+<p>您还可以在您的模型进行训练时，将整个Tensorboard服务器运行</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> tensorboard <span style="color:#f92672">--</span>logdir <span style="color:#f92672">&lt;</span>job_dir<span style="color:#f92672">&gt;/</span>tb<span style="color:#f92672">/</span></code></pre></div>
+<p>之后，您可以通过使用<a href="http://localhost:6006打开Tensorboard页面。">http://localhost:6006打开Tensorboard页面。</a>
+或者你可以点击Tensorboard链接到可视化</p>
+
+<p>如想了解更多，可以参考<a href="https://www.tensorflow.org/get_started/summaries_and_tensorboard">official tensorflow documentaton</a></p>
+
+<h3 id="例子">例子</h3>
+
+<h4 id="简单的自动编码网络">简单的自动编码网络</h4>
+
+<p>下面的网络是一个简单的自动编码器，它演示了如何在DIGITS中使用tensorflow的结构。自动编码器是一个2部分的网络它基本上是一种压缩机制.第一部分将尝试将图像压缩到比原来小的大小，而第二部分将尝试解压压缩网络创建的压缩表示。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserModel</span>(Tower):
+
+    <span style="color:#a6e22e">@model_property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">inference</span>(self):
+
+        <span style="color:#75715e"># the order for input shape is [0] -&gt; H, [1] -&gt; W, [2] -&gt; C</span>
+        <span style="color:#75715e"># this is because tensorflow&#39;s default order is NHWC</span>
+        model <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reshape(self<span style="color:#f92672">.</span>x, shape<span style="color:#f92672">=</span>[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">0</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">1</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">2</span>]])
+        image_dim <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">1</span>]
+
+        <span style="color:#66d9ef">with</span> slim<span style="color:#f92672">.</span>arg_scope([slim<span style="color:#f92672">.</span>fully_connected], 
+                        weights_initializer<span style="color:#f92672">=</span>tf<span style="color:#f92672">.</span>contrib<span style="color:#f92672">.</span>layers<span style="color:#f92672">.</span>xavier_initializer(),
+                        weights_regularizer<span style="color:#f92672">=</span>slim<span style="color:#f92672">.</span>l2_regularizer(<span style="color:#ae81ff">0.0005</span>)):
+
+            <span style="color:#75715e"># first we reshape the images to something</span>
+            model <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reshape(_x, shape<span style="color:#f92672">=</span>[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, image_dim])
+
+            <span style="color:#75715e"># encode the image</span>
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>fully_connected(model, <span style="color:#ae81ff">300</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc1&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>fully_connected(model, <span style="color:#ae81ff">50</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc2&#39;</span>)
+
+            <span style="color:#75715e"># decode the image</span>
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>fully_connected(model, <span style="color:#ae81ff">300</span>, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc3&#39;</span>)
+            model <span style="color:#f92672">=</span> slim<span style="color:#f92672">.</span>fully_connected(model, image_dim, activation_fn<span style="color:#f92672">=</span>None, scope<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc4&#39;</span>)
+
+            <span style="color:#75715e"># form it back to the original</span>
+            model <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reshape(model, shape<span style="color:#f92672">=</span>[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">0</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">1</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">2</span>]])
+            
+            <span style="color:#66d9ef">return</span> model
+
+    <span style="color:#a6e22e">@model_property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">loss</span>(self):
+
+        <span style="color:#75715e"># In an autoencoder, we compare the encoded and then decoded image with the original</span>
+        original <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reshape(self<span style="color:#f92672">.</span>x, shape<span style="color:#f92672">=</span>[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">0</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">1</span>], self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">2</span>]])
+
+        <span style="color:#75715e"># self.inference is called to get the processed image</span>
+        model <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>inference
+        loss <span style="color:#f92672">=</span> digits<span style="color:#f92672">.</span>mse_loss(original, model)
+
+        <span style="color:#66d9ef">return</span> loss</code></pre></div>
+<h4 id="通过重命名冻结预训练模型中的变量">通过重命名冻结预训练模型中的变量</h4>
+
+<p>下面演示了如何指定我们希望用于训练的权重。如果我们使用的是预先训练过的模型，这是最有效的。这适用于对模型进行微调。</p>
+
+<p>当您最初训练一个模型时，tensorflow将用指定的名称保存变量。当您重新加载模型以重新训练它时，tensorflow将会重新加载所有这些变量，并在模型定义中指定它们，并对它们进行重新训练。当您更改模型中变量的名称时，tensorflow将知道不会对该变量进行培训，从而“冻结”它。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserModel</span>(Tower):
+
+    <span style="color:#a6e22e">@model_property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">inference</span>(self):
+
+        model <span style="color:#f92672">=</span> construct_model()
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;code to construct the network omitted&#34;&#34;&#34;</span>
+
+        <span style="color:#75715e"># assuming the original model have weight2 and bias2 variables</span>
+        <span style="color:#75715e"># in here, we renamed them by adding the suffix _not_in_use</span>
+        <span style="color:#75715e"># this tells TensorFlow that these variables in the pre-trained model should</span>
+        <span style="color:#75715e"># not be retrained and it should be frozen</span>
+        <span style="color:#75715e"># If we would like to freeze a weight, all we have to do is just rename it</span>
+        self<span style="color:#f92672">.</span>weights <span style="color:#f92672">=</span> {
+            <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;weight1&#39;</span>: tf<span style="color:#f92672">.</span>get_variable(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;weight1&#39;</span>, [<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>, self<span style="color:#f92672">.</span>input_shape[<span style="color:#ae81ff">2</span>], <span style="color:#ae81ff">20</span>], initializer<span style="color:#f92672">=</span>tf<span style="color:#f92672">.</span>contrib<span style="color:#f92672">.</span>layers<span style="color:#f92672">.</span>xavier_initializer()),
+            <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;weight2&#39;</span>: tf<span style="color:#f92672">.</span>get_variable(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;weight2_not_in_use&#39;</span>, [<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">50</span>], initializer<span style="color:#f92672">=</span>tf<span style="color:#f92672">.</span>contrib<span style="color:#f92672">.</span>layers<span style="color:#f92672">.</span>xavier_initializer())
+        }
+
+        self<span style="color:#f92672">.</span>biases <span style="color:#f92672">=</span> {
+            <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;bias1&#39;</span>: tf<span style="color:#f92672">.</span>get_variable(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;bias1&#39;</span>, [<span style="color:#ae81ff">20</span>], initializer<span style="color:#f92672">=</span>tf<span style="color:#f92672">.</span>constant_initializer(<span style="color:#ae81ff">0.0</span>)),
+            <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;bias2&#39;</span>: tf<span style="color:#f92672">.</span>get_variable(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;bias2_not_in_use&#39;</span>, [<span style="color:#ae81ff">50</span>], initializer<span style="color:#f92672">=</span>tf<span style="color:#f92672">.</span>constant_initializer(<span style="color:#ae81ff">0.0</span>))
+        }
+
+        <span style="color:#66d9ef">return</span> model
+
+    <span style="color:#a6e22e">@model_property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">loss</span>(self):
+        loss <span style="color:#f92672">=</span> calculate_loss()
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;code to calculate loss omitted&#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">return</span> loss</code></pre></div>
+<h3 id="安装digits">安装DIGITS</h3>
+
+<h4 id="安装环境">安装环境</h4>
+
+<pre><code>- 
+-
+-
+</code></pre>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="https://xieydd.github.io/tags/tensorflow"><span class="tag">Tensorflow</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/nvidia"><span class="tag">NVIDIA</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/digits"><span class="tag">DIGITS</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>

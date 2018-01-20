@@ -6,7 +6,9 @@
 
   
   <title>
-  Tags | Xieydd Blog
+  Tag → digits
+  
+   | Xieydd Blog
 </title>
 
   
@@ -31,7 +33,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Xieydd Blog" />
   <meta property="og:description" content="谢远东的博客，基于Hugp和Github搭建" />
-  <meta property="og:url" content="https://xieydd.github.io/tags/" />
+  <meta property="og:url" content="https://xieydd.github.io/tags/digits/" />
   <meta property="og:image" content="https://xieydd.github.io/img/avatar.jpg" />
 
 
@@ -40,7 +42,7 @@
 <meta name="generator" content="Hugo 0.31.1" />
 
 
-<link rel="canonical" href="https://xieydd.github.io/tags/" />
+<link rel="canonical" href="https://xieydd.github.io/tags/digits/" />
 <link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
 
 
@@ -139,8 +141,6 @@
       
         <li class="menu-item
             
-              is-active
-            
             
             ">
             <a href="https://xieydd.github.io/tags/">标签</a>
@@ -234,95 +234,38 @@
   </nav>
 </header>
 
-  <section class="main post-detail terms-list">
-    <header class="post-header">
-      <h1 class="post-title">Tags</h1>
+  <section class="main post-list">
+    <header class="list-header offscreen">
+      <h2 class="list-label">Posts List</h2>
     </header>
-    <div class="tags-cloud">
+    
+    
       
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="https://xieydd.github.io/post/digits_gettingstartedtensorflow/" class="post-link">DIGITS Getting Started Tensorflow</a></h3>
+    <p class="post-meta">@Xieydd · Jan 20, 2018 · 3 min read</p>
+  </header>
+  
+    <img class="post-cover" src="img/NVIDIA.jpg" alt="DIGITS Getting Started Tensorflow">
+  
+  <p class="post-summary">[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
+ 帮助函数 在Tensorboard中进行可视化   例子
+ 简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
+  在DIGITS中启用对TensorFlow的支持 如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入
+如果DIGITS不支持tensorflow将会打印出TensorFlow support is disabled
+在DIGITS中建立模型的时候选择Tensorflow 在模型建立页，点击”Tensorflow”
+[图片-使用TensorFlow建立模型 —来自于DIGITS]
+在DIGITS中定义TensorFlow模型 未来定义一个Tensorflow模型在DIGITS，你需要写一个python类遵循以下模板
+class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def inference(self): # Your code here return model @model_property#with tf.variable_scope(digits.GraphKeys.MODEL, reuse=None): def loss(self): # Your code here return loss 就像LeNet-5模型,由Yann Lecn创造的对数字进行识别分类的模型</p>
+  <footer class="post-footer">
+    <a class="read-more" href="https://xieydd.github.io/post/digits_gettingstartedtensorflow/">Read More →</a>
+  </footer>
+</article>
+
       
-        
-        <a href="https://xieydd.github.io/tags/kubernetes/" class="tag-l">kubernetes</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/tensorflow/" class="tag-l">tensorflow</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/kubeflow/" class="tag-xxl">kubeflow</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="tag-m">云原生</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/deeplearning/" class="tag-s">deeplearning</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/deploy/" class="tag-s">deploy</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/digits/" class="tag-s">digits</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/docker/" class="tag-s">docker</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/gan/" class="tag-s">gan</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/katacoda/" class="tag-s">katacoda</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/kreas/" class="tag-s">kreas</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/kube-shell/" class="tag-s">kube-shell</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/kubectl%E5%B7%A5%E5%85%B7/" class="tag-s">kubectl工具</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/lstm/" class="tag-s">lstm</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/machine-learning/" class="tag-s">machine-learning</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/matchzoo/" class="tag-s">matchzoo</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/nvidia/" class="tag-s">nvidia</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/pca/" class="tag-s">pca</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/swarm/" class="tag-s">swarm</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/t-sne/" class="tag-s">t-sne</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/tools/" class="tag-s">tools</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/tutorials/" class="tag-s">tutorials</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E4%BF%A1%E6%81%AF%E6%A3%80%E7%B4%A2%E7%B3%BB%E7%BB%9F/" class="tag-s">信息检索系统</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%81%A5%E8%BA%AB/" class="tag-s">健身</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%85%A8%E7%9F%A2cnn%E6%A8%A1%E5%9E%8B/" class="tag-s">全矢cnn模型</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%AE%B9%E5%99%A8/" class="tag-s">容器</a>
-      
-        
-        <a href="https://xieydd.github.io/tags/%E5%BC%A0%E5%93%88%E5%93%88/" class="tag-s">张哈哈</a>
-      
-    </div>
+    
+    
   </section>
   <footer class="site-footer">
   <p>© 2017-2018 Xieydd Blog</p>
