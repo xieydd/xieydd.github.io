@@ -37,9 +37,9 @@
     </item>
     
     <item>
-      <title>DIGITS Getting Started Tensorflow</title>
+      <title>DIGITS_GettingStartedTensorflow</title>
       <link>https://xieydd.github.io/post/digits_gettingstartedtensorflow/</link>
-      <pubDate>Sat, 20 Jan 2018 19:47:49 +0800</pubDate>
+      <pubDate>Tue, 23 Jan 2018 10:35:00 +0800</pubDate>
       
       <guid>https://xieydd.github.io/post/digits_gettingstartedtensorflow/</guid>
       <description>[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具

@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
 
   
-  <title>DIGITS Getting Started Tensorflow</title>
+  <title>DIGITS_GettingStartedTensorflow</title>
 
   
   
@@ -30,7 +30,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
   
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@xieydd_" />
-    <meta name="twitter:title" content="DIGITS Getting Started Tensorflow" />
+    <meta name="twitter:title" content="DIGITS_GettingStartedTensorflow" />
     <meta name="twitter:description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
  帮助函数 在Tensorboard中进行可视化   例子
  简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
@@ -45,7 +45,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 
   
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="DIGITS Getting Started Tensorflow" />
+  <meta property="og:title" content="DIGITS_GettingStartedTensorflow" />
   <meta property="og:description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
  帮助函数 在Tensorboard中进行可视化   例子
  简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
@@ -61,7 +61,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 
 
 
-<meta name="generator" content="Hugo 0.31.1" />
+<meta name="generator" content="Hugo 0.34" />
 
 
 <link rel="canonical" href="https://xieydd.github.io/post/digits_gettingstartedtensorflow/" />
@@ -264,12 +264,12 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 
   <section class="main post-detail">
     <header class="post-header">
-      <h1 class="post-title">DIGITS Getting Started Tensorflow</h1>
-      <p class="post-meta">@Xieydd · Jan 20, 2018 · 3 min read</p>
+      <h1 class="post-title">DIGITS_GettingStartedTensorflow</h1>
+      <p class="post-meta">@Xieydd · Jan 23, 2018 · 6 min read</p>
     </header>
     <article class="post-content">
 
-<h1 id="digits-getting-started-tensorflow">[DIGITS Getting   Started Tensorflow]</h1>
+<h1 id="digits-getting-started-tensorflow">[DIGITS Getting Started Tensorflow]</h1>
 
 <h2 id="目录">目录</h2>
 
@@ -383,7 +383,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 <tr>
 <td>input_shape</td>
 <td>Tensor</td>
-<td>第一个输入张量的Shape(1D张量)。对于图像数据，0、1和2分别设置为的高度、宽度和通道</td>
+<td>第一个输入张量的Shape(1D张量)。对于图像数据，[0]、[1]和[2]分别设置为的高度、宽度和通道</td>
 </tr>
 
 <tr>
@@ -401,13 +401,13 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 <tr>
 <td>x</td>
 <td>Tensor</td>
-<td>输入节点，shape为(N, H, W, C)</td>
+<td>输入节点，shape为[N, H, W, C]</td>
 </tr>
 
 <tr>
 <td>y</td>
 <td>Tensor</td>
-<td>标签，N为标量标签，只有self.is_training是True的时候</td>
+<td>标签，[N]为标量标签，只有self.is_training是True的时候</td>
 </tr>
 </tbody>
 </table>
@@ -448,7 +448,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 
 <h4 id="张量">张量</h4>
 
-<p>这个网络使用(N,H,W,C)回馈给Tensorflow的Tensor对象</p>
+<p>这个网络使用[N,H,W,C]回馈给Tensorflow的Tensor对象</p>
 
 <h3 id="digits其他的tensorflow工具">DIGITS其他的Tensorflow工具</h3>
 
@@ -633,14 +633,274 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 -
 -
 </code></pre>
+
+<h4 id="前期准备">前期准备</h4>
+
+<ol>
+<li>需要NVIDIA驱动</li>
+</ol>
+
+<p><strong>注意</strong>这里可能无法安装，参考以下链接:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">http:<span style="color:#f92672">//</span>www<span style="color:#f92672">.</span><span style="color:#ae81ff">52</span>nlp<span style="color:#f92672">.</span>cn<span style="color:#f92672">/%</span>E6<span style="color:#f92672">%</span>B7<span style="color:#f92672">%</span>B1<span style="color:#f92672">%</span>E5<span style="color:#f92672">%</span>BA<span style="color:#f92672">%</span>A6<span style="color:#f92672">%</span>E5<span style="color:#f92672">%</span>AD<span style="color:#f92672">%</span>A6<span style="color:#f92672">%</span>E4<span style="color:#f92672">%</span>B9<span style="color:#f92672">%</span>A0<span style="color:#f92672">%</span>E4<span style="color:#f92672">%</span>B8<span style="color:#f92672">%</span>BB<span style="color:#f92672">%</span>E6<span style="color:#f92672">%</span><span style="color:#ae81ff">9</span>C<span style="color:#f92672">%</span>BA<span style="color:#f92672">%</span>E7<span style="color:#f92672">%</span><span style="color:#ae81ff">8</span>E<span style="color:#f92672">%</span>AF<span style="color:#f92672">%</span>E5<span style="color:#f92672">%</span>A2<span style="color:#f92672">%</span><span style="color:#ae81ff">83</span><span style="color:#f92672">%</span>E9<span style="color:#f92672">%</span><span style="color:#ae81ff">85</span><span style="color:#f92672">%</span><span style="color:#ae81ff">8</span>D<span style="color:#f92672">%</span>E7<span style="color:#f92672">%</span>BD<span style="color:#f92672">%</span>AE<span style="color:#f92672">-</span>ubuntu<span style="color:#f92672">-</span><span style="color:#ae81ff">16</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span><span style="color:#f92672">-</span>nvidia<span style="color:#f92672">-</span>gtx<span style="color:#f92672">-</span><span style="color:#ae81ff">1080</span><span style="color:#f92672">-</span>cuda<span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>
+
+http:<span style="color:#f92672">//</span>www<span style="color:#f92672">.</span>cnblogs<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>wmxfd<span style="color:#f92672">/</span>p<span style="color:#f92672">/</span>installation_of_nvidia_graphics_driver_and_cuda8_and_cudnn6<span style="color:#f92672">.</span>html</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># For Ubuntu 14.04</span>
+CUDA_REPO_PKG<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>developer<span style="color:#f92672">.</span>download<span style="color:#f92672">.</span>nvidia<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>compute<span style="color:#f92672">/</span>cuda<span style="color:#f92672">/</span>repos<span style="color:#f92672">/</span>ubuntu1404<span style="color:#f92672">/</span>x86_64<span style="color:#f92672">/</span>cuda<span style="color:#f92672">-</span>repo<span style="color:#f92672">-</span>ubuntu1404_8<span style="color:#f92672">.</span><span style="color:#ae81ff">0.61</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>_amd64<span style="color:#f92672">.</span>deb
+ML_REPO_PKG<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>developer<span style="color:#f92672">.</span>download<span style="color:#f92672">.</span>nvidia<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>compute<span style="color:#f92672">/</span>machine<span style="color:#f92672">-</span>learning<span style="color:#f92672">/</span>repos<span style="color:#f92672">/</span>ubuntu1404<span style="color:#f92672">/</span>x86_64<span style="color:#f92672">/</span>nvidia<span style="color:#f92672">-</span>machine<span style="color:#f92672">-</span>learning<span style="color:#f92672">-</span>repo<span style="color:#f92672">-</span>ubuntu1404_4<span style="color:#f92672">.</span><span style="color:#ae81ff">0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>_amd64<span style="color:#f92672">.</span>deb
+
+<span style="color:#75715e"># For Ubuntu 16.04</span>
+CUDA_REPO_PKG<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>developer<span style="color:#f92672">.</span>download<span style="color:#f92672">.</span>nvidia<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>compute<span style="color:#f92672">/</span>cuda<span style="color:#f92672">/</span>repos<span style="color:#f92672">/</span>ubuntu1604<span style="color:#f92672">/</span>x86_64<span style="color:#f92672">/</span>cuda<span style="color:#f92672">-</span>repo<span style="color:#f92672">-</span>ubuntu1604_8<span style="color:#f92672">.</span><span style="color:#ae81ff">0.61</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>_amd64<span style="color:#f92672">.</span>deb
+ML_REPO_PKG<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>developer<span style="color:#f92672">.</span>download<span style="color:#f92672">.</span>nvidia<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>compute<span style="color:#f92672">/</span>machine<span style="color:#f92672">-</span>learning<span style="color:#f92672">/</span>repos<span style="color:#f92672">/</span>ubuntu1604<span style="color:#f92672">/</span>x86_64<span style="color:#f92672">/</span>nvidia<span style="color:#f92672">-</span>machine<span style="color:#f92672">-</span>learning<span style="color:#f92672">-</span>repo<span style="color:#f92672">-</span>ubuntu1604_1<span style="color:#f92672">.</span><span style="color:#ae81ff">0.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>_amd64<span style="color:#f92672">.</span>deb
+
+<span style="color:#75715e"># Install repo packages</span>
+wget <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;$CUDA_REPO_PKG&#34;</span> <span style="color:#f92672">-</span>O <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>cuda<span style="color:#f92672">-</span>repo<span style="color:#f92672">.</span>deb <span style="color:#f92672">&amp;&amp;</span> sudo dpkg <span style="color:#f92672">-</span>i <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>cuda<span style="color:#f92672">-</span>repo<span style="color:#f92672">.</span>deb <span style="color:#f92672">&amp;&amp;</span> rm <span style="color:#f92672">-</span>f <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>cuda<span style="color:#f92672">-</span>repo<span style="color:#f92672">.</span>deb
+wget <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;$ML_REPO_PKG&#34;</span> <span style="color:#f92672">-</span>O <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>ml<span style="color:#f92672">-</span>repo<span style="color:#f92672">.</span>deb <span style="color:#f92672">&amp;&amp;</span> sudo dpkg <span style="color:#f92672">-</span>i <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>ml<span style="color:#f92672">-</span>repo<span style="color:#f92672">.</span>deb <span style="color:#f92672">&amp;&amp;</span> rm <span style="color:#f92672">-</span>f <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>ml<span style="color:#f92672">-</span>repo<span style="color:#f92672">.</span>deb
+
+<span style="color:#75715e"># Download new list of packages</span>
+sudo apt<span style="color:#f92672">-</span>get update</code></pre></div>
+<ol>
+<li><p>安装依赖</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>install<span style="color:#f92672">-</span>recommends git graphviz python<span style="color:#f92672">-</span>dev python<span style="color:#f92672">-</span>flask python<span style="color:#f92672">-</span>flaskext<span style="color:#f92672">.</span>wtf python<span style="color:#f92672">-</span>gevent python<span style="color:#f92672">-</span>h5py python<span style="color:#f92672">-</span>numpy python<span style="color:#f92672">-</span>pil python<span style="color:#f92672">-</span>pip python<span style="color:#f92672">-</span>scipy python<span style="color:#f92672">-</span>tk</code></pre></div></li>
+
+<li><p><a href="https://github.com/xieydd/DIGITS/blob/master/docs/BuildCaffe.md">安装Cafffe(必须的)</a></p></li>
+</ol>
+
+<p>官方只支持最近发布的版本，来自于<a href="https://github.com/NVIDIA/caffe"> NVIDIA/caffe</a>,最近构建的<a href="https://github.com/BVLC/caffe"> BVLC/caffe</a>可能会起作用</p>
+
+<ul>
+<li>依赖</li>
+</ul>
+
+<p>在Build Caffe之前，需要安装<a href="https://github.com/xieydd/DIGITS/blob/master/docs/BuildProtobuf.md">Protobuf3</a>,这也是Tensorflow所需要的。</p>
+
+<p>Caffe可以从debian软件包中安装，但是如果要使用tensorflow来运行，那么python层等一些特性将无法正常工作。建议从源代码中构建protobuf，以确保DIGITS正常工作，指导基于谷歌的<a href="https://github.com/google/protobuf/blob/master/src/README.md">安装指南</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.依赖</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install autoconf automake libtool curl make g<span style="color:#f92672">++</span> git python<span style="color:#f92672">-</span>dev python<span style="color:#f92672">-</span>setuptools unzip</code></pre></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.下载源码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># example location - can be customized</span>
+<span style="color:#960050;background-color:#1e0010">$</span> export PROTOBUF_ROOT<span style="color:#f92672">=~/</span>protobuf
+<span style="color:#960050;background-color:#1e0010">$</span> git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>google<span style="color:#f92672">/</span>protobuf<span style="color:#f92672">.</span>git <span style="color:#960050;background-color:#1e0010">$</span>PROTOBUF_ROOT <span style="color:#f92672">-</span>b <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;3.2.x&#39;</span></code></pre></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.安装Protobuf</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>PROTOBUF_ROOT
+<span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">./</span>autogen<span style="color:#f92672">.</span>sh
+<span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">./</span>configure
+<span style="color:#960050;background-color:#1e0010">$</span> make <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;-j$(nproc)&#34;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> make install
+<span style="color:#960050;background-color:#1e0010">$</span> ldconfig
+<span style="color:#960050;background-color:#1e0010">$</span> cd python
+<span style="color:#960050;background-color:#1e0010">$</span> python setup<span style="color:#f92672">.</span>py install <span style="color:#f92672">--</span>cpp_implementation</code></pre></div>
+<p>为了更好的性能，可能需要:</p>
+
+<ul>
+<li>一个或者多个<a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#gpu">NVIDIA GPUs</a></li>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#driver">NVIDIA驱动</a></li>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#cuda-toolkit">CUDA工具</a></li>
+<li><a href="https://developer.nvidia.com/cudnn">cuDNN</a></li>
+</ul>
+
+<p>用Deb包安装一些依赖项</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>install<span style="color:#f92672">-</span>recommends build<span style="color:#f92672">-</span>essential cmake git gfortran libatlas<span style="color:#f92672">-</span>base<span style="color:#f92672">-</span>dev libboost<span style="color:#f92672">-</span>filesystem<span style="color:#f92672">-</span>dev libboost<span style="color:#f92672">-</span>python<span style="color:#f92672">-</span>dev libboost<span style="color:#f92672">-</span>system<span style="color:#f92672">-</span>dev libboost<span style="color:#f92672">-</span>thread<span style="color:#f92672">-</span>dev libgflags<span style="color:#f92672">-</span>dev libgoogle<span style="color:#f92672">-</span>glog<span style="color:#f92672">-</span>dev libhdf5<span style="color:#f92672">-</span>serial<span style="color:#f92672">-</span>dev libleveldb<span style="color:#f92672">-</span>dev liblmdb<span style="color:#f92672">-</span>dev libopencv<span style="color:#f92672">-</span>dev libsnappy<span style="color:#f92672">-</span>dev python<span style="color:#f92672">-</span>all<span style="color:#f92672">-</span>dev python<span style="color:#f92672">-</span>dev python<span style="color:#f92672">-</span>h5py python<span style="color:#f92672">-</span>matplotlib python<span style="color:#f92672">-</span>numpy python<span style="color:#f92672">-</span>opencv python<span style="color:#f92672">-</span>pil python<span style="color:#f92672">-</span>pip python<span style="color:#f92672">-</span>pydot python<span style="color:#f92672">-</span>scipy python<span style="color:#f92672">-</span>skimage python<span style="color:#f92672">-</span>sklearn</code></pre></div>
+<ul>
+<li>下载源码</li>
+</ul>
+
+<p>目前Caffe版本为Caffe 0.15</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># example location - can be customized</span>
+<span style="color:#960050;background-color:#1e0010">$</span> export CAFFE_ROOT<span style="color:#f92672">=~/</span>caffe
+<span style="color:#960050;background-color:#1e0010">$</span> git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>NVIDIA<span style="color:#f92672">/</span>caffe<span style="color:#f92672">.</span>git <span style="color:#960050;background-color:#1e0010">$</span>CAFFE_ROOT <span style="color:#f92672">-</span>b <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;caffe-0.15&#39;</span></code></pre></div>
+<p>设置Caffe的root环境变量将有助于DIGITS自动检测您的Caffe的安装，但这是可选的。</p>
+
+<ul>
+<li>Python包</li>
+</ul>
+
+<p>需要安装几个PyPI包:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#注意，带sudo后再python3.5下载包，可尝试不带sudo，下同</span>
+<span style="color:#960050;background-color:#1e0010">$</span> sudo pip install <span style="color:#f92672">-</span>r <span style="color:#960050;background-color:#1e0010">$</span>CAFFE_ROOT<span style="color:#f92672">/</span>python<span style="color:#f92672">/</span>requirements<span style="color:#f92672">.</span>txt <span style="color:#f92672">-</span>i https:<span style="color:#f92672">//</span>mirrors<span style="color:#f92672">.</span>ustc<span style="color:#f92672">.</span>edu<span style="color:#f92672">.</span>cn<span style="color:#f92672">/</span>pypi<span style="color:#f92672">/</span>web<span style="color:#f92672">/</span>simple<span style="color:#f92672">/</span></code></pre></div>
+<p><strong>注意:</strong>这里遇到错误:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">You are using pip version <span style="color:#ae81ff">8.1</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1</span>, however version <span style="color:#ae81ff">9.0</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">is</span> available<span style="color:#f92672">.</span>
+You should consider upgrading via the <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;pip install --upgrade pip&#39;</span> command
+
+<span style="color:#75715e">#下面的代码块将解决</span></code></pre></div>
+<p><strong>这里注意python和python3版本问题和pip和pip2的版本问题</strong></p>
+
+<p>如果您遇到有关缺少导入的错误，请使用此命令按顺序安装软件包,这里有一些<a href="https://github.com/BVLC/caffe/pull/1950#issuecomment-76026969">pull issue</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cat <span style="color:#960050;background-color:#1e0010">$</span>CAFFE_ROOT<span style="color:#f92672">/</span>python<span style="color:#f92672">/</span>requirements<span style="color:#f92672">.</span>txt <span style="color:#f92672">|</span> xargs <span style="color:#f92672">-</span>n1 sudo pip install <span style="color:#f92672">-</span>i https:<span style="color:#f92672">//</span>mirrors<span style="color:#f92672">.</span>ustc<span style="color:#f92672">.</span>edu<span style="color:#f92672">.</span>cn<span style="color:#f92672">/</span>pypi<span style="color:#f92672">/</span>web<span style="color:#f92672">/</span>simple<span style="color:#f92672">/</span></code></pre></div>
+<p>我们推荐使用CMake来配置Caffe，而不是使用原始Makefile构建自动依赖检测：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>CAFFE_ROOT
+<span style="color:#960050;background-color:#1e0010">$</span> mkdir build
+<span style="color:#960050;background-color:#1e0010">$</span> cd build
+<span style="color:#960050;background-color:#1e0010">$</span> sudo cmake <span style="color:#f92672">..</span>
+<span style="color:#960050;background-color:#1e0010">$</span> sudo make <span style="color:#f92672">-</span>j<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;$(nproc)&#34;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> sudo make install</code></pre></div>
+<p>4.安装<a href="https://github.com/xieydd/DIGITS/blob/master/docs/BuildTorch.md">Torch7 建议</a></p>
+
+<ul>
+<li>依赖</li>
+</ul>
+
+<p>为了更好的性能，可能需要:</p>
+
+<ul>
+<li>一个或者多个<a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#gpu">NVIDIA GPUs</a></li>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#driver">NVIDIA驱动</a></li>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#cuda-toolkit">CUDA工具</a></li>
+<li><a href="https://developer.nvidia.com/cudnn">cuDNN</a></li>
+</ul>
+
+<p>用Deb包安装一些依赖项</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>install<span style="color:#f92672">-</span>recommends git software<span style="color:#f92672">-</span>properties<span style="color:#f92672">-</span>common</code></pre></div>
+<ul>
+<li>基础安装</li>
+</ul>
+
+<p>这些指令基于<a href="http://torch.ch/docs/getting-started.html">官方指令</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># example location - can be customized</span>
+<span style="color:#960050;background-color:#1e0010">$</span> export TORCH_ROOT<span style="color:#f92672">=~/</span>torch
+
+<span style="color:#960050;background-color:#1e0010">$</span> git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>torch<span style="color:#f92672">/</span>distro<span style="color:#f92672">.</span>git <span style="color:#960050;background-color:#1e0010">$</span>TORCH_ROOT <span style="color:#f92672">--</span>recursive
+<span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>TORCH_ROOT
+<span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">./</span>install<span style="color:#f92672">-</span>deps
+<span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">./</span>install<span style="color:#f92672">.</span>sh <span style="color:#f92672">-</span>b
+<span style="color:#960050;background-color:#1e0010">$</span> source <span style="color:#f92672">~/.</span>bashrc</code></pre></div>
+<ul>
+<li>其他依赖</li>
+</ul>
+
+<p>DIGITS需要其他依赖</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>install<span style="color:#f92672">-</span>recommends libhdf5<span style="color:#f92672">-</span>serial<span style="color:#f92672">-</span>dev liblmdb<span style="color:#f92672">-</span>dev
+<span style="color:#960050;background-color:#1e0010">$</span> luarocks install tds
+<span style="color:#960050;background-color:#1e0010">$</span> luarocks install <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;https://raw.github.com/deepmind/torch-hdf5/master/hdf5-0-0.rockspec&#34;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> luarocks install <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;https://raw.github.com/Neopallium/lua-pb/master/lua-pb-scm-0.rockspec&#34;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> luarocks install lightningmdb <span style="color:#ae81ff">0.9</span><span style="color:#f92672">.</span><span style="color:#ae81ff">18.1</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> LMDB_INCDIR<span style="color:#f92672">=/</span>usr<span style="color:#f92672">/</span>include <span style="color:#960050;background-color:#1e0010">$</span> LMDB_LIBDIR<span style="color:#f92672">=/</span>usr<span style="color:#f92672">/</span>lib<span style="color:#f92672">/</span>x86_64<span style="color:#f92672">-</span>linux<span style="color:#f92672">-</span>gnu
+<span style="color:#75715e"># If you have installed NCCL</span>
+<span style="color:#960050;background-color:#1e0010">$</span> luarocks install <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;https://raw.githubusercontent.com/ngimel/nccl.torch/master/nccl-scm-1.rockspec&#34;</span></code></pre></div>
+<ul>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/GettingStartedTorch.md">在DIGITS开启Torch7</a></li>
+</ul>
+
+<ol>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/BuildTensorflow.md">安装Tensorflow(建议)</a></li>
+</ol>
+
+<p>DIGITS现在支持TensorFlow作为Caffe或Torch的可选替代后端</p>
+
+<ul>
+<li>要求</li>
+</ul>
+
+<p>DIGITS现在需要tensorflow-gpu V1.2.1</p>
+
+<p>DIGITS的TensorFlow需要一个或多个NVIDIA CUDA计算能力为3.0或更高的GPU。官方支持<a href="https://developer.nvidia.com/cuda-gpus">列表</a></p>
+
+<p>为了更好的性能，可能需要:</p>
+
+<ul>
+<li>一个或者多个<a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#gpu">NVIDIA GPUs</a></li>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#driver">NVIDIA驱动</a></li>
+<li><a href="https://github.com/xieydd/DIGITS/blob/master/docs/InstallCuda.md#cuda-toolkit">CUDA工具</a></li>
+
+<li><p><a href="https://developer.nvidia.com/cudnn">cuDNN5.1</a></p></li>
+
+<li><p><strong>注意cuDNN和tensorflow版本问题</strong></p></li>
+</ul>
+
+<p>目前tensorflow v1.2.1的目标是cuDNN 5.1。要使tensorflow v1.2.1以数字运行，您必须安装cuDNN 5.1。要安装它，请在终端中使用以下命令</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install libcudnn5</code></pre></div>
+<ul>
+<li>安装，这些指令基于<a href="https://www.tensorflow.org/versions/master/install/">官方指令</a>
+Tensorflow来自于pip，可以使用简单命令:</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> pip install tensorflow<span style="color:#f92672">-</span>gpu<span style="color:#f92672">==</span><span style="color:#ae81ff">1.2</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span>i https:<span style="color:#f92672">//</span>mirrors<span style="color:#f92672">.</span>ustc<span style="color:#f92672">.</span>edu<span style="color:#f92672">.</span>cn<span style="color:#f92672">/</span>pypi<span style="color:#f92672">/</span>web<span style="color:#f92672">/</span>simple<span style="color:#f92672">/</span></code></pre></div>
+<p>TensorFlow应该毫不费力地安装，并将其所需的所有依赖关系提取出来</p>
+
+<p>[在DIGITS使用Tensorflow]()</p>
+
+<p>6.下载DIGITS源码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># example location - can be customized</span>
+<span style="color:#960050;background-color:#1e0010">$</span> DIGITS_ROOT<span style="color:#f92672">=~/</span>digits
+<span style="color:#960050;background-color:#1e0010">$</span> git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>NVIDIA<span style="color:#f92672">/</span>DIGITS<span style="color:#f92672">.</span>git <span style="color:#960050;background-color:#1e0010">$</span>DIGITS_ROOT</code></pre></div>
+<p>在整个文档中，我们将把你的安装位置称为DIGITS_ROOT（在这个例子中是〜/ digits），尽管你不需要真的设置这个环境变量.</p>
+
+<p>7.python包下载</p>
+
+<p>一些PyPi包需要下载:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo pip install <span style="color:#f92672">-</span>r <span style="color:#960050;background-color:#1e0010">$</span>DIGITS_ROOT<span style="color:#f92672">/</span>requirements<span style="color:#f92672">.</span>txt <span style="color:#f92672">-</span>i https:<span style="color:#f92672">//</span>mirrors<span style="color:#f92672">.</span>ustc<span style="color:#f92672">.</span>edu<span style="color:#f92672">.</span>cn<span style="color:#f92672">/</span>pypi<span style="color:#f92672">/</span>web<span style="color:#f92672">/</span>simple<span style="color:#f92672">/</span></code></pre></div>
+<p>8.启用对插件的支持</p>
+
+<p>需要安装DIGITS以启用加载数据和可视化插件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo pip install <span style="color:#f92672">-</span>e <span style="color:#960050;background-color:#1e0010">$</span>DIGITS_ROOT <span style="color:#f92672">-</span>i https:<span style="color:#f92672">//</span>mirrors<span style="color:#f92672">.</span>ustc<span style="color:#f92672">.</span>edu<span style="color:#f92672">.</span>cn<span style="color:#f92672">/</span>pypi<span style="color:#f92672">/</span>web<span style="color:#f92672">/</span>simple<span style="color:#f92672">/</span></code></pre></div>
+<p>9.开启服务器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">./</span>digits<span style="color:#f92672">-</span>devserver
+A valid Caffe installation was <span style="color:#f92672">not</span> found on your system<span style="color:#f92672">.</span>
+Use the envvar CAFFE_ROOT to indicate a valid installation<span style="color:#f92672">.</span>
+Traceback (most recent call last):
+  File <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;/usr/lib/python2.7/runpy.py&#34;</span>, line <span style="color:#ae81ff">174</span>, <span style="color:#f92672">in</span> _run_module_as_main
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;__main__&#34;</span>, fname, loader, pkg_name)
+  File <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;/usr/lib/python2.7/runpy.py&#34;</span>, line <span style="color:#ae81ff">72</span>, <span style="color:#f92672">in</span> _run_code
+    <span style="color:#66d9ef">exec</span> code <span style="color:#f92672">in</span> run_globals
+  File <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;/home/xieydd/digits/digits/__main__.py&#34;</span>, line <span style="color:#ae81ff">70</span>, <span style="color:#f92672">in</span> <span style="color:#f92672">&lt;</span>module<span style="color:#f92672">&gt;</span>
+    main()
+  File <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;/home/xieydd/digits/digits/__main__.py&#34;</span>, line <span style="color:#ae81ff">53</span>, <span style="color:#f92672">in</span> main
+    <span style="color:#f92672">import</span> digits.config
+  File <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;digits/config/__init__.py&#34;</span>, line <span style="color:#ae81ff">7</span>, <span style="color:#f92672">in</span> <span style="color:#f92672">&lt;</span>module<span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">from</span> . <span style="color:#f92672">import</span> (  <span style="color:#75715e"># noqa</span>
+  File <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;digits/config/caffe.py&#34;</span>, line <span style="color:#ae81ff">230</span>, <span style="color:#f92672">in</span> <span style="color:#f92672">&lt;</span>module<span style="color:#f92672">&gt;</span>
+    executable, version, flavor <span style="color:#f92672">=</span> load_from_path()
+  File <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;digits/config/caffe.py&#34;</span>, line <span style="color:#ae81ff">54</span>, <span style="color:#f92672">in</span> load_from_path
+    <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;Caffe executable not found in PATH&#39;</span>)
+<span style="color:#a6e22e">ValueError</span>: Caffe executable <span style="color:#f92672">not</span> found <span style="color:#f92672">in</span> PATH
+
+<span style="color:#75715e">#解决方法</span>
+xieydd<span style="color:#a6e22e">@xieydd</span>:<span style="color:#f92672">~/</span>digits<span style="color:#960050;background-color:#1e0010">$</span> sudo echo <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;export CAFFE_ROOT=/home/xieydd/caffe/&#34;</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#f92672">~/.</span>profile
+xieydd<span style="color:#a6e22e">@xieydd</span>:<span style="color:#f92672">~/</span>digits<span style="color:#960050;background-color:#1e0010">$</span> source <span style="color:#f92672">~/.</span>profile
+xieydd<span style="color:#a6e22e">@xieydd</span>:<span style="color:#f92672">~/</span>digits<span style="color:#960050;background-color:#1e0010">$</span> echo <span style="color:#960050;background-color:#1e0010">$</span>CAFFE_ROOT
+<span style="color:#f92672">/</span>home<span style="color:#f92672">/</span>xieydd<span style="color:#f92672">/</span>caffe<span style="color:#f92672">/</span>
+
+
+
+<span style="color:#75715e">#登录:http://localhost:5000/</span>
+
+<span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">./</span>digits<span style="color:#f92672">-</span>devserver <span style="color:#f92672">--</span>help
+usage: __main__<span style="color:#f92672">.</span>py [<span style="color:#f92672">-</span>h] [<span style="color:#f92672">-</span>p PORT] [<span style="color:#f92672">-</span>d] [<span style="color:#f92672">--</span>version]
+
+DIGITS development server
+
+optional arguments:
+  <span style="color:#f92672">-</span>h, <span style="color:#f92672">--</span>help            show this help message <span style="color:#f92672">and</span> exit
+  <span style="color:#f92672">-</span>p PORT, <span style="color:#f92672">--</span>port PORT  Port to run app on (default <span style="color:#ae81ff">5000</span>)
+  <span style="color:#f92672">-</span>d, <span style="color:#f92672">--</span>debug           Run the application <span style="color:#f92672">in</span> debug mode (reloads when the
+                        source changes <span style="color:#f92672">and</span> gives more detailed error messages)
+  <span style="color:#f92672">--</span>version             Print the version number <span style="color:#f92672">and</span> exit</code></pre></div>
+<p>10.可以开始使用了</p>
+
+<p>详见<a href="https://github.com/xieydd/DIGITS/blob/master/docs/GettingStarted.md">指南</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">xieydd<span style="color:#a6e22e">@xieydd</span>:<span style="color:#f92672">~/</span>digits<span style="color:#960050;background-color:#1e0010">$</span> python <span style="color:#f92672">-</span>m digits<span style="color:#f92672">.</span>download_data mnist <span style="color:#f92672">~/</span>mnist
+Downloading url<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>yann<span style="color:#f92672">.</span>lecun<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>exdb<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>train<span style="color:#f92672">-</span>images<span style="color:#f92672">-</span>idx3<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Downloading url<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>yann<span style="color:#f92672">.</span>lecun<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>exdb<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>train<span style="color:#f92672">-</span>labels<span style="color:#f92672">-</span>idx1<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Downloading url<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>yann<span style="color:#f92672">.</span>lecun<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>exdb<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>t10k<span style="color:#f92672">-</span>images<span style="color:#f92672">-</span>idx3<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Downloading url<span style="color:#f92672">=</span>http:<span style="color:#f92672">//</span>yann<span style="color:#f92672">.</span>lecun<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>exdb<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>t10k<span style="color:#f92672">-</span>labels<span style="color:#f92672">-</span>idx1<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Uncompressing file<span style="color:#f92672">=</span>train<span style="color:#f92672">-</span>images<span style="color:#f92672">-</span>idx3<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Uncompressing file<span style="color:#f92672">=</span>train<span style="color:#f92672">-</span>labels<span style="color:#f92672">-</span>idx1<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Uncompressing file<span style="color:#f92672">=</span>t10k<span style="color:#f92672">-</span>images<span style="color:#f92672">-</span>idx3<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Uncompressing file<span style="color:#f92672">=</span>t10k<span style="color:#f92672">-</span>labels<span style="color:#f92672">-</span>idx1<span style="color:#f92672">-</span>ubyte<span style="color:#f92672">.</span>gz <span style="color:#f92672">...</span>
+Reading labels <span style="color:#f92672">from</span> <span style="color:#f92672">/</span>home<span style="color:#f92672">/</span>xieydd<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>train<span style="color:#f92672">-</span>labels<span style="color:#f92672">.</span>bin <span style="color:#f92672">...</span>
+Reading images <span style="color:#f92672">from</span> <span style="color:#f92672">/</span>home<span style="color:#f92672">/</span>xieydd<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>train<span style="color:#f92672">-</span>images<span style="color:#f92672">.</span>bin <span style="color:#f92672">...</span>
+Reading labels <span style="color:#f92672">from</span> <span style="color:#f92672">/</span>home<span style="color:#f92672">/</span>xieydd<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>test<span style="color:#f92672">-</span>labels<span style="color:#f92672">.</span>bin <span style="color:#f92672">...</span>
+Reading images <span style="color:#f92672">from</span> <span style="color:#f92672">/</span>home<span style="color:#f92672">/</span>xieydd<span style="color:#f92672">/</span>mnist<span style="color:#f92672">/</span>test<span style="color:#f92672">-</span>images<span style="color:#f92672">.</span>bin <span style="color:#f92672">...</span>
+Dataset directory <span style="color:#f92672">is</span> created successfully at <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;/home/xieydd/mnist&#39;</span>
+Done after <span style="color:#ae81ff">47.370775938</span> seconds<span style="color:#f92672">.</span></code></pre></div>
+<p>图像化操作，看文档就好</p>
+
+<p>11.开发项</p>
+
+<p>如果项开发DIGITS，需要源码，请参考<a href="https://github.com/xieydd/DIGITS/blob/master/docs/DevelopmentSetup.md">开发者指南</a></p>
 </article>
     <footer class="post-footer">
       
       <ul class="post-tags">
         
           <li><a href="https://xieydd.github.io/tags/tensorflow"><span class="tag">Tensorflow</span></a></li>
-        
-          <li><a href="https://xieydd.github.io/tags/nvidia"><span class="tag">NVIDIA</span></a></li>
         
           <li><a href="https://xieydd.github.io/tags/digits"><span class="tag">DIGITS</span></a></li>
         
