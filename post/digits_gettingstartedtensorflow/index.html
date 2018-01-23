@@ -16,7 +16,7 @@
 
   
   <meta name="author" content="Xieydd" />
-  <meta name="description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
+  <meta name="description" content="[DIGITS - Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
  帮助函数 在Tensorboard中进行可视化   例子
  简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
   在DIGITS中启用对TensorFlow的支持 如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入
@@ -31,7 +31,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@xieydd_" />
     <meta name="twitter:title" content="DIGITS_GettingStartedTensorflow" />
-    <meta name="twitter:description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
+    <meta name="twitter:description" content="[DIGITS - Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
  帮助函数 在Tensorboard中进行可视化   例子
  简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
   在DIGITS中启用对TensorFlow的支持 如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入
@@ -46,7 +46,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
   
   <meta property="og:type" content="article" />
   <meta property="og:title" content="DIGITS_GettingStartedTensorflow" />
-  <meta property="og:description" content="[DIGITS Getting Started Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
+  <meta property="og:description" content="[DIGITS - Tensorflow] 目录  在DIGITS中启用对TensorFlow的支持 在DIGITS中创建模型时选择TensorFlow 在DIGITS中定义TensorFlow模型  提供属性 内部属性 Tensors  DIGITS的其他Tensorflow工具
  帮助函数 在Tensorboard中进行可视化   例子
  简单自动编码网络 通过重命名冻结预训练模型中的变量 多GPU训练   安装DIGITS及Tensorflow
   在DIGITS中启用对TensorFlow的支持 如果Tesnorflow-gpu被安装到系统，DIGITS将会自动支持Tensorflow，通过import tensorflow看是否实际导入
@@ -269,7 +269,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
     </header>
     <article class="post-content">
 
-<h1 id="digits-getting-started-tensorflow">[DIGITS Getting Started Tensorflow]</h1>
+<h1 id="digits-tensorflow">[DIGITS - Tensorflow]</h1>
 
 <h2 id="目录">目录</h2>
 
@@ -629,10 +629,11 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 
 <h4 id="安装环境">安装环境</h4>
 
-<pre><code>- 
--
--
-</code></pre>
+<ul>
+<li>ubuntu 16.04 TLS</li>
+<li>Python2.7.12
+<br /></li>
+</ul>
 
 <h4 id="前期准备">前期准备</h4>
 
@@ -814,7 +815,7 @@ Tensorflow来自于pip，可以使用简单命令:</li>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> pip install tensorflow<span style="color:#f92672">-</span>gpu<span style="color:#f92672">==</span><span style="color:#ae81ff">1.2</span><span style="color:#f92672">.</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span>i https:<span style="color:#f92672">//</span>mirrors<span style="color:#f92672">.</span>ustc<span style="color:#f92672">.</span>edu<span style="color:#f92672">.</span>cn<span style="color:#f92672">/</span>pypi<span style="color:#f92672">/</span>web<span style="color:#f92672">/</span>simple<span style="color:#f92672">/</span></code></pre></div>
 <p>TensorFlow应该毫不费力地安装，并将其所需的所有依赖关系提取出来</p>
 
-<p>[在DIGITS使用Tensorflow]()</p>
+<p><a href="https://xieydd.github.io/post/digits_gettingstartedtensorflow/">在DIGITS使用Tensorflow</a></p>
 
 <p>6.下载DIGITS源码</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># example location - can be customized</span>
