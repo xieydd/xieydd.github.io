@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Kreas on Xieydd Blog</title>
-    <link>https://xieydd.github.io/tags/kreas/</link>
-    <description>Recent content in Kreas on Xieydd Blog</description>
+    <title>Ict on Xieydd Blog</title>
+    <link>https://xieydd.github.io/tags/ict/</link>
+    <description>Recent content in Ict on Xieydd Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
     <lastBuildDate>Tue, 23 Jan 2018 16:09:34 +0800</lastBuildDate>
     
-	<atom:link href="https://xieydd.github.io/tags/kreas/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://xieydd.github.io/tags/ict/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -21,15 +21,6 @@
       <description>[MatchZoo] MatchZoo是文本匹配工具包，它的发展重点是促进设计、比较和共享深度文本匹配模型。有例如DRMM、MatchPyramid、MV_LSTM、aNMM、DUET、ARC-Ⅰ、ARC-Ⅱ、DSSM以及CDSSM，通过统一接口设计的深度匹配模型。与MatchZoo相关的潜在任务包括文档检索、问题回答、会话响应排序、意译识别等。我们总是很高兴收到来自我们所有的MatchZoo用户的任何代码整合、建议和评论。
    任务 文本1 文本2 对象     意义识别 string1 string2 分类   文本含义 文本 意义 分类   QA 问题 回答 分类和得分   会话 对话框 回应 分类和得分   信息检索 询问 文档 得分    安装 $ git clone https://github.com/faneshion/MatchZoo.git $ cd MatchZoo $ sudo python setup.py install 试运行例子:
 $ python matchzoo/main.py --phase train --model_file examples/toy_example/config/arci_ranking.config $ python matchzoo/main.py --phase predict --model_file examples/toy_example/config/arci_ranking.</description>
-    </item>
-    
-    <item>
-      <title>New_Year_Start</title>
-      <link>https://xieydd.github.io/post/new_start/</link>
-      <pubDate>Thu, 28 Dec 2017 16:37:10 +0800</pubDate>
-      
-      <guid>https://xieydd.github.io/post/new_start/</guid>
-      <description> 新一年的开始&amp;hellip; 新的一年要做的事情(最重要的事放最后面&amp;hellip;)  学习Kubernetes及云原生的基础知识 继续完善全矢CNN模型 着手学习deeplearning.ai的LSTM模型，并上手文本匹配框架MatchZoo 深化对Tensorflow以及Kreas的理解和应用，尤其是Tensorflow对移动端的支持即Tensorflow Lite以及其对于Apple MLCore的支持 尝试将Kubeflow在Kubernetes环境中搭建，并运行模型 发表小论文以及着手准备大论文 强化对Java和Python语言的理解&amp;hellip; 健身、健身、健身&amp;hellip;&amp;hellip; 2018最重要的就是和张哈哈把小窝搭起来，haha&amp;hellip;  </description>
     </item>
     
   </channel>

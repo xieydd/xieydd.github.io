@@ -13,6 +13,16 @@
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/post/detectron/</loc>
+    <lastmod>2018-01-25T19:44:41+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/post/matchzoo/</loc>
+    <lastmod>2018-01-23T16:09:34+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/post/digits_gettingstartedtensorflow/</loc>
     <lastmod>2018-01-23T10:35:00+08:00</lastmod>
   </url>
@@ -103,6 +113,12 @@
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/tags/ict/</loc>
+    <lastmod>2018-01-23T16:09:34+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/tags/katacoda/</loc>
     <lastmod>2018-01-19T15:32:44+08:00</lastmod>
     <priority>0</priority>
@@ -110,7 +126,7 @@
   
   <url>
     <loc>https://xieydd.github.io/tags/kreas/</loc>
-    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <lastmod>2018-01-23T16:09:34+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -152,7 +168,7 @@
   
   <url>
     <loc>https://xieydd.github.io/tags/matchzoo/</loc>
-    <lastmod>2018-01-14T22:15:23+08:00</lastmod>
+    <lastmod>2018-01-23T16:09:34+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -164,7 +180,7 @@
   
   <url>
     <loc>https://xieydd.github.io/post/</loc>
-    <lastmod>2018-01-23T10:35:00+08:00</lastmod>
+    <lastmod>2018-01-25T19:44:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   

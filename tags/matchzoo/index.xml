@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
-    <lastBuildDate>Sun, 14 Jan 2018 22:15:23 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 23 Jan 2018 16:09:34 +0800</lastBuildDate>
     
 	<atom:link href="https://xieydd.github.io/tags/matchzoo/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>MatchZoo</title>
+      <link>https://xieydd.github.io/post/matchzoo/</link>
+      <pubDate>Tue, 23 Jan 2018 16:09:34 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/matchzoo/</guid>
+      <description>[MatchZoo] MatchZoo是文本匹配工具包，它的发展重点是促进设计、比较和共享深度文本匹配模型。有例如DRMM、MatchPyramid、MV_LSTM、aNMM、DUET、ARC-Ⅰ、ARC-Ⅱ、DSSM以及CDSSM，通过统一接口设计的深度匹配模型。与MatchZoo相关的潜在任务包括文档检索、问题回答、会话响应排序、意译识别等。我们总是很高兴收到来自我们所有的MatchZoo用户的任何代码整合、建议和评论。
+   任务 文本1 文本2 对象     意义识别 string1 string2 分类   文本含义 文本 意义 分类   QA 问题 回答 分类和得分   会话 对话框 回应 分类和得分   信息检索 询问 文档 得分    安装 $ git clone https://github.com/faneshion/MatchZoo.git $ cd MatchZoo $ sudo python setup.py install 试运行例子:
+$ python matchzoo/main.py --phase train --model_file examples/toy_example/config/arci_ranking.config $ python matchzoo/main.py --phase predict --model_file examples/toy_example/config/arci_ranking.</description>
+    </item>
     
     <item>
       <title>Cross Lingual End to End Product Search with Tensorflow</title>

@@ -383,7 +383,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 <tr>
 <td>input_shape</td>
 <td>Tensor</td>
-<td>第一个输入张量的Shape(1D张量)。对于图像数据，[0]、[1]和[2]分别设置为的高度、宽度和通道</td>
+<td>第一个输入张量的Shape(1D张量)。对于图像数据，0、1和2分别设置为的高度、宽度和通道</td>
 </tr>
 
 <tr>
@@ -401,13 +401,13 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 <tr>
 <td>x</td>
 <td>Tensor</td>
-<td>输入节点，shape为[N, H, W, C]</td>
+<td>输入节点，shape为N, H, W, C</td>
 </tr>
 
 <tr>
 <td>y</td>
 <td>Tensor</td>
-<td>标签，[N]为标量标签，只有self.is_training是True的时候</td>
+<td>标签，N为标量标签，只有self.is_training是True的时候</td>
 </tr>
 </tbody>
 </table>
@@ -448,7 +448,7 @@ class UserModel(Tower): @model_propertyOther TensorFlow Tools in DIGITS def infe
 
 <h4 id="张量">张量</h4>
 
-<p>这个网络使用[N,H,W,C]回馈给Tensorflow的Tensor对象</p>
+<p>这个网络使用N,H,W,C回馈给Tensorflow的Tensor对象</p>
 
 <h3 id="digits其他的tensorflow工具">DIGITS其他的Tensorflow工具</h3>
 

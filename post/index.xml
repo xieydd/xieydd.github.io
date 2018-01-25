@@ -7,10 +7,35 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
-    <lastBuildDate>Tue, 23 Jan 2018 10:35:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jan 2018 19:44:41 +0800</lastBuildDate>
     
 	<atom:link href="https://xieydd.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Detectron</title>
+      <link>https://xieydd.github.io/post/detectron/</link>
+      <pubDate>Thu, 25 Jan 2018 19:44:41 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/detectron/</guid>
+      <description>[Detectron] Detectron是FAIR(Facebook AI Research)实现最先进的目标检测算法的软件，包含Mask R-CNN.使用Python以及Caffe2的深度学习框架支持
+在FAIR，Detectron已经开启多个研究项目，包括Feature Pyramid Networks for Object Detection、Mask R-CNN、Detecting and Recognizing Human-Object Interactions、Focal Loss for Dense Object Detection、Non-local Neural Networks, Learning to Segment Every Thing、Data Distillation: Towards Omni-Supervised Learning,即特征金字塔网络用于对象检测、Mask R-CNN、检测和识别人类动作交流、密集对象检测的焦点损失、非本地神经网络、学会分割每一件事、数据精炼:面向全监督学习
+[Example Mask R-CNN output]
+介绍 Deterctron的目标是提供一个高质量，高性能的目标检测代码库。它的设计是灵活的，快速实现和评估论文。Detection包含以下目标检测算法的实现:
+ Mask R-CNN &amp;ndash; marr Prize at ICCV 2017 RetinaNet  &amp;ndash; Best Student Paper Award at ICCV 2017 Faster R-CNN RPN Fast R-CNN R-FCN  使用以下主干神经网络框架:
+ ResNeXt{50,101,152} ResNet{50,101,152} Feature Pyramid Networks(with ResNet/ResNeXt) VGG16  额外的主干框架很容易实现，具体参考</description>
+    </item>
+    
+    <item>
+      <title>MatchZoo</title>
+      <link>https://xieydd.github.io/post/matchzoo/</link>
+      <pubDate>Tue, 23 Jan 2018 16:09:34 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/matchzoo/</guid>
+      <description>[MatchZoo] MatchZoo是文本匹配工具包，它的发展重点是促进设计、比较和共享深度文本匹配模型。有例如DRMM、MatchPyramid、MV_LSTM、aNMM、DUET、ARC-Ⅰ、ARC-Ⅱ、DSSM以及CDSSM，通过统一接口设计的深度匹配模型。与MatchZoo相关的潜在任务包括文档检索、问题回答、会话响应排序、意译识别等。我们总是很高兴收到来自我们所有的MatchZoo用户的任何代码整合、建议和评论。
+   任务 文本1 文本2 对象     意义识别 string1 string2 分类   文本含义 文本 意义 分类   QA 问题 回答 分类和得分   会话 对话框 回应 分类和得分   信息检索 询问 文档 得分    安装 $ git clone https://github.com/faneshion/MatchZoo.git $ cd MatchZoo $ sudo python setup.py install 试运行例子:
+$ python matchzoo/main.py --phase train --model_file examples/toy_example/config/arci_ranking.config $ python matchzoo/main.py --phase predict --model_file examples/toy_example/config/arci_ranking.</description>
+    </item>
     
     <item>
       <title>DIGITS_GettingStartedTensorflow</title>

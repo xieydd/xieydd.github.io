@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Detectron</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[Detectron] Detectron是FAIR(Facebook AI Research)实现最先进的目标检测算法的软件，包含Mask R-CNN.使用Python以及Caffe2的深度学习框架支持
+在FAIR，Detectron已经开启多个研究项目，包括Feature Pyramid Networks for Object Detection、Mask R-CNN、Detecting and Recognizing Human-Object Interactions、Focal Loss for Dense Object Detection、Non-local Neural Networks, Learning to Segment Every Thing、Data Distillation: Towards Omni-Supervised Learning,即特征金字塔网络用于对象检测、Mask R-CNN、检测和识别人类动作交流、密集对象检测的焦点损失、非本地神经网络、学会分割每一件事、数据精炼:面向全监督学习
+[Example Mask R-CNN output]
+介绍 Deterctron的目标是提供一个高质量，高性能的目标检测代码库。它的设计是灵活的，快速实现和评估论文。Detection包含以下目标检测算法的实现:
+ Mask R-CNN &amp;ndash; marr Prize at ICCV 2017 RetinaNet  &amp;ndash; Best Student Paper Award at ICCV 2017 Faster R-CNN RPN Fast R-CNN R-FCN  使用以下主干神经网络框架:
+ ResNeXt{50,101,152} ResNet{50,101,152} Feature Pyramid Networks(with ResNet/ResNeXt) VGG16  额外的主干框架很容易实现，具体参考" />
+
+  
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Detectron" />
+    <meta name="twitter:description" content="[Detectron] Detectron是FAIR(Facebook AI Research)实现最先进的目标检测算法的软件，包含Mask R-CNN.使用Python以及Caffe2的深度学习框架支持
+在FAIR，Detectron已经开启多个研究项目，包括Feature Pyramid Networks for Object Detection、Mask R-CNN、Detecting and Recognizing Human-Object Interactions、Focal Loss for Dense Object Detection、Non-local Neural Networks, Learning to Segment Every Thing、Data Distillation: Towards Omni-Supervised Learning,即特征金字塔网络用于对象检测、Mask R-CNN、检测和识别人类动作交流、密集对象检测的焦点损失、非本地神经网络、学会分割每一件事、数据精炼:面向全监督学习
+[Example Mask R-CNN output]
+介绍 Deterctron的目标是提供一个高质量，高性能的目标检测代码库。它的设计是灵活的，快速实现和评估论文。Detection包含以下目标检测算法的实现:
+ Mask R-CNN &amp;ndash; marr Prize at ICCV 2017 RetinaNet  &amp;ndash; Best Student Paper Award at ICCV 2017 Faster R-CNN RPN Fast R-CNN R-FCN  使用以下主干神经网络框架:
+ ResNeXt{50,101,152} ResNet{50,101,152} Feature Pyramid Networks(with ResNet/ResNeXt) VGG16  额外的主干框架很容易实现，具体参考" />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/FAIR.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Detectron" />
+  <meta property="og:description" content="[Detectron] Detectron是FAIR(Facebook AI Research)实现最先进的目标检测算法的软件，包含Mask R-CNN.使用Python以及Caffe2的深度学习框架支持
+在FAIR，Detectron已经开启多个研究项目，包括Feature Pyramid Networks for Object Detection、Mask R-CNN、Detecting and Recognizing Human-Object Interactions、Focal Loss for Dense Object Detection、Non-local Neural Networks, Learning to Segment Every Thing、Data Distillation: Towards Omni-Supervised Learning,即特征金字塔网络用于对象检测、Mask R-CNN、检测和识别人类动作交流、密集对象检测的焦点损失、非本地神经网络、学会分割每一件事、数据精炼:面向全监督学习
+[Example Mask R-CNN output]
+介绍 Deterctron的目标是提供一个高质量，高性能的目标检测代码库。它的设计是灵活的，快速实现和评估论文。Detection包含以下目标检测算法的实现:
+ Mask R-CNN &amp;ndash; marr Prize at ICCV 2017 RetinaNet  &amp;ndash; Best Student Paper Award at ICCV 2017 Faster R-CNN RPN Fast R-CNN R-FCN  使用以下主干神经网络框架:
+ ResNeXt{50,101,152} ResNet{50,101,152} Feature Pyramid Networks(with ResNet/ResNeXt) VGG16  额外的主干框架很容易实现，具体参考" />
+  <meta property="og:url" content="https://xieydd.github.io/post/detectron/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/FAIR.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.34" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/detectron/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Detectron</h1>
+      <p class="post-meta">@Xieydd · Jan 25, 2018 · 4 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="detectron">[Detectron]</h1>
+
+<p>Detectron是FAIR(Facebook AI Research)实现最先进的目标检测算法的软件，包含<a href="https://arxiv.org/abs/1703.06870">Mask R-CNN</a>.使用Python以及Caffe2的深度学习框架支持</p>
+
+<p>在FAIR，Detectron已经开启多个研究项目，包括<a href="https://arxiv.org/abs/1612.03144">Feature Pyramid Networks for Object Detection</a>、<a href="https://arxiv.org/abs/1703.06870"> Mask R-CNN</a>、<a href="https://arxiv.org/abs/1704.07333">Detecting and Recognizing Human-Object Interactions</a>、<a href="https://arxiv.org/abs/1708.02002">Focal Loss for Dense Object Detection</a>、<a href="https://arxiv.org/abs/1711.07971">Non-local Neural Networks, Learning to Segment Every Thing</a>、<a href="https://arxiv.org/abs/1712.04440">Data Distillation: Towards Omni-Supervised Learning</a>,即特征金字塔网络用于对象检测、Mask R-CNN、检测和识别人类动作交流、密集对象检测的焦点损失、非本地神经网络、学会分割每一件事、数据精炼:面向全监督学习</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/Mask_R-CNN.jpg" alt="Example Mask R-CNN output" />
+[Example Mask R-CNN output]</p>
+
+<h3 id="介绍">介绍</h3>
+
+<p>Deterctron的目标是提供一个高质量，高性能的目标检测代码库。它的设计是灵活的，快速实现和评估论文。Detection包含以下目标检测算法的实现:</p>
+
+<ul>
+<li><a href="https://arxiv.org/abs/1703.06870">Mask R-CNN</a> &ndash; marr Prize at ICCV 2017</li>
+<li><a href="https://arxiv.org/abs/1708.02002">RetinaNet </a> &ndash; Best Student Paper Award at ICCV 2017</li>
+<li><a href="https://arxiv.org/abs/1506.01497">Faster R-CNN</a></li>
+<li><a href="https://arxiv.org/abs/1506.01497">RPN</a></li>
+<li><a href="https://arxiv.org/abs/1504.08083">Fast R-CNN</a></li>
+<li><a href="https://arxiv.org/abs/1605.06409">R-FCN</a></li>
+</ul>
+
+<p>使用以下主干神经网络框架:</p>
+
+<ul>
+<li><a href="https://arxiv.org/abs/1611.05431">ResNeXt{50,101,152}</a></li>
+<li><a href="https://arxiv.org/abs/1512.03385">ResNet{50,101,152}</a></li>
+<li><a href="https://arxiv.org/abs/1612.03144">Feature Pyramid Networks</a>(with ResNet/ResNeXt)</li>
+<li><a href="https://arxiv.org/abs/1409.1556">VGG16</a></li>
+</ul>
+
+<p>额外的主干框架很容易实现，具体<a href="https://github.com/xieydd/Detectron#references">参考</a></p>
+
+<h3 id="引用detectron">引用Detectron</h3>
+
+<p>如果你想在你的研究中引用发表咋<a href="https://github.com/xieydd/Detectron/blob/master/MODEL_ZOO.md">Model Zoo</a>baseline结果,请使用以下的BibTeX：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@misc</span>{Detectron2018,
+  author <span style="color:#f92672">=</span>       {Ross Girshick <span style="color:#f92672">and</span> Ilija Radosavovic <span style="color:#f92672">and</span> Georgia Gkioxari <span style="color:#f92672">and</span>
+                  Piotr Doll\<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;{a}r and Kaiming He},</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">  title =        {Detectron},</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">  howpublished = {\url{https://github.com/facebookresearch/detectron}},</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">  year =         {2018}</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#e6db74">}</span></code></pre></div>
+<h3 id="model-zoo以及-baselines">Model Zoo以及 Baselines</h3>
+
+<p>我们提供了大量的baseline结果，以及训练好的模型参数，可以在<a href="https://github.com/xieydd/Detectron/blob/master/MODEL_ZOO.md">Detectron Model Zoo</a></p>
+
+<h3 id="安装">安装</h3>
+
+<p>这里需要安装Detectron, 和它的依赖 (包含 Caffe2), 以及COCO dataset.</p>
+
+<p><strong>要求</strong></p>
+
+<ul>
+<li>NVIDIA GPU, Linux, Python2</li>
+<li>Caffe2一些基本的Python包以及COCO的API</li>
+</ul>
+
+<p><strong>注意</strong></p>
+
+<ul>
+<li>Detectron目前只支持GPU</li>
+<li>Detectron在CUDA8.0和cuDNN 6.0.21上进行测试过</li>
+</ul>
+
+<h4 id="caffe2">Caffe2</h4>
+
+<p>注意Caffe2需为最新版，以支持<a href="https://github.com/caffe2/caffe2/tree/master/modules/detectron">Detectron module</a></p>
+
+<ul>
+<li>安装依赖</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get update
+<span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">-</span>y <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>install<span style="color:#f92672">-</span>recommends \
+      build<span style="color:#f92672">-</span>essential \
+      cmake \
+      git \
+      libgoogle<span style="color:#f92672">-</span>glog<span style="color:#f92672">-</span>dev \
+      libprotobuf<span style="color:#f92672">-</span>dev \
+      protobuf<span style="color:#f92672">-</span>compiler \
+      python<span style="color:#f92672">-</span>dev \
+      python<span style="color:#f92672">-</span>pip                          
+<span style="color:#960050;background-color:#1e0010">$</span> sudo pip install numpy protobuf</code></pre></div>
+<p><strong>可选依赖</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># for Ubuntu 16.04</span>
+<span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">-</span>y <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>install<span style="color:#f92672">-</span>recommends libgflags<span style="color:#f92672">-</span>dev
+
+<span style="color:#960050;background-color:#1e0010">$</span> sudo apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">-</span>y <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>install<span style="color:#f92672">-</span>recommends \
+      libgtest<span style="color:#f92672">-</span>dev \
+      libiomp<span style="color:#f92672">-</span>dev \
+      libleveldb<span style="color:#f92672">-</span>dev \
+      liblmdb<span style="color:#f92672">-</span>dev \
+      libopencv<span style="color:#f92672">-</span>dev \
+      libopenmpi<span style="color:#f92672">-</span>dev \
+      libsnappy<span style="color:#f92672">-</span>dev \
+      openmpi<span style="color:#f92672">-</span>bin \
+      openmpi<span style="color:#f92672">-</span>doc \
+      python<span style="color:#f92672">-</span>pydot
+<span style="color:#960050;background-color:#1e0010">$</span>sudo pip install \
+      flask \
+      future \
+      graphviz \
+      hypothesis \
+      jupyter \
+      matplotlib \
+      pydot python<span style="color:#f92672">-</span>nvd3 \
+      pyyaml \
+      requests \
+      scikit<span style="color:#f92672">-</span>image \
+      scipy \
+      setuptools \
+      six \
+      tornado <span style="color:#f92672">-</span>i https:<span style="color:#f92672">//</span>mirrors<span style="color:#f92672">.</span>ustc<span style="color:#f92672">.</span>edu<span style="color:#f92672">.</span>cn<span style="color:#f92672">/</span>pypi<span style="color:#f92672">/</span>web<span style="color:#f92672">/</span>simple<span style="color:#f92672">/</span></code></pre></div>
+<p><strong>克隆和Build</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> git clone <span style="color:#f92672">--</span>recursive https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>caffe2<span style="color:#f92672">/</span>caffe2<span style="color:#f92672">.</span>git <span style="color:#f92672">&amp;&amp;</span> cd caffe2
+<span style="color:#960050;background-color:#1e0010">$</span> make <span style="color:#f92672">&amp;&amp;</span> cd build <span style="color:#f92672">&amp;&amp;</span> sudo make install
+<span style="color:#960050;background-color:#1e0010">$</span> python <span style="color:#f92672">-</span>c <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;from caffe2.python import core&#39;</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;/</span>dev<span style="color:#f92672">/</span>null <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Success&#34;</span> <span style="color:#f92672">||</span> echo <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Failure&#34;</span></code></pre></div>
+<p>测试GPU是否构建成功</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> python <span style="color:#f92672">-</span>m caffe2<span style="color:#f92672">.</span>python<span style="color:#f92672">.</span>operator_test<span style="color:#f92672">.</span>relu_op_test</code></pre></div>
+<p><strong>设置环境变量</strong></p>
+
+<p>这些环境变量可以根据您当前的配置提供帮助。当在AWS深度学习AMI上使用安装说明时，您不需要设置这些变量。然而，我们的Docker脚本构建在Ubuntu-14.04或NVIDIA的CUDA图像上似乎受益于这些设置。如果您在上面的构建测试中遇到问题，那么这些都是值得检查的好东西。先回传它们，看看你有什么，并可能附加或替换这些目录。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> echo <span style="color:#960050;background-color:#1e0010">$</span>PYTHONPATH
+<span style="color:#75715e"># export PYTHONPATH=/usr/local:$PYTHONPATH</span>
+<span style="color:#75715e"># export PYTHONPATH=$PYTHONPATH:/home/ubuntu/caffe2/build</span>
+<span style="color:#960050;background-color:#1e0010">$</span> echo <span style="color:#960050;background-color:#1e0010">$</span>LD_LIBRARY_PATH
+<span style="color:#75715e"># export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH</span></code></pre></div>
+<p><strong>设置教程和Jupyter Server</strong></p>
+
+<p>如果在云计算机上运行这一切，默认情况下，您可能不会有一个UI或方法来查看IPython notebooks。通常，您将在本地使用ipython notebook启动它们，您将看到一个localhost:8888网页弹出的是笔记本运行的目录。下面的示例将向您展示如何启动Jupyter server并通过SSH通道连接到远程。</p>
+
+<p>首先配置您的云服务器以接受端口8889，或者您想要的任何东西，但是要在以下命令中更改端口。在AWS上，您可以通过向服务器的安全组添加一个规则来实现这一目标，允许在端口8889上输入TCP。否则你会调整iptables。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#启动Jupyter Server</span>
+<span style="color:#960050;background-color:#1e0010">$</span> jupyter notebook <span style="color:#f92672">--</span>no<span style="color:#f92672">-</span>browser <span style="color:#f92672">--</span>port<span style="color:#f92672">=</span><span style="color:#ae81ff">8889</span></code></pre></div>
+<p>然后创建SSH通道。这将把云服务器的Jupyter实例传递到您的本地主机8888端口，供您在本地使用。下面的例子是在您如何连接AWS(您的公共证书)之后进行模板化的。your-public-cert.pem是您自己的公共证书，ubuntu@superrad-gpu-instance.compute -1.amazonaws.com是您的登录到您的云服务器。您可以在AWS上轻松地获取这一信息，并在ssh之后复制该部分，并在下面的命令中进行交换。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> ssh <span style="color:#f92672">-</span>N <span style="color:#f92672">-</span>f <span style="color:#f92672">-</span>L localhost:<span style="color:#ae81ff">8888</span>:localhost:<span style="color:#ae81ff">8889</span> <span style="color:#f92672">-</span>i <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;your-public-cert.pem&#34;</span> ubuntu<span style="color:#a6e22e">@super</span><span style="color:#f92672">-</span>rad<span style="color:#f92672">-</span>GPU<span style="color:#f92672">-</span>instance<span style="color:#f92672">.</span>compute<span style="color:#f92672">-</span><span style="color:#ae81ff">1.</span>amazonaws<span style="color:#f92672">.</span>com</code></pre></div>
+<p><strong>Troubleshooting</strong></p>
+
+<p>详见<a href="https://caffe2.ai/docs/getting-started.html?platform=ubuntu&amp;configuration=compile">文档</a></p>
+
+<h4 id="另外一些依赖">另外一些依赖</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> pip install numpy pyyaml matplotlib opencv<span style="color:#f92672">-</span>python<span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">3.0</span> setuptools Cython mock</code></pre></div>
+<p>安装COCO的<a href="https://github.com/cocodataset/cocoapi">API</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 注意COCOAPI=/path/to/clone/cocoapi</span>
+<span style="color:#960050;background-color:#1e0010">$</span> git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>cocodataset<span style="color:#f92672">/</span>cocoapi<span style="color:#f92672">.</span>git <span style="color:#960050;background-color:#1e0010">$</span>COCOAPI
+<span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>COCOAPI<span style="color:#f92672">/</span>PythonAPI
+<span style="color:#75715e"># Install into global site-packages</span>
+<span style="color:#960050;background-color:#1e0010">$</span> make install
+<span style="color:#75715e"># Alternatively, if you do not have permissions or prefer</span>
+<span style="color:#75715e"># not to install the COCO API into global site-packages</span>
+<span style="color:#960050;background-color:#1e0010">$</span> python2 setup<span style="color:#f92672">.</span>py install <span style="color:#f92672">--</span>user</code></pre></div>
+<h4 id="detectron-1">Detectron</h4>
+
+<p>克隆Detectron仓库:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># DETECTRON=/path/to/clone/detectron</span>
+<span style="color:#960050;background-color:#1e0010">$</span> git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>facebookresearch<span style="color:#f92672">/</span>detectron <span style="color:#960050;background-color:#1e0010">$</span>DETECTRON</code></pre></div>
+<p>设置Python模块</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>DETECTRON<span style="color:#f92672">/</span>lib <span style="color:#f92672">&amp;&amp;</span> make</code></pre></div>
+<p>检测是否通过(以<a href="https://github.com/xieydd/Detectron/blob/master/tests/test_spatial_narrow_as_op.py"> SpatialNarrowAsOp test</a>为例)</p>
+
+<pre><code>$ python2 $DETECTRON/tests/test_spatial_narrow_as_op.py
+</code></pre>
+
+<p>这时候你就可以使用预训练Detectron模型。参考<a href="https://github.com/xieydd/Detectron/blob/master/GETTING_STARTED.md">infrence tutorial</a>.如果您想在COCO数据集上训练模型，请继续使用安装说明.</p>
+
+<h4 id="数据集">数据集</h4>
+
+<p>Detectron通过符号链接lib/datasets/data寻找数据集到数据集图像和注释存储的实际位置。有关如何为COCO和其他数据集例如: PASCAL VOC创建符号链接的说明，请参见<a href="https://github.com/xieydd/Detectron/blob/master/lib/datasets/data/README.md">lib/datasets/data/README.md</a></p>
+
+<p>连接创建后，就可以开始训练模型了</p>
+
+<h4 id="高级主题-新研究项目的自定义操作">高级主题:新研究项目的自定义操作</h4>
+
+<p>请阅读自定义操作不烦的常见问题<a href="https://github.com/xieydd/Detectron/blob/master/FAQ.md">FAQ</a></p>
+
+<p>为方便起见，我们提供CMake支持来构建自定义操作。所有自定义操作都构建在一个可以从Python动态加载的单个库中。将自定义操作实现放在下面<a href="https://github.com/xieydd/Detectron/tree/master/lib/ops">lib/ops/</a>可以参考<a href="https://github.com/xieydd/Detectron/blob/master/tests/test_zero_even_op.py">tests/test_zero_even_op.py</a>例子看一看如何通过Python加载自定义操作</p>
+
+<p>构建自定义操作符库:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>DETECTRON<span style="color:#f92672">/</span>lib <span style="color:#f92672">&amp;&amp;</span> make ops
+<span style="color:#75715e">#检查自定义操作</span>
+<span style="color:#960050;background-color:#1e0010">$</span> python2 <span style="color:#960050;background-color:#1e0010">$</span>DETECTRON<span style="color:#f92672">/</span>tests<span style="color:#f92672">/</span>test_zero_even_op<span style="color:#f92672">.</span>py</code></pre></div>
+<h4 id="docker-镜像">Docker 镜像</h4>
+
+<p>我们提供<a href="https://github.com/xieydd/Detectron/blob/master/docker/Dockerfile">Dockerfile</a>，可以使用它创建Detectron镜像.如果你是要预训练Caffe2镜像(例如从<a href="https://hub.docker.com/r/caffe2ai/caffe2/">docker镜像库</a>)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Dockerfile</span>
+<span style="color:#75715e"># Use Caffe2 image as parent image</span>
+FROM caffe2:cuda8<span style="color:#f92672">-</span>cudnn6<span style="color:#f92672">-</span>all<span style="color:#f92672">-</span>options
+
+<span style="color:#75715e"># Install Python dependencies</span>
+RUN pip install numpy pyyaml matplotlib opencv<span style="color:#f92672">-</span>python<span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">3.0</span> setuptools Cython mock
+
+<span style="color:#75715e"># Install the COCO API</span>
+RUN git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>cocodataset<span style="color:#f92672">/</span>cocoapi<span style="color:#f92672">.</span>git
+WORKDIR <span style="color:#f92672">/</span>cocoapi<span style="color:#f92672">/</span>PythonAPI
+RUN make install
+
+<span style="color:#75715e"># Clone the Detectron repository</span>
+RUN git clone https:<span style="color:#f92672">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>facebookresearch<span style="color:#f92672">/</span>detectron <span style="color:#f92672">/</span>detectron
+
+<span style="color:#75715e"># Set up Python modules</span>
+WORKDIR <span style="color:#f92672">/</span>detectron<span style="color:#f92672">/</span>lib
+RUN make
+
+<span style="color:#75715e"># Build custom ops</span>
+RUN make ops
+
+<span style="color:#75715e"># Go to Detectron root</span>
+WORKDIR <span style="color:#f92672">/</span>detectron</code></pre></div>
+<p>我们还提供了如何构建一个最新的Caffe2镜像的示例。</p>
+
+<p>创建Caffe2镜像</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">/</span>path<span style="color:#f92672">/</span>to<span style="color:#f92672">/</span>caffe2<span style="color:#f92672">/</span>docker<span style="color:#f92672">/</span>ubuntu<span style="color:#f92672">-</span><span style="color:#ae81ff">16.04</span><span style="color:#f92672">-</span>cuda8<span style="color:#f92672">-</span>cudnn6<span style="color:#f92672">-</span>all<span style="color:#f92672">-</span>options
+<span style="color:#75715e"># Use the latest Caffe2 master</span>
+<span style="color:#960050;background-color:#1e0010">$</span> sed <span style="color:#f92672">-</span>i <span style="color:#f92672">-</span>e <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;s/ --branch v0.8.1//g&#39;</span> Dockerfile
+<span style="color:#960050;background-color:#1e0010">$</span> docker build <span style="color:#f92672">-</span>t caffe2:cuda8<span style="color:#f92672">-</span>cudnn6<span style="color:#f92672">-</span>all<span style="color:#f92672">-</span>options <span style="color:#f92672">.</span></code></pre></div>
+<p>创建Detectron镜像</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>DETECTRON<span style="color:#f92672">/</span>docker
+<span style="color:#960050;background-color:#1e0010">$</span> docker build <span style="color:#f92672">-</span>t detectron:c2<span style="color:#f92672">-</span>cuda8<span style="color:#f92672">-</span>cudnn6 </code></pre></div>
+<p>运行Detectron镜像(例如:<a href="https://github.com/xieydd/Detectron/blob/master/tests/test_batch_permutation_op.py">BatchPermutationOp test</a>)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> nvidia<span style="color:#f92672">-</span>docker run <span style="color:#f92672">--</span>rm <span style="color:#f92672">-</span>it detectron:c2<span style="color:#f92672">-</span>cuda8<span style="color:#f92672">-</span>cudnn6 python2 tests<span style="color:#f92672">/</span>test_batch_permutation_op<span style="color:#f92672">.</span>py</code></pre></div>
+<h4 id="排错">排错</h4>
+
+<p>如果出现Caffe2安装问题，请阅读相关Caffe2<a href="https://caffe2.ai/docs/getting-started.html?platform=windows&amp;configuration=compile">安装指导</a>的故障排除部分,我们为Caffe2和Detectron提供了额外的故障排除提示</p>
+
+<h5 id="caffe2运算符分析">Caffe2运算符分析</h5>
+
+<p>Caffe2附带<a href="https://github.com/caffe2/caffe2/tree/master/caffe2/contrib/prof">性能分析</a>支持，您可能会发现对您的操作人员进行基准测试或调试非常有用,例如<a href="https://github.com/xieydd/Detectron/blob/master/tests/test_batch_permutation_op.py">BatchPermutationOp test</a>。分析支持不是默认生成的，您可以通过在运行Caffe2 CMake时设置-DUSE_PROF = ON标志来启用它</p>
+
+<h5 id="cmake无法找到cuda和cudnn">CMake无法找到CUDA和cuDNN</h5>
+
+<p>有时候，CMake在你的机器上很难找到CUDA和cuDNN文件</p>
+
+<p>在构建Caffe2时，你可以将CMake指向CUDA和cuDNN文件通过:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cmake <span style="color:#f92672">..</span> \
+  <span style="color:#75715e"># insert your Caffe2 CMake flags here</span>
+  <span style="color:#f92672">-</span>DCUDA_TOOLKIT_ROOT_DIR<span style="color:#f92672">=/</span>path<span style="color:#f92672">/</span>to<span style="color:#f92672">/</span>cuda<span style="color:#f92672">/</span>toolkit<span style="color:#f92672">/</span>dir \
+  <span style="color:#f92672">-</span>DCUDNN_ROOT_DIR<span style="color:#f92672">=/</span>path<span style="color:#f92672">/</span>to<span style="color:#f92672">/</span>cudnn<span style="color:#f92672">/</span>root<span style="color:#f92672">/</span>dir</code></pre></div>
+<p>类似地，在构建定制的检测操作时，你可以使用:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>DETECTRON<span style="color:#f92672">/</span>lib
+<span style="color:#960050;background-color:#1e0010">$</span> mkdir <span style="color:#f92672">-</span>p build <span style="color:#f92672">&amp;&amp;</span> cd build
+<span style="color:#960050;background-color:#1e0010">$</span> cmake <span style="color:#f92672">..</span> \
+  <span style="color:#f92672">-</span>DCUDA_TOOLKIT_ROOT_DIR<span style="color:#f92672">=/</span>path<span style="color:#f92672">/</span>to<span style="color:#f92672">/</span>cuda<span style="color:#f92672">/</span>toolkit<span style="color:#f92672">/</span>dir \
+  <span style="color:#f92672">-</span>DCUDNN_ROOT_DIR<span style="color:#f92672">=/</span>path<span style="color:#f92672">/</span>to<span style="color:#f92672">/</span>cudnn<span style="color:#f92672">/</span>root<span style="color:#f92672">/</span>dir
+<span style="color:#960050;background-color:#1e0010">$</span> make</code></pre></div>
+<p>请注意，您可以使用相同的命令来让CMake使用在您的机器上安装的多个版本的CUDA和cuDNN的特定版本。</p>
+
+<h5 id="protobuf错误">Protobuf错误</h5>
+
+<p>Caffe2使用protobuf作为序列化格式，需要3.2.0或更新版本。如果您的protobuf版本较旧，您可以从Caffe2 protobuf子模块构建protobuf，然后使用该版本.</p>
+
+<p>构建Caffe2 protobuf子模块</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># CAFFE2=/path/to/caffe2</span>
+<span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#960050;background-color:#1e0010">$</span>CAFFE2<span style="color:#f92672">/</span>third_party<span style="color:#f92672">/</span>protobuf<span style="color:#f92672">/</span>cmake
+<span style="color:#960050;background-color:#1e0010">$</span> mkdir <span style="color:#f92672">-</span>p build <span style="color:#f92672">&amp;&amp;</span> cd build
+<span style="color:#960050;background-color:#1e0010">$</span> cmake <span style="color:#f92672">..</span> \
+  <span style="color:#f92672">-</span>DCMAKE_INSTALL_PREFIX<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">$</span>HOME<span style="color:#f92672">/</span>c2_tp_protobuf \
+  <span style="color:#f92672">-</span>Dprotobuf_BUILD_TESTS<span style="color:#f92672">=</span>OFF \
+  <span style="color:#f92672">-</span>DCMAKE_CXX_FLAGS<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;-fPIC&#34;</span>
+<span style="color:#960050;background-color:#1e0010">$</span> make install</code></pre></div>
+<p>将Caffe的的CMake指向新建成的protobuf:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cmake <span style="color:#f92672">..</span> \
+  <span style="color:#75715e"># insert your Caffe2 CMake flags here</span>
+  <span style="color:#f92672">-</span>DPROTOBUF_PROTOC_EXECUTABLE<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">$</span>HOME<span style="color:#f92672">/</span>c2_tp_protobuf<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>protoc \
+  <span style="color:#f92672">-</span>DPROTOBUF_INCLUDE_DIR<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">$</span>HOME<span style="color:#f92672">/</span>c2_tp_protobuf<span style="color:#f92672">/</span>include \
+  <span style="color:#f92672">-</span>DPROTOBUF_LIBRARY<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">$</span>HOME<span style="color:#f92672">/</span>c2_tp_protobuf<span style="color:#f92672">/</span>lib64<span style="color:#f92672">/</span>libprotobuf<span style="color:#f92672">.</span>a</code></pre></div>
+<p>如果您同时安装了系统和anaconda包，那么您可能也会遇到protobuf的问题。这可能会导致问题，因为版本可能在编译时或运行时混合。通过遵循上面的命令，也可以克服这个问题。</p>
+
+<h5 id="caffe2-python二进制文件">Caffe2 Python二进制文件</h5>
+
+<p>如果您遇到CMake无法找到所需的Python路径的问题(例如在virtualenv中)，您可以尝试将Caffe2的CMake指向Python库，并使用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> cmake <span style="color:#f92672">..</span> \
+  <span style="color:#75715e"># insert your Caffe2 CMake flags here</span>
+  <span style="color:#f92672">-</span>DPYTHON_LIBRARY<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">$</span>(python2 <span style="color:#f92672">-</span>c <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;from distutils import sysconfig; print(sysconfig.get_python_lib())&#34;</span>) \
+  <span style="color:#f92672">-</span>DPYTHON_INCLUDE_DIR<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">$</span>(python2 <span style="color:#f92672">-</span>c <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;from distutils import sysconfig; print(sysconfig.get_python_inc())&#34;</span>)</code></pre></div>
+<h5 id="caffe2-nnpack构建">Caffe2 NNPACK构建</h5>
+
+<p>Detectron不需要用NNPACK支持构建的Caffe2。如果您在Caffe2的安装过程中遇到了NNPACK相关的问题，您可以通过设置-dusennpack=OFF cflag标志来安全地禁用NNPACK。</p>
+
+<h5 id="caffe2-opencv构建">Caffe2 OpenCV构建</h5>
+
+<p>类似于上面的NNPACK情况，您可以通过设置-DUSE_OPENCV = OFF CMake标志来禁用OpenCV</p>
+
+<h5 id="coco-api未定义符号错误">COCO API未定义符号错误</h5>
+
+<p>如果您遇到了由于未定义的符号而导致的COCO API导入错误，如<a href="https://github.com/cocodataset/cocoapi/issues/35">报告</a>所指出的那样,确保你的Python版本没有混淆。例如，如果您同时<a href="https://stackoverflow.com/questions/36190757/numpy-undefined-symbol-pyfpe-jbuf">安装了系统和conda numpy</a>，可能会出现这个问题</p>
+
+<h5 id="cmake找不到caffe2的时候">CMake找不到Caffe2的时候</h5>
+
+<p>如果您遇到了CMake在构建自定义操作符时无法找到Caffe2包的问题，请确保您已经将make install作为您的Caffe2安装过程的一部分</p>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>
