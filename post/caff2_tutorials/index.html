@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Caff2　Tutorials</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[Caffe2] 1.使用预训练的神经网络模型 MNIST tutorial
+Caffe模型文件  .caffemodel 或者 .pb2,他们是二进制的可能会很大  caffemodel：原生的Caffe pb2：来自于Caffe2  deploy.prototxt，是一个json文件描述的是神经网络的设计信息 solver.prototxt：描述的是训练时的变量描述信息 train_val.prototxt: readme：描述模型如何训练，以及模型和数据集地址  预训练模型 IPython Tutorial
+模型下载 到Match Zoo中找到预训练模型
+或者使用caff2的models.download模块，例如:
+#这里使用-i，这个模型将会安装到/caff2/python/models下 $ python -m caffe2.python.models.download -i squeezenet 如果您学习过图像预处理教程，您将看到我们正在使用rescale和裁剪函数来准备图像，以及重新格式化图像为CHW、BGR和NCHW。我们还纠正了图像的平均值，通过使用提供的npy文件的计算平均值或静态删除128作为占位符平均值。
+您会发现加载预先训练的模型非常简单，只需几行代码即可完成。这里我们展示了这几行:
+# 1.读取pb(Protobuf文件) with open(&amp;#34;init_net.pb&amp;#34;) as f: init_net = f.read() with open(&amp;#34;predict_net.pb&amp;#34;) as f: predict_net = f.read() #2. 在工作空间中使用预测函数来加载来自protobufs的blobs。 p = workspace.Predictor(init_net, predict_net) #3.运行网络得到结果 results = p.run([img]) 结果返回的是一个多维的概率数组。本质上，每一行都是一个百分比概率，这个对象与神经网络识别的东西相匹配。当你运行花时，它应该给你超过95%的评价，花是一朵雏菊。
+设置 设置如下
+# where you installed caffe2. Probably &amp;#39;~/caffe2&amp;#39; or &amp;#39;~/src/caffe2&amp;#39;." />
+
+  
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Caff2　Tutorials" />
+    <meta name="twitter:description" content="[Caffe2] 1.使用预训练的神经网络模型 MNIST tutorial
+Caffe模型文件  .caffemodel 或者 .pb2,他们是二进制的可能会很大  caffemodel：原生的Caffe pb2：来自于Caffe2  deploy.prototxt，是一个json文件描述的是神经网络的设计信息 solver.prototxt：描述的是训练时的变量描述信息 train_val.prototxt: readme：描述模型如何训练，以及模型和数据集地址  预训练模型 IPython Tutorial
+模型下载 到Match Zoo中找到预训练模型
+或者使用caff2的models.download模块，例如:
+#这里使用-i，这个模型将会安装到/caff2/python/models下 $ python -m caffe2.python.models.download -i squeezenet 如果您学习过图像预处理教程，您将看到我们正在使用rescale和裁剪函数来准备图像，以及重新格式化图像为CHW、BGR和NCHW。我们还纠正了图像的平均值，通过使用提供的npy文件的计算平均值或静态删除128作为占位符平均值。
+您会发现加载预先训练的模型非常简单，只需几行代码即可完成。这里我们展示了这几行:
+# 1.读取pb(Protobuf文件) with open(&amp;#34;init_net.pb&amp;#34;) as f: init_net = f.read() with open(&amp;#34;predict_net.pb&amp;#34;) as f: predict_net = f.read() #2. 在工作空间中使用预测函数来加载来自protobufs的blobs。 p = workspace.Predictor(init_net, predict_net) #3.运行网络得到结果 results = p.run([img]) 结果返回的是一个多维的概率数组。本质上，每一行都是一个百分比概率，这个对象与神经网络识别的东西相匹配。当你运行花时，它应该给你超过95%的评价，花是一朵雏菊。
+设置 设置如下
+# where you installed caffe2. Probably &amp;#39;~/caffe2&amp;#39; or &amp;#39;~/src/caffe2&amp;#39;." />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/caffe.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Caff2　Tutorials" />
+  <meta property="og:description" content="[Caffe2] 1.使用预训练的神经网络模型 MNIST tutorial
+Caffe模型文件  .caffemodel 或者 .pb2,他们是二进制的可能会很大  caffemodel：原生的Caffe pb2：来自于Caffe2  deploy.prototxt，是一个json文件描述的是神经网络的设计信息 solver.prototxt：描述的是训练时的变量描述信息 train_val.prototxt: readme：描述模型如何训练，以及模型和数据集地址  预训练模型 IPython Tutorial
+模型下载 到Match Zoo中找到预训练模型
+或者使用caff2的models.download模块，例如:
+#这里使用-i，这个模型将会安装到/caff2/python/models下 $ python -m caffe2.python.models.download -i squeezenet 如果您学习过图像预处理教程，您将看到我们正在使用rescale和裁剪函数来准备图像，以及重新格式化图像为CHW、BGR和NCHW。我们还纠正了图像的平均值，通过使用提供的npy文件的计算平均值或静态删除128作为占位符平均值。
+您会发现加载预先训练的模型非常简单，只需几行代码即可完成。这里我们展示了这几行:
+# 1.读取pb(Protobuf文件) with open(&amp;#34;init_net.pb&amp;#34;) as f: init_net = f.read() with open(&amp;#34;predict_net.pb&amp;#34;) as f: predict_net = f.read() #2. 在工作空间中使用预测函数来加载来自protobufs的blobs。 p = workspace.Predictor(init_net, predict_net) #3.运行网络得到结果 results = p.run([img]) 结果返回的是一个多维的概率数组。本质上，每一行都是一个百分比概率，这个对象与神经网络识别的东西相匹配。当你运行花时，它应该给你超过95%的评价，花是一朵雏菊。
+设置 设置如下
+# where you installed caffe2. Probably &amp;#39;~/caffe2&amp;#39; or &amp;#39;~/src/caffe2&amp;#39;." />
+  <meta property="og:url" content="https://xieydd.github.io/post/caff2_tutorials/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/caffe.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.34" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/caff2_tutorials/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Caff2　Tutorials</h1>
+      <p class="post-meta">@Xieydd · Jan 29, 2018 · 5 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="caffe2">[Caffe2]</h1>
+
+<h2 id="1-使用预训练的神经网络模型">1.使用预训练的神经网络模型</h2>
+
+<p><a href="https://caffe2.ai/docs/tutorial-MNIST.html">MNIST tutorial</a></p>
+
+<h3 id="caffe模型文件">Caffe模型文件</h3>
+
+<ul>
+<li>.caffemodel 或者 .pb2,他们是二进制的可能会很大
+
+<ul>
+<li>caffemodel：原生的Caffe</li>
+<li>pb2：来自于Caffe2</li>
+</ul></li>
+<li>deploy.prototxt，是一个json文件描述的是神经网络的设计信息</li>
+<li>solver.prototxt：描述的是训练时的变量描述信息</li>
+<li>train_val.prototxt:</li>
+<li>readme：描述模型如何训练，以及模型和数据集地址</li>
+</ul>
+
+<h3 id="预训练模型">预训练模型</h3>
+
+<p><a href="https://github.com/caffe2/caffe2/blob/master/caffe2/python/tutorials/Loading_Pretrained_Models.ipynb">IPython Tutorial</a></p>
+
+<h4 id="模型下载">模型下载</h4>
+
+<p>到<a href="https://caffe2.ai/docs/zoo">Match Zoo</a>中找到预训练模型</p>
+
+<p>或者使用caff2的models.download模块，例如:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#这里使用-i，这个模型将会安装到/caff2/python/models下</span>
+<span style="color:#960050;background-color:#1e0010">$</span> python <span style="color:#f92672">-</span>m caffe2<span style="color:#f92672">.</span>python<span style="color:#f92672">.</span>models<span style="color:#f92672">.</span>download <span style="color:#f92672">-</span>i squeezenet</code></pre></div>
+<p>如果您学习过图像预处理教程，您将看到我们正在使用rescale和裁剪函数来准备图像，以及重新格式化图像为CHW、BGR和NCHW。我们还纠正了图像的平均值，通过使用提供的npy文件的计算平均值或静态删除128作为占位符平均值。</p>
+
+<p>您会发现加载预先训练的模型非常简单，只需几行代码即可完成。这里我们展示了这几行:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 1.读取pb(Protobuf文件)</span>
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;init_net.pb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+     init_net <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;predict_net.pb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+     predict_net <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read() 
+     
+<span style="color:#75715e">#2. 在工作空间中使用预测函数来加载来自protobufs的blobs。</span>
+p <span style="color:#f92672">=</span> workspace<span style="color:#f92672">.</span>Predictor(init_net, predict_net)
+
+<span style="color:#75715e">#3.运行网络得到结果</span>
+results <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>run([img])</code></pre></div>
+<p>结果返回的是一个多维的概率数组。本质上，每一行都是一个百分比概率，这个对象与神经网络识别的东西相匹配。当你运行花时，它应该给你超过95%的评价，花是一朵雏菊。</p>
+
+<h4 id="设置">设置</h4>
+
+<p>设置如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># where you installed caffe2. Probably &#39;~/caffe2&#39; or &#39;~/src/caffe2&#39;.</span>
+CAFFE2_ROOT <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;~/caffe2&#34;</span>
+<span style="color:#75715e"># assumes being a subdirectory of caffe2</span>
+CAFFE_MODELS <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;~/caffe2/caffe2/python/models&#34;</span>
+<span style="color:#75715e"># if you have a mean file, place it in the same dir as the model</span>
+
+<span style="color:#f92672">%</span>matplotlib inline
+<span style="color:#f92672">from</span> caffe2.proto <span style="color:#f92672">import</span> caffe2_pb2
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> skimage.io
+<span style="color:#f92672">import</span> skimage.transform
+<span style="color:#f92672">from</span> matplotlib <span style="color:#f92672">import</span> pyplot
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">from</span> caffe2.python <span style="color:#f92672">import</span> core, workspace
+<span style="color:#f92672">import</span> urllib2
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Required modules imported.&#34;</span>)</code></pre></div>
+<p>图片的地址可以通过URL或者本地文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">IMAGE_LOCATION <span style="color:#f92672">=</span>  <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;https://cdn.pixabay.com/photo/2015/02/10/21/28/flower-631765_1280.jpg&#34;</span>
+
+<span style="color:#75715e"># What model are we using? You should have already converted or downloaded one.</span>
+<span style="color:#75715e"># format below is the model&#39;s:</span>
+<span style="color:#75715e"># folder, INIT_NET, predict_net, mean, input image size</span>
+<span style="color:#75715e"># you can switch the comments on MODEL to try out different model conversions</span>
+MODEL <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;squeezenet&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;init_net.pb&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;predict_net.pb&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;ilsvrc_2012_mean.npy&#39;</span>, <span style="color:#ae81ff">227</span>
+
+<span style="color:#75715e"># codes - these help decypher the output and source from a list from AlexNet&#39;s object codes to provide an result like &#34;tabby cat&#34; or &#34;lemon&#34; depending on what&#39;s in the picture you submit to the neural network.</span>
+<span style="color:#75715e"># The list of output codes for the AlexNet models (also squeezenet)</span>
+codes <span style="color:#f92672">=</span>  <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;https://gist.githubusercontent.com/aaronmarkham/cd3a6b6ac071eca6f7b4a6e40e6038aa/raw/9edb4038a37da6b5a44c3b5bc52e448ff09bfe5b/alexnet_codes&#34;</span>
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Config set!&#34;</span></code></pre></div>
+<p>在下面的代码块中，我们正在加载平均文件(如果它存在)和图像，然后预处理图像，将其输入到一个Caffe2卷积神经网络中!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">crop_center</span>(img,cropx,cropy):
+    y,x,c <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>shape
+    startx <span style="color:#f92672">=</span> x<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span><span style="color:#f92672">-</span>(cropx<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span>)
+    starty <span style="color:#f92672">=</span> y<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span><span style="color:#f92672">-</span>(cropy<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span>)    
+    <span style="color:#66d9ef">return</span> img[starty:starty<span style="color:#f92672">+</span>cropy,startx:startx<span style="color:#f92672">+</span>cropx]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">rescale</span>(img, input_height, input_width):
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Original image shape:&#34;</span> <span style="color:#f92672">+</span> str(img<span style="color:#f92672">.</span>shape) <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34; and remember it should be in H, W, C!&#34;</span>)
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Model&#39;s input shape is </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">x</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">%</span> (input_height, input_width)
+    aspect <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">/</span>float(img<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>])
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Orginal aspect ratio: &#34;</span> <span style="color:#f92672">+</span> str(aspect))
+    <span style="color:#66d9ef">if</span>(aspect<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">1</span>):
+        <span style="color:#75715e"># landscape orientation - wide image</span>
+        res <span style="color:#f92672">=</span> int(aspect <span style="color:#f92672">*</span> input_height)
+        imgScaled <span style="color:#f92672">=</span> skimage<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>resize(img, (input_width, res))
+    <span style="color:#66d9ef">if</span>(aspect<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">1</span>):
+        <span style="color:#75715e"># portrait orientation - tall image</span>
+        res <span style="color:#f92672">=</span> int(input_width<span style="color:#f92672">/</span>aspect)
+        imgScaled <span style="color:#f92672">=</span> skimage<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>resize(img, (res, input_height))
+    <span style="color:#66d9ef">if</span>(aspect <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>):
+        imgScaled <span style="color:#f92672">=</span> skimage<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>resize(img, (input_width, input_height))
+    pyplot<span style="color:#f92672">.</span>figure()
+    pyplot<span style="color:#f92672">.</span>imshow(imgScaled)
+    pyplot<span style="color:#f92672">.</span>axis(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;on&#39;</span>)
+    pyplot<span style="color:#f92672">.</span>title(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;Rescaled image&#39;</span>)
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;New image shape:&#34;</span> <span style="color:#f92672">+</span> str(imgScaled<span style="color:#f92672">.</span>shape) <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34; in HWC&#34;</span>)
+    <span style="color:#66d9ef">return</span> imgScaled
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Functions set.&#34;</span>
+
+<span style="color:#75715e"># set paths and variables from model choice and prep image</span>
+CAFFE2_ROOT <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>expanduser(CAFFE2_ROOT)
+CAFFE_MODELS <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>expanduser(CAFFE_MODELS)
+
+<span style="color:#75715e"># mean can be 128 or custom based on the model</span>
+<span style="color:#75715e"># gives better results to remove the colors found in all of the training images</span>
+MEAN_FILE <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(CAFFE_MODELS, MODEL[<span style="color:#ae81ff">0</span>], MODEL[<span style="color:#ae81ff">3</span>])
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(MEAN_FILE):
+    mean <span style="color:#f92672">=</span> <span style="color:#ae81ff">128</span>
+<span style="color:#66d9ef">else</span>:
+    mean <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>load(MEAN_FILE)<span style="color:#f92672">.</span>mean(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">.</span>mean(<span style="color:#ae81ff">1</span>)
+    mean <span style="color:#f92672">=</span> mean[:, np<span style="color:#f92672">.</span>newaxis, np<span style="color:#f92672">.</span>newaxis]
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;mean was set to: &#34;</span>, mean
+
+<span style="color:#75715e"># some models were trained with different image sizes, this helps you calibrate your image</span>
+INPUT_IMAGE_SIZE <span style="color:#f92672">=</span> MODEL[<span style="color:#ae81ff">4</span>]
+
+<span style="color:#75715e"># make sure all of the files are around...</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(CAFFE2_ROOT):
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Houston, you may have a problem.&#34;</span>)
+INIT_NET <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(CAFFE_MODELS, MODEL[<span style="color:#ae81ff">0</span>], MODEL[<span style="color:#ae81ff">1</span>])
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;INIT_NET = &#39;</span>, INIT_NET
+PREDICT_NET <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(CAFFE_MODELS, MODEL[<span style="color:#ae81ff">0</span>], MODEL[<span style="color:#ae81ff">2</span>])
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;PREDICT_NET = &#39;</span>, PREDICT_NET
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(INIT_NET):
+    <span style="color:#66d9ef">print</span>(INIT_NET <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34; not found!&#34;</span>)
+<span style="color:#66d9ef">else</span>:
+    <span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Found &#34;</span>, INIT_NET, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;...Now looking for&#34;</span>, PREDICT_NET
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(PREDICT_NET):
+        <span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Caffe model file, &#34;</span> <span style="color:#f92672">+</span> PREDICT_NET <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34; was not found!&#34;</span>
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;All needed files found! Loading the model in the next block.&#34;</span>
+
+<span style="color:#75715e"># load and transform image</span>
+img <span style="color:#f92672">=</span> skimage<span style="color:#f92672">.</span>img_as_float(skimage<span style="color:#f92672">.</span>io<span style="color:#f92672">.</span>imread(IMAGE_LOCATION))<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>float32)
+img <span style="color:#f92672">=</span> rescale(img, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE)
+img <span style="color:#f92672">=</span> crop_center(img, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE)
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;After crop: &#34;</span> , img<span style="color:#f92672">.</span>shape
+pyplot<span style="color:#f92672">.</span>figure()
+pyplot<span style="color:#f92672">.</span>imshow(img)
+pyplot<span style="color:#f92672">.</span>axis(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;on&#39;</span>)
+pyplot<span style="color:#f92672">.</span>title(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;Cropped&#39;</span>)
+
+<span style="color:#75715e"># switch to CHW</span>
+img <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>swapaxes(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)<span style="color:#f92672">.</span>swapaxes(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)
+pyplot<span style="color:#f92672">.</span>figure()
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">3</span>):
+    <span style="color:#75715e"># For some reason, pyplot subplot follows Matlab&#39;s indexing</span>
+    <span style="color:#75715e"># convention (starting with 1). Well, we&#39;ll just follow it...</span>
+    pyplot<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>, i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)
+    pyplot<span style="color:#f92672">.</span>imshow(img[i])
+    pyplot<span style="color:#f92672">.</span>axis(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;off&#39;</span>)
+    pyplot<span style="color:#f92672">.</span>title(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;RGB channel </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>))
+
+<span style="color:#75715e"># switch to BGR</span>
+img <span style="color:#f92672">=</span> img[(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>), :, :]
+
+<span style="color:#75715e"># remove mean for better results</span>
+img <span style="color:#f92672">=</span> img <span style="color:#f92672">*</span> <span style="color:#ae81ff">255</span> <span style="color:#f92672">-</span> mean
+
+<span style="color:#75715e"># add batch size</span>
+img <span style="color:#f92672">=</span> img[np<span style="color:#f92672">.</span>newaxis, :, :, :]<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>float32)
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;NCHW: &#34;</span>, img<span style="color:#f92672">.</span>shape</code></pre></div>
+<p>这样得到的图像就可以被CNN模型接受，打开protobufs文件，加载到工作空间后运行模型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># initialize the neural net</span>
+
+<span style="color:#66d9ef">with</span> open(INIT_NET) <span style="color:#66d9ef">as</span> f:
+    init_net <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+<span style="color:#66d9ef">with</span> open(PREDICT_NET) <span style="color:#66d9ef">as</span> f:
+    predict_net <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+
+p <span style="color:#f92672">=</span> workspace<span style="color:#f92672">.</span>Predictor(init_net, predict_net)
+
+<span style="color:#75715e"># run the net and return prediction</span>
+results <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>run([img])
+
+<span style="color:#75715e"># turn it into something we can play with and examine which is in a multi-dimensional array</span>
+results <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>asarray(results)
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;results shape: &#34;</span>, results<span style="color:#f92672">.</span>shape</code></pre></div>
+<p>看到中间有1000(result.shape可以看出)个结果吗?如果我们在批处理中提交了多个图像，那么数组将会更大，但是中间仍然有1000个单元。它是在预先训练的模型中持有每一类的概率。所以当你看结果时，就像是在说，“电脑，这是铍球的概率是多少?”或者是gila monster，或者其他998组的东西。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># the rest of this is digging through the results</span>
+
+results <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>delete(results, <span style="color:#ae81ff">1</span>)
+index <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+highest <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+arr <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>empty((<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">2</span>), dtype<span style="color:#f92672">=</span>object)
+arr[:,<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> int(<span style="color:#ae81ff">10</span>)
+arr[:,<span style="color:#ae81ff">1</span>:] <span style="color:#f92672">=</span> float(<span style="color:#ae81ff">10</span>)
+<span style="color:#66d9ef">for</span> i, r <span style="color:#f92672">in</span> enumerate(results):
+    <span style="color:#75715e"># imagenet index begins with 1!</span>
+    i<span style="color:#f92672">=</span>i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>
+    arr <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>append(arr, np<span style="color:#f92672">.</span>array([[i,r]]), axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+    <span style="color:#66d9ef">if</span> (r <span style="color:#f92672">&gt;</span> highest):
+        highest <span style="color:#f92672">=</span> r
+        index <span style="color:#f92672">=</span> i
+
+<span style="color:#66d9ef">print</span> index, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34; :: &#34;</span>, highest
+
+<span style="color:#75715e"># lookup the code and return the result</span>
+<span style="color:#75715e"># top 3 results</span>
+<span style="color:#75715e"># sorted(arr, key=lambda x: x[1], reverse=True)[:3]</span>
+
+<span style="color:#75715e"># now we can grab the code list</span>
+response <span style="color:#f92672">=</span> urllib2<span style="color:#f92672">.</span>urlopen(codes)
+
+<span style="color:#75715e"># and lookup our result from the list</span>
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> response:
+    code, result <span style="color:#f92672">=</span> line<span style="color:#f92672">.</span>partition(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;:&#34;</span>)[::<span style="color:#ae81ff">2</span>]
+    <span style="color:#66d9ef">if</span> (code<span style="color:#f92672">.</span>strip() <span style="color:#f92672">==</span> str(index)):
+        <span style="color:#66d9ef">print</span> result<span style="color:#f92672">.</span>strip()[<span style="color:#ae81ff">1</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>]</code></pre></div>
+<p>现在您已经运行了它，尝试一些不同的图像。看看它在更复杂的图像或多物体或物体上的表现如何。</p>
+
+<h4 id="图像预处理pipeline">图像预处理Pipeline</h4>
+
+<p><a href="https://github.com/caffe2/caffe2/blob/master/caffe2/python/tutorials/Image_Pre-Processing_Pipeline.ipynb">ipynb</a></p>
+
+<p>从手机到网络摄像头到新的医学图像，你会想要考虑你的图像摄取管道，以及在任何类型的图像分类过程中，速度和准确性都需要什么转换。</p>
+
+<ul>
+<li>resizing</li>
+<li>rescaling</li>
+<li>HWC到CHW</li>
+<li>RGB到BRG</li>
+<li>为Caffe2图像准备</li>
+</ul>
+
+<h3 id="入门caffe2">入门Caffe2</h3>
+
+<h4 id="caffe向caffe2转换">Caffe向Caffe2转换</h4>
+
+<p>不用同在于Caffe2模块化为大规模以及移动部署，Caffe2更加灵活，尤其是分布式计算出现后</p>
+
+<p>Caffe2相对于Caffe1.0:
+- 对于大规模分布式训练的很好的支持
+- 移动端的部署
+- 新的硬件的支持
+- 未来方向的灵活性，如量化计算
+- 压力测试了大量的Facebook应用程序</p>
+
+<p>Caffe2最主要的新特性就是<a href="https://caffe2.ai/docs/operators.html">Operators</a>,提供<a href="https://caffe2.ai/docs/intro-tutorial.html">tutorial</a></p>
+
+<p>在这里，您可以找到一个教程，其中包含了从Caffe的原始存储库下载模型的示例，您可以用它来使用Caffe2转换器。如果你从头开始，想要学习咖啡因，就跳过这个<a href="https://github.com/caffe2/caffe2/blob/master/caffe2/python/tutorials/Getting_Caffe1_Models_for_Translation.ipynb">教程</a></p>
+
+<p>我们提供的python脚本完成这些</p>
+
+<ul>
+<li><a href="https://github.com/caffe2/caffe2/blob/master/caffe2/python/caffe_translator.py">caffe_translator.py</a>这个脚本内置了用于普通层的翻译。上面提到的教程实现了相同的脚本，因此复习教程以了解如何使用脚本是很有帮助的。您也可以直接从命令行调用该脚本。</li>
+<li><a href="https://github.com/caffe2/caffe2/blob/master/caffe2/python/caffe_translator_test.py">caffe_translator_test.py </a>这是一个经过BVLC caffenet模型转换的大型测试，通过整个模型运行一个示例，并通过数值验证所有的结果都是正确的。默认情况下，它是禁用的，除非您明确地希望运行它。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> python <span style="color:#f92672">-</span>m caffe2<span style="color:#f92672">.</span>python<span style="color:#f92672">.</span>caffe_translator deploy<span style="color:#f92672">.</span>prototxt pretrained<span style="color:#f92672">.</span>caffemodel</code></pre></div>
+<h4 id="caffe向pytorch转换">Caffe向PyTorch转换</h4>
+
+<p>特点不同，先不了解，可以参考<a href="https://github.com/facebook/fb-caffe-exts#torch2caffe">Github torch2caffe</a></p>
+
+<h4 id="冲突">冲突</h4>
+
+<p>老版本可能不支持转换，您可以使用自定义脚本管理这个脚本，将您的层填充到<a href="https://caffe2.ai/doxygen-python/html/namespaceworkspace.html#a34cb41f806c820ea5ce1876ee3aa29f0">blobs</a>中并对其进行标记</p>
+
+<p><a href="https://github.com/BVLC/caffe/tree/master/tools">Utilize the appropriate upgrade binary from Caffe’s tools </a>升级到最新版本的Caffe，然后尝试我们的Caffe to coffee2 translator。</p>
+
+<h4 id="caffe组件">Caffe组件</h4>
+
+<h5 id="blobs-and-workspace-tensors">Blobs and Workspace, Tensors</h5>
+
+<p>数据在caffe2中规划为blob。blob只是内存中的一个命名数据块。大多数blobs都包含一个张量(考虑多维数组)，在Python中，它们被转换成numpy数组(numpy是Python的流行数字库，并且已经作为一个先决条件添加了Caffe)</p>
+
+<p><a href="https://caffe2.ai/docs/workspace.html">Workspace</a>存储所有的blobs，下面展示如何将blobs填充到workspace中并整合。工作空间在您开始使用它们时初始化它们自己。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> caffe2.python <span style="color:#f92672">import</span> workspace, model_helper
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#75715e"># Create random tensor of three dimensions</span>
+x <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>)
+<span style="color:#66d9ef">print</span>(x)
+<span style="color:#66d9ef">print</span>(x<span style="color:#f92672">.</span>shape)
+
+workspace<span style="color:#f92672">.</span>FeedBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;my_x&#34;</span>, x)
+
+x2 <span style="color:#f92672">=</span> workspace<span style="color:#f92672">.</span>FetchBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;my_x&#34;</span>)
+<span style="color:#66d9ef">print</span>(x2)</code></pre></div>
+<h6 id="nets和operators">Nets和Operators</h6>
+
+<p>net是一个操作图和。每个操作接受一组输入blob并产生一个或多个输出blob。</p>
+
+<p>下面将建立一个简单的模型，包含以下的组件:</p>
+
+<ul>
+<li>一个FC层</li>
+<li>一个Sigmoid激活Softmax</li>
+<li>一个交叉熵损失</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Create the input data</span>
+data <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">100</span>)<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>float32)
+
+<span style="color:#75715e"># Create labels for the data as integers [0, 9].</span>
+label <span style="color:#f92672">=</span> (np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">16</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>)<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>int32)
+
+workspace<span style="color:#f92672">.</span>FeedBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;data&#34;</span>, data)
+workspace<span style="color:#f92672">.</span>FeedBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;label&#34;</span>, label)
+
+
+<span style="color:#75715e"># Create model using a model helper</span>
+m <span style="color:#f92672">=</span> model_helper<span style="color:#f92672">.</span>ModelHelper(name<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;my first net&#34;</span>)
+
+
+<span style="color:#75715e">#创建两个网络init_net以及exec_net</span>
+weight <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>param_init_net<span style="color:#f92672">.</span>XavierFill([], <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc_w&#39;</span>, shape<span style="color:#f92672">=</span>[<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">100</span>])
+bias <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>param_init_net<span style="color:#f92672">.</span>ConstantFill([], <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;fc_b&#39;</span>, shape<span style="color:#f92672">=</span>[<span style="color:#ae81ff">10</span>, ])
+fc_1 <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>net<span style="color:#f92672">.</span>FC([<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;data&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;fc_w&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;fc_b&#34;</span>], <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;fc1&#34;</span>)
+pred <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>net<span style="color:#f92672">.</span>Sigmoid(fc_1, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;pred&#34;</span>)
+softmax, loss <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>net<span style="color:#f92672">.</span>SoftmaxWithLoss([pred, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;label&#34;</span>], [<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;softmax&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;loss&#34;</span>])</code></pre></div>
+<p>总结:</p>
+
+<ol>
+<li><p>创建输入数据和标签的blob到内存中；注意，数据和标签blobs有第一个维度&rsquo; 16 &lsquo;;这是因为模型的输入mini batch的16个样本。
+很多Caffe2的操作都可以直接通过ModelHelper一次处理输入的mini batch量</p></li>
+
+<li><p>使用一些操作例如:FC、Sigmoid、SoftmaxWithLost；注意这时候只是创建一个框架，<a href="http://note.youdao.com/">并未运行</a></p></li>
+
+<li><p>Model helper帮助你创建两个网络；m.param_init_net只运行一次，为所有的FC层的参数blobs初始化，训练实际上是在m.net中</p></li>
+</ol>
+
+<p>net被存储在<a href="https://developers.google.com/protocol-buffers/">protobuf</a>结构中,可以调用net.Proto()查看</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#查看网络结构</span>
+<span style="color:#66d9ef">print</span>(m<span style="color:#f92672">.</span>net<span style="color:#f92672">.</span>Proto())
+<span style="color:#75715e">#</span>
+<span style="color:#75715e">#查看参数初始化</span>
+<span style="color:#66d9ef">print</span>(m<span style="color:#f92672">.</span>param_init_net<span style="color:#f92672">.</span>Proto())</code></pre></div>
+<p>Caffe2的核心API思想是:使用Python来方便地编写网络来训练您的模型，将这些网络传递给C代码作为序列化的原始缓冲区，然后让C代码运行具有完整性能的网络</p>
+
+<h5 id="运行">运行</h5>
+
+<p>首先运行参数初始化,这实际上会将param_init_net的原始缓冲区传递到C++运行时执行;然后训练模型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">workspace<span style="color:#f92672">.</span>RunNetOnce(m<span style="color:#f92672">.</span>param_init_net)
+
+workspace<span style="color:#f92672">.</span>CreateNet(m<span style="color:#f92672">.</span>net)
+
+<span style="color:#75715e">#创建一次可以多次使用</span>
+
+<span style="color:#75715e"># Run 100 x 10 iterations</span>
+<span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">100</span>):
+    data <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">100</span>)<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>float32)
+    label <span style="color:#f92672">=</span> (np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">16</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>)<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>int32)
+
+    workspace<span style="color:#f92672">.</span>FeedBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;data&#34;</span>, data)
+    workspace<span style="color:#f92672">.</span>FeedBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;label&#34;</span>, label)
+
+    workspace<span style="color:#f92672">.</span>RunNet(m<span style="color:#f92672">.</span>name, <span style="color:#ae81ff">10</span>)   <span style="color:#75715e"># run for 10 times</span></code></pre></div>
+<p>请注意，我们只是通过了m.name，而不是net定义本身到RunNet()。由于在工作区中创建了网络，所以我们不需要再次传递这个定义。</p>
+
+<p>运行完成后，我们可以检查存储在输出blobs中的结果</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(workspace<span style="color:#f92672">.</span>FetchBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;softmax&#34;</span>))
+<span style="color:#66d9ef">print</span>(workspace<span style="color:#f92672">.</span>FetchBlob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;loss&#34;</span>))</code></pre></div>
+<h5 id="反向传播">反向传播</h5>
+
+<p>真想传播没有学到任何东西，反向传播提供梯度操作</p>
+
+<p>调用RunNetOnce()之前</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">m<span style="color:#f92672">.</span>AddGradientOperators([loss])
+
+<span style="color:#75715e">#再次查看模型结构</span>
+<span style="color:#66d9ef">print</span>(m<span style="color:#f92672">.</span>net<span style="color:#f92672">.</span>Proto())</code></pre></div>
+<p><a href="https://github.com/caffe2/caffe2/blob/master/caffe2/python/tutorials/Basics.ipynb">Basics of Caffe2 - Workspaces, Operators, and Nets ipynb</a></p>
+
+<h4 id="brewing-models-https-caffe2-ai-docs-brew"><a href="https://caffe2.ai/docs/brew">Brewing Models</a></h4>
+
+<p>brew帮助建立模型，例如CNNModelHelper.brew，现在新的操作ModelHelper可以让建立模型更加简单</p>
+
+<h2 id="2-创意自己的神经网路模型">2.创意自己的神经网路模型</h2>
+
+<h2 id="3-手机或者叫移动端使用深度学习模型">3.手机或者叫移动端使用深度学习模型</h2>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="https://xieydd.github.io/tags/caffe2"><span class="tag">Caffe2</span></a></li>
+        
+          <li><a href="https://xieydd.github.io/tags/caffe"><span class="tag">Caffe</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>

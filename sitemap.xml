@@ -13,6 +13,11 @@
   </url>
   
   <url>
+    <loc>https://xieydd.github.io/post/caff2_tutorials/</loc>
+    <lastmod>2018-01-29T17:49:43+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xieydd.github.io/post/detectron/</loc>
     <lastmod>2018-01-25T19:44:41+08:00</lastmod>
   </url>
@@ -75,6 +80,18 @@
   <url>
     <loc>https://xieydd.github.io/xieydd/me/</loc>
     <lastmod>2017-12-27T20:02:20+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/caffe/</loc>
+    <lastmod>2018-01-29T17:49:43+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xieydd.github.io/tags/caffe2/</loc>
+    <lastmod>2018-01-29T17:49:43+08:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -180,7 +197,7 @@
   
   <url>
     <loc>https://xieydd.github.io/post/</loc>
-    <lastmod>2018-01-25T19:44:41+08:00</lastmod>
+    <lastmod>2018-01-29T17:49:43+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -198,7 +215,7 @@
   
   <url>
     <loc>https://xieydd.github.io/tags/</loc>
-    <lastmod>2017-12-28T16:37:10+08:00</lastmod>
+    <lastmod>2018-01-29T17:49:43+08:00</lastmod>
     <priority>0</priority>
   </url>
   

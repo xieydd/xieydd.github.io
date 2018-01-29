@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Caffe on Xieydd Blog</title>
+    <link>https://xieydd.github.io/tags/caffe/</link>
+    <description>Recent content in Caffe on Xieydd Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
+    <lastBuildDate>Mon, 29 Jan 2018 17:49:43 +0800</lastBuildDate>
+    
+	<atom:link href="https://xieydd.github.io/tags/caffe/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Caff2　Tutorials</title>
+      <link>https://xieydd.github.io/post/caff2_tutorials/</link>
+      <pubDate>Mon, 29 Jan 2018 17:49:43 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/caff2_tutorials/</guid>
+      <description>[Caffe2] 1.使用预训练的神经网络模型 MNIST tutorial
+Caffe模型文件  .caffemodel 或者 .pb2,他们是二进制的可能会很大  caffemodel：原生的Caffe pb2：来自于Caffe2  deploy.prototxt，是一个json文件描述的是神经网络的设计信息 solver.prototxt：描述的是训练时的变量描述信息 train_val.prototxt: readme：描述模型如何训练，以及模型和数据集地址  预训练模型 IPython Tutorial
+模型下载 到Match Zoo中找到预训练模型
+或者使用caff2的models.download模块，例如:
+#这里使用-i，这个模型将会安装到/caff2/python/models下 $ python -m caffe2.python.models.download -i squeezenet 如果您学习过图像预处理教程，您将看到我们正在使用rescale和裁剪函数来准备图像，以及重新格式化图像为CHW、BGR和NCHW。我们还纠正了图像的平均值，通过使用提供的npy文件的计算平均值或静态删除128作为占位符平均值。
+您会发现加载预先训练的模型非常简单，只需几行代码即可完成。这里我们展示了这几行:
+# 1.读取pb(Protobuf文件) with open(&amp;#34;init_net.pb&amp;#34;) as f: init_net = f.read() with open(&amp;#34;predict_net.pb&amp;#34;) as f: predict_net = f.read() #2. 在工作空间中使用预测函数来加载来自protobufs的blobs。 p = workspace.Predictor(init_net, predict_net) #3.运行网络得到结果 results = p.run([img]) 结果返回的是一个多维的概率数组。本质上，每一行都是一个百分比概率，这个对象与神经网络识别的东西相匹配。当你运行花时，它应该给你超过95%的评价，花是一朵雏菊。
+设置 设置如下
+# where you installed caffe2. Probably &amp;#39;~/caffe2&amp;#39; or &amp;#39;~/src/caffe2&amp;#39;.</description>
+    </item>
+    
+  </channel>
+</rss>
