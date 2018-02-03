@@ -7,10 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
-    <lastBuildDate>Mon, 29 Jan 2018 17:49:43 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 03 Feb 2018 11:50:59 +0800</lastBuildDate>
     
 	<atom:link href="https://xieydd.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Google Driver GPU</title>
+      <link>https://xieydd.github.io/post/google_driver_gpu/</link>
+      <pubDate>Sat, 03 Feb 2018 11:50:59 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/google_driver_gpu/</guid>
+      <description>[免费使用Google的GPU测试] 参考
+1.准备工作  我的网址Google Driver
+ 这里可能需要梯子，我的ss梯子全部坏掉，使用的是naback.top
+ 登陆后新建文件夹，我命名为app，然后在文件夹中右键&amp;ndash;&amp;gt;更多&amp;ndash;&amp;gt;关联更多，找到colaboratory
+ 打开后修改ipynb的名称
+ 添加以下代码进行注册
+  !apt-get install -y -qq software-properties-common python-software-properties module-init-tools !add-apt-repository -y ppa:alessandro-strada/ppa 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get update -qq 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get -y install -qq google-drive-ocamlfuse fuse from google.colab import auth auth.authenticate_user() from oauth2client.client import GoogleCredentials creds = GoogleCredentials.get_application_default() import getpass !google-drive-ocamlfuse -headless -id={creds.client_id} -secret={creds.client_secret} &amp;lt; /dev/null 2&amp;gt;&amp;amp;1 | grep URL vcode = getpass.getpass() !echo {vcode} | google-drive-ocamlfuse -headless -id={creds.</description>
+    </item>
     
     <item>
       <title>Caff2 Tutorials</title>
@@ -38,7 +53,7 @@ Caffe模型文件  .caffemodel 或者 .pb2,他们是二进制的可能会很大 
       <description>[Detectron] Detectron是FAIR(Facebook AI Research)实现最先进的目标检测算法的软件，包含Mask R-CNN.使用Python以及Caffe2的深度学习框架支持
 在FAIR，Detectron已经开启多个研究项目，包括Feature Pyramid Networks for Object Detection、Mask R-CNN、Detecting and Recognizing Human-Object Interactions、Focal Loss for Dense Object Detection、Non-local Neural Networks, Learning to Segment Every Thing、Data Distillation: Towards Omni-Supervised Learning,即特征金字塔网络用于对象检测、Mask R-CNN、检测和识别人类动作交流、密集对象检测的焦点损失、非本地神经网络、学会分割每一件事、数据精炼:面向全监督学习
 [Example Mask R-CNN output]
-介绍 Deterctron的目标是提供一个高质量，高性能的目标检测代码库。它的设计是灵活的，快速实现和评估论文。Detection包含以下目标检测算法的实现:
+1.介绍 Deterctron的目标是提供一个高质量，高性能的目标检测代码库。它的设计是灵活的，快速实现和评估论文。Detection包含以下目标检测算法的实现:
  Mask R-CNN &amp;ndash; marr Prize at ICCV 2017 RetinaNet  &amp;ndash; Best Student Paper Award at ICCV 2017 Faster R-CNN RPN Fast R-CNN R-FCN  使用以下主干神经网络框架:
  ResNeXt{50,101,152} ResNet{50,101,152} Feature Pyramid Networks(with ResNet/ResNeXt) VGG16  额外的主干框架很容易实现，具体参考</description>
     </item>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Google Driver GPU</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[免费使用Google的GPU测试] 参考
+1.准备工作  我的网址Google Driver
+ 这里可能需要梯子，我的ss梯子全部坏掉，使用的是naback.top
+ 登陆后新建文件夹，我命名为app，然后在文件夹中右键&amp;ndash;&amp;gt;更多&amp;ndash;&amp;gt;关联更多，找到colaboratory
+ 打开后修改ipynb的名称
+ 添加以下代码进行注册
+  !apt-get install -y -qq software-properties-common python-software-properties module-init-tools !add-apt-repository -y ppa:alessandro-strada/ppa 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get update -qq 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get -y install -qq google-drive-ocamlfuse fuse from google.colab import auth auth.authenticate_user() from oauth2client.client import GoogleCredentials creds = GoogleCredentials.get_application_default() import getpass !google-drive-ocamlfuse -headless -id={creds.client_id} -secret={creds.client_secret} &amp;lt; /dev/null 2&amp;gt;&amp;amp;1 | grep URL vcode = getpass.getpass() !echo {vcode} | google-drive-ocamlfuse -headless -id={creds." />
+
+  
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Google Driver GPU" />
+    <meta name="twitter:description" content="[免费使用Google的GPU测试] 参考
+1.准备工作  我的网址Google Driver
+ 这里可能需要梯子，我的ss梯子全部坏掉，使用的是naback.top
+ 登陆后新建文件夹，我命名为app，然后在文件夹中右键&amp;ndash;&amp;gt;更多&amp;ndash;&amp;gt;关联更多，找到colaboratory
+ 打开后修改ipynb的名称
+ 添加以下代码进行注册
+  !apt-get install -y -qq software-properties-common python-software-properties module-init-tools !add-apt-repository -y ppa:alessandro-strada/ppa 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get update -qq 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get -y install -qq google-drive-ocamlfuse fuse from google.colab import auth auth.authenticate_user() from oauth2client.client import GoogleCredentials creds = GoogleCredentials.get_application_default() import getpass !google-drive-ocamlfuse -headless -id={creds.client_id} -secret={creds.client_secret} &amp;lt; /dev/null 2&amp;gt;&amp;amp;1 | grep URL vcode = getpass.getpass() !echo {vcode} | google-drive-ocamlfuse -headless -id={creds." />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/Google_Driver.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Google Driver GPU" />
+  <meta property="og:description" content="[免费使用Google的GPU测试] 参考
+1.准备工作  我的网址Google Driver
+ 这里可能需要梯子，我的ss梯子全部坏掉，使用的是naback.top
+ 登陆后新建文件夹，我命名为app，然后在文件夹中右键&amp;ndash;&amp;gt;更多&amp;ndash;&amp;gt;关联更多，找到colaboratory
+ 打开后修改ipynb的名称
+ 添加以下代码进行注册
+  !apt-get install -y -qq software-properties-common python-software-properties module-init-tools !add-apt-repository -y ppa:alessandro-strada/ppa 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get update -qq 2&amp;gt;&amp;amp;1 &amp;gt; /dev/null !apt-get -y install -qq google-drive-ocamlfuse fuse from google.colab import auth auth.authenticate_user() from oauth2client.client import GoogleCredentials creds = GoogleCredentials.get_application_default() import getpass !google-drive-ocamlfuse -headless -id={creds.client_id} -secret={creds.client_secret} &amp;lt; /dev/null 2&amp;gt;&amp;amp;1 | grep URL vcode = getpass.getpass() !echo {vcode} | google-drive-ocamlfuse -headless -id={creds." />
+  <meta property="og:url" content="https://xieydd.github.io/post/google_driver_gpu/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/Google_Driver.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.35" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/google_driver_gpu/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Google Driver GPU</h1>
+      <p class="post-meta">@Xieydd · Feb 3, 2018 · 1 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="免费使用google的gpu测试">[免费使用Google的GPU测试]</h1>
+
+<p><a href="https://sites.google.com/s/1_Lq0FbaqLr2TPhPFEWPuFdWLkJyZAqPu/p/1aWY7rgWvUaySzcQyEFpZaBPu_-wf-FHA/edit">参考</a></p>
+
+<h3 id="1-准备工作">1.准备工作</h3>
+
+<ul>
+<li><p>我的网址<a href="https://drive.google.com/drive/folders/1aYMT1O15g2cIHZw-JUiqUHje_NtHOLGs">Google Driver</a></p></li>
+
+<li><p>这里可能需要梯子，我的ss梯子全部坏掉，使用的是<a href="http://ncback.top/user">naback.top</a></p></li>
+
+<li><p>登陆后新建文件夹，我命名为app，然后在文件夹中右键&ndash;&gt;更多&ndash;&gt;关联更多，找到colaboratory</p></li>
+
+<li><p>打开后修改ipynb的名称</p></li>
+
+<li><p>添加以下代码进行注册</p></li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">!</span>apt<span style="color:#f92672">-</span>get install <span style="color:#f92672">-</span>y <span style="color:#f92672">-</span>qq software<span style="color:#f92672">-</span>properties<span style="color:#f92672">-</span>common python<span style="color:#f92672">-</span>software<span style="color:#f92672">-</span>properties module<span style="color:#f92672">-</span>init<span style="color:#f92672">-</span>tools
+<span style="color:#960050;background-color:#1e0010">!</span>add<span style="color:#f92672">-</span>apt<span style="color:#f92672">-</span>repository <span style="color:#f92672">-</span>y ppa:alessandro<span style="color:#f92672">-</span>strada<span style="color:#f92672">/</span>ppa <span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;&amp;</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&gt;</span> <span style="color:#f92672">/</span>dev<span style="color:#f92672">/</span>null
+<span style="color:#960050;background-color:#1e0010">!</span>apt<span style="color:#f92672">-</span>get update <span style="color:#f92672">-</span>qq <span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;&amp;</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&gt;</span> <span style="color:#f92672">/</span>dev<span style="color:#f92672">/</span>null
+<span style="color:#960050;background-color:#1e0010">!</span>apt<span style="color:#f92672">-</span>get <span style="color:#f92672">-</span>y install <span style="color:#f92672">-</span>qq google<span style="color:#f92672">-</span>drive<span style="color:#f92672">-</span>ocamlfuse fuse
+<span style="color:#f92672">from</span> google.colab <span style="color:#f92672">import</span> auth
+auth<span style="color:#f92672">.</span>authenticate_user()
+<span style="color:#f92672">from</span> oauth2client.client <span style="color:#f92672">import</span> GoogleCredentials
+creds <span style="color:#f92672">=</span> GoogleCredentials<span style="color:#f92672">.</span>get_application_default()
+<span style="color:#f92672">import</span> getpass
+<span style="color:#960050;background-color:#1e0010">!</span>google<span style="color:#f92672">-</span>drive<span style="color:#f92672">-</span>ocamlfuse <span style="color:#f92672">-</span>headless <span style="color:#f92672">-</span>id<span style="color:#f92672">=</span>{creds<span style="color:#f92672">.</span>client_id} <span style="color:#f92672">-</span>secret<span style="color:#f92672">=</span>{creds<span style="color:#f92672">.</span>client_secret} <span style="color:#f92672">&lt;</span> <span style="color:#f92672">/</span>dev<span style="color:#f92672">/</span>null <span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;&amp;</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> grep URL
+vcode <span style="color:#f92672">=</span> getpass<span style="color:#f92672">.</span>getpass()
+<span style="color:#960050;background-color:#1e0010">!</span>echo {vcode} <span style="color:#f92672">|</span> google<span style="color:#f92672">-</span>drive<span style="color:#f92672">-</span>ocamlfuse <span style="color:#f92672">-</span>headless <span style="color:#f92672">-</span>id<span style="color:#f92672">=</span>{creds<span style="color:#f92672">.</span>client_id} <span style="color:#f92672">-</span>secret<span style="color:#f92672">=</span>{creds<span style="color:#f92672">.</span>client_secret}</code></pre></div>
+<ul>
+<li>之后看见链接，点击后，复制代码到到框中，然后执行以下代码</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">!</span>mkdir <span style="color:#f92672">-</span>p drive
+<span style="color:#960050;background-color:#1e0010">!</span>google<span style="color:#f92672">-</span>drive<span style="color:#f92672">-</span>ocamlfuse drive</code></pre></div>
+<ul>
+<li>用!pip install或者!apt-get install命令</li>
+<li>以下几个命令帮助你了解如何查看GPU的一些状态</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#查看GPU是否工作</span>
+<span style="color:#f92672">import</span> tensorflow <span style="color:#f92672">as</span> tftf.test.gpu_device_name()
+
+<span style="color:#75715e">#那个GPU在工作</span>
+<span style="color:#f92672">from</span> tensorflow.python.client <span style="color:#f92672">import</span> device_libdevice_lib<span style="color:#f92672">.</span>list_local_devices()
+
+<span style="color:#75715e"># RAM多大</span>
+<span style="color:#960050;background-color:#1e0010">!</span>cat <span style="color:#f92672">/</span>proc<span style="color:#f92672">/</span>meminfo
+
+<span style="color:#75715e"># CPU多大</span>
+<span style="color:#960050;background-color:#1e0010">!</span>cat <span style="color:#f92672">/</span>proc<span style="color:#f92672">/</span>cpuinfo
+
+<span style="color:#75715e">### 2.具体使用见后续...</span></code></pre></div></article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>
