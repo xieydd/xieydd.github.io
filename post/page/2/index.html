@@ -40,7 +40,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.35" />
+<meta name="generator" content="Hugo 0.36" />
 
 
 <link rel="canonical" href="https://xieydd.github.io/post/" />
@@ -243,6 +243,22 @@
     </header>
     
     
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="https://xieydd.github.io/post/docker/" class="post-link">Docker</a></h3>
+    <p class="post-meta">@Xieydd · Jan 8, 2018 · 44 min read</p>
+  </header>
+  
+    <img class="post-cover" src="img/docker.jpg" alt="Docker">
+  
+  <p class="post-summary">[Docker] 1. 部署第一个容器 以运行redis容器为例,作为数据库，需要持续的运行
+$ docker search redis #在background运行3.2版本 $ docker run -d redis:3.2 # $ docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES bcfa0307fe3b redis &#34;docker-entrypoint...&#34; 19 seconds ago Up 19 seconds 6379/tcp flamboyant_pasteur $ docker inspect bcfa0307fe3b #或者name $ docker logs bcfa0307fe3b [ { &#34;Id&#34;: &#34;bcfa0307fe3b5287e05cec154ac557be067d3cec7fa26c502fe59fad8a55d66a&#34;, &#34;Created&#34;: &#34;2018-01-04T13:12:19.047437762Z&#34;, &#34;Path&#34;: &#34;docker-entrypoint.sh&#34;, &#34;Args&#34;: [ &#34;redis-server&#34; ], &#34;State&#34;: { &#34;Status&#34;: &#34;running&#34;, &#34;Running&#34;: true, &#34;Paused&#34;: false, &#34;Restarting&#34;: false, &#34;OOMKilled&#34;: false, &#34;Dead&#34;: false, &#34;Pid&#34;: 445, &#34;ExitCode&#34;: 0, &#34;Error&#34;: &#34;&#34;, &#34;StartedAt&#34;: &#34;2018-01-04T13:12:19.</p>
+  <footer class="post-footer">
+    <a class="read-more" href="https://xieydd.github.io/post/docker/">Read More →</a>
+  </footer>
+</article>
+
       
         <article class="post-entry">
   <header class="post-header">

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Lifeifei CS231n</title>
+
+  
+  
+
+
+
+
+
+  
+  <meta name="author" content="Xieydd" />
+  <meta name="description" content="[机器视觉] 更加基础的课程请参考CS231a
+1.机器视觉历史回顾 讲义
+从寒武纪生命的爆炸式的出现和增长 &amp;ndash;》 现代视觉工程技术的开端起始于达芬奇的照相暗盒 &amp;ndash;》 哈佛的Hubel和Wiesel发现生物大脑是如何处理图像信息的(利用电极插入猫的大脑的基础视觉皮质层primary visual cortex检测，注意这个不是紧挨眼睛这个不同于耳朵和鼻子)，但是发现给猫看鱼和花什么的图像并不能刺激神经元，反而变换幻灯片能够刺激，由此得出基础视觉区的神经元是按照一列一列组织起来的，每一列只会对特定的形状感兴趣 &amp;ndash;》 Larry Roberts验证了边缘决定结构 &amp;ndash;》 StandFord的AI实验室成立 &amp;ndash;》 David Marr的VISION提出视觉是分层的，这和上面的边缘决定结构组成了机器视觉的两大基石；对于遮挡问题提出2.5D的概念 &amp;ndash;》 第一波机器视觉方法，重建3D模型识别物体(Tomas Binford提出generalized Cylinder模型认为世界上的物体都是简单形状组合而成；Pictorial Structure专注于概率模型) &amp;ndash;》 开始着手于彩色图像的识别normalize cut，感知分组(当你进入一个房间，不是看到的一个一个像素，而是先分类) &amp;ndash;》 Viola Jones Face Detection转换为第一个人脸识别产品2006年的富士相机 &amp;ndash;》PASCAL数据集20种类 &amp;ndash;》 ImageNet数据集 5000万张图片包含2万种类以及ImageNet Competition for Object Recognition 对1000种类的150万图片识别&amp;ndash;》2012年的ImageNet Com..的获胜模型就是卷积神经网络(上世纪七八十年代提出)
+图像分类关注的最大图整体，物体检测则是告诉你东西具体在哪，深入理解图像要做到检测，分类，联系
+2.数据驱动的图像分类方式 对于CIFIA-10数据集(10类的50000张图片32x32)
+3种算法 - K最近邻与线性分类器 - 线性分类器:SVM、Softmax - 两层简单的神经网络 - 图像特征
+需要python3和numpy
+如果需要使用Google Cloud,好像可以试用,可以参考
+Semantic Gap(语义代沟):图片由巨大的数字表单组成，一个三维数组数字在0~255之间，相机的旋转、缩放、平移、聚焦以及亮度的变化的鲁棒性
+Challenges：Illumination(光线)、Deformation(形变问题)、Occlusion:遮挡、Background Clutter(背景和物体融合在一起如何分辨)、Intraclass variable(同一类东西有多种类)
+一个图片分类器
+def classify_image(image): #something...,这里不是直接的算法可以给出答案，例如排序以及计算convex hull return class_label 以前有些人使用硬编码对于进行分类，例如:计算出图像的边界，然后将边界形状组合分类，这个只能对于特定的物体进行识别而不具有推广到全部物体的能力" />
+
+  
+  
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xieydd_" />
+    <meta name="twitter:title" content="Lifeifei CS231n" />
+    <meta name="twitter:description" content="[机器视觉] 更加基础的课程请参考CS231a
+1.机器视觉历史回顾 讲义
+从寒武纪生命的爆炸式的出现和增长 &amp;ndash;》 现代视觉工程技术的开端起始于达芬奇的照相暗盒 &amp;ndash;》 哈佛的Hubel和Wiesel发现生物大脑是如何处理图像信息的(利用电极插入猫的大脑的基础视觉皮质层primary visual cortex检测，注意这个不是紧挨眼睛这个不同于耳朵和鼻子)，但是发现给猫看鱼和花什么的图像并不能刺激神经元，反而变换幻灯片能够刺激，由此得出基础视觉区的神经元是按照一列一列组织起来的，每一列只会对特定的形状感兴趣 &amp;ndash;》 Larry Roberts验证了边缘决定结构 &amp;ndash;》 StandFord的AI实验室成立 &amp;ndash;》 David Marr的VISION提出视觉是分层的，这和上面的边缘决定结构组成了机器视觉的两大基石；对于遮挡问题提出2.5D的概念 &amp;ndash;》 第一波机器视觉方法，重建3D模型识别物体(Tomas Binford提出generalized Cylinder模型认为世界上的物体都是简单形状组合而成；Pictorial Structure专注于概率模型) &amp;ndash;》 开始着手于彩色图像的识别normalize cut，感知分组(当你进入一个房间，不是看到的一个一个像素，而是先分类) &amp;ndash;》 Viola Jones Face Detection转换为第一个人脸识别产品2006年的富士相机 &amp;ndash;》PASCAL数据集20种类 &amp;ndash;》 ImageNet数据集 5000万张图片包含2万种类以及ImageNet Competition for Object Recognition 对1000种类的150万图片识别&amp;ndash;》2012年的ImageNet Com..的获胜模型就是卷积神经网络(上世纪七八十年代提出)
+图像分类关注的最大图整体，物体检测则是告诉你东西具体在哪，深入理解图像要做到检测，分类，联系
+2.数据驱动的图像分类方式 对于CIFIA-10数据集(10类的50000张图片32x32)
+3种算法 - K最近邻与线性分类器 - 线性分类器:SVM、Softmax - 两层简单的神经网络 - 图像特征
+需要python3和numpy
+如果需要使用Google Cloud,好像可以试用,可以参考
+Semantic Gap(语义代沟):图片由巨大的数字表单组成，一个三维数组数字在0~255之间，相机的旋转、缩放、平移、聚焦以及亮度的变化的鲁棒性
+Challenges：Illumination(光线)、Deformation(形变问题)、Occlusion:遮挡、Background Clutter(背景和物体融合在一起如何分辨)、Intraclass variable(同一类东西有多种类)
+一个图片分类器
+def classify_image(image): #something...,这里不是直接的算法可以给出答案，例如排序以及计算convex hull return class_label 以前有些人使用硬编码对于进行分类，例如:计算出图像的边界，然后将边界形状组合分类，这个只能对于特定的物体进行识别而不具有推广到全部物体的能力" />
+    <meta name="twitter:image" content="https://xieydd.github.io/img/Lifeifei.jpg" />
+  
+
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Lifeifei CS231n" />
+  <meta property="og:description" content="[机器视觉] 更加基础的课程请参考CS231a
+1.机器视觉历史回顾 讲义
+从寒武纪生命的爆炸式的出现和增长 &amp;ndash;》 现代视觉工程技术的开端起始于达芬奇的照相暗盒 &amp;ndash;》 哈佛的Hubel和Wiesel发现生物大脑是如何处理图像信息的(利用电极插入猫的大脑的基础视觉皮质层primary visual cortex检测，注意这个不是紧挨眼睛这个不同于耳朵和鼻子)，但是发现给猫看鱼和花什么的图像并不能刺激神经元，反而变换幻灯片能够刺激，由此得出基础视觉区的神经元是按照一列一列组织起来的，每一列只会对特定的形状感兴趣 &amp;ndash;》 Larry Roberts验证了边缘决定结构 &amp;ndash;》 StandFord的AI实验室成立 &amp;ndash;》 David Marr的VISION提出视觉是分层的，这和上面的边缘决定结构组成了机器视觉的两大基石；对于遮挡问题提出2.5D的概念 &amp;ndash;》 第一波机器视觉方法，重建3D模型识别物体(Tomas Binford提出generalized Cylinder模型认为世界上的物体都是简单形状组合而成；Pictorial Structure专注于概率模型) &amp;ndash;》 开始着手于彩色图像的识别normalize cut，感知分组(当你进入一个房间，不是看到的一个一个像素，而是先分类) &amp;ndash;》 Viola Jones Face Detection转换为第一个人脸识别产品2006年的富士相机 &amp;ndash;》PASCAL数据集20种类 &amp;ndash;》 ImageNet数据集 5000万张图片包含2万种类以及ImageNet Competition for Object Recognition 对1000种类的150万图片识别&amp;ndash;》2012年的ImageNet Com..的获胜模型就是卷积神经网络(上世纪七八十年代提出)
+图像分类关注的最大图整体，物体检测则是告诉你东西具体在哪，深入理解图像要做到检测，分类，联系
+2.数据驱动的图像分类方式 对于CIFIA-10数据集(10类的50000张图片32x32)
+3种算法 - K最近邻与线性分类器 - 线性分类器:SVM、Softmax - 两层简单的神经网络 - 图像特征
+需要python3和numpy
+如果需要使用Google Cloud,好像可以试用,可以参考
+Semantic Gap(语义代沟):图片由巨大的数字表单组成，一个三维数组数字在0~255之间，相机的旋转、缩放、平移、聚焦以及亮度的变化的鲁棒性
+Challenges：Illumination(光线)、Deformation(形变问题)、Occlusion:遮挡、Background Clutter(背景和物体融合在一起如何分辨)、Intraclass variable(同一类东西有多种类)
+一个图片分类器
+def classify_image(image): #something...,这里不是直接的算法可以给出答案，例如排序以及计算convex hull return class_label 以前有些人使用硬编码对于进行分类，例如:计算出图像的边界，然后将边界形状组合分类，这个只能对于特定的物体进行识别而不具有推广到全部物体的能力" />
+  <meta property="og:url" content="https://xieydd.github.io/post/lifeifei-cs231n/" />
+  <meta property="og:image" content="https://xieydd.github.io/img/Lifeifei.jpg" />
+
+
+
+
+<meta name="generator" content="Hugo 0.36" />
+
+
+<link rel="canonical" href="https://xieydd.github.io/post/lifeifei-cs231n/" />
+<link rel="alternative" href="https://xieydd.github.io/index.xml" title="Xieydd Blog" type="application/atom+xml" />
+
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+
+
+<meta name="robots" content="index,follow" />
+<meta name="referrer" content="origin-when-cross-origin" />
+<meta name="google-site-verification" content="_moDmnnBNVLBN1rzNxyGUGdPHE20YgbmrtzLIbxaWFc" />
+<meta name="msvalidate.01" content="22596E34341DD1D17D6022C44647E587" />
+
+
+
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Xieydd Blog" />
+<meta name="msapplication-tooltip" content="Xieydd Blog" />
+<meta name='msapplication-navbutton-color' content="#5fbf5e" />
+<meta name="msapplication-TileColor" content="#5fbf5e" />
+<meta name="msapplication-TileImage" content="/img/tile-image-windows.png" />
+<link rel="icon" href="https://xieydd.github.io/img/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="https://xieydd.github.io/img/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="https://xieydd.github.io/img/favicon-32x32.png" />
+<link rel="icon" sizes="192x192" href="https://xieydd.github.io/img/touch-icon-android.png" />
+<link rel="apple-touch-icon" href="https://xieydd.github.io/img/touch-icon-apple.png" />
+<link rel="mask-icon" href="https://xieydd.github.io/img/safari-pinned-tab.svg" color="#5fbf5e" />
+
+
+
+<link rel="stylesheet" href="//cdn.bootcss.com/video.js/6.2.8/alt/video-js-cdn.min.css" />
+
+<link rel="stylesheet" href="https://xieydd.github.io/css/bundle.css" />
+
+
+  
+  <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/video.js/6.2.8/ie8/videojs-ie8.min.js"></script>
+  <![endif]-->
+
+<!--[if lte IE 11]>
+    <script src="//cdn.bootcss.com/classlist/1.1.20170427/classList.min.js"></script>
+  <![endif]-->
+
+
+<script src="//cdn.bootcss.com/object-fit-images/3.2.3/ofi.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/smooth-scroll/12.1.4/js/smooth-scroll.polyfills.min.js"></script>
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a title="Go to top" class="to-top is-hide"><span class="icon icon-up"></span></a>
+      
+        
+        <a title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="https://xieydd.github.io/img/xieydd_haha.jpg" alt="Avatar">
+  
+  <h2 class="title">Xieydd Blog</h2>
+  
+  <p class="subtitle">~ 充满力量，充满爱，去生活 ~</p>
+  <button class="menu-toggle" type="button">
+    <span class="icon icon-menu"></span>
+  </button>
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+            
+            
+            
+              is-active
+            ">
+            <a href="https://xieydd.github.io/">首页</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://github.com/xieydd/">作品</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/tags/">标签</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/links/">友链</a>
+          </li>
+      
+        <li class="menu-item
+            
+            
+            ">
+            <a href="https://xieydd.github.io/about/">About</a>
+          </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list">
+
+      
+      <li class="social-item">
+        <a href="mailto:xieydd@gmail.com" title="Email"><span class="icon icon-email"></span></a>
+      </li>
+
+      
+      <li class="social-item">
+        <a href="//github.com/xieydd" title="GitHub"><span class="icon icon-github"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//twitter.com/xieydd_" title="Twitter"><span class="icon icon-twitter"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.facebook.com/xieydd" title="Facebook"><span class="icon icon-facebook"></span></a>
+      </li>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="//weibo.com/xieydd" title="Weibo"><span class="icon icon-weibo"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/img/wxcode.jpg" title="Wechat"><span class="icon icon-wechat"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.linkedin.com/in/xieydd" title="Linkedin"><span class="icon icon-linkedin"></span></a>
+      </li>
+
+      <li class="social-item">
+        <a href="//www.zhihu.com/people/xie-yuan-dong-49" title="Zhihu"><span class="icon icon-zhihu"></span></a>
+      </li>
+
+      
+
+      
+
+      <li class="social-item">
+        <a href="https://xieydd.github.io/index.xml"><span class="icon icon-rss" title="RSS"></span></a>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Lifeifei CS231n</h1>
+      <p class="post-meta">@Xieydd · Feb 5, 2018 · 2 min read</p>
+    </header>
+    <article class="post-content">
+
+<h1 id="机器视觉">[机器视觉]</h1>
+
+<p>更加基础的课程请参考CS231a</p>
+
+<h3 id="1-机器视觉历史回顾">1.机器视觉历史回顾</h3>
+
+<p><a href="http://cs231n.stanford.edu/slides/2017/cs231n_2017_lecture1.pdf">讲义</a></p>
+
+<p>从寒武纪生命的爆炸式的出现和增长 &ndash;》 现代视觉工程技术的开端起始于达芬奇的照相暗盒 &ndash;》 哈佛的Hubel和Wiesel发现生物大脑是如何处理图像信息的(利用电极插入猫的大脑的基础视觉皮质层primary visual cortex检测，注意这个不是紧挨眼睛这个不同于耳朵和鼻子)，但是发现给猫看鱼和花什么的图像并不能刺激神经元，反而变换幻灯片能够刺激，由此得出基础视觉区的神经元是按照一列一列组织起来的，每一列只会对特定的形状感兴趣  &ndash;》 Larry Roberts验证了边缘决定结构 &ndash;》 StandFord的AI实验室成立 &ndash;》 David Marr的VISION提出视觉是分层的，这和上面的边缘决定结构组成了机器视觉的两大基石；对于遮挡问题提出2.5D的概念 &ndash;》 第一波机器视觉方法，重建3D模型识别物体(Tomas Binford提出generalized Cylinder模型认为世界上的物体都是简单形状组合而成；Pictorial Structure专注于概率模型) &ndash;》 开始着手于彩色图像的识别normalize cut，感知分组(当你进入一个房间，不是看到的一个一个像素，而是先分类) &ndash;》 Viola Jones Face Detection转换为第一个人脸识别产品2006年的富士相机 &ndash;》PASCAL数据集20种类 &ndash;》 ImageNet数据集 5000万张图片包含2万种类以及ImageNet Competition for Object Recognition 对1000种类的150万图片识别&ndash;》2012年的ImageNet Com..的获胜模型就是卷积神经网络(上世纪七八十年代提出)</p>
+
+<p>图像分类关注的最大图整体，物体检测则是告诉你东西具体在哪，深入理解图像要做到检测，分类，联系</p>
+
+<h3 id="2-数据驱动的图像分类方式">2.数据驱动的图像分类方式</h3>
+
+<p>对于CIFIA-10数据集(10类的50000张图片32x32)</p>
+
+<p>3种算法
+- K最近邻与线性分类器
+- 线性分类器:SVM、Softmax
+- 两层简单的神经网络
+- 图像特征</p>
+
+<p>需要python3和<a href="ttp://cs231n.github.io/python-numpy-tutorial/">numpy</a></p>
+
+<p>如果需要使用<a href="cloud.google.com">Google Cloud</a>,好像可以试用,可以<a href="http://cs231n.github.io/gce-tutorial/">参考</a></p>
+
+<p>Semantic Gap(语义代沟):图片由巨大的数字表单组成，一个三维数组数字在0~255之间，相机的旋转、缩放、平移、聚焦以及亮度的变化的鲁棒性</p>
+
+<p>Challenges：Illumination(光线)、Deformation(形变问题)、Occlusion:遮挡、Background Clutter(背景和物体融合在一起如何分辨)、Intraclass variable(同一类东西有多种类)</p>
+
+<p>一个图片分类器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">classify_image</span>(image):
+   <span style="color:#75715e">#something...,这里不是直接的算法可以给出答案，例如排序以及计算convex hull</span>
+    <span style="color:#66d9ef">return</span> class_label</code></pre></div>
+<p>以前有些人使用硬编码对于进行分类，例如:计算出图像的边界，然后将边界形状组合分类，这个只能对于特定的物体进行识别而不具有推广到全部物体的能力</p>
+
+<p>我们使用的是基于数据驱动的方法:
+- 收集图像以及进行标注
+- 使用机器学习方法训练分类器
+- 使用分类器对于新的图像进行测试评估模型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train</span>(images,labels):
+    <span style="color:#75715e">#Machine Learning...</span>
+    <span style="color:#66d9ef">return</span> model
+    
+    
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">evaluate</span>(model,test_images):
+    <span style="color:#75715e">#Use model to predict labels...</span>
+    <span style="color:#66d9ef">return</span> test_labels</code></pre></div>
+<h5 id="最近邻算法">最近邻算法</h5>
+
+<p>最近邻算法可以说是最简单的分类算法，就是简单的记录数据，然后比较数据，在train函数中记住所有的图像和标签，在predcit()中预测的是最像图片标签</p>
+
+<ul>
+<li>Example DataSet：CIFAR10(10类50000张32x32训练图片，10000张测试图片)</li>
+</ul>
+
+<p>如果有两张图片的话如何进行对比？如何选择函数？</p>
+
+<p>这里选择的是L1距离，也叫做曼哈顿距离(即矩阵相减绝对值的和)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># -*- coding: utf-8 -*-</span>
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">Created on Sat Feb  3 22:35:40 2018
+</span><span style="color:#e6db74">E-mail: xieydd@gmail.com
+</span><span style="color:#e6db74">@author: xieydd
+</span><span style="color:#e6db74">@description:CS231n的最近邻算法
+</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NearestNeighbor</span>:
+	<span style="color:#66d9ef">def</span> __init__(self):
+		<span style="color:#66d9ef">pass</span>
+
+	<span style="color:#75715e">#这里的训练只需要存储data 所以时间复杂度为O(1)</span>
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train</span>(self,X,y):
+		<span style="color:#f92672">***</span><span style="color:#960050;background-color:#1e0010">这里的</span>X(N x D)<span style="color:#960050;background-color:#1e0010">的每一行是一个实例</span>,Y是一个一维的长度为N<span style="color:#f92672">***</span>
+		self<span style="color:#f92672">.</span>Xtr <span style="color:#f92672">=</span> X
+		self<span style="color:#f92672">.</span>ytr <span style="color:#f92672">=</span> y
+
+	<span style="color:#75715e">#预测过程吧需要循环相减所以计算复杂度为O(n)</span>
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">predict</span>(self,X):
+		<span style="color:#f92672">***</span><span style="color:#960050;background-color:#1e0010">这里的</span>X是你要预测的实例长度为(N x D)<span style="color:#f92672">***</span>
+		num_test <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]
+
+		Ypred <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(num_test,dtype<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>ytr<span style="color:#f92672">.</span>dtype)
+
+		<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(num_test):
+			distances <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sum(np<span style="color:#f92672">.</span>abs(self<span style="color:#f92672">.</span>Xtr <span style="color:#f92672">-</span> X[i,:]),axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+			min_index <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>argmax(distances)
+			Ypred[i] <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ytr[min_index]
+		<span style="color:#66d9ef">return</span> Ypred
+
+
+
+<span style="color:#75715e">#而不是从最近的邻居复制标签，从K个最接近的点获得多数票</span>
+<span style="color:#75715e">#机器学习实战中k-近邻算法，这里使用 的是L2距离（即平方差和的开方）</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">classify0</span>(inX, dataSet, labels, k):
+	<span style="color:#75715e">#计算距离</span>
+	<span style="color:#75715e">#shape[0]表示第一维的长度</span>
+	dataSetSize <span style="color:#f92672">=</span> dataSet<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]
+	<span style="color:#75715e">#tile将第二维数据重复dataSetSize次，第一维重复1次即不改变,保证矩阵的运算</span>
+	diffMat <span style="color:#f92672">=</span> tile(inX, (dataSetSize,<span style="color:#ae81ff">1</span>)) <span style="color:#f92672">-</span> dataSet
+	sqDiffMat <span style="color:#f92672">=</span> diffMat<span style="color:#f92672">**</span><span style="color:#ae81ff">2</span>
+	sqDistances <span style="color:#f92672">=</span> sqDiffMat<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+	distances <span style="color:#f92672">=</span> sqDistances<span style="color:#f92672">**</span><span style="color:#ae81ff">0.5</span>
+	<span style="color:#75715e">#选择距离最小的k个点</span>
+	sortedDistIndicies <span style="color:#f92672">=</span> distances<span style="color:#f92672">.</span>argsort()
+	classCount<span style="color:#f92672">=</span>{}
+	<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(k):
+		voteIlabel <span style="color:#f92672">=</span> labels[sortedDistIndicies[i]]
+	classCount[voteIlabel] <span style="color:#f92672">=</span> classCount<span style="color:#f92672">.</span>get(voteIlabel,<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+	<span style="color:#75715e">#注意dict的iteritems方法改名为items</span>
+	sortedClassCount <span style="color:#f92672">=</span> sorted(classCount<span style="color:#f92672">.</span>items(), key<span style="color:#f92672">=</span>operator<span style="color:#f92672">.</span>itemgetter(<span style="color:#ae81ff">1</span>), reverse<span style="color:#f92672">=</span>True)
+	<span style="color:#66d9ef">return</span> sortedClassCount[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">0</span>]</code></pre></div>
+<p>这里我们发现训练快但是预测的时候慢，所以这个模型不适用于现代的移动端的特点</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/KNN_1_3_5.jpg" alt="KNN的K为1、3、5" />
+[KNN的K为1、3、5]</p>
+
+<p>我们发现决策边界更加的平滑，而且噪点没有吧周围变为相同的色彩；白的代表没有得到K最邻投票</p>
+
+<p>下面几点对于反复是靠验证很有用:</p>
+
+<ul>
+<li>在平面上的高纬点概念</li>
+<li>具体图像的观察，因为图像的像素点可以让我们将这个图像看做高维向量</li>
+</ul>
+
+<p>这个<a href="http://vision.stanford.edu/teaching/cs231n-demos/knn/">网址</a>可以可视化KNN的情况 ,由斯坦福提供，可以感受一下改变超参数(我们自我设定的而不是在模型中学习到的)的影响</p>
+
+<p>如何设置超参数?</p>
+
+<ol>
+<li><p>自己选择选择最优的效果(这个是最不建议的)，K=1的时候总是训练的效果很好</p></li>
+
+<li><p>设置训练集合测试集，在测试集上得到超参数,这样可能只在测试集上超参数集有作用</p></li>
+
+<li><p>将数据集分为训练集、验证集、测试集(最好，而且是必须，这个和Andrew的观点略有不同)</p></li>
+
+<li><p>Cross-Validation(交叉验证):分割出训练集合测试集，然后将训练集分为几个部分，轮流作为验证集</p></li>
+</ol>
+
+<p>一次性使用相同的方法得到数据，然后将数据打乱，然后分为训练集，验证集，测试集。如果不打乱可能会陷入先得到的数据作为训练集、后得到的数据作为测试集可能会导致偏差</p>
+
+<p><img src="https://xieydd.github.io/media/posts/hugo-nuo-post-preview/KNN_cv.jpg" alt="KNN Cross Validation" />
+[KNN Cross Validation]</p>
+
+<p>KNN不太适合视觉处理?</p>
+
+<ul>
+<li>向量化的比较函数(L2距离适合图像之间的视觉相似度</li>
+<li>KNN算法存在维数灾难的问题</li>
+</ul>
+
+<h5 id="线性分类">线性分类</h5>
+
+<p>线性分类器作为卷积神经网络中的一个组件</p>
+
+<p>线性分类在多维度中的面分类(可以想象一下)</p>
+
+<p>线性分类器难以解决非线性分类问题和多分类问题</p>
+
+<p>当我们得到权重的时候，如何确定是好还是坏呢？</p>
+
+<h3 id="3-损失函数">3.损失函数</h3>
+</article>
+    <footer class="post-footer">
+      
+      <p class="post-copyright">
+        © This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  <footer class="site-footer">
+  <p>© 2017-2018 Xieydd Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank">Nuo</a>.</p>
+  
+</footer>
+
+
+
+<script async src="//cdn.bootcss.com/video.js/6.2.8/alt/video.novtt.min.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[','\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+<script src="https://xieydd.github.io/js/bundle.js"></script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+  </body>
+</html>

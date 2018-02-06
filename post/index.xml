@@ -7,10 +7,30 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you likes to quote or reproduce.</copyright>
-    <lastBuildDate>Sat, 03 Feb 2018 11:50:59 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 05 Feb 2018 12:01:36 +0800</lastBuildDate>
     
 	<atom:link href="https://xieydd.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Lifeifei CS231n</title>
+      <link>https://xieydd.github.io/post/lifeifei-cs231n/</link>
+      <pubDate>Mon, 05 Feb 2018 12:01:36 +0800</pubDate>
+      
+      <guid>https://xieydd.github.io/post/lifeifei-cs231n/</guid>
+      <description>[机器视觉] 更加基础的课程请参考CS231a
+1.机器视觉历史回顾 讲义
+从寒武纪生命的爆炸式的出现和增长 &amp;ndash;》 现代视觉工程技术的开端起始于达芬奇的照相暗盒 &amp;ndash;》 哈佛的Hubel和Wiesel发现生物大脑是如何处理图像信息的(利用电极插入猫的大脑的基础视觉皮质层primary visual cortex检测，注意这个不是紧挨眼睛这个不同于耳朵和鼻子)，但是发现给猫看鱼和花什么的图像并不能刺激神经元，反而变换幻灯片能够刺激，由此得出基础视觉区的神经元是按照一列一列组织起来的，每一列只会对特定的形状感兴趣 &amp;ndash;》 Larry Roberts验证了边缘决定结构 &amp;ndash;》 StandFord的AI实验室成立 &amp;ndash;》 David Marr的VISION提出视觉是分层的，这和上面的边缘决定结构组成了机器视觉的两大基石；对于遮挡问题提出2.5D的概念 &amp;ndash;》 第一波机器视觉方法，重建3D模型识别物体(Tomas Binford提出generalized Cylinder模型认为世界上的物体都是简单形状组合而成；Pictorial Structure专注于概率模型) &amp;ndash;》 开始着手于彩色图像的识别normalize cut，感知分组(当你进入一个房间，不是看到的一个一个像素，而是先分类) &amp;ndash;》 Viola Jones Face Detection转换为第一个人脸识别产品2006年的富士相机 &amp;ndash;》PASCAL数据集20种类 &amp;ndash;》 ImageNet数据集 5000万张图片包含2万种类以及ImageNet Competition for Object Recognition 对1000种类的150万图片识别&amp;ndash;》2012年的ImageNet Com..的获胜模型就是卷积神经网络(上世纪七八十年代提出)
+图像分类关注的最大图整体，物体检测则是告诉你东西具体在哪，深入理解图像要做到检测，分类，联系
+2.数据驱动的图像分类方式 对于CIFIA-10数据集(10类的50000张图片32x32)
+3种算法 - K最近邻与线性分类器 - 线性分类器:SVM、Softmax - 两层简单的神经网络 - 图像特征
+需要python3和numpy
+如果需要使用Google Cloud,好像可以试用,可以参考
+Semantic Gap(语义代沟):图片由巨大的数字表单组成，一个三维数组数字在0~255之间，相机的旋转、缩放、平移、聚焦以及亮度的变化的鲁棒性
+Challenges：Illumination(光线)、Deformation(形变问题)、Occlusion:遮挡、Background Clutter(背景和物体融合在一起如何分辨)、Intraclass variable(同一类东西有多种类)
+一个图片分类器
+def classify_image(image): #something...,这里不是直接的算法可以给出答案，例如排序以及计算convex hull return class_label 以前有些人使用硬编码对于进行分类，例如:计算出图像的边界，然后将边界形状组合分类，这个只能对于特定的物体进行识别而不具有推广到全部物体的能力</description>
+    </item>
     
     <item>
       <title>Google Driver GPU</title>
