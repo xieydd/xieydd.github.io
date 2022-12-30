@@ -151,7 +151,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
     custom = ""
     # whether to show Hugo and theme info
     # 是否显示 Hugo 和主题信息
-    hugo = false
+    hugo = true 
     # whether to show copyright info
     # 是否显示版权信息
     copyright = true
@@ -189,7 +189,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
     paginate = 20
     # date format (month and day)
     # 日期格式 (月和日)
-    dateFormat = "1970-01-02"
+    dateFormat = "01-02"
     # amount of RSS pages
     # RSS 文章数目
     rss = 10
@@ -199,7 +199,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
   [params.app]
     # optional site title override for the app when added to an iOS home screen or Android launcher
     # 当添加到 iOS 主屏幕或者 Android 启动器时的标题, 覆盖默认标题
-    title = "LoveIt"
+    title = "Xieydd"
     # whether to omit favicon resource links
     # 是否隐藏网站图标资源链接
     noFavicon = false
@@ -651,7 +651,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
     enable = false
     # Google Analytics
     [params.analytics.google]
-      id = ""
+      id = "G-T4DQ9F4S5V"
       # whether to anonymize IP
       # 是否匿名化用户 IP
       anonymizeIP = true
@@ -864,7 +864,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
           gravatarEmail = ""
           avatarURL = "/images/xieydd_github.jpeg"
           title = ""
-          subtitle = "A Clean, Elegant but Advanced Hugo Theme"
+          subtitle = "Welcome to xieydd's Blog"
           typeit = true
           social = true
           disclaimer = ""
