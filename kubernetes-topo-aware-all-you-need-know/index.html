@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>关于 Kubernetes 中，拓扑感知你需要知道的一切 - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="关于 Kubernetes 中，拓扑感知你需要知道的一切" />
+<meta property="og:description" content="最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/" />
+<meta property="og:image" content="https://xieydd.github.io/logo.png"/>
+<meta property="article:published_time" content="2022-12-29T16:27:06+08:00" />
+<meta property="article:modified_time" content="2022-12-31T00:14:30+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://xieydd.github.io/logo.png"/>
+
+<meta name="twitter:title" content="关于 Kubernetes 中，拓扑感知你需要知道的一切"/>
+<meta name="twitter:description" content="最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始"/>
+<meta name="application-name" content="Xieydd">
+<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "关于 Kubernetes 中，拓扑感知你需要知道的一切",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xieydd.github.io\/kubernetes-topo-aware-all-you-need-know\/"
+        },"image": ["https:\/\/xieydd.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "kubernetes, topo aware","wordcount":  4007 ,
+        "url": "https:\/\/xieydd.github.io\/kubernetes-topo-aware-all-you-need-know\/","datePublished": "2022-12-29T16:27:06+08:00","dateModified": "2022-12-31T00:14:30+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/xieydd.github.io\/images\/xieydd_github.jpeg",
+                    "width":  400 ,
+                    "height":  400 
+                }},"author": {
+                "@type": "Person",
+                "name": "xieydd"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Xieydd&#39;s Blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/categories/documentation/"> 文档 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/kubernetes-topo-aware-all-you-need-know/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Xieydd&#39;s Blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/categories/documentation/" title="">文档</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/kubernetes-topo-aware-all-you-need-know/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">关于 Kubernetes 中，拓扑感知你需要知道的一切</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="https://xieydd.github.io" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2022/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2022</a>&nbsp;<a href="/categories/kubernetes/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>kubernetes</a>&nbsp;<a href="/categories/documentation/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>文档</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-12-29">2022-12-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4007 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;<span id="/kubernetes-topo-aware-all-you-need-know/" class="leancloud_visitors" data-flag-title="关于 Kubernetes 中，拓扑感知你需要知道的一切">
+                        <i class="far fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#为啥需要感知拓扑">为啥需要感知拓扑</a></li>
+    <li><a href="#拓扑类型">拓扑类型</a>
+      <ul>
+        <li><a href="#gpu-topology-manager">GPU Topology Manager</a>
+          <ul>
+            <li><a href="#why">Why</a></li>
+            <li><a href="#how">How</a></li>
+          </ul>
+        </li>
+        <li><a href="#numa-topology-awareness">NUMA Topology Awareness</a>
+          <ul>
+            <li><a href="#why-1">Why</a></li>
+            <li><a href="#how-1">How</a>
+              <ul>
+                <li><a href="#kubernetes-topology-manager">Kubernetes Topology Manager</a></li>
+                <li><a href="#crane-numa-拓扑感知">Crane NUMA 拓扑感知</a></li>
+                <li><a href="#koordinator-fine-grained-cpu-orchestration">Koordinator Fine-grained cpu orchestration</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#引用">引用</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始终抓不到头绪，谨以此篇文章来梳理总结。</p>
+<h2 id="为啥需要感知拓扑">为啥需要感知拓扑</h2>
+<p>这里 kubernetes <a href="https://kubernetes.io/zh-cn/docs/tasks/administer-cluster/topology-manager/" target="_blank" rel="noopener noreffer ">官方</a>说了：目前越来越多的系统利用 CPU 和硬件加速器，比如 GPU,DPU 来支持低延迟的任务以及高吞吐的并行计算任务。</p>
+<p>但是好像又说的不清楚，其实本质原因是冯诺依曼架构带来的问题。还是那句老话，没有银弹，冯诺依曼架构将存储器和运算器分开，指令和数据均放在存储器，为现代计算的通用性奠定了基础。但是也埋下了隐患，那就是内存容量指数级提升后，CPU 和内存之前的数据传输成为了瓶颈。目前服务器中的设备基本都是通过 PCIe 总线进行高速连接，而不同的用途的服务器可能其总线布局也不相同，如下图所示（网上找到的，非本人所画）,左图 GPU 驻留在不同的 PCIe 域上，GPU 内存之间的直接 P2P 复制是不可能的，从 GPU 0 的内存复制到 GPU 2 的内存需要首先通过 PCIe 复制到连接到 CPU 0 的内存，然后通过 QPI 链接传输到 CPU 1 并再次通过 PCIe 传输到 GPU 2。可以想象这个过程在延迟和带宽方面增加了大量的开销，而右图可以通过 GPU P2P 连接实现超高速通信。简单总结下，拓扑会影响设备间的通信，通信对业务造成稳定性以及效率，所以需要通过一些技术手段让业务感知拓扑。</p>
+<figure>
+    <img src="gpu-cpu-pcie-topo.jpg"/> <figcaption>
+            <h4>PCIe Topo (figure 1)</h4>
+        </figcaption>
+</figure>
+
+<h2 id="拓扑类型">拓扑类型</h2>
+<p>目前有哪些拓扑需要感知:</p>
+<ul>
+<li>GPU Topology Awareness</li>
+<li>NUMA Topology Awareness</li>
+</ul>
+<h3 id="gpu-topology-manager">GPU Topology Manager</h3>
+<p>业界目前有几种实现方案：</p>
+<ul>
+<li><a href="https://github.com/volcano-sh/volcano/issues/1472" target="_blank" rel="noopener noreffer ">Volcano GPU Topology Awareness</a></li>
+<li><a href="https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ" target="_blank" rel="noopener noreffer ">百度智能云 GPU 拓扑感知调度</a></li>
+</ul>
+<p>Volcano 目前未完全实现，智能云闭源只能通过一些分享的信息，管中窥豹。</p>
+<h4 id="why">Why</h4>
+<p>为什么需要 GPU 的拓扑感知，首先上个图，这张图来自  NVIDIA 官方，描述了现在主流的 GPU 显卡 V100 在服务器中的拓扑关系。</p>
+<figure>
+    <img src="gpu-topo.png"/> <figcaption>
+            <h4>GPU Topo (figure 2)</h4>
+        </figcaption>
+</figure>
+
+<p>每块 V100 GPU有6个 NVLink 通道，8块 GPU 间无法做到全连接，2块 GPU 间最多只能有2条 NVLink 连接。其中 GPU0 和 GPU3，GPU0 和 GPU4 之间有2条NVLink 连接，GPU0 和 GPU1 之间有一条 NVLink 连接，GPU0 和6之间没有 NVLink 连接，故 GPU0 与 GPU6 之间仍然需要通过 PCIe 进行通信。NVlink 连接的单向通信带宽为 25 GB/s，双向通信带宽为 50 GB/s，PCIe 连接的通信带宽为16 GB/s。所以在 GPU 训练过程中如果错误的分配了 GPU， 比如某训练任务 Pod 申请了两张卡 GPU0 与 GPU6，在跨 GPU 通信可能就成为了训练任务的瓶颈。</p>
+<p>拓扑信息可以在节点执行命令查看：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># nvidia-smi topo -m
+	   GPU0	GPU1 GPU2 GPU3 GPU4	GPU5 GPU6 GPU7
+GPU0	 X 	PIX	 PHB  PHB  SYS	SYS	 SYS  SYS
+GPU1	PIX	 X 	 PHB  PHB  SYS	SYS	 SYS  SYS
+GPU2	PHB	PHB	 X 	  PIX  SYS	SYS	 SYS  SYS
+GPU3	PHB	PHB	 PIX  X    SYS	SYS	 SYS  SYS
+GPU4	SYS	SYS	 SYS  SYS  X 	PIX	 PHB  PHB
+GPU5	SYS	SYS	 SYS  SYS  PIX	 X 	 PHB  PHB
+GPU6	SYS	SYS	 SYS  SYS  PHB	PHB	 X 	  PIX
+GPU7	SYS	SYS	 SYS  SYS  PHB	PHB	 PIX  X 
+Legend:
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe switches (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing a single PCIe switch
+  NV#  = Connection traversing a bonded set of # NVLinks
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="how">How</h4>
+<p>这里就不一一解析，本身也没完整的实现来看，就以我自己的理解来梳理出一些大致思路。</p>
+<p>第一步其实是感知，即通过 daemon 组件来进行 nvidia gpu 、网络拓扑、NVLink、PCIe 的信息。第二步则是调度器，定义策略。策略1：优先将同一个 NUMA node 下 NVLink 数最多的 GPU 调度到一个 Pod 上；策略2：优先将处于同一个 PCI switch 的 GPU 和网卡分配给同一个 Pod。大致整体思路如下：</p>
+<ol>
+<li>GPU-device-plugin 或者其他 daemon 进程，构造节点的 GPU 拓扑信息 CRD；</li>
+<li>Pod 定义 topo 策略，比如策略1或者策略2；</li>
+<li>新定义调度器会根据 pod 调度的策略 fliter 、priority阶段过滤不满足策略节点，给满足策略节点打高分；</li>
+<li>关于节点 gpu device 的发现更新交给 device-plugin 和 kubelet 来做, 参见<a href="https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s" target="_blank" rel="noopener noreffer ">文章</a>。</li>
+</ol>
+<p>目前 GPU 拓扑信息可以通过官方的 <a href="https://github.com/NVIDIA/go-nvml" target="_blank" rel="noopener noreffer ">nvml (NVIDIA Management Library)</a> 通过接口查询。</p>
+<h3 id="numa-topology-awareness">NUMA Topology Awareness</h3>
+<h4 id="why-1">Why</h4>
+<p>谈到 NUMA 拓扑感知，一定要先解释 NUMA 是干啥呢，为啥要感知它呢？</p>
+<figure>
+    <img src="numa-arch.png"/> <figcaption>
+            <h4>NUMA Topo (figure 3)</h4>
+        </figcaption>
+</figure>
+
+<figure>
+    <img src="cpu-cache-latency.png"/> <figcaption>
+            <h4>CPU Cache Latency (figure 4)</h4>
+        </figcaption>
+</figure>
+
+<p>上面两幅图给你答案，现代 CPU 多采用 NUMA 架构， NUMA 全称 &ldquo;Non-Uniform Memory Access&rdquo; 即非一致性内存访问。为啥搞个非一致性，一致性不好吗？答案肯定是不好，因为如果使用 UMA 即一致性内存访问，随着北桥上的物理核心越来越多，CPU的频率也越来越高，总线带宽扛不住，访问同一块内存的冲突问题也会越来越严重。我们回到 NUMA架构，每个 NUMA node 上会有自己的物理CPU内核，以及每个 NUMA node 之间也共享 L3 Cache。同时，内存也分布在每个NUMA node上的。某些开启了超线程的CPU，一个物理CPU内核在操作系统上会呈现两个逻辑的核。</p>
+<p>回到业务侧，对于业务侧，如果程序都跑在同一个NUMA node上，可以更好地去共享一些L3 Cache，L3 Cache的访问速度会很快。如果L3 Cache没有命中，可以到内存中读取数据，访存速度会大大降低。</p>
+<p>在容器大行其道的今天，由于 CPU 错误分配的问题尤为严重。因为现在节点出现了超卖，节点上有大量的容器在同时运行，如果同一个进行分配了不同的 NUMA 会发生什么问题：</p>
+<ul>
+<li>CPU 争抢带来频繁的上下文切换时间；</li>
+<li>频繁的进程切换导致 CPU 高速缓存失败；</li>
+<li>跨 NUMA 访存会带来更严重的性能瓶颈。</li>
+</ul>
+<p>总结下：在现代 CPU 架构下，如果不感知 NUMA 拓扑关系，错误的进行 CPU 的分配，会导致性能问题，影响业务的 SLA。</p>
+<h4 id="how-1">How</h4>
+<p>上一章节阐述了为什么需要 NUMA 感知调度，那目前怎么感知 NUMA 拓扑呢，有什么现成的方案呢？这边我简单列下在 Kubernetes 生态的项目，各位看官如果有补充，可在评论区评论：</p>
+<ul>
+<li><a href="https://kubernetes.io/zh-cn/docs/tasks/administer-cluster/topology-manager/" target="_blank" rel="noopener noreffer ">Kubernetes Topology Manager</a> Office</li>
+<li><a href="https://gocrane.io/zh-cn/docs/tutorials/node-resource-tpolology-scheduler-plugins/" target="_blank" rel="noopener noreffer ">Crane NUMA 拓扑感知</a></li>
+<li><a href="https://koordinator.sh/docs/user-manuals/fine-grained-cpu-orchestration" target="_blank" rel="noopener noreffer ">Koordinator Fine-grained cpu orchestration</a></li>
+</ul>
+<h5 id="kubernetes-topology-manager">Kubernetes Topology Manager</h5>
+<p>拓扑管理器（Topology Manager） 是一个 kubelet 组件，旨在协调负责这些优化的一组组件。Topology Manager 其实是解决一个历史问题，CPU Manager 和 Device Manager 是独立工作的，互相不感知。
+首先来看下 Kubernetes Topology Manager 的实现，这里我也不想造轮子了，可以参看阿里的同学总结的一篇<a href="https://developer.aliyun.com/article/784148" target="_blank" rel="noopener noreffer ">好文</a>。这里做一个总结：</p>
+<ol>
+<li>找到不同资源的 topology hints 即拓扑信息， cpu 的选择标准是在满足资源申请的情况下，涉及的 NUMA 节点个数最少前提下涉及到 socket 个数最小的优先选择。 device manager 则在满足资源申请情况下，涉及 NUMA 节点最小优先选择。</li>
+<li>不同 topology 类型的 hints 做 merge 操作，也就是 union，选出最优策略</li>
+</ol>
+<p>如果选到还好，如果没选出来怎么办？kubernetes 提供了 kubelet 配置策略:</p>
+<ul>
+<li>best-effort: kubernetes 节点也会接纳这个 Pod，就是效果不达预期。</li>
+<li>restricted：节点会拒绝接纳这个 Pod，如果 Pod 遭到节点拒绝，其状态将变为 Terminated。</li>
+<li>single-NUMA-node：节点会拒绝接纳这个Pod，如果 Pod 遭到节点拒绝，其状态将变为Terminated。这里比 restricted 还多一个条件是选出来的 NUMA 节点个数需要是1个。</li>
+</ul>
+<p>所以我们看到 Kubernetes Topology Manager 还是在以 NUMA 为中心来进行不同资源（NIC, GPU, CPU）来进行 complete fair 最短路径的选择。而且是在 pod 被调度到某个节点上后 kubelet 执行上述的过程，这样会带来几个问题：</p>
+<ol>
+<li>pod 有很大概率会 Terminated, 生产上不可用。</li>
+<li>节点的 topology-manager-policy 配置不方便， kubelet 每次配置参数都需要重启，如果遇到特殊的版本可能会重启所有节点 pod，详见<a href="https://www.likakuli.com/posts/kubernetes-kubelet-restart/" target="_blank" rel="noopener noreffer ">文章</a></li>
+</ol>
+<p>所以我们会想到几个优化的方案：</p>
+<ol>
+<li>让一个类似 kubelet 的 daemon 进程，可以发现 topo 关系，并向外暴露；</li>
+<li>可以让拓扑感知放在 kube-scheduler 给 pod 分配 node 的时候就感知，而且可以指导调度；</li>
+<li>提供声明式的灵活的 topology manager policy。</li>
+</ol>
+<p>下面介绍的几个拓扑感知方案其实就是基于上面的 idea 应运而生的。</p>
+<h5 id="crane-numa-拓扑感知">Crane NUMA 拓扑感知</h5>
+<p>首先看下 Crane NUMA 感知调度的架构图。
+<figure>
+    <img src="crane-numa-aware-arch.png"/> <figcaption>
+            <h4>Crane NUMA Topology Aware (figure 5)</h4>
+        </figcaption>
+</figure>
+
+大致流程如下：</p>
+<ol>
+<li>Crane-Agent 从节点采集资源拓扑，包括NUMA、Socket、设备等信息，汇总到NodeResourceTopology这个自定义资源对象中。</li>
+<li>Crane-Scheduler在调度时会参考节点的NodeResourceTopology对象获取到节点详细的资源拓扑结构，在调度到节点的同时还会为Pod分配拓扑资源，并将结果写到Pod的annotations中。</li>
+<li>Crane-Agent在节点上Watch到Pod被调度后，从Pod的annotations中获取到拓扑分配结果，并按照用户给定的CPU绑定策略进行CPUSet的细粒度分配。</li>
+</ol>
+<p>这里其实就已经解决上述 Kubernetes Topology Manager 的缺陷。不过我们发现策略怎么配置呢，这里提供两种策略配置方案</p>
+<ol>
+<li>业务侧，在 pod 上打不同的标签来指定策略：
+<ol>
+<li>none：该策略不进行特别的CPUSet分配，Pod会使用节点CPU共享池。</li>
+<li>exclusive：该策略对应kubelet的static策略，Pod会独占CPU核心，其他任何Pod都无法使用。</li>
+<li>NUMA：该策略会指定NUMA Node，Pod会使用该NUMA Node上的CPU共享池。</li>
+<li>immovable：该策略会将Pod固定在某些CPU核心上，但这些核心属于共享池，其他Pod仍可使用。</li>
+</ol>
+</li>
+<li>节点侧
+<ol>
+<li>目前默认是 <a href="https://kubernetes.io/zh-cn/docs/tasks/administer-cluster/cpu-management-policies/" target="_blank" rel="noopener noreffer ">cpu manager policy</a> 是 static 即允许为节点上具有某些资源特征的 Pod 赋予增强的 CPU 亲和性和独占性； topology manager policy 是 SingleNUMANodePodLevel。</li>
+<li>如果节点无 <code>topology.crane.io/topology-awareness</code> 标签，则 topology manager policy 为 none</li>
+</ol>
+</li>
+</ol>
+<p>这里有个比较特别的功能，默认 kubelet 的 static 的 cpu manager 策略，只对 pod qos 为 guranteed 且资源申请为整数的 pod 生效，且分配指定的 cpu 其他进程无法占用。但是配合 crane-agent 和 Crane NUMA 感知调度后, 可以实现 pod 和 绑定核心的 pod 共享资源，可以在利用绑核更少的上下文切换和更高的缓存亲和性的优点的前提下，还能让其他 workload 部署共用，提升资源利用率。而且放松了 pod 的要求，只需要任意container的CPU limit大于或等于1且等于CPU request即可为该container设置绑核。实验下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ cat nginx
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  annotations:
+    topology.crane.io/topology-awareness: <span class="s1">&#39;true&#39;</span>
+    topology.crane.io/cpu-policy: <span class="s1">&#39;immovable&#39;</span>
+spec:
+  containers:
+  - image: nginx
+    imagePullPolicy: Always
+    name: nginx
+    resources:
+      requests:
+        cpu: <span class="m">2</span>
+        memory: 1Gi
+      limits:
+        cpu: <span class="m">2</span>
+        memory: 1Gi
+$ k <span class="nb">exec</span> -it nginx /bin/bash
+$ taskset -cp <span class="m">1</span> <span class="c1"># 查看绑核</span>
+pid 1<span class="s1">&#39;s current affinity list: 0,1
+</span><span class="s1"># 查看 burstable pod 的 cpuset 信息
+</span><span class="s1">$ cat /sys/fs/cgroup/cpuset/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod2260198d_db73_41f0_8ae3_387e09d3b9ec.slice/cri-containerd-6a5dfa37f9ce9102e1f781160d1fecb11b17dc835e5d72b9d7f573b515af86b3.scope/cpuset.cpus
+</span><span class="s1">0-9
+</span><span class="s1">
+</span><span class="s1"># change to exclusive 
+</span><span class="s1">annotations:
+</span><span class="s1">    topology.crane.io/topology-awareness: &#39;</span>true<span class="s1">&#39;
+</span><span class="s1">    topology.crane.io/cpu-policy: &#39;</span>exclusive<span class="err">&#39;</span>
+$ cat /sys/fs/cgroup/cpuset/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod2260198d_db73_41f0_8ae3_387e09d3b9ec.slice/cri-containerd-6a5dfa37f9ce9102e1f781160d1fecb11b17dc835e5d72b9d7f573b515af86b3.scope/cpuset.cpus
+2-9
+</code></pre></td></tr></table>
+</div>
+</div><p>符合预期, 这里 cpuset 看官不了解可以参看 <a href="https://zhuanlan.zhihu.com/p/121588317" target="_blank" rel="noopener noreffer ">Linux Cgroup 入门教程：cpuset</a>。</p>
+<h5 id="koordinator-fine-grained-cpu-orchestration">Koordinator Fine-grained cpu orchestration</h5>
+<p>Koordinator 和 Crane 在 NUMA 感知这块的架构是类似的，koordlet 替代 crane-agent, koord-scheduler 替代 crane-scheduler, 甚至描述节点 topo 的 CRD 都是一样的名字 NRT。这里梳理几个不同的点：</p>
+<ol>
+<li>Koordinator 支持的 cpu manager 的策略更多，除了 static 还支持申请完整物理核心的 full-pcpus-only 策略，以及需要多个  NUMA 满足分配情况下的均匀分配策略 distribute-cpus-across-NUMA。</li>
+<li>Koordinator 支持基于 NUMA 拓扑更多的调度策略， 比如 bin-packing 优先调慢一个节点或者分配到最空闲的节点。</li>
+<li>此外 Koordinator 相对于 crane 在 PodQos 以及 CPU manager 上的粒度更细，这也是为啥叫 Fine-grained cpu orchestration 的原因吧，回头单独整一篇文章来详细解读下。</li>
+</ol>
+<h2 id="引用">引用</h2>
+<p>这里站在巨人的肩膀上，再次感谢。</p>
+<ul>
+<li><a href="https://kubernetes.io/zh-cn/">https://kubernetes.io/zh-cn/</a></li>
+<li><a href="https://github.com/volcano-sh/volcano/">https://github.com/volcano-sh/volcano/</a></li>
+<li><a href="https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ">https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ</a></li>
+<li><a href="https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s">https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s</a></li>
+<li><a href="https://github.com/NVIDIA/go-nvml">https://github.com/NVIDIA/go-nvml</a></li>
+<li><a href="https://gocrane.io/zh-cn/docs/">https://gocrane.io/zh-cn/docs/</a></li>
+<li><a href="https://koordinator.sh/docs/user-manuals">https://koordinator.sh/docs/user-manuals</a></li>
+<li><a href="https://www.likakuli.com/posts/kubernetes-kubelet-restart/">https://www.likakuli.com/posts/kubernetes-kubelet-restart/</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/121588317">https://zhuanlan.zhihu.com/p/121588317</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-12-31&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/cd749ca08d049f7450a9c747dcd78e081ddfd8d4" target="_blank" title="commit by xieydd(xieydd@gmail.com) cd749ca08d049f7450a9c747dcd78e081ddfd8d4: Update blank.yml">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cd749ca</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/kubernetes-topo-aware-all-you-need-know/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/" data-title="关于 Kubernetes 中，拓扑感知你需要知道的一切" data-hashtags="kubernetes,topo aware"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/" data-hashtag="kubernetes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/" data-title="关于 Kubernetes 中，拓扑感知你需要知道的一切"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/" data-title="关于 Kubernetes 中，拓扑感知你需要知道的一切"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/" data-title="关于 Kubernetes 中，拓扑感知你需要知道的一切"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/kubernetes/">kubernetes</a>,&nbsp;<a href="/tags/topo-aware/">topo aware</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://xieydd.github.io/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.5.0/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"valine":{"appId":"QGzwQXOqs5JOhN4RGPOkR2mR-MdYXbMMI","appKey":"WBmoGyJtbqUswvfLh6L8iEBr","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@14.0.0/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-CN","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://leancloud.hugoloveit.com","visitor":true}},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.zh-cn","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
