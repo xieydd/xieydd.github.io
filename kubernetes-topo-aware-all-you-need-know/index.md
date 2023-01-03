@@ -92,7 +92,7 @@ Legend:
 #### How
 
 上一章节阐述了为什么需要 NUMA 感知调度，那目前怎么感知 NUMA 拓扑呢，有什么现成的方案呢？这边我简单列下在 Kubernetes 生态的项目，各位看官如果有补充，可在评论区评论：
-- [Kubernetes Topology Manager](https://kubernetes.io/zh-cn/docs/tasks/administer-cluster/topology-manager/) Office
+- [Kubernetes Topology Manager](https://kubernetes.io/zh-cn/docs/tasks/administer-cluster/topology-manager/) Offical
 - [Crane NUMA 拓扑感知](https://gocrane.io/zh-cn/docs/tutorials/node-resource-tpolology-scheduler-plugins/)
 - [Koordinator Fine-grained cpu orchestration](https://koordinator.sh/docs/user-manuals/fine-grained-cpu-orchestration)
 
