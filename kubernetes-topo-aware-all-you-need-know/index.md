@@ -77,7 +77,7 @@ Legend:
 
 {{< figure src="cpu-cache-latency.png" title="CPU Cache Latency (figure 4)">}}
 
-上面两幅图给你答案，现代 CPU 多采用 NUMA 架构， NUMA 全称 "Non-Uniform Memory Access" 即非一致性内存访问。为啥搞个非一致性，一致性不好吗？答案肯定是不好，因为如果使用 UMA 即一致性内存访问，随着北桥上的物理核心越来越多，CPU的频率也越来越高，总线带宽扛不住，访问同一块内存的冲突问题也会越来越严重。我们回到 NUMA架构，每个 NUMA node 上会有自己的物理CPU内核，以及每个 NUMA node 之间也共享 L3 Cache。同时，内存也分布在每个NUMA node上的。某些开启了超线程的CPU，一个物理CPU内核在操作系统上会呈现两个逻辑的核。
+上面两幅图给你答案，现代 CPU 多采用 NUMA 架构， NUMA 全称 "Non-Uniform Memory Access" 即非一致性内存访问。为啥搞个非一致性，一致性不好吗？答案肯定是不好，因为如果使用 UMA 即一致性内存访问，随着北桥上的物理核心越来越多，CPU的频率也越来越高，总线带宽扛不住，访问同一块内存的冲突问题也会越来越严重。我们回到 NUMA架构，每个 NUMA node 上会有自己的物理CPU内核，以及每个 NUMA node 上核心之间之间也共享 L3 Cache。同时，内存也分布在每个NUMA node上的。某些开启了超线程的CPU，一个物理CPU内核在操作系统上会呈现两个逻辑的核。
 
 回到业务侧，对于业务侧，如果程序都跑在同一个NUMA node上，可以更好地去共享一些L3 Cache，L3 Cache的访问速度会很快。如果L3 Cache没有命中，可以到内存中读取数据，访存速度会大大降低。
 
