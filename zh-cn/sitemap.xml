@@ -2,9 +2,12 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/categories/2022/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/categories/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://xieydd.github.io/postgres-ha/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/vector-search/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/scheduler/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/categories/2024/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/categories/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://xieydd.github.io/en/categories/"
@@ -13,10 +16,11 @@
                     hreflang="zh-cn"
                     href="https://xieydd.github.io/categories/"
                     /></url><url>
-            <loc>https://xieydd.github.io/categories/kubernetes/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/tags/kubernetes/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/posts/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/tags/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://xieydd.github.io/tags/high-availability/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/categories/postgres/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/postgres/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/posts/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://xieydd.github.io/en/tags/"
@@ -25,8 +29,7 @@
                     hreflang="zh-cn"
                     href="https://xieydd.github.io/tags/"
                     /></url><url>
-            <loc>https://xieydd.github.io/tags/topo-aware/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://xieydd.github.io/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://xieydd.github.io/en/"
@@ -35,7 +38,13 @@
                     hreflang="zh-cn"
                     href="https://xieydd.github.io/"
                     /></url><url>
-            <loc>https://xieydd.github.io/categories/documentation/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://xieydd.github.io/categories/vector-search/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/vector-search/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/categories/2023/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/kubernetes/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/categories/kubernetes/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/scheduler/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/categories/documentation/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://xieydd.github.io/en/categories/documentation/"
@@ -44,7 +53,9 @@
                     hreflang="zh-cn"
                     href="https://xieydd.github.io/categories/documentation/"
                     /></url><url>
-            <loc>https://xieydd.github.io/about/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://xieydd.github.io/categories/2022/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/topo-aware/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/about/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://xieydd.github.io/en/about/"
@@ -53,6 +64,6 @@
                     hreflang="zh-cn"
                     href="https://xieydd.github.io/about/"
                     /></url><url>
-            <loc>https://xieydd.github.io/tags/content/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/tags/installation/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://xieydd.github.io/tags/configuration/</loc><lastmod>2023-01-18T23:08:09&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url></urlset>
+            <loc>https://xieydd.github.io/tags/content/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/installation/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://xieydd.github.io/tags/configuration/</loc><lastmod>2024-07-28T11:36:22&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url></urlset>

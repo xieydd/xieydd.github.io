@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>scheduler - 标签 - Xieydd&#39;s Blog</title>
+        <link>https://xieydd.github.io/tags/scheduler/</link>
+        <description>scheduler - 标签 - Xieydd&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</lastBuildDate><atom:link href="https://xieydd.github.io/tags/scheduler/" rel="self" type="application/rss+xml" /><item>
+    <title>调度系统</title>
+    <link>https://xieydd.github.io/scheduler/</link>
+    <pubDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</pubDate>
+    <author>xieydd</author>
+    <guid>https://xieydd.github.io/scheduler/</guid>
+    <description><![CDATA[最近在进行晋级答辩(已失败 :&lt;)，主题还是去年做了一些调度方面的工作，借此机会对调度系统进行一些高维度的思考，在此记录下，如有不足之处]]></description>
+</item>
+</channel>
+</rss>

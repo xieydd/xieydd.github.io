@@ -4,7 +4,15 @@
         <link>https://xieydd.github.io/categories/kubernetes/</link>
         <description>kubernetes - 分类 - Xieydd&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</lastBuildDate><atom:link href="https://xieydd.github.io/categories/kubernetes/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</lastBuildDate><atom:link href="https://xieydd.github.io/categories/kubernetes/" rel="self" type="application/rss+xml" /><item>
+    <title>调度系统</title>
+    <link>https://xieydd.github.io/scheduler/</link>
+    <pubDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</pubDate>
+    <author>xieydd</author>
+    <guid>https://xieydd.github.io/scheduler/</guid>
+    <description><![CDATA[最近在进行晋级答辩(已失败 :&lt;)，主题还是去年做了一些调度方面的工作，借此机会对调度系统进行一些高维度的思考，在此记录下，如有不足之处]]></description>
+</item>
+<item>
     <title>关于 Kubernetes 中，拓扑感知你需要知道的一切</title>
     <link>https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/</link>
     <pubDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</pubDate>
