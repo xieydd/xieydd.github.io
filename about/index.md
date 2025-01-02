@@ -25,14 +25,14 @@
   - 结合腾讯如意内核调度器优化以及可观测性，在保证服务质量的同时进行成本优化
   - 在内部云中大规模推出降低成本计划，通过资源的合理分配，提升资源利用率
 
-### 2023.5-至今 [Tensorchord](https://vectorchord.ai)
+### 2023.5-至今 [Tensorchord](https://tensorchord.ai)
 
 1. 负责在 GCP 上构建 Serverless Inference 平台 [ModelZ](https://modelz.ai/)， 提供极致的冷启动优化模型服务推理服务：
   - 通过构建缓存模型服务、镜像预热等手段优化模型服务的冷启动时间
   - 引入 JuiceFS 构建高性能缓存调度系统，提升模型服务的性能
 
 
-2. 负责整个 Cloud Team, 构建向量数据库 VectorChord 的云服务以及客户支持 [VectorChord Cloud](https://cloud.vectorchord.ai)：
+2. 负责整个 Cloud Team, 构建向量数据库 VectorChord 的云服务以及客户支持 [VectorChord Cloud](https://vectorchord.ai)：
   - 在 AWS 上构建基于 Postgres 的向量数据库，实现控制面、数据面分离，BYOC(Bring Your Own Cloud)、BYOD(Bring Your Own Data) 等功能
   - 引入云原生架构，实现 Postgres 存算分离、高可用、Backup、PITR(Point-In-Time Recovery)、In-Place Upgrade 等功能
 
