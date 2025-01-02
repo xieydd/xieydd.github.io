@@ -31,8 +31,55 @@ Postgres 高可用一般有两个目标：
 
 ### Backup and Restore
 
+这里首先列举下常用的备份和恢复方式以及优劣：
+
+#### 1. Pg_dump (Logical Backup)
+
+逻辑备份是通过 SQL 命令 `pg_dump` 将数据库中的数据导出到一个文件中，然后通过 SQL 命令将数据导入到数据库中。
+优势：
+1. 根据需要，逻辑备份可以是表级到数据库级
+2. 备份不会阻止数据库上的读/写活动
+3. 可以恢复到 PostgresSQL 的不同主要版本，甚至不同的操作系统架构中
+劣势：
+1. 逻辑备份在恢复时，需要 replay ,如果数据量大，需要很长时间，而且可能会降低整体性能
+2. 不支持全局变量的 dump, 只能用 pg_dumpall
+
+#### 2. Physical Backup
+
+物理备份是停止 PostgreSQL 集群后进行的 PostgreSQL 离线备份,这些备份包含整个集群数据。
+优势：
+1. 备份和恢复速度快
+2. 适合大型数据库
+3. 适合高可用场景
+劣势：
+1. 不能跨版本恢复
+2. 不能跨操作系统恢复
+
+#### 3. Continuous Archiving and Point-in-Time Recovery (PITR)
+
+Online Backup 或者叫 Hot Backup, 先进行完整的备份,可以在不停止 PostgreSQL 集群的情况下在线进行。增量备份生成的 WAL 日志，然后可以通过恢复 WAL 来恢复存档/WAL。
+优势：
+1. 可以恢复到任何时间点
+2. 不会导致应用程序出现任何停机
+劣势：
+1. 可能需要很长时间才能从存档中恢复数据，这些主要用于容量巨大、无法进行频繁备份的数据库。
+
+##### 4. Snapshots and Cloud Backups
+快照需要操作系统或者 cloud provider 的支持，有rsync等工具可以用来拍摄快照。
+劣势：
+1. 不适用于数据库将表空间存储在多个驱动器卷中的情况。
+
+备份需要考虑很多情况，比如备份的频率、备份的存储位置、备份的恢复时间、备份保留策略等等，所以需要一些工具辅助我们来进行备份，下面列举一些常用的开源工具如下：
 - [pgbackrest](https://pgbackrest.org/)
 - [EDB barman](https://github.com/EnterpriseDB/barman)
+- [WAL-G](https://github.com/wal-g/wal-g)
+从这个[讨论](https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145#discussioncomment-7394174)中，可以看到 barman 相对于 pgbackrest 还是有些功能的缺失：
+1. Zstd 压缩
+2. Delta restore 
+3. Encryption at rest
+4. Native postgres page checksum validation
+5. Multi repo
+
 
 ### High Availability
 
@@ -94,8 +141,76 @@ Patroni 的 maximum_lag_on_failover 和 pg 的 wal_segsize 的大小，需在可
 
 在上述架构下可为跨区域灾难恢复提供最多大约 5 分钟的 RPO，如果使用同步 Streaming Replication 可以达到 0 RPO, 且具备极低的 RTO。
 
+### Supabase Backup
+
+```mermaid
+graph TD;  
+A(Supabase Backup)--->B(Pro);
+B(Pro)--->E(Database Size 0-40GB);
+B(Pro)--->F(Database Size 40GB+);
+B(Pro)--->G(PITR);
+B(Pro)--->H(Read Replica);
+E(Database Size 0-40GB)--->I(Logical Backup);
+F(Database Size 40GB+)--->J(Physical Backup);
+G(PITR)--->J(Physical Backup);
+H(Read Replica)--->J(Physical Backup);
+A(Supabase Backup)--->C(Team);
+C(Team)--->K(Database Size 0-40GB);
+C(Team)--->L(Database Size 40GB+);
+C(Team)--->M(PITR);
+C(Team)--->N(Read Replica);
+K(Database Size 0-40GB)--->I(Logical Backup);
+L(Database Size 40GB+)--->J(Physical Backup);
+M(PITR)--->J(Physical Backup);
+N(Read Replica)--->J(Physical Backup);
+A(Supabase Backup)--->D(Enterprise);
+D(Enterprise)--->O(Database Size 0-40GB);
+D(Enterprise)--->P(Database Size 40GB+);
+D(Enterprise)--->Q(PITR);
+D(Enterprise)--->R(Read Replica);
+O(Database Size 0-40GB)--->J(Physical Backup);
+P(Database Size 40GB+)--->J(Physical Backup);
+Q(PITR)--->J(Physical Backup);
+R(Read Replica)--->J(Physical Backup);
+```
+
+```mermaid
+graph TD;
+A(Supabase Backup)-->B(Pro);
+A(Supabase Backup)-->C(Team);
+A(Supabase Backup)-->D(Enterprise);
+B(Pro)-->E(Daily Backup, Retain 7 days);
+E-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
+C(Team)-->F(Daily Backup, Retain 2 weeks);
+F-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
+D(Enterprise)-->G(Daily Backup, Retain 1 month);
+D-->J(physical backup);
+```
+
+用户可以访问每一天生成的 logical backup 的 sql 文件进行 restore。
+
+```mermaid
+graph TD;
+A(Supabase PITR)-->B(WAL-G, archiving Write Ahead Log files, default 2 min or certain file size threshold and physical backups);
+B-->C(2 minutes RPO);
+C-->D(show database restore available from and latest restore available at);
+```
+
+
+```mermaid
+graph TD;
+A(PGVecto.rs Cloud PITR)-->B(barman-cloud-wal-archive archiving Write Ahead Log files, default 5 min or certain file size threshold and barman-cloud-backup for physical backups);
+B-->C(5 minutes RPO);
+C-->D(show database restore available from and latest restore available at);
+D-->E(delete cluster will delete all wal and physical backups);
+```
+
 
 ## 引用
 - https://pigsty.io/
 - https://cloudnative-pg.io/ 
 - https://www.cnblogs.com/xianghuaqiang/p/14792001.html
+- https://docs.pgbarman.org/release/3.10.1/
+- https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145
+- https://supabase.com/blog/postgresql-physical-logical-backups
+

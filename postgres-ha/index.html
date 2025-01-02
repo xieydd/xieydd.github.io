@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://xieydd.github.io/postgres-ha/" />
 <meta property="og:image" content="https://xieydd.github.io/logo.png"/>
 <meta property="article:published_time" content="2024-07-26T12:40:32+08:00" />
-<meta property="article:modified_time" content="2024-07-29T08:26:44+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-01-02T20:58:18+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://xieydd.github.io/logo.png"/>
 
@@ -19,7 +19,7 @@
 <meta name="application-name" content="Xieydd">
 <meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://xieydd.github.io/postgres-ha/" /><link rel="prev" href="https://xieydd.github.io/vector-search/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://xieydd.github.io/postgres-ha/" /><link rel="prev" href="https://xieydd.github.io/vector-search/" /><link rel="next" href="https://xieydd.github.io/serverless/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
     {
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/xieydd.github.io\/postgres-ha\/"
-        },"image": ["https:\/\/xieydd.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "High Availability, Postgres","wordcount":  2219 ,
-        "url": "https:\/\/xieydd.github.io\/postgres-ha\/","datePublished": "2024-07-26T12:40:32+08:00","dateModified": "2024-07-29T08:26:44+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/xieydd.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "High Availability, Postgres","wordcount":  3113 ,
+        "url": "https:\/\/xieydd.github.io\/postgres-ha\/","datePublished": "2024-07-26T12:40:32+08:00","dateModified": "2025-01-02T20:58:18+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -115,8 +115,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Postgres 高可用</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://xieydd.github.io" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-26">2024-07-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2219 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-26">2024-07-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3113 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -129,7 +129,17 @@
     <li><a href="#概念">概念</a></li>
     <li><a href="#工具">工具</a>
       <ul>
-        <li><a href="#backup-and-restore">Backup and Restore</a></li>
+        <li><a href="#backup-and-restore">Backup and Restore</a>
+          <ul>
+            <li><a href="#1-pg_dump-logical-backup">1. Pg_dump (Logical Backup)</a></li>
+            <li><a href="#2-physical-backup">2. Physical Backup</a></li>
+            <li><a href="#3-continuous-archiving-and-point-in-time-recovery-pitr">3. Continuous Archiving and Point-in-Time Recovery (PITR)</a>
+              <ul>
+                <li><a href="#4-snapshots-and-cloud-backups">4. Snapshots and Cloud Backups</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
         <li><a href="#high-availability">High Availability</a></li>
       </ul>
     </li>
@@ -137,6 +147,7 @@
       <ul>
         <li><a href="#pigsty-ha-架构">Pigsty HA 架构</a></li>
         <li><a href="#cloudnative-pg-ha-架构">Cloudnative-PG HA 架构</a></li>
+        <li><a href="#supabase-backup">Supabase Backup</a></li>
       </ul>
     </li>
     <li><a href="#引用">引用</a></li>
@@ -168,10 +179,58 @@
 </ol>
 <h2 id="工具">工具</h2>
 <h3 id="backup-and-restore">Backup and Restore</h3>
+<p>这里首先列举下常用的备份和恢复方式以及优劣：</p>
+<h4 id="1-pg_dump-logical-backup">1. Pg_dump (Logical Backup)</h4>
+<p>逻辑备份是通过 SQL 命令 <code>pg_dump</code> 将数据库中的数据导出到一个文件中，然后通过 SQL 命令将数据导入到数据库中。
+优势：</p>
+<ol>
+<li>根据需要，逻辑备份可以是表级到数据库级</li>
+<li>备份不会阻止数据库上的读/写活动</li>
+<li>可以恢复到 PostgresSQL 的不同主要版本，甚至不同的操作系统架构中
+劣势：</li>
+<li>逻辑备份在恢复时，需要 replay ,如果数据量大，需要很长时间，而且可能会降低整体性能</li>
+<li>不支持全局变量的 dump, 只能用 pg_dumpall</li>
+</ol>
+<h4 id="2-physical-backup">2. Physical Backup</h4>
+<p>物理备份是停止 PostgreSQL 集群后进行的 PostgreSQL 离线备份,这些备份包含整个集群数据。
+优势：</p>
+<ol>
+<li>备份和恢复速度快</li>
+<li>适合大型数据库</li>
+<li>适合高可用场景
+劣势：</li>
+<li>不能跨版本恢复</li>
+<li>不能跨操作系统恢复</li>
+</ol>
+<h4 id="3-continuous-archiving-and-point-in-time-recovery-pitr">3. Continuous Archiving and Point-in-Time Recovery (PITR)</h4>
+<p>Online Backup 或者叫 Hot Backup, 先进行完整的备份,可以在不停止 PostgreSQL 集群的情况下在线进行。增量备份生成的 WAL 日志，然后可以通过恢复 WAL 来恢复存档/WAL。
+优势：</p>
+<ol>
+<li>可以恢复到任何时间点</li>
+<li>不会导致应用程序出现任何停机
+劣势：</li>
+<li>可能需要很长时间才能从存档中恢复数据，这些主要用于容量巨大、无法进行频繁备份的数据库。</li>
+</ol>
+<h5 id="4-snapshots-and-cloud-backups">4. Snapshots and Cloud Backups</h5>
+<p>快照需要操作系统或者 cloud provider 的支持，有rsync等工具可以用来拍摄快照。
+劣势：</p>
+<ol>
+<li>不适用于数据库将表空间存储在多个驱动器卷中的情况。</li>
+</ol>
+<p>备份需要考虑很多情况，比如备份的频率、备份的存储位置、备份的恢复时间、备份保留策略等等，所以需要一些工具辅助我们来进行备份，下面列举一些常用的开源工具如下：</p>
 <ul>
 <li><a href="https://pgbackrest.org/" target="_blank" rel="noopener noreffer ">pgbackrest</a></li>
 <li><a href="https://github.com/EnterpriseDB/barman" target="_blank" rel="noopener noreffer ">EDB barman</a></li>
+<li><a href="https://github.com/wal-g/wal-g" target="_blank" rel="noopener noreffer ">WAL-G</a>
+从这个<a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145#discussioncomment-7394174" target="_blank" rel="noopener noreffer ">讨论</a>中，可以看到 barman 相对于 pgbackrest 还是有些功能的缺失：</li>
 </ul>
+<ol>
+<li>Zstd 压缩</li>
+<li>Delta restore</li>
+<li>Encryption at rest</li>
+<li>Native postgres page checksum validation</li>
+<li>Multi repo</li>
+</ol>
 <h3 id="high-availability">High Availability</h3>
 <ul>
 <li><a href="https://github.com/patroni/patroni" target="_blank" rel="noopener noreffer ">Patroni</a></li>
@@ -256,18 +315,141 @@
 <li>通过 barman 进行备份，可以备份到云对象存储例如 s3 或者使用 Volume Snapshot 进行备份</li>
 </ul>
 <p>在上述架构下可为跨区域灾难恢复提供最多大约 5 分钟的 RPO，如果使用同步 Streaming Replication 可以达到 0 RPO, 且具备极低的 RTO。</p>
-<h2 id="引用">引用</h2>
+<h3 id="supabase-backup">Supabase Backup</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;  
+A(Supabase Backup)---&gt;B(Pro);
+B(Pro)---&gt;E(Database Size 0-40GB);
+B(Pro)---&gt;F(Database Size 40GB+);
+B(Pro)---&gt;G(PITR);
+B(Pro)---&gt;H(Read Replica);
+E(Database Size 0-40GB)---&gt;I(Logical Backup);
+F(Database Size 40GB+)---&gt;J(Physical Backup);
+G(PITR)---&gt;J(Physical Backup);
+H(Read Replica)---&gt;J(Physical Backup);
+A(Supabase Backup)---&gt;C(Team);
+C(Team)---&gt;K(Database Size 0-40GB);
+C(Team)---&gt;L(Database Size 40GB+);
+C(Team)---&gt;M(PITR);
+C(Team)---&gt;N(Read Replica);
+K(Database Size 0-40GB)---&gt;I(Logical Backup);
+L(Database Size 40GB+)---&gt;J(Physical Backup);
+M(PITR)---&gt;J(Physical Backup);
+N(Read Replica)---&gt;J(Physical Backup);
+A(Supabase Backup)---&gt;D(Enterprise);
+D(Enterprise)---&gt;O(Database Size 0-40GB);
+D(Enterprise)---&gt;P(Database Size 40GB+);
+D(Enterprise)---&gt;Q(PITR);
+D(Enterprise)---&gt;R(Read Replica);
+O(Database Size 0-40GB)---&gt;J(Physical Backup);
+P(Database Size 40GB+)---&gt;J(Physical Backup);
+Q(PITR)---&gt;J(Physical Backup);
+R(Read Replica)---&gt;J(Physical Backup);
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;
+A(Supabase Backup)--&gt;B(Pro);
+A(Supabase Backup)--&gt;C(Team);
+A(Supabase Backup)--&gt;D(Enterprise);
+B(Pro)--&gt;E(Daily Backup, Retain 7 days);
+E--&gt;H(pg_dumpall logical backup， when database size &gt; 40GB will use physical backup);
+C(Team)--&gt;F(Daily Backup, Retain 2 weeks);
+F--&gt;H(pg_dumpall logical backup， when database size &gt; 40GB will use physical backup);
+D(Enterprise)--&gt;G(Daily Backup, Retain 1 month);
+D--&gt;J(physical backup);
+</code></pre></td></tr></table>
+</div>
+</div><p>用户可以访问每一天生成的 logical backup 的 sql 文件进行 restore。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;
+A(Supabase PITR)--&gt;B(WAL-G, archiving Write Ahead Log files, default 2 min or certain file size threshold and physical backups);
+B--&gt;C(2 minutes RPO);
+C--&gt;D(show database restore available from and latest restore available at);
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;
+A(PGVecto.rs Cloud PITR)--&gt;B(barman-cloud-wal-archive archiving Write Ahead Log files, default 5 min or certain file size threshold and barman-cloud-backup for physical backups);
+B--&gt;C(5 minutes RPO);
+C--&gt;D(show database restore available from and latest restore available at);
+D--&gt;E(delete cluster will delete all wal and physical backups);
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="引用">引用</h2>
 <ul>
 <li><a href="https://pigsty.io/">https://pigsty.io/</a></li>
 <li><a href="https://cloudnative-pg.io/">https://cloudnative-pg.io/</a></li>
 <li><a href="https://www.cnblogs.com/xianghuaqiang/p/14792001.html">https://www.cnblogs.com/xianghuaqiang/p/14792001.html</a></li>
+<li><a href="https://docs.pgbarman.org/release/3.10.1/">https://docs.pgbarman.org/release/3.10.1/</a></li>
+<li><a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145">https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145</a></li>
+<li><a href="https://supabase.com/blog/postgresql-physical-logical-backups">https://supabase.com/blog/postgresql-physical-logical-backups</a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2024-07-29&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/7b5b2dee95ad8ec661361732b51a84f49fe19876" target="_blank" title="commit by xieydd(xieydd@gmail.com) 7b5b2dee95ad8ec661361732b51a84f49fe19876: hidden draft doc">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>7b5b2de</a></span>
+                <span>更新于 2025-01-02&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/3e9dd5f23a48edd9e2ddcc1582bf5c3a53439490" target="_blank" title="commit by xieydd(xieydd@gmail.com) 3e9dd5f23a48edd9e2ddcc1582bf5c3a53439490: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>3e9dd5f</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -286,14 +468,15 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/vector-search/" class="prev" rel="prev" title="向量数据库中的门门道道"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>向量数据库中的门门道道</a></div>
+    <div class="post-nav"><a href="/vector-search/" class="prev" rel="prev" title="向量数据库中的门门道道"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>向量数据库中的门门道道</a>
+            <a href="/serverless/" class="next" rel="next" title="Serverless Database">Serverless Database<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 <div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
                 Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
             </noscript></div></article></div>
             </main><footer class="footer">
         <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://xieydd.github.io/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://xieydd.github.io/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 

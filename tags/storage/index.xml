@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Storage - 标签 - Xieydd&#39;s Blog</title>
+        <link>https://xieydd.github.io/tags/storage/</link>
+        <description>Storage - 标签 - Xieydd&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 13 Sep 2024 21:40:10 &#43;0000</lastBuildDate><atom:link href="https://xieydd.github.io/tags/storage/" rel="self" type="application/rss+xml" /><item>
+    <title>S3</title>
+    <link>https://xieydd.github.io/s3/</link>
+    <pubDate>Fri, 13 Sep 2024 21:40:10 &#43;0000</pubDate>
+    <author>xieydd</author>
+    <guid>https://xieydd.github.io/s3/</guid>
+    <description><![CDATA[All you need know about S3 AP 场景下 S3 的最佳实践 来源论文 Key Points: price and durability tradeoff: Cloud object storage provides the best durability guarantees while being the cheapest storage option latency: first byte latency 与 total latency 看取舍，1MB 以下对象，两者基本一致，对象越大]]></description>
+</item>
+</channel>
+</rss>
