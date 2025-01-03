@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>serverless - 分类 - Xieydd&#39;s Blog</title>
-        <link>https://xieydd.pages.dev/categories/serverless/</link>
+        <link>https://blog.xieydd.top/categories/serverless/</link>
         <description>serverless - 分类 - Xieydd&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</lastBuildDate><atom:link href="https://xieydd.pages.dev/categories/serverless/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</lastBuildDate><atom:link href="https://blog.xieydd.top/categories/serverless/" rel="self" type="application/rss+xml" /><item>
     <title>Serverless Database</title>
-    <link>https://xieydd.pages.dev/serverless/</link>
+    <link>https://blog.xieydd.top/serverless/</link>
     <pubDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.pages.dev/serverless/</guid>
+    <guid>https://blog.xieydd.top/serverless/</guid>
     <description><![CDATA[DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2]]></description>
 </item>
 </channel>

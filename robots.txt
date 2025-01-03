@@ -61,4 +61,4 @@ Disallow: /
 User-agent: ZoominfoBot
 Disallow: /
 
-Sitemap: https://xieydd.pages.dev/sitemap.xml
+Sitemap: https://blog.xieydd.top/sitemap.xml

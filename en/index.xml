@@ -1,10 +1,10 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Xieydd&#39;s Blog</title>
-        <link>https://xieydd.pages.dev/en/</link>
+        <link>https://blog.xieydd.top/en/</link>
         <description>远东的小猪窝</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
             <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 29 Dec 2022 16:11:14 &#43;0800</lastBuildDate>
-            <atom:link href="https://xieydd.pages.dev/en/index.xml" rel="self" type="application/rss+xml" />
+            <atom:link href="https://blog.xieydd.top/en/index.xml" rel="self" type="application/rss+xml" />
         </channel>
 </rss>

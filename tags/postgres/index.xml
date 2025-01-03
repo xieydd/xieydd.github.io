@@ -1,23 +1,23 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Postgres - 标签 - Xieydd&#39;s Blog</title>
-        <link>https://xieydd.pages.dev/tags/postgres/</link>
+        <link>https://blog.xieydd.top/tags/postgres/</link>
         <description>Postgres - 标签 - Xieydd&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</lastBuildDate><atom:link href="https://xieydd.pages.dev/tags/postgres/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/postgres/" rel="self" type="application/rss+xml" /><item>
     <title>Postgres 高可用</title>
-    <link>https://xieydd.pages.dev/postgres-ha/</link>
+    <link>https://blog.xieydd.top/postgres-ha/</link>
     <pubDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.pages.dev/postgres-ha/</guid>
+    <guid>https://blog.xieydd.top/postgres-ha/</guid>
     <description><![CDATA[最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点]]></description>
 </item>
 <item>
     <title>向量数据库中的门门道道</title>
-    <link>https://xieydd.pages.dev/vector-search/</link>
+    <link>https://blog.xieydd.top/vector-search/</link>
     <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.pages.dev/vector-search/</guid>
+    <guid>https://blog.xieydd.top/vector-search/</guid>
     <description><![CDATA[加入 Tensorchord 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 Modelz pivot 到向量搜索领域 VectorChord 的]]></description>
 </item>
 </channel>
