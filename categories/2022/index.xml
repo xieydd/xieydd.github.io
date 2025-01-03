@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>2022 - 分类 - Xieydd&#39;s Blog</title>
-        <link>https://xieydd.github.io/categories/2022/</link>
+        <link>https://xieydd.pages.dev/categories/2022/</link>
         <description>2022 - 分类 - Xieydd&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</lastBuildDate><atom:link href="https://xieydd.github.io/categories/2022/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</lastBuildDate><atom:link href="https://xieydd.pages.dev/categories/2022/" rel="self" type="application/rss+xml" /><item>
     <title>关于 Kubernetes 中，拓扑感知你需要知道的一切</title>
-    <link>https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/</link>
+    <link>https://xieydd.pages.dev/kubernetes-topo-aware-all-you-need-know/</link>
     <pubDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/</guid>
+    <guid>https://xieydd.pages.dev/kubernetes-topo-aware-all-you-need-know/</guid>
     <description><![CDATA[最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始]]></description>
 </item>
 </channel>

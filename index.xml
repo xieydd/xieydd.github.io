@@ -1,57 +1,57 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Xieydd&#39;s Blog</title>
-        <link>https://xieydd.github.io/</link>
+        <link>https://xieydd.pages.dev/</link>
         <description>远东的小猪窝</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
             <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 13 Sep 2024 21:40:10 &#43;0000</lastBuildDate>
-            <atom:link href="https://xieydd.github.io/index.xml" rel="self" type="application/rss+xml" />
+            <atom:link href="https://xieydd.pages.dev/index.xml" rel="self" type="application/rss+xml" />
         <item>
     <title>S3</title>
-    <link>https://xieydd.github.io/s3/</link>
+    <link>https://xieydd.pages.dev/s3/</link>
     <pubDate>Fri, 13 Sep 2024 21:40:10 &#43;0000</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.github.io/s3/</guid>
+    <guid>https://xieydd.pages.dev/s3/</guid>
     <description><![CDATA[All you need know about S3 AP 场景下 S3 的最佳实践 来源论文 Key Points: price and durability tradeoff: Cloud object storage provides the best durability guarantees while being the cheapest storage option latency: first byte latency 与 total latency 看取舍，1MB 以下对象，两者基本一致，对象越大]]></description>
 </item>
 <item>
     <title>Serverless Database</title>
-    <link>https://xieydd.github.io/serverless/</link>
+    <link>https://xieydd.pages.dev/serverless/</link>
     <pubDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.github.io/serverless/</guid>
+    <guid>https://xieydd.pages.dev/serverless/</guid>
     <description><![CDATA[DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2]]></description>
 </item>
 <item>
     <title>Postgres 高可用</title>
-    <link>https://xieydd.github.io/postgres-ha/</link>
+    <link>https://xieydd.pages.dev/postgres-ha/</link>
     <pubDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.github.io/postgres-ha/</guid>
+    <guid>https://xieydd.pages.dev/postgres-ha/</guid>
     <description><![CDATA[最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点]]></description>
 </item>
 <item>
     <title>向量数据库中的门门道道</title>
-    <link>https://xieydd.github.io/vector-search/</link>
+    <link>https://xieydd.pages.dev/vector-search/</link>
     <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.github.io/vector-search/</guid>
+    <guid>https://xieydd.pages.dev/vector-search/</guid>
     <description><![CDATA[加入 Tensorchord 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 Modelz pivot 到向量搜索领域 VectorChord 的]]></description>
 </item>
 <item>
     <title>调度系统</title>
-    <link>https://xieydd.github.io/scheduler/</link>
+    <link>https://xieydd.pages.dev/scheduler/</link>
     <pubDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.github.io/scheduler/</guid>
+    <guid>https://xieydd.pages.dev/scheduler/</guid>
     <description><![CDATA[最近在进行晋级答辩(已失败 :&lt;)，主题还是去年做了一些调度方面的工作，借此机会对调度系统进行一些高维度的思考，在此记录下，如有不足之处]]></description>
 </item>
 <item>
     <title>关于 Kubernetes 中，拓扑感知你需要知道的一切</title>
-    <link>https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/</link>
+    <link>https://xieydd.pages.dev/kubernetes-topo-aware-all-you-need-know/</link>
     <pubDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</pubDate>
     <author>xieydd</author>
-    <guid>https://xieydd.github.io/kubernetes-topo-aware-all-you-need-know/</guid>
+    <guid>https://xieydd.pages.dev/kubernetes-topo-aware-all-you-need-know/</guid>
     <description><![CDATA[最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始]]></description>
 </item>
 </channel>
