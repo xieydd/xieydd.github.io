@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>All You Need to Know About Topology Awareness in Kubernetes - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="All You Need to Know About Topology Awareness in Kubernetes" />
+<meta property="og:description" content="Recently, I&#39;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
+Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" />
+<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
+<meta property="article:published_time" content="2022-12-29T16:27:06+08:00" />
+<meta property="article:modified_time" content="2025-01-06T22:50:35+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
+
+<meta name="twitter:title" content="All You Need to Know About Topology Awareness in Kubernetes"/>
+<meta name="twitter:description" content="Recently, I&#39;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
+Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks."/>
+<meta name="application-name" content="Xieydd">
+<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" /><link rel="next" href="https://blog.xieydd.top/en/vector-search/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "All You Need to Know About Topology Awareness in Kubernetes",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/blog.xieydd.top\/en\/kubernetes-topo-aware-all-you-need-know\/"
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "kubernetes, topo aware","wordcount":  2275 ,
+        "url": "https:\/\/blog.xieydd.top\/en\/kubernetes-topo-aware-all-you-need-know\/","datePublished": "2022-12-29T16:27:06+08:00","dateModified": "2025-01-06T22:50:35+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
+                    "width":  400 ,
+                    "height":  400 
+                }},"author": {
+                "@type": "Person",
+                "name": "xieydd"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/en/" title="Xieydd&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
+        data-sizes="auto"
+        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/categories/documentation/"> Docs </a><a class="menu-item" href="/en/about/"> About </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/kubernetes-topo-aware-all-you-need-know/" selected>English</option><option value="/kubernetes-topo-aware-all-you-need-know/">简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/en/" title="Xieydd&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
+        data-sizes="auto"
+        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/categories/documentation/" title="">Docs</a><a class="menu-item" href="/en/about/" title="">About</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/en/kubernetes-topo-aware-all-you-need-know/" selected>English</option><option value="/kubernetes-topo-aware-all-you-need-know/">简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">All You Need to Know About Topology Awareness in Kubernetes</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">included in <a href="/en/categories/2022/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2022</a>&nbsp;<a href="/en/categories/kubernetes/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>kubernetes</a>&nbsp;<a href="/en/categories/documentation/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Documentation</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-12-29">2022-12-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;2275 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;11 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#why-topology-awareness-is-needed">Why Topology Awareness is Needed</a></li>
+    <li><a href="#types-of-topology">Types of Topology</a>
+      <ul>
+        <li><a href="#gpu-topology-manager">GPU Topology Manager</a>
+          <ul>
+            <li><a href="#why">Why</a></li>
+            <li><a href="#how">How</a></li>
+          </ul>
+        </li>
+        <li><a href="#numa-topology-awareness">NUMA Topology Awareness</a>
+          <ul>
+            <li><a href="#why-1">Why</a></li>
+            <li><a href="#how-1">How</a>
+              <ul>
+                <li><a href="#kubernetes-topology-manager">Kubernetes Topology Manager</a></li>
+                <li><a href="#crane-numa-topology-awareness">Crane NUMA Topology Awareness</a></li>
+                <li><a href="#koordinator-fine-grained-cpu-orchestration">Koordinator Fine-grained CPU Orchestration</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Recently, I've been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.</p>
+<h2 id="why-topology-awareness-is-needed">Why Topology Awareness is Needed</h2>
+<p>According to the <a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/" target="_blank" rel="noopener noreffer ">official Kubernetes documentation</a>, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.</p>
+<p>However, the explanation seems a bit unclear. The fundamental reason lies in the issues brought by the Von Neumann architecture. As the saying goes, there is no silver bullet. The Von Neumann architecture separates memory and processors, with both instructions and data stored in memory, laying the foundation for the universality of modern computing. However, it also poses a hidden risk: as memory capacity increases exponentially, data transfer between the CPU and memory becomes a bottleneck. Currently, most devices in servers are connected via high-speed PCIe buses, and the bus layout may vary depending on the server's purpose. As shown in the figure below (found online, not drawn by me), in the left diagram, GPUs reside in different PCIe domains, making direct P2P copying between GPU memories impossible. To copy memory from GPU 0 to GPU 2, it must first be copied via PCIe to the memory connected to CPU 0, then transferred to CPU 1 via QPI link, and finally transferred to GPU 2 via PCIe again. This process adds significant overhead in terms of latency and bandwidth, whereas the right diagram can achieve ultra-high-speed communication through GPU P2P connections. In summary, topology affects communication between devices, impacting business stability and efficiency, necessitating some technical means to make businesses topology-aware.</p>
+<figure>
+    <img src="gpu-cpu-pcie-topo.jpg"/> <figcaption>
+            <h4>PCIe Topo (figure 1)</h4>
+        </figcaption>
+</figure>
+
+<h2 id="types-of-topology">Types of Topology</h2>
+<p>Currently, the types of topology that need to be aware of include:</p>
+<ul>
+<li>GPU Topology Awareness</li>
+<li>NUMA Topology Awareness</li>
+</ul>
+<h3 id="gpu-topology-manager">GPU Topology Manager</h3>
+<p>There are several implementation solutions in the industry:</p>
+<ul>
+<li><a href="https://github.com/volcano-sh/volcano/issues/1472" target="_blank" rel="noopener noreffer ">Volcano GPU Topology Awareness</a></li>
+<li><a href="https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ" target="_blank" rel="noopener noreffer ">Baidu Intelligent Cloud GPU Topology-Aware Scheduling</a></li>
+</ul>
+<p>Volcano is not fully implemented yet, and Baidu's solution is closed-source, so we can only get a glimpse through shared information.</p>
+<h4 id="why">Why</h4>
+<p>Why is GPU topology awareness needed? Let's start with a diagram from NVIDIA, which describes the topology of the mainstream V100 GPU graphics card in servers.</p>
+<figure>
+    <img src="gpu-topo.png"/> <figcaption>
+            <h4>GPU Topo (figure 2)</h4>
+        </figcaption>
+</figure>
+
+<p>Each V100 GPU has 6 NVLink channels, and 8 GPUs cannot achieve full connectivity, with a maximum of 2 NVLink connections between 2 GPUs. For instance, there are 2 NVLink connections between GPU0 and GPU3, and between GPU0 and GPU4, while there is only one NVLink connection between GPU0 and GPU1, and no NVLink connection between GPU0 and GPU6. Therefore, communication between GPU0 and GPU6 still requires PCIe. The unidirectional communication bandwidth of NVLink is 25 GB/s, and the bidirectional bandwidth is 50 GB/s, while the communication bandwidth of PCIe is 16 GB/s. Thus, if GPUs are allocated incorrectly during GPU training, such as a training task Pod requesting two cards, GPU0 and GPU6, cross-GPU communication may become a bottleneck for the training task.</p>
+<p>Topology information can be viewed by executing the following command on a node:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># nvidia-smi topo -m
+	   GPU0	GPU1 GPU2 GPU3 GPU4	GPU5 GPU6 GPU7
+GPU0	 X 	PIX	 PHB  PHB  SYS	SYS	 SYS  SYS
+GPU1	PIX	 X 	 PHB  PHB  SYS	SYS	 SYS  SYS
+GPU2	PHB	PHB	 X 	  PIX  SYS	SYS	 SYS  SYS
+GPU3	PHB	PHB	 PIX  X    SYS	SYS	 SYS  SYS
+GPU4	SYS	SYS	 SYS  SYS  X 	PIX	 PHB  PHB
+GPU5	SYS	SYS	 SYS  SYS  PIX	 X 	 PHB  PHB
+GPU6	SYS	SYS	 SYS  SYS  PHB	PHB	 X 	  PIX
+GPU7	SYS	SYS	 SYS  SYS  PHB	PHB	 PIX  X 
+Legend:
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe switches (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing a single PCIe switch
+  NV#  = Connection traversing a bonded set of # NVLinks
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="how">How</h4>
+<p>I won't parse it all here, as there isn't a complete implementation to look at. I'll outline some general ideas based on my understanding.</p>
+<p>The first step is awareness, which involves using a daemon component to gather information on NVIDIA GPUs, network topology, NVLink, and PCIe. The second step is the scheduler, which defines strategies. Strategy 1: Preferably schedule GPUs with the most NVLinks under the same NUMA node to a Pod; Strategy 2: Preferably allocate GPUs and network cards under the same PCI switch to the same Pod. The general process is as follows:</p>
+<ol>
+<li>GPU-device-plugin or other daemon processes construct the GPU topology information CRD for the node;</li>
+<li>The Pod defines a topology strategy, such as Strategy 1 or Strategy 2;</li>
+<li>The newly defined scheduler filters nodes that do not meet the strategy during the filter and priority phases and scores nodes that meet the strategy highly;</li>
+<li>The discovery and update of GPU devices on the node are handled by the device-plugin and kubelet, as referenced in <a href="https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s" target="_blank" rel="noopener noreffer ">this article</a>.</li>
+</ol>
+<p>Currently, GPU topology information can be queried through the official <a href="https://github.com/NVIDIA/go-nvml" target="_blank" rel="noopener noreffer ">nvml (NVIDIA Management Library)</a> interface.</p>
+<h3 id="numa-topology-awareness">NUMA Topology Awareness</h3>
+<h4 id="why-1">Why</h4>
+<p>When discussing NUMA topology awareness, it's essential to first explain what NUMA is and why it needs to be aware of it.</p>
+<figure>
+    <img src="numa-arch.png"/> <figcaption>
+            <h4>NUMA Topo (figure 3)</h4>
+        </figcaption>
+</figure>
+
+<figure>
+    <img src="cpu-cache-latency.png"/> <figcaption>
+            <h4>CPU Cache Latency (figure 4)</h4>
+        </figcaption>
+</figure>
+
+<p>The two figures above provide the answer. Modern CPUs often use the NUMA architecture, which stands for &ldquo;Non-Uniform Memory Access.&rdquo; Why use non-uniformity? Isn't uniformity better? The answer is no, because if UMA (Uniform Memory Access) is used, as the number of physical cores on the northbridge increases and CPU frequency rises, the bus bandwidth cannot keep up, and conflicts over accessing the same memory will become more severe. Returning to the NUMA architecture, each NUMA node has its own physical CPU cores, and the cores within each NUMA node also share the L3 Cache. Additionally, memory is distributed across each NUMA node. Some CPUs with hyper-threading enabled will present two logical cores for each physical CPU core in the operating system.</p>
+<p>From a business perspective, if programs run on the same NUMA node, they can better share some L3 Cache, which has a very fast access speed. If the L3 Cache is not hit, data can be read from memory, significantly reducing access speed.</p>
+<p>In today's container-dominated world, the issue of incorrect CPU allocation is particularly severe. Because nodes are now oversold, with many containers running simultaneously, what happens if the same process is allocated to different NUMA nodes:</p>
+<ul>
+<li>CPU contention leads to frequent context switching time;</li>
+<li>Frequent process switching causes CPU cache failures;</li>
+<li>Cross-NUMA memory access results in more severe performance bottlenecks.</li>
+</ul>
+<p>In summary, in modern CPU architectures, if NUMA topology relationships are not considered, incorrect CPU allocation can lead to performance issues, affecting business SLAs.</p>
+<h4 id="how-1">How</h4>
+<p>The previous section explained why NUMA-aware scheduling is needed. So how can NUMA topology be sensed, and what existing solutions are available? Here, I briefly list some projects in the Kubernetes ecosystem. If you have any additions, feel free to comment:</p>
+<ul>
+<li><a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/" target="_blank" rel="noopener noreffer ">Kubernetes Topology Manager</a> Official</li>
+<li><a href="https://gocrane.io/docs/tutorials/node-resource-tpolology-scheduler-plugins/" target="_blank" rel="noopener noreffer ">Crane NUMA Topology Awareness</a></li>
+<li><a href="https://koordinator.sh/docs/user-manuals/fine-grained-cpu-orchestration" target="_blank" rel="noopener noreffer ">Koordinator Fine-grained CPU Orchestration</a></li>
+</ul>
+<h5 id="kubernetes-topology-manager">Kubernetes Topology Manager</h5>
+<p>The Topology Manager is a kubelet component designed to coordinate a set of components responsible for these optimizations. The Topology Manager addresses a historical issue where the CPU Manager and Device Manager worked independently and were unaware of each other.
+Let's first look at the implementation of the Kubernetes Topology Manager. I don't want to reinvent the wheel here, so you can refer to a <a href="https://developer.aliyun.com/article/784148" target="_blank" rel="noopener noreffer ">great article</a> summarized by a colleague from Alibaba. Here's a summary:</p>
+<ol>
+<li>Find the topology hints for different resources, i.e., topology information. The CPU selection criteria prioritize the smallest number of NUMA nodes involved, with the smallest number of sockets involved as a secondary priority. The device manager prioritizes the smallest number of NUMA nodes involved while meeting resource requests.</li>
+<li>Merge hints from different topology types, i.e., union, to select the optimal strategy.</li>
+</ol>
+<p>If a selection is made, that's good. If not, what happens? Kubernetes provides kubelet configuration strategies:</p>
+<ul>
+<li>best-effort: The Kubernetes node will accept the Pod, but the effect may not meet expectations.</li>
+<li>restricted: The node will refuse to accept the Pod, and if the Pod is rejected, its status will become Terminated.</li>
+<li>single-NUMA-node: The node will refuse to accept the Pod, and if the Pod is rejected, its status will become Terminated. This is more restrictive than restricted, as the selected NUMA node count must be 1.</li>
+</ul>
+<p>Therefore, we see that the Kubernetes Topology Manager is still centered around NUMA, performing complete fair shortest path selection for different resources (NIC, GPU, CPU). Moreover, this process occurs after the Pod is scheduled to a specific node, which brings several issues:</p>
+<ol>
+<li>There is a high probability that the Pod will be Terminated, making it unusable in production.</li>
+<li>Configuring the topology-manager-policy on nodes is inconvenient, as kubelet needs to be restarted every time parameters are configured. In some special versions, this may restart all node Pods, as detailed in <a href="https://www.likakuli.com/posts/kubernetes-kubelet-restart/" target="_blank" rel="noopener noreffer ">this article</a>.</li>
+</ol>
+<p>So, we think of several optimization solutions:</p>
+<ol>
+<li>A daemon process similar to kubelet can discover topology relationships and expose them externally;</li>
+<li>Topology awareness can be placed in the kube-scheduler to sense and guide scheduling when assigning nodes to Pods;</li>
+<li>Provide declarative and flexible topology manager policies.</li>
+</ol>
+<p>The following topology-aware solutions are based on the above ideas.</p>
+<h5 id="crane-numa-topology-awareness">Crane NUMA Topology Awareness</h5>
+<p>Let's first look at the architecture diagram of Crane NUMA-aware scheduling.
+<figure>
+    <img src="crane-numa-aware-arch.png"/> <figcaption>
+            <h4>Crane NUMA Topology Aware (figure 5)</h4>
+        </figcaption>
+</figure>
+
+The general process is as follows:</p>
+<ol>
+<li>Crane-Agent collects resource topology from nodes, including NUMA, Socket, and device information, and aggregates it into the NodeResourceTopology custom resource object.</li>
+<li>Crane-Scheduler references the NodeResourceTopology object of the node to obtain detailed resource topology structure during scheduling, and allocates topology resources to the Pod while scheduling it to the node, writing the results into the Pod's annotations.</li>
+<li>Crane-Agent watches the Pod being scheduled on the node, retrieves the topology allocation results from the Pod's annotations, and performs fine-grained CPUSet allocation according to the user-defined CPU binding strategy.</li>
+</ol>
+<p>This essentially addresses the shortcomings of the Kubernetes Topology Manager mentioned above. However, how do we configure strategies? Here are two strategy configuration options:</p>
+<ol>
+<li>Business side, specify strategies by labeling Pods:
+<ol>
+<li>none: This strategy does not perform special CPUSet allocation, and the Pod will use the node's CPU shared pool.</li>
+<li>exclusive: This strategy corresponds to kubelet's static strategy, where the Pod will exclusively occupy CPU cores, and no other Pod can use them.</li>
+<li>NUMA: This strategy specifies a NUMA Node, and the Pod will use the CPU shared pool on that NUMA Node.</li>
+<li>immovable: This strategy fixes the Pod on certain CPU cores, but these cores belong to the shared pool, and other Pods can still use them.</li>
+</ol>
+</li>
+<li>Node side
+<ol>
+<li>The default <a href="https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/" target="_blank" rel="noopener noreffer ">cpu manager policy</a> is static, allowing Pods with certain resource characteristics on the node to have enhanced CPU affinity and exclusivity; the topology manager policy is SingleNUMANodePodLevel.</li>
+<li>If the node does not have the <code>topology.crane.io/topology-awareness</code> label, the topology manager policy is none.</li>
+</ol>
+</li>
+</ol>
+<p>There is a particularly notable feature here. By default, kubelet's static CPU manager strategy only applies to Pods with qos as guaranteed and resource requests as integers, and the allocated CPUs cannot be occupied by other processes. However, with the cooperation of crane-agent and Crane NUMA-aware scheduling, Pods and bound-core Pods can share resources, allowing for the benefits of fewer context switches and higher cache affinity with bound cores, while also allowing other workloads to share resources, improving resource utilization. Moreover, the requirements for Pods are relaxed, as any container with a CPU limit greater than or equal to 1 and equal to the CPU request can be set to bind cores. Let's experiment:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ cat nginx
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  annotations:
+    topology.crane.io/topology-awareness: <span class="s1">&#39;true&#39;</span>
+    topology.crane.io/cpu-policy: <span class="s1">&#39;immovable&#39;</span>
+spec:
+  containers:
+  - image: nginx
+    imagePullPolicy: Always
+    name: nginx
+    resources:
+      requests:
+        cpu: <span class="m">2</span>
+        memory: 1Gi
+      limits:
+        cpu: <span class="m">2</span>
+        memory: 1Gi
+$ k <span class="nb">exec</span> -it nginx /bin/bash
+$ taskset -cp <span class="m">1</span> <span class="c1"># 查看绑核</span>
+pid 1<span class="s1">&#39;s current affinity list: 0,1
+</span><span class="s1"># 查看 burstable pod 的 cpuset 信息
+</span><span class="s1">$ cat /sys/fs/cgroup/cpuset/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod2260198d_db73_41f0_8ae3_387e09d3b9ec.slice/cri-containerd-6a5dfa37f9ce9102e1f781160d1fecb11b17dc835e5d72b9d7f573b515af86b3.scope/cpuset.cpus
+</span><span class="s1">0-9
+</span><span class="s1">
+</span><span class="s1"># change to exclusive 
+</span><span class="s1">annotations:
+</span><span class="s1">    topology.crane.io/topology-awareness: &#39;</span>true<span class="s1">&#39;
+</span><span class="s1">    topology.crane.io/cpu-policy: &#39;</span>exclusive<span class="err">&#39;</span>
+$ cat /sys/fs/cgroup/cpuset/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod2260198d_db73_41f0_8ae3_387e09d3b9ec.slice/cri-containerd-6a5dfa37f9ce9102e1f781160d1fecb11b17dc835e5d72b9d7f573b515af86b3.scope/cpuset.cpus
+2-9
+</code></pre></td></tr></table>
+</div>
+</div><p>As expected, for those unfamiliar with cpuset, you can refer to <a href="https://zhuanlan.zhihu.com/p/121588317" target="_blank" rel="noopener noreffer ">Linux Cgroup Introduction: cpuset</a>.</p>
+<h5 id="koordinator-fine-grained-cpu-orchestration">Koordinator Fine-grained CPU Orchestration</h5>
+<p>Koordinator and Crane have similar architectures in NUMA awareness, with koordlet replacing crane-agent and koord-scheduler replacing crane-scheduler. Even the CRD describing node topology is named the same, NRT. Here are a few different points:</p>
+<ol>
+<li>Koordinator supports more CPU manager strategies, in addition to static, it also supports the full-pcpus-only strategy for requesting complete physical cores, and the distribute-cpus-across-NUMA strategy for even distribution when multiple NUMAs are required.</li>
+<li>Koordinator supports more scheduling strategies based on NUMA topology, such as bin-packing, which prioritizes scheduling to a single node or the most idle node.</li>
+<li>Additionally, Koordinator has finer granularity in PodQos and CPU manager compared to Crane, which is why it's called Fine-grained CPU Orchestration. I'll write a separate article to explain it in detail later.</li>
+</ol>
+<h2 id="references">References</h2>
+<p>Standing on the shoulders of giants, thanks again.</p>
+<ul>
+<li><a href="https://kubernetes.io/">https://kubernetes.io/</a></li>
+<li><a href="https://github.com/volcano-sh/volcano/">https://github.com/volcano-sh/volcano/</a></li>
+<li><a href="https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ">https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ</a></li>
+<li><a href="https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s">https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s</a></li>
+<li><a href="https://github.com/NVIDIA/go-nvml">https://github.com/NVIDIA/go-nvml</a></li>
+<li><a href="https://gocrane.io/docs/">https://gocrane.io/docs/</a></li>
+<li><a href="https://koordinator.sh/docs/user-manuals">https://koordinator.sh/docs/user-manuals</a></li>
+<li><a href="https://www.likakuli.com/posts/kubernetes-kubelet-restart/">https://www.likakuli.com/posts/kubernetes-kubelet-restart/</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/121588317">https://zhuanlan.zhihu.com/p/121588317</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2025-01-06&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/58c6b9b82a44e7c1121cea8d716bd8bc25821e64" target="_blank" title="commit by xieydd(xieydd@gmail.com) 58c6b9b82a44e7c1121cea8d716bd8bc25821e64: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>58c6b9b</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/en/kubernetes-topo-aware-all-you-need-know/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes" data-via="xxxx" data-hashtags="kubernetes,topo aware"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-hashtag="kubernetes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/kubernetes/">kubernetes</a>,&nbsp;<a href="/en/tags/topo-aware/">topo aware</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+            <a href="/en/vector-search/" class="next" rel="next" title="The Ins and Outs of Vector Databases">The Ins and Outs of Vector Databases<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.en","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+</html>

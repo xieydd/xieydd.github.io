@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>The Ins and Outs of Vector Databases - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="The Ins and Outs of Vector Databases" />
+<meta property="og:description" content="It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.xieydd.top/en/vector-search/" />
+<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
+<meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
+<meta property="article:modified_time" content="2025-01-06T22:50:35+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
+
+<meta name="twitter:title" content="The Ins and Outs of Vector Databases"/>
+<meta name="twitter:description" content="It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me."/>
+<meta name="application-name" content="Xieydd">
+<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/en/vector-search/" /><link rel="prev" href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "The Ins and Outs of Vector Databases",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/blog.xieydd.top\/en\/vector-search\/"
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  5149 ,
+        "url": "https:\/\/blog.xieydd.top\/en\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-01-06T22:50:35+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
+                    "width":  400 ,
+                    "height":  400 
+                }},"author": {
+                "@type": "Person",
+                "name": "xieydd"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/en/" title="Xieydd&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
+        data-sizes="auto"
+        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/categories/documentation/"> Docs </a><a class="menu-item" href="/en/about/"> About </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/vector-search/" selected>English</option><option value="/vector-search/">简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/en/" title="Xieydd&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
+        data-sizes="auto"
+        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
+        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/categories/documentation/" title="">Docs</a><a class="menu-item" href="/en/about/" title="">About</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/en/vector-search/" selected>English</option><option value="/vector-search/">简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">The Ins and Outs of Vector Databases</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">included in <a href="/en/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/en/categories/vector-search/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>vector search</a>&nbsp;<a href="/en/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;5149 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;25 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-what-is-a-vector">1. What is a Vector</a></li>
+    <li><a href="#2-what-is-a-vector-database">2. What is a Vector Database</a></li>
+    <li><a href="#3-what-is-vector-search">3. What is Vector Search</a>
+      <ul>
+        <li><a href="#31-vector-search-application-scenarios">3.1 Vector Search Application Scenarios</a>
+          <ul>
+            <li><a href="#311-recommendation-system">3.1.1 Recommendation System</a></li>
+            <li><a href="#312--image-retrieval">3.1.2  Image Retrieval</a></li>
+            <li><a href="#313-rag">3.1.3 RAG</a></li>
+          </ul>
+        </li>
+        <li><a href="#32-similarity-metrics">3.2 Similarity Metrics</a></li>
+        <li><a href="#33-vector-search-algorithms">3.3 Vector Search Algorithms</a>
+          <ul>
+            <li><a href="#332-ivfinverted-file-index">3.3.2 IVF（Inverted File Index）</a></li>
+            <li><a href="#333-hnsw-hierarchical-navigable-small-world">3.3.3 HNSW (Hierarchical Navigable Small World)</a></li>
+            <li><a href="#nsg-navigating-spreading-out-graph">NSG (Navigating Spreading-out Graph)</a></li>
+            <li><a href="#334-diskann">3.3.4 DiskANN</a></li>
+          </ul>
+        </li>
+        <li><a href="#34-vector-search-algorithm-optimization">3.4 Vector Search Algorithm Optimization</a>
+          <ul>
+            <li><a href="#341-pqproduct-quantization">3.4.1 PQ（Product Quantization）</a></li>
+            <li><a href="#342-sqscalar-quantization">3.4.2 SQ（Scalar Quantization）</a></li>
+            <li><a href="#343-rabitq">3.4.3 RabitQ</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#4-common-vector-databases-and-their-pros-and-cons">4. Common Vector Databases and Their Pros and Cons</a>
+      <ul>
+        <li><a href="#41-milvushttpsmilvusio">4.1 Milvus</a></li>
+        <li><a href="#44-pineconehttpswwwpineconeio">4.4 Pinecone</a></li>
+        <li><a href="#45-qdranthttpsqdranttech">4.5 Qdrant</a></li>
+        <li><a href="#46-pgvectorhttpsgithubcompgvectorpgvector">4.6 Pgvector</a></li>
+        <li><a href="#47-pgvectorshttpsgithubcomtensorchordpgvectors">4.7 Pgvecto.rs</a></li>
+        <li><a href="#48-vectorchordhttpsgithubcomtensorchordvectorchord">4.8 VectorChord</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-excellent-vector-search-libraries-and-open-source-vector-database-projects">5. Excellent Vector Search Libraries and Open-Source Vector Database Projects</a></li>
+    <li><a href="#6-what-you-need-to-know-about-vector-database-commercialization">6. What You Need to Know About Vector Database Commercialization</a></li>
+    <li><a href="#7-summary">7. Summary</a></li>
+    <li><a href="#8-references">8. References</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>It has been over a year since I joined <a href="https://tensorchord.ai" target="_blank" rel="noopener noreffer ">Tensorchord</a>, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference <a href="https://modelz.ai/" target="_blank" rel="noopener noreffer ">Modelz</a> to the vector search field <a href="https://vectorchord.ai/" target="_blank" rel="noopener noreffer ">VectorChord</a>. The experience of this pivot might be shared in future articles, and those interested can also directly <a href="../../about/index.zh-cn.md" rel="">contact</a> me. Recently, I have been developing <a href="https://cloud.vectorchord.ai/" target="_blank" rel="noopener noreffer ">VectorChord Cloud</a>, so I am summarizing the ins and outs of vector databases while learning.</p>
+<h2 id="1-what-is-a-vector">1. What is a Vector</h2>
+<p>The meaning of vectors in physics, mathematics, and computer science is different. Here, vectors mainly refer to vectors in computer science, which are an ordered set of numerical values. In computer science, vectors are usually used to represent data. For example, in machine learning, we usually convert an image into a vector or tokenize a piece of text and then convert it into a vector for training. In vector databases, we usually convert an image, a piece of text, or an audio segment into a vector through an embedding model and then store and retrieve it. Below is a simple example where we convert a piece of text into a vector using the <code>all-MiniLM-L6-v2</code> model. <code>all-MiniLM-L6-v2</code> maps sentences and paragraphs to a 384-dimensional dense vector and can be used for tasks such as clustering or semantic search.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SentenceTransformer</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">all-MiniLM-L6-v2</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">Hugging Face is creating a tool that democratizes AI.</span><span class="s2">&#34;</span><span class="p">,</span>
+    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">I love natural language processing.</span><span class="s2">&#34;</span><span class="p">,</span>
+    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">Transformers are state-of-the-art models for NLP tasks.</span><span class="s2">&#34;</span>
+<span class="p">]</span>
+
+<span class="c1"># generate embeddings</span>
+<span class="n">embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
+
+<span class="c1"># print the embeddings</span>
+<span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Sentence: {sentence}</span><span class="s2">&#34;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Embedding: {embedding}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>In summary, vectors are actually the bridge between real-world entities and the computer world. Computers understand and process real-world data through vectors.</p>
+<h2 id="2-what-is-a-vector-database">2. What is a Vector Database</h2>
+<p>The world originally did not have vector databases, but with more vectors, vector databases emerged, just kidding hh. Here I give a simple definition: a database that can index and store vectors to achieve fast retrieval and similarity search functions. Many people on the internet define vector databases as databases that focus on processing vector data, which is not accurate. To be precise, vectors and vector search are a new data type and query processing method, which is not fundamentally different from similar and indexing methods in traditional databases.</p>
+<h2 id="3-what-is-vector-search">3. What is Vector Search</h2>
+<p>Vector search, also known as vector retrieval, is a technique in Information Retrieval used to find the most similar vectors to a given query vector in a high-dimensional vector space. To measure the similarity between two vectors, we usually use cosine similarity, Euclidean distance, Manhattan distance, etc. To speed up vector search, we usually use index structures such as KD-Tree, IVF (Inverted File Index), HNSW (Hierarchical Navigable Small World), etc. Vector search has applications in many fields, such as in recommendation systems, where we can use vector search to find products most similar to a user's historical behavior and then recommend them to the user; in image retrieval, we can use vector search to find images most similar to a given image; in RAG (Retrieval Augmented Generation), we can use vector search to find text most similar to a given question, enhancing the Context of large models to improve the quality of generated answers.</p>
+<h3 id="31-vector-search-application-scenarios">3.1 Vector Search Application Scenarios</h3>
+<h4 id="311-recommendation-system">3.1.1 Recommendation System</h4>
+<p>As in the On-premise case of Qdrant about <a href="https://qdrant.tech/blog/vector-search-vector-recommendation/" target="_blank" rel="noopener noreffer ">Video Content-based Recommendation</a>, the multilingual universal sentence encoder is used to embed the script when uploading a video. Here, it is not simply extracting frames from the video, but more information comes from the video title, description, automatically detected tags, and content recognized by Whisper speech recognition. So the current problem is that if the video has no audio, the title and description are forced to be used for recommendation, which is a big challenge for the review team. Here, the call start issues in the recommendation field are mentioned, that is, when users first start using the system, the recommendation quality of the recommendation system is not high, and the user experience is poor at this time. On the basis of non-real-time updated collaborative recommenders and metadata recommenders, adding a content-based recommender can greatly optimize call start issues.</p>
+<h4 id="312--image-retrieval">3.1.2  Image Retrieval</h4>
+<p><a href="https://github.com/immich-app/immich" target="_blank" rel="noopener noreffer ">immich</a> is a high-performance open-source self-hosted image and video management solution. Imagine when you upload all your videos and images to immich, it is difficult to find the image or video you want in a short time. At this time, an efficient image retrieval system <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">smart search</a> is needed. Through vector search technology, you can quickly and accurately find the image or video you want through text descriptions and additional filters (tags, dates, etc.).</p>
+<div align="center">
+  <img src="https://immich.app/assets/images/advanced-search-filters-1d755f0d492deb304a7bb924e5f4f046.webp" alt="image tag filter search" />
+</div>
+<div align="center">
+  <img src="https://immich.app/assets/images/search-ex-1-3d2c72e3921cb56afcfdbf25369107fb.png" alt="image search" />
+</div>
+<blockquote>
+<p>Images from <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">immich</a></p>
+</blockquote>
+<h4 id="313-rag">3.1.3 RAG</h4>
+<p>RAG (Retrieval Augmented Generation) mainly solves several problems in LLM applications:</p>
+<ol>
+<li>The data used to train LLM models is not real-time, in other words, it is static data, and the cost of obtaining the latest data and retraining is too high.</li>
+<li>LLM lacks domain-specific knowledge because the training corpus of LLM is mostly general datasets on the internet. In fields such as finance, healthcare, and law, private data may be the most important, and the lack of domain data will cause LLM to hallucinate.</li>
+<li>The black box problem of LLM, we cannot know how LLM generates answers, and where the source of the answers comes from.</li>
+</ol>
+<p>Here, I borrow two diagrams from Paul lusztin and Aurimas Griciunas to explain how RAG works:</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="./rag-1.png"
+        data-srcset="./rag-1.png, ./rag-1.png 1.5x, ./rag-1.png 2x"
+        data-sizes="auto"
+        alt="./rag-1.png"
+        title="alt text" /></p>
+<ol>
+<li>Obtain streaming real-time data of financial news and historical data.</li>
+<li>Chunk the data into inputs for the embedding model, and then store the embeddings in the vector database.</li>
+<li>User asks a question.</li>
+<li>Find the most similar news chunks through vector search, and then perform Prompt composition with the user's historical chat information and news chunks.</li>
+<li>Input into the LLM to generate an answer.</li>
+<li>Return the answer to the user.</li>
+<li>Store the new chat information in the user's historical data.</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="./rag-2.png"
+        data-srcset="./rag-2.png, ./rag-2.png 1.5x, ./rag-2.png 2x"
+        data-sizes="auto"
+        alt="./rag-2.png"
+        title="alt text" /></p>
+<ol>
+<li>Private data, such as Notion, Jira, local PDF files, etc., are chunked into inputs for the embedding model.</li>
+<li>Input the chunks into the embedding model, and then store the embeddings in the vector database.</li>
+<li>The Vector Database builds an Index.</li>
+<li>User asks a question, input into the embedding model.</li>
+<li>The embedding model outputs the query's embedding vector.</li>
+<li>Use the vector from step 5 as the Query vector and input it into the vector database.</li>
+<li>The vector database finds the most similar chunks through ANNs (Approximate Nearest Neighbors Search).</li>
+<li>Construct a Prompt with the searched chunks and the query.</li>
+<li>Input into the LLM to generate an answer.</li>
+</ol>
+<h3 id="32-similarity-metrics">3.2 Similarity Metrics</h3>
+<p>Cosine similarity is a method used to measure the similarity between two vectors. It is measured by calculating the angle between two vectors. The range of cosine similarity is [-1, 1], where 1 means the angle between two vectors is 0 degrees, indicating that the two vectors are identical; -1 means the angle between two vectors is 180 degrees, indicating that the two vectors are completely opposite; 0 means the angle between two vectors is 90 degrees, indicating that there is no similarity between the two vectors. The calculation formula is as follows:</p>
+<div align="center">
+  <img src="cosine_distance.png" alt="cos" />
+</div>
+<p>This formula calculates the cosine value of the angle between vectors 𝐴 and 𝐵.</p>
+<p>Euclidean distance is a method used to measure the similarity between two vectors. It is measured by calculating the distance between two vectors. The range of Euclidean distance is [0, ∞], where 0 means the two vectors are identical, and the larger the value, the greater the difference between the two vectors. The calculation formula is as follows:</p>
+<div align="center">
+  <img src="euclidean_distance.png" alt="l2" />
+</div>
+<p>This formula calculates the Euclidean distance between vectors 𝐴 and 𝐵. Some do not take the square root, which only changes the numerical value but does not fundamentally differ.</p>
+<p>Negative inner product is measured by calculating the inner product between two vectors. The larger the value, the higher the similarity between the two vectors. The calculation formula is as follows:</p>
+<div align="center">
+  <img src="negative_inner_product.png" alt="negative_inner_product" />
+</div>
+<p>Manhattan distance (taxicab distance) is measured by calculating the distance between two vectors. The range of Manhattan distance is [0, ∞], where 0 means the two vectors are identical, and the larger the value, the greater the difference between the two vectors. The calculation formula is as follows:</p>
+<div align="center">
+  <img src="taxicab_distance.png" alt="taxicab_distance" />
+</div>
+<h3 id="33-vector-search-algorithms">3.3 Vector Search Algorithms</h3>
+<p>Intuitively, we can find the vector most similar to a given query vector by traversing all vectors, but the time complexity of this method is O(n), which is not feasible when the number of vectors is large. To speed up vector search, we usually use index structures such as IVF (Inverted File Index), HNSW (Hierarchical Navigable Small World), etc. Through ANNs (Approximate Nearest Neighbors Search) algorithms, we can find the vector most similar to a given query vector with lower time complexity, such as O(log(n)).</p>
+<p>3.3.1 #### LSH (Locality Sensitive Hashing)</p>
+<p>Locality Sensitive Hashing (LSH) works by processing each vector with a hash function, grouping vectors into buckets, thereby maximizing hash collisions, rather than minimizing collisions as usual hash functions do.</p>
+<p>Here is a diagram from Pinecone:
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75"
+        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75 2x"
+        data-sizes="auto"
+        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75"
+        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75" /></p>
+<p>The specific details of LSH are as follows:</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75"
+        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75 2x"
+        data-sizes="auto"
+        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75"
+        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75" /></p>
+<ol>
+<li>Shingling: Use k-shingling and one-hot encoding to convert text into sparse vectors.
+<ul>
+<li>k-shingling means using a sliding window of size k to extract k consecutive characters from the text.</li>
+<li>one-hot encoding means comparing the result of k-shingling with the vocabulary, and if it exists, it is represented as 1 in the vocabulary, otherwise 0.</li>
+</ul>
+</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75"
+        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75 2x"
+        data-sizes="auto"
+        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75"
+        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75" /></p>
+<ol start="2">
+<li>Then use MinHash to create a &ldquo;signature&rdquo;.
+<ul>
+<li>Create a random permutation of [1&hellip;len(voc)+1].</li>
+<li>Use the value from top to bottom in the random permutation as the index. If the index-1 position of the original sparse vector is 1, take the index-1 position number of the random permutation as the signature value.</li>
+<li>Repeat n times to get an n-dimensional dense vector.
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75"
+        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75 2x"
+        data-sizes="auto"
+        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75"
+        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75" /></li>
+</ul>
+</li>
+<li>Band and Hash
+<ul>
+<li>Divide the n-dimensional signature vector into b groups, each with r elements.</li>
+<li>Hash each group to get b hash values.</li>
+<li>If two vectors have the same hash value, put them in the same bucket.</li>
+<li>If in the same bucket, consider them as candidate pairs.</li>
+</ul>
+</li>
+</ol>
+<div align="center">
+  <img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F00a27d5963a54c82b9f751845218b6beb8c09324-1280x720.png&w=1920&q=75" alt="lsh5" />
+</div>
+<p>Here, as b increases, more candidate pairs are returned, which naturally leads to more false positives.</p>
+<div align="center">
+  <img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fd6b9466efa2e6875ff98f4cce94ae1737e36c53b-1280x720.png&w=1920&q=75" alt="lsh6" />
+</div>
+<p>This means that as the dimension increases, the possibility of false positives increases, and more hash buckets need to be maintained, which also increases storage overhead. Therefore, LSH is more suitable for low-dimensional vector search and is not the mainstream vector search algorithm.</p>
+<h4 id="332-ivfinverted-file-index">3.3.2 IVF（Inverted File Index）</h4>
+<p>The inverted index algorithm is a simple, easy-to-understand, and very easy-to-implement algorithm, and it has a good search speed, but the search accuracy is worse than HNSW, but the memory consumption is relatively less than HNSW.</p>
+<p>The core of building an IVF index is divided into two steps:</p>
+<ol>
+<li>Use a clustering algorithm to divide the vectors into nlist clusters.</li>
+<li>Assign the vectors to the corresponding clusters.</li>
+</ol>
+<p>When searching, set the number of cells to search nprobe.</p>
+<div align="center">
+  <img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fe68c5241fd2726395449721f5414bc21b038f615-2020x1270.png&w=2048&q=75" alt="ivf" />
+</div>
+<p>The impact of the parameters here is:</p>
+<ul>
+<li>Increasing nlist will slow down the index building speed because the vectors need to be calculated with more centroids during the clustering process; at the same time, it will reduce the search time because there are fewer vectors corresponding to the centroids, making knn faster.</li>
+<li>Increasing nprobe will improve the recall rate but will reduce the search speed because more cells need to be searched.</li>
+</ul>
+<div align="center">
+  <img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F8432b8975f19db1a0bc3fb4ced7f62ab7ab783f4-700x568.png&w=750&q=75" alt="ivf2" />
+</div>
+<h4 id="333-hnsw-hierarchical-navigable-small-world">3.3.3 HNSW (Hierarchical Navigable Small World)</h4>
+<p>HNSW combines the advantages of NSW and Skip List and is an efficient vector search algorithm. The core idea of HNSW is to build a multi-layer graph, where each layer is a small world. By searching for the nearest nodes in each layer and then searching for the nearest nodes in the next layer, the vector most similar to the given query vector is finally found.</p>
+<p>NSW is based on a theory that the distance from any point to any other point on NSW is finite and can be found with a few jumps.</p>
+<p>The construction process of NSW:</p>
+<ol>
+<li>Randomly select a point as the insertion point.</li>
+<li>Find the m nearest points to the insertion point.</li>
+<li>Connect the insertion point with the m points.</li>
+</ol>
+<p>The randomness here will increase the number of long connections in the early graph, speeding up the search, which can be understood as &ldquo;highways&rdquo;. The red lines in the figure below are long connections:
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="./nsw_graph.png"
+        data-srcset="./nsw_graph.png, ./nsw_graph.png 1.5x, ./nsw_graph.png 2x"
+        data-sizes="auto"
+        alt="./nsw_graph.png"
+        title="./nsw_graph.png" /></p>
+<p>The search process of NSW is as follows, here I borrow a diagram from Zhihu user &ldquo;工牌厂程序猿&rdquo;:</p>
+<div align="center">
+  <img src="https://pic4.zhimg.com/80/v2-b8f847192cdd6fd0e0fe45158910dce7_720w.webp" alt="nsw" />
+</div>
+<ol>
+<li>Initialize three sets, namely visited, candidate, result (fixed length); randomly select the initial point to enter and add it to the visited and candidate sets, candidate saves the distance to the query point.</li>
+<li>Find the n nearest neighbors of the initial point, add them to the visited set, note that if the friend point is in the visited set, it is discarded, calculate the distance to the query point for the n nearest neighbors in parallel, sort them in ascending order (from near to far) and add them to the candidate set.</li>
+<li>Find the n nearest neighbors of the candidate set, add them to the visited set, if they are already in the visited set, discard them; here query point C, only point D is not visited, because the distance from point D to the query point is less than the distance from point C to the query point, so replace point C with point D in the result set, and replace point C with point D in the candidate set.</li>
+<li>Repeat step 3, find the n nearest neighbors of D, add them to the visited set, if they are already in the visited set, discard them; here query points E and G, because the distance from point E to the query point is less than the maximum distance in the result set, replace point H with point E in the result set, and remove point E from the candidate set.</li>
+<li>Repeat step 3, the distance from the point with the smallest distance to the query in the candidate set H is greater than the distance from the point with the largest distance to the query in the result set E, then stop the query.</li>
+</ol>
+<p>Skip List is an efficient data structure that can find the vector most similar to a given query vector in O(log(n)) time complexity. The core idea of Skip List is to build a multi-layer linked list, where each layer is an ordered linked list. By searching for the nearest nodes in each layer and then searching for the nearest nodes in the next layer, the vector most similar to the given query vector is finally found.</p>
+<div align="center">
+  <img src="https://pic1.zhimg.com/80/v2-714a3944759f3c85e7eb0d8a50c29b70_720w.webp" alt="skiplist" />
+</div>
+<p>Here are a few points to note about HNSW:</p>
+<ol>
+<li>Note that the maximum number of connections per layer Max needs to be controlled. When randomly inserting nodes (the lower the layer, the greater the probability), if the number of connections of neighbor node N is greater than Max, perform a KNN search on N and re-establish connections with new neighbors.</li>
+<li>Heuristic edge selection strategy: When searching for the M nearest nodes to the insertion point in each layer, it first recalls efConstruction nodes and then selects M nodes (efConstruction &gt;= M). The process of selecting M can directly select Top-M, but it may reduce the overall connectivity. The article by &ldquo;工牌厂程序猿&rdquo; specifically lists this case:</li>
+</ol>
+<div align="center">
+  <img src="https://pic3.zhimg.com/80/v2-239f6f6e2790a8a130fc72c97756c68a_720w.webp" alt="hnsw" />
+</div>
+<p>Here, efConstruction is 4, M is 2. If Top-M is directly selected, A and B will definitely be selected, which reduces the connectivity between ABQ and CD. Here, after selecting A, when looking for the second nearest neighbor, check the distance between QA and AB. If QA &gt; AB, then look for the next nearest neighbor until it is greater than QA. Here, point C is found when AC &gt; AQ.
+3. High degree vertex is closer to the top layer, which can reduce the search path and improve search efficiency.</p>
+<p>Construction parameters:</p>
+<ul>
+<li>efConstruction: A parameter in the graph construction process, used to control the number of nearest neighbor candidate nodes considered when establishing connections for each node. This parameter specifically affects the quality of the connections between nodes during the graph construction process. A higher efConstruction value means that more candidate nodes are considered when selecting neighbors for a node, resulting in a higher quality graph structure. However, a higher efConstruction value will increase the time and space complexity of building the graph, and it will also increase the search time.</li>
+<li>m: The maximum number of neighbors added per vertex, divided into m_0=2m and m_max=m, see <a href="https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp#L76" target="_blank" rel="noopener noreffer ">code</a>.</li>
+</ul>
+<p>Search parameters:</p>
+<ul>
+<li>efSearch: Used to control the quality of the search. A higher efSearch value means that more candidate nodes are considered during the search, thereby improving the quality of the search. However, a higher efSearch value will increase the search time.</li>
+</ul>
+<p>HNSW is fully in-memory because the retrieval process involves an average of hundreds of disk read operations per query, and constantly looking for the next random point will cause extremely high latency on SSD.</p>
+<h4 id="nsg-navigating-spreading-out-graph">NSG (Navigating Spreading-out Graph)</h4>
+<p>NSG optimizes graph connectivity, reduces average out-degree, shortens search paths, and reduces graph size, proposing a new graph structure called Monotonic Relative Neighborhood Graph (MRNG).</p>
+<p>The specific process is as follows:</p>
+<ul>
+<li>Build a K-nearest-neighbor-graph (KNNG) as the basis for graph construction.</li>
+<li>Randomly select a point as the Navigation Point, and all newly inserted nodes will add the Navigation Point to the candidate set when selecting edges.</li>
+<li>During the graph construction process, subgraphs will gradually be connected to the Navigation Point, so other nodes only need to maintain a few edges, thereby reducing the size of the graph.</li>
+<li>Each search starts from the Navigation Point and can point to specific subgraphs, reducing invalid searches and achieving better search performance.</li>
+</ul>
+<p>NSG's edge selection is different from HNSW's minimum edge selection strategy. Taking point r as an example, when r is connected to p, circles are drawn with r and p as the center and the distance between r and p as the radius. If there are no other points connected to p within the intersection of the two circles, then r is connected to p. When connecting point s, since there is already point r connected to p within the intersection circle of s and p, s is not connected to p. Point t is retained because point s has been excluded. In the figure below, only points r, t, and q are connected to point p, reducing redundant edges and average out-degree.
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp"
+        data-srcset="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp, https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp 1.5x, https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp 2x"
+        data-sizes="auto"
+        alt="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp"
+        title="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" /></p>
+<h4 id="334-diskann">3.3.4 DiskANN</h4>
+<p>The DiskANN series consists of three articles: DiskANN, FreshDiskANN, and FilterDiskANN, which are essentially optimizations of the HNSW or NSG algorithm.</p>
+<p>DiskANN introduces an SSD-friendly graph algorithm called Vamana, minimizing disk operations. The Vamana graph is similar to HNSW and NSG graphs, with the difference being the initial graph selection and the introduction of a loose parameter alpha during graph pruning to balance graph diameter and node connectivity, improving graph quality. Additionally, to avoid multiple random disk reads and writes, DiskANN combines two types of algorithms: clustering compression algorithms and graph structure algorithms. First, by compressing the original data, only the compressed codebook information and centroid mapping information are kept in memory, while the original data and the constructed graph structure data are stored on disk, only reading from disk when specific nodes are matched during queries. Second, by modifying the arrangement of vector data and graph structures, data points and their neighbor nodes are stored together, allowing a single disk operation to read the vector data and neighbor node information of a node.</p>
+<p>Graph construction process:</p>
+<ol>
+<li>First, build a random graph. Unlike NSG's K-nearest-neighbor graph, each node is randomly connected to R nodes.</li>
+<li>Calculate the starting point, finding the point closest to the global centroid to minimize the average search radius.</li>
+<li>Search from the starting point and perform ANN for each point, using all points on the search path as candidate neighbor sets, and execute an alpha = 1 edge pruning strategy.</li>
+<li>Repeat step 3 with alpha &gt; 1 (recommended 1.2 in the paper). Since step 3 is based on a random neighbor graph, the graph quality is not high after the first iteration, so another iteration is needed to improve graph quality, which is important for recall. Taking the above figure as an example, if alpha is 1.2, the ps edge is pruned only when the distance of ps is greater than 1.2 * the distance of pr.</li>
+</ol>
+<p>The figure below intuitively shows the difference between alpha=1 and alpha=1.2 graphs. The first row is alpha=1, and the second row is alpha=1.2. The alpha=1.2 graph is denser, with more long edges, reducing the search radius.
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp"
+        data-srcset="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp, https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp 1.5x, https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp 2x"
+        data-sizes="auto"
+        alt="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp"
+        title="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp" /></p>
+<p>At this point, you may have a question: if the graph is built this way, it is impossible to store more than 1B data on a 64GB machine. Here are some optimization techniques:</p>
+<ol>
+<li>First, perform global k-means to divide the data into k clusters, and then assign each point to the nearest I clusters, usually I=2 is enough. Build an in-memory Vamana index for each cluster, and finally merge the k Vamana indexes into one index.</li>
+<li>Use quantization methods, using the original vectors to build the index, but using compressed vectors for queries. Building the index with original vectors ensures graph quality, while searching with compressed vectors that can fit in memory allows for coarse-grained search. Although the compressed vectors lose some precision, as long as the graph quality is high enough, the general direction is correct, and the final distance calculation is still done with the original vectors.</li>
+<li>Store the neighbor sets and original vector data of each point together. This takes advantage of data locality.</li>
+</ol>
+<p>If the index file is stored on SSD, to ensure search latency, minimize the number of disk accesses and disk read/write requests. Therefore, DiskANN proposes two optimization strategies:</p>
+<ol>
+<li>Cache hotspots: Keep points within C hops from the starting point in memory, usually C=3~4 is good.</li>
+<li>Beam search: Simply put, preload. When searching for point p, if the neighbor points of p are not in the cache, load the neighbor information of p from disk. Since a small number of SSD random access operations and a single SSD sector access operation take about the same time, we can load the neighbor information of W unvisited points at once. W should not be too large or too small; too large wastes computation and SSD bandwidth, too small increases search latency.</li>
+</ol>
+<p>The advantage of DiskANN is that it can achieve good search performance with small memory usage and SSD, but building the index on small machines will be slow, so a trade-off is needed.</p>
+<p>In summary, in terms of memory usage, HNSW is significantly larger than IVF, LSH, and Flat (KNN). In terms of recall rate and search speed, HNSW is better than IVF and LSH. DiskANN is better than HNSW in memory usage, but building the index is slower. In terms of search speed, DiskANN is better than HNSW, but the recall rate is not as good as HNSW. Therefore, when choosing a vector search algorithm, you need to choose based on your needs.</p>
+<h3 id="34-vector-search-algorithm-optimization">3.4 Vector Search Algorithm Optimization</h3>
+<p>By reducing the size of vectors or reducing dimensions to make searches faster, here are some common vector search algorithm optimization methods.</p>
+<h4 id="341-pqproduct-quantization">3.4.1 PQ（Product Quantization）</h4>
+<p>Here I borrow a diagram from a Zhihu user, as the user's diagram is very well-drawn:
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
+        data-srcset="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg, https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 1.5x, https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 2x"
+        data-sizes="auto"
+        alt="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
+        title="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" />
+Construction phase:</p>
+<ol>
+<li>First, split N original vectors into multiple sub-vectors. For example, a 256-dimensional vector is split into 8 32-dimensional sub-vectors.</li>
+<li>Then perform clustering in each sub-vector space, using clustering algorithms such as KMeans. Assuming there are 1024 clusters in each subspace, encode each cluster center to get 1024 IDs.</li>
+<li>Encode the original vectors into the nearest cluster center ID, and finally concatenate them.</li>
+</ol>
+<p>Retrieval phase:</p>
+<ol>
+<li>Split the retrieval vector.</li>
+<li>Calculate the distance between each subspace and each cluster center to create a distance table.</li>
+<li>Use the distance table to calculate the distance between the query and candidate samples in each subspace, accumulate them, and take the top-k.</li>
+</ol>
+<p>The splitting involved can be done in parallel. PQ is generally not used directly because it still requires a lot of distance calculations. Usually, IVF is first used to find the most promising top-k clusters, and then PQ is performed.</p>
+<h4 id="342-sqscalar-quantization">3.4.2 SQ（Scalar Quantization）</h4>
+<p>SQ is relatively simple.
+Encoding: scalar = (max-min)/255, floor(value-min/scaler). If less than 0, take 0; if greater than 255, take 255. This compresses the vector to between 0-255, reducing the size of the vector but losing some information.
+Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
+<h4 id="343-rabitq">3.4.3 RabitQ</h4>
+<p>RabitQ comes from the paper <a href="https://arxiv.org/abs/2405.12497" target="_blank" rel="noopener noreffer ">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>.</p>
+<p>RabitQ points out two problems with the current PQ algorithm:</p>
+<ol>
+<li>Using the centroid of kmeans as the codebook is a heuristic approximation during construction, with no theoretical guarantee.</li>
+<li>Distance estimation, using the distance between the quantized vector and the query vector to estimate the distance between the original vector and the query vector, lacks an approximate error range.</li>
+</ol>
+<p>How to solve the above problems:</p>
+<ol>
+<li>Codebook construction phase
+<ol>
+<li>First, normalize the data vectors to align them on the unit hypersphere in D-dimensional space.</li>
+<li>Construct a set of $2^{D}$ bivalued vectors with coordinates $−1/\sqrt{D}$ or $+1/\sqrt{D}$ (i.e., the set consists of the vertices of a hypercube uniformly distributed on the unit hypersphere).</li>
+<li>Randomly rotate the bivalued vectors by multiplying each bivalued vector by a random orthogonal matrix (i.e., perform a Johnson-Lindenstrauss transformation).</li>
+<li>For each vector, take the closest vector in the codebook as the quantized vector. Since each quantized vector is a rotated D-dimensional bivalued vector, we represent its quantization code as a bit string of length D, where 0 and 1 represent two different values. The basic principle of codebook construction is that it has a clear geometric interpretation (i.e., the vectors in the codebook are a set of randomly rotated vectors on the unit hypersphere), allowing explicit analysis of the geometric relationships between data vectors, their quantized vectors, and query vectors.</li>
+</ol>
+</li>
+<li>Distance estimation
+<ol>
+<li>Carefully design an estimator for the distance between data vectors and query vectors based on the above geometric relationships, and prove that this estimator is unbiased and provides an error range.</li>
+<li>At the same time, when estimating distances, even with shorter quantization codes, about half of the advantages can be estimated with small empirical errors.</li>
+</ol>
+</li>
+</ol>
+<p>RaBitQ’s distance estimator：</p>
+<ul>
+<li>Single data vector uses bitwise operations.</li>
+<li>Batch data uses SIMD acceleration.</li>
+</ul>
+<p>Using a random codebook avoids the poor performance of bivalued codebooks on specific vectors, such as ($1/\sqrt{D}$&hellip; $−1/\sqrt{D}$) and (1, 0, 0, 0). We multiply this codebook by a random orthogonal matrix, allowing the unit vectors of the codebook to have the same probability of rotating to any position on the unit hypersphere.</p>
+<h2 id="4-common-vector-databases-and-their-pros-and-cons">4. Common Vector Databases and Their Pros and Cons</h2>
+<p>The following lists some common vector databases and their pros and cons. Some are dedicated vector databases, while others are extensions of existing relational databases.</p>
+<h3 id="41-milvushttpsmilvusio">4.1 <a href="https://milvus.io/" target="_blank" rel="noopener noreffer ">Milvus</a></h3>
+<p>Milvus is an excellent open-source vector database that supports multiple vector search algorithms, including HNSW, DiskANN, IVF, etc. In addition to basic vector retrieval functions, it also provides sharding, streaming data ingestion, and hybrid search.</p>
+<p>Milvus adopts a cloud-native, shared-everything architecture with separate control and data planes. Each component is independent and horizontally scalable, including:</p>
+<ul>
+<li>Access Layer: Consists of a set of stateless proxies. It provides endpoints for user connections, verifies client requests, and merges and returns results.
+<ul>
+<li>It uses load balancing components such as Nginx, Kubernetes Ingress, NodePort, and LVS to provide a unified service address.</li>
+<li>Since Milvus uses a massively parallel processing (MPP) architecture, the proxy aggregates and post-processes intermediate results and then returns the final results to the client.</li>
+</ul>
+</li>
+<li>Coordinator Service: Responsible for assigning tasks to execution nodes, including root coord, data coord, and query coord.
+<ul>
+<li>root coord: Handles data definition language (DDL) and data control language (DCL) requests, such as creating or deleting collections, partitions, or indexes, and managing TSO (Timestamp Oracle) and time ticker.</li>
+<li>data coord: Manages data and index node topology, maintains metadata, and triggers background data operations such as flush, compact, and index building.</li>
+<li>query coord: Manages query node topology, load balancing, and the conversion of growing segments to sealed segments.</li>
+</ul>
+</li>
+<li>Worker Node: Executes tasks assigned by the coordinator service and proxy DML commands.
+<ul>
+<li>Query Node: Retrieves incremental log data, converts it into growing segments by subscribing to the log broker, loads historical data from object storage, and performs hybrid searches between vector and scalar data.</li>
+<li>Data Node: Obtains incremental log data by subscribing to the log broker, processes mutation requests, and packages log data into log snapshots stored in object storage.</li>
+<li>Index Node: Builds indexes. Index nodes do not need to reside in memory and can be implemented through a Serverless framework.</li>
+</ul>
+</li>
+<li>Storage Layer: Object storage is responsible for storing data, including data files and index files.
+<ul>
+<li>Meta Storage: Meta storage stores metadata snapshots, such as collection schemas and message consumption checkpoints. Storing metadata requires high availability, strong consistency, and transaction support, so Milvus chooses etcd for meta storage. Milvus also uses etcd for service registration and health checks.</li>
+<li>Object Storage: Stores log snapshot files, index files for scalar and vector data, and intermediate query results. Milvus uses MinIO as object storage, which can be easily deployed on AWS S3 and Azure Blob. However, object storage has high access latency and charges based on query counts. To improve performance and reduce costs, Milvus plans to implement cold and hot data separation on a memory or SSD-based cache pool.</li>
+<li>Log Broker: A publish-subscribe system responsible for streaming data persistence and event notification. It also ensures the integrity of incremental data when worker nodes recover from system failures. Milvus cluster uses Pulsar as the log broker; Milvus standalone uses RocksDB as the log broker. Additionally, the log broker can be easily replaced with streaming data storage platforms such as Kafka.</li>
+</ul>
+</li>
+</ul>
+<p>Milvus's cloud-native architecture is its advantage, but it also brings significant challenges to developers, such as learning new concepts and the operational management challenges brought by related components like Pulsar or etcd.</p>
+<h3 id="44-pineconehttpswwwpineconeio">4.4 <a href="https://www.pinecone.io/" target="_blank" rel="noopener noreffer ">Pinecone</a></h3>
+<h3 id="45-qdranthttpsqdranttech">4.5 <a href="https://qdrant.tech/" target="_blank" rel="noopener noreffer ">Qdrant</a></h3>
+<h3 id="46-pgvectorhttpsgithubcompgvectorpgvector">4.6 <a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener noreffer ">Pgvector</a></h3>
+<h3 id="47-pgvectorshttpsgithubcomtensorchordpgvectors">4.7 <a href="https://github.com/tensorchord/pgvecto.rs" target="_blank" rel="noopener noreffer ">Pgvecto.rs</a></h3>
+<h3 id="48-vectorchordhttpsgithubcomtensorchordvectorchord">4.8 <a href="https://github.com/tensorchord/VectorChord" target="_blank" rel="noopener noreffer ">VectorChord</a></h3>
+<h2 id="5-excellent-vector-search-libraries-and-open-source-vector-database-projects">5. Excellent Vector Search Libraries and Open-Source Vector Database Projects</h2>
+<h2 id="6-what-you-need-to-know-about-vector-database-commercialization">6. What You Need to Know About Vector Database Commercialization</h2>
+<h2 id="7-summary">7. Summary</h2>
+<p>Here, I have briefly introduced some basic knowledge of vector search, as well as some common vector search algorithms, vector search application scenarios, vector search algorithm optimization, common vector databases and their pros and cons, excellent vector search libraries, and open-source vector database projects. I hope to apply this knowledge to actual scenarios in the future. I hope this article can help you better understand vector search.</p>
+<h2 id="8-references">8. References</h2>
+<p>Thank you very much to Pinecone's articles, which gave me a deeper understanding of vector databases.</p>
+<ul>
+<li><a href="https://www.pinecone.io/learn/series/faiss/vector-indexes/">https://www.pinecone.io/learn/series/faiss/vector-indexes/</a></li>
+<li><a href="https://www.pinecone.io/learn/series/faiss/locality-sensitive-hashing/">https://www.pinecone.io/learn/series/faiss/locality-sensitive-hashing/</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/379372268">https://zhuanlan.zhihu.com/p/379372268</a></li>
+<li><a href="https://songlinlife.github.io/2022/%E6%95%B0%E6%8D%AE%E5%BA%93/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%EF%BC%9ANSG/">https://songlinlife.github.io/2022/%E6%95%B0%E6%8D%AE%E5%BA%93/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%EF%BC%9ANSG/</a></li>
+<li><a href="https://www.xiemingzhao.com/posts/hnswAlgo.html">https://www.xiemingzhao.com/posts/hnswAlgo.html</a></li>
+<li><a href="https://whenever5225.github.io/2020/05/11/hnsw-heuristic/">https://whenever5225.github.io/2020/05/11/hnsw-heuristic/</a></li>
+<li>Search Engine For AI：高维数据检索工业级解决方案 <a href="https://zhuanlan.zhihu.com/p/50143204">https://zhuanlan.zhihu.com/p/50143204</a></li>
+<li><a href="https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw">https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2025-01-06&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/58c6b9b82a44e7c1121cea8d716bd8bc25821e64" target="_blank" title="commit by xieydd(xieydd@gmail.com) 58c6b9b82a44e7c1121cea8d716bd8bc25821e64: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>58c6b9b</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/en/vector-search/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The Ins and Outs of Vector Databases" data-via="xxxx" data-hashtags="vector search,Postgres"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/en/vector-search/" data-hashtag="vector search"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The Ins and Outs of Vector Databases"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The Ins and Outs of Vector Databases"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The Ins and Outs of Vector Databases"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/vector-search/">vector search</a>,&nbsp;<a href="/en/tags/postgres/">Postgres</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/en/kubernetes-topo-aware-all-you-need-know/" class="prev" rel="prev" title="All You Need to Know About Topology Awareness in Kubernetes"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>All You Need to Know About Topology Awareness in Kubernetes</a></div>
+</div>
+<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.en","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+</html>

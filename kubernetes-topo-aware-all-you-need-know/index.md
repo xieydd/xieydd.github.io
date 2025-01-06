@@ -121,7 +121,9 @@ Legend:
 ##### Crane NUMA 拓扑感知
 
 首先看下 Crane NUMA 感知调度的架构图。
+
 {{< figure src="crane-numa-aware-arch.png" title="Crane NUMA Topology Aware (figure 5)" >}}
+
 大致流程如下：
 1. Crane-Agent 从节点采集资源拓扑，包括NUMA、Socket、设备等信息，汇总到NodeResourceTopology这个自定义资源对象中。
 2. Crane-Scheduler在调度时会参考节点的NodeResourceTopology对象获取到节点详细的资源拓扑结构，在调度到节点的同时还会为Pod分配拓扑资源，并将结果写到Pod的annotations中。

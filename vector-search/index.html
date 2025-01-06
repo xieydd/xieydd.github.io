@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/vector-search/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
-<meta property="article:modified_time" content="2025-01-03T22:08:24+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-01-06T22:50:35+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/vector-search\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  9155 ,
-        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-01-03T22:08:24+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  9148 ,
+        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-01-06T22:50:35+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -74,7 +74,7 @@
                     <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
                 </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
                     <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/vector-search/" selected>简体中文</option></select>
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/vector-search/">English</option><option value="/vector-search/" selected>简体中文</option></select>
                 </a></div>
         </div>
     </div>
@@ -115,7 +115,7 @@
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
                     <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/vector-search/" selected>简体中文</option></select>
+                    <select class="language-select" onchange="location = this.value;"><option value="/en/vector-search/">English</option><option value="/vector-search/" selected>简体中文</option></select>
                 </a></div>
     </div>
 </header><div class="search-dropdown desktop">
@@ -129,7 +129,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">向量数据库中的门门道道</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/vector-search/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>vector search</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 9155 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 9148 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 19 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -142,11 +142,21 @@
     <li><a href="#2-什么是向量数据库">2. 什么是向量数据库</a></li>
     <li><a href="#3-什么是向量搜索">3. 什么是向量搜索</a>
       <ul>
-        <li><a href="#31-向量搜索应用场景">3.1 向量搜索应用场景</a></li>
+        <li><a href="#31-向量搜索应用场景">3.1 向量搜索应用场景</a>
+          <ul>
+            <li><a href="#311-推荐系统">3.1.1 推荐系统</a></li>
+            <li><a href="#312-图像检索">3.1.2 图像检索</a></li>
+            <li><a href="#313-rag">3.1.3 RAG</a></li>
+          </ul>
+        </li>
         <li><a href="#32-相似度指标">3.2 相似度指标</a></li>
         <li><a href="#33-向量搜索算法">3.3 向量搜索算法</a>
           <ul>
+            <li><a href="#331-lsh-locality-sensitive-hashing">3.3.1 LSH (Locality Sensitive Hashing)</a></li>
+            <li><a href="#332-ivfinverted-file-index">3.3.2 IVF（Inverted File Index）</a></li>
+            <li><a href="#333-hnsw-hierarchical-navigable-small-world">3.3.3 HNSW (Hierarchical Navigable Small World)</a></li>
             <li><a href="#nsg-navigating-spreading-out-graph">NSG (Navigating Spreading-out Graph)</a></li>
+            <li><a href="#334-diskann">3.3.4 DiskANN</a></li>
           </ul>
         </li>
         <li><a href="#34-向量搜索算法优化">3.4 向量搜索算法优化</a>
@@ -227,9 +237,9 @@
 <h2 id="3-什么是向量搜索">3. 什么是向量搜索</h2>
 <p>向量搜索也叫向量检索，是一种 Information Retrieval 的技术，用于在高维向量空间中查找与给定查询向量最相似的向量。为了衡量两个向量之间的相似性，我们通常会使用余弦相似度，欧氏距离，曼哈顿距离等。为了加速向量搜索，我们通常会使用索引结构，比如 KD-Tree，IVF(Inverted File Index)，HNSW(Hierarchical Navigable Small World)等。向量搜索在很多领域都有应用，比如在推荐系统中，我们可以使用向量搜索来查找与用户历史行为最相似的商品，然后推荐给用户；在图像检索中，我们可以使用向量搜索来查找与给定图片最相似的图片；在 RAG（Retrieval Augmented Generation）中，我们可以使用向量搜索来查找与给定问题最相似的文本，增强大模型的 Context 从而提高生成答案的质量。</p>
 <h3 id="31-向量搜索应用场景">3.1 向量搜索应用场景</h3>
-<p>3.1.1 #### 推荐系统</p>
+<h4 id="311-推荐系统">3.1.1 推荐系统</h4>
 <p>如 Qdrant 关于 <a href="https://qdrant.tech/blog/vector-search-vector-recommendation/" target="_blank" rel="noopener noreffer ">Video Content-based Recommendation</a> 的 On-premise 案例，通过 multilingual universal sentence encoder 来对上传视频时候的脚本进行嵌入。这里不是简单的对视频进行抽帧，更多的信息来自于上传时候的视频标题，描述，自动检测标签以及通过 whisper 语音识别的内容。所以目前遇到的问题是如果视频是无音频，被迫使用标题以及描述进行推荐，这样对于审核团队来说是一个很大的挑战。这里提到了推荐领域的 call start issues, 也就是用户在刚开始使用的时候，推荐系统的推荐质量不高，这个时候用户体验会很差。在非即时更新的协作推荐器以及元数据推荐器的基础上，增加基于内容的推荐器，可以大大优化 call start issues。</p>
-<p>3.1.2 #### 图像检索</p>
+<h4 id="312-图像检索">3.1.2 图像检索</h4>
 <p><a href="https://github.com/immich-app/immich" target="_blank" rel="noopener noreffer ">immich</a> 是一个高性能的开源 self-hosted 图像以及视频管理解决方案。试想当你把你所有的视频和图片都上传到 immich 之后，你很难在很短的时间内找到你想要的图片或者视频。这个时候就需要一个高效的图像检索系统 <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">smart search</a>，通过向量搜索技术，你可以通过文本描述以及额外的过滤器（标签，日期等）来快速精准的找到你想要的图片或者视频。</p>
 <div align="center">
   <img src="https://immich.app/assets/images/advanced-search-filters-1d755f0d492deb304a7bb924e5f4f046.webp" alt="image tag filter search" />
@@ -240,7 +250,7 @@
 <blockquote>
 <p>图片来自于 <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">immich</a></p>
 </blockquote>
-<p>3.1.3 #### RAG</p>
+<h4 id="313-rag">3.1.3 RAG</h4>
 <p>RAG（Retrieval Augmented Generation）主要解决在 LLM 应用中的几个问题：</p>
 <ol>
 <li>LLM 训练模型的数据不是即时的，换句话说是静态的数据，获取最新数据重新进行训练的成本太大。</li>
@@ -305,7 +315,7 @@
 </div>
 <h3 id="33-向量搜索算法">3.3 向量搜索算法</h3>
 <p>直觉上，我们可以通过遍历所有的向量来找到与给定查询向量最相似的向量，但是这种方法的时间复杂度是 O(n)，当向量的数量很大时，这种方法是不可行的。为了加速向量搜索，我们通常会使用索引结构，比如 IVF(Inverted File Index)，HNSW(Hierarchical Navigable Small World)等。通过 ANNs (Approximate Nearest Neighbors Search) 算法，我们可以在更低的时间复杂度，比如 O(log(n))，找到与给定查询向量最相似的向量。</p>
-<p>3.3.1 #### LSH (Locality Sensitive Hashing)</p>
+<h4 id="331-lsh-locality-sensitive-hashing">3.3.1 LSH (Locality Sensitive Hashing)</h4>
 <p>局部敏感哈希 (LSH) 的工作原理是通过哈希函数处理每个向量，将向量分组到存储桶中，从而最大化哈希冲突，而不是像通常的哈希函数那样最小化冲突。</p>
 <p>这里引用 Pinecone 的一张图
 <img
@@ -374,7 +384,7 @@
   <img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fd6b9466efa2e6875ff98f4cce94ae1737e36c53b-1280x720.png&w=1920&q=75" alt="lsh6" />
 </div>
 <p>这意味着随着纬度的增加，误报的可能性越大，而且维数增大后需要维护更多的 hash 桶，存储的开销也会增大。所以 LSH 更适合低维度的向量搜索，不是目前的主流向量搜索算法。</p>
-<p>3.3.2 #### IVF（Inverted File Index）</p>
+<h4 id="332-ivfinverted-file-index">3.3.2 IVF（Inverted File Index）</h4>
 <p>倒排索引算法是一个简单、易懂而且非常容易实现的算法，而且有着不错的搜索速度，但是搜索的精度较 HNSW 较差些，但是内存消耗相对 HNSW 更少。</p>
 <p>构建 IVF 索引的核心分为两个步骤：</p>
 <ol>
@@ -393,7 +403,7 @@
 <div align="center">
   <img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F8432b8975f19db1a0bc3fb4ced7f62ab7ab783f4-700x568.png&w=750&q=75" alt="ivf2" />
 </div>
-<p>3.3.3 #### HNSW (Hierarchical Navigable Small World)</p>
+<h4 id="333-hnsw-hierarchical-navigable-small-world">3.3.3 HNSW (Hierarchical Navigable Small World)</h4>
 <p>HNSW 结合了 NSW 以及 Skip List 的优点，是一种高效的向量搜索算法。HNSW 的核心思想是通过构建一个多层的图，每一层都是一个小世界，通过在每一层中搜索最近的节点，然后在下一层中搜索最近的节点，最终找到与给定查询向量最相似的向量。</p>
 <p>NSW 是建立在一个理论的基础上，NSW 上的点到任意点的距离都是有限的，而且是通过很少的几次跳跃就能找到的。</p>
 <p>NSW 的构造过程：</p>
@@ -464,7 +474,7 @@
         data-sizes="auto"
         alt="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp"
         title="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" /></p>
-<p>3.3.4 #### DiskANN</p>
+<h4 id="334-diskann">3.3.4 DiskANN</h4>
 <p>DiskANN 系列有三篇文章，DiskANN，FreshDiskANN，FilterDiskANN， 从本质上是对 HNSW或者说 NSG 算法的优化。</p>
 <p>DiskANN 通过引入 SSD 友好型的图算法 Vamana,最小化磁盘操作。Vamana 图与 HNSW、NSG 图类似，区别在于初始图的选择、以及构图剪枝过程中引入宽松参数 alpha ，在图直径和节点连通度上达到平衡，图的质量相对有所提升。其次，为了规避多次随机读写磁盘数据，DiskANN 算法结合两类算法：聚类压缩算法和图结构算法，一是通过压缩原始数据，仅将压缩后的码表信息和中心点映射信息放到内存中，而原始数据和构建好的图结构数据存放到磁盘中，只需在查询匹配到特定节点时到磁盘中读取；二是修改向量数据和图结构的排列方式，将数据点与其邻居节点并排存放，这种方式使得一次磁盘操作即可完成节点的向量数据、邻接节点等信息的读取。</p>
 <p>构图过程:</p>
@@ -615,8 +625,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-01-03&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/ea1e6baca33eac699b24b48f9b52c00aba3208fe" target="_blank" title="commit by xieydd(xieydd@gmail.com) ea1e6baca33eac699b24b48f9b52c00aba3208fe: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>ea1e6ba</a></span>
+                <span>更新于 2025-01-06&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/58c6b9b82a44e7c1121cea8d716bd8bc25821e64" target="_blank" title="commit by xieydd(xieydd@gmail.com) 58c6b9b82a44e7c1121cea8d716bd8bc25821e64: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>58c6b9b</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

@@ -1,6 +1,10 @@
 # 关于远东
 
 
+📫  您如果想联系我，可以直接发送邮件，邮箱地址 xieydd@gmail.com,或者您可以加我的微信 `echo -n 'eGlleWRkX2hhaGEK' | base64 -d`.
+
+💻
+
 截止到 2024 年，有着超过 6 年的 AI Infra 的经验：
 
 ### 2018-2021.2（含实习）[Unisound](https://www.unisound.com/)
@@ -47,8 +51,5 @@
 5. [openmodelz](https://github.com/tensorchord/openmodelz) One-click machine learning deployment (LLM, text-to-image and so on) at scale on any cluster (GCP, AWS, Lambda labs, your home lab, or even a single machine).
 6. [clusternet](https://github.com/clusternet/clusternet) [CNCF Sandbox Project] Managing your Kubernetes clusters (including public, private, edge, etc.) as easily as visiting the Internet
 7. [vectorchord](https://github.com/tensorchord/VectorChord) Scalable, fast, and disk-friendly vector search in Postgres, the successor of pgvecto.rs.
-
-
-📫  您如果想联系我，可以直接发送邮件，邮箱地址 xieydd@gmail.com,或者您可以加我的微信 `echo -n 'eGlleWRkX2hhaGEK' | base64 -d`.
 
 

@@ -41,11 +41,11 @@ for sentence, embedding in zip(sentences, embeddings):
 
 ### 3.1 向量搜索应用场景
 
-3.1.1 #### 推荐系统
+#### 3.1.1 推荐系统
 
 如 Qdrant 关于 [Video Content-based Recommendation](https://qdrant.tech/blog/vector-search-vector-recommendation/) 的 On-premise 案例，通过 multilingual universal sentence encoder 来对上传视频时候的脚本进行嵌入。这里不是简单的对视频进行抽帧，更多的信息来自于上传时候的视频标题，描述，自动检测标签以及通过 whisper 语音识别的内容。所以目前遇到的问题是如果视频是无音频，被迫使用标题以及描述进行推荐，这样对于审核团队来说是一个很大的挑战。这里提到了推荐领域的 call start issues, 也就是用户在刚开始使用的时候，推荐系统的推荐质量不高，这个时候用户体验会很差。在非即时更新的协作推荐器以及元数据推荐器的基础上，增加基于内容的推荐器，可以大大优化 call start issues。
 
-3.1.2 #### 图像检索
+#### 3.1.2 图像检索
 
 [immich](https://github.com/immich-app/immich) 是一个高性能的开源 self-hosted 图像以及视频管理解决方案。试想当你把你所有的视频和图片都上传到 immich 之后，你很难在很短的时间内找到你想要的图片或者视频。这个时候就需要一个高效的图像检索系统 [smart search](https://immich.app/docs/features/smart-search)，通过向量搜索技术，你可以通过文本描述以及额外的过滤器（标签，日期等）来快速精准的找到你想要的图片或者视频。
 
@@ -59,7 +59,7 @@ for sentence, embedding in zip(sentences, embeddings):
 
 > 图片来自于 [immich](https://immich.app/docs/features/smart-search)
 
-3.1.3 #### RAG
+#### 3.1.3 RAG
 
 RAG（Retrieval Augmented Generation）主要解决在 LLM 应用中的几个问题：
 1. LLM 训练模型的数据不是即时的，换句话说是静态的数据，获取最新数据重新进行训练的成本太大。
@@ -124,7 +124,7 @@ RAG（Retrieval Augmented Generation）主要解决在 LLM 应用中的几个问
 
 直觉上，我们可以通过遍历所有的向量来找到与给定查询向量最相似的向量，但是这种方法的时间复杂度是 O(n)，当向量的数量很大时，这种方法是不可行的。为了加速向量搜索，我们通常会使用索引结构，比如 IVF(Inverted File Index)，HNSW(Hierarchical Navigable Small World)等。通过 ANNs (Approximate Nearest Neighbors Search) 算法，我们可以在更低的时间复杂度，比如 O(log(n))，找到与给定查询向量最相似的向量。
 
-3.3.1 #### LSH (Locality Sensitive Hashing)
+#### 3.3.1 LSH (Locality Sensitive Hashing)
 
 局部敏感哈希 (LSH) 的工作原理是通过哈希函数处理每个向量，将向量分组到存储桶中，从而最大化哈希冲突，而不是像通常的哈希函数那样最小化冲突。
 
@@ -164,7 +164,7 @@ LSH 的具体细节如下图所示：
 
 这意味着随着纬度的增加，误报的可能性越大，而且维数增大后需要维护更多的 hash 桶，存储的开销也会增大。所以 LSH 更适合低维度的向量搜索，不是目前的主流向量搜索算法。
 
-3.3.2 #### IVF（Inverted File Index）
+#### 3.3.2 IVF（Inverted File Index）
 
 倒排索引算法是一个简单、易懂而且非常容易实现的算法，而且有着不错的搜索速度，但是搜索的精度较 HNSW 较差些，但是内存消耗相对 HNSW 更少。
 
@@ -187,7 +187,7 @@ LSH 的具体细节如下图所示：
 </div>
 
 
-3.3.3 #### HNSW (Hierarchical Navigable Small World)
+#### 3.3.3 HNSW (Hierarchical Navigable Small World)
 
 HNSW 结合了 NSW 以及 Skip List 的优点，是一种高效的向量搜索算法。HNSW 的核心思想是通过构建一个多层的图，每一层都是一个小世界，通过在每一层中搜索最近的节点，然后在下一层中搜索最近的节点，最终找到与给定查询向量最相似的向量。
 
@@ -251,7 +251,7 @@ NSG 围绕图的连通性、减少平均出度，缩短搜索路径以及图的�
 NSG 选边跟 HNSW 选择最小边策略不同。以点 r 为例，当 r 与 p 建立连接时，以 r 和 p 为圆心，r 和 p 的距离为半径，分别做圆，如果两个圆的交集内没有其他与 p 相连接的点，则 r 与 p 相连。在连接点 s 时，由于以 s 和 p 距离为半径的交集圆内，已有点 r 与 p 相连，所以 s 和 p 不相连。t点因为s点已经排除，所以保留,下图中最终与点 p 相连的点只有r, t 和 q，这样减少了冗余边，减少了平均出度。
 ![](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp)
 
-3.3.4 #### DiskANN
+#### 3.3.4 DiskANN
 
 DiskANN 系列有三篇文章，DiskANN，FreshDiskANN，FilterDiskANN， 从本质上是对 HNSW或者说 NSG 算法的优化。
 
