@@ -15,7 +15,7 @@ PostgreSQL High Availability High Availability Goals PostgreSQL high availabilit
  RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again.]]></description>
 </item>
 <item>
-    <title>The Ins and Outs of Vector Databases</title>
+    <title>The internals of Vector Databases</title>
     <link>https://blog.xieydd.top/en/vector-search/</link>
     <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
     <author>xieydd</author>

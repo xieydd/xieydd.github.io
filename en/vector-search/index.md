@@ -1,4 +1,4 @@
-# The Ins and Outs of Vector Databases
+# The internals of Vector Databases
 
 
 It has been over a year since I joined [Tensorchord](https://tensorchord.ai), and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference [Modelz](https://modelz.ai/) to the vector search field [VectorChord](https://vectorchord.ai/). The experience of this pivot might be shared in future articles, and those interested can also directly [contact](../../about/index.zh-cn.md) me. Recently, I have been developing [VectorChord Cloud](https://cloud.vectorchord.ai/), so I am summarizing the ins and outs of vector databases while learning.

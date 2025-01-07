@@ -5,7 +5,7 @@
         <description>vector search - Category - Xieydd&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
             <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/categories/vector-search/" rel="self" type="application/rss+xml" /><item>
-    <title>The Ins and Outs of Vector Databases</title>
+    <title>The internals of Vector Databases</title>
     <link>https://blog.xieydd.top/en/vector-search/</link>
     <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
     <author>xieydd</author>
