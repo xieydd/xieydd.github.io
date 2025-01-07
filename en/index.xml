@@ -4,9 +4,19 @@
         <link>https://blog.xieydd.top/en/</link>
         <description>远东的小猪窝</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</lastBuildDate>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</lastBuildDate>
             <atom:link href="https://blog.xieydd.top/en/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>PostgreSQL High Availability</title>
+    <link>https://blog.xieydd.top/en/postgres-ha/</link>
+    <pubDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</pubDate>
+    <author>xieydd</author>
+    <guid>https://blog.xieydd.top/en/postgres-ha/</guid>
+    <description><![CDATA[I've been researching PostgreSQL high availability solutions recently, and here's what I've learned.
+PostgreSQL High Availability High Availability Goals PostgreSQL high availability typically has two main objectives:
+ RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again.]]></description>
+</item>
+<item>
     <title>The Ins and Outs of Vector Databases</title>
     <link>https://blog.xieydd.top/en/vector-search/</link>
     <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
