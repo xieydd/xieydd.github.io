@@ -25,6 +25,8 @@ sequenceDiagram
     Note right of containerd: 1. Pull Image <br>2. Start Container<br>3. Download model
 ```
 
+![alt text](image-1.png)
+
 The entire process chain is very long, but the real time-consuming part is the process of pulling the image and starting the container by Containerd at the end. We further break down this part, and the time for each stage here is roughly from reference 1:
 
 ```mermaid
@@ -40,6 +42,8 @@ flowchart TD
     1A[HPA reaction 10s] --> 1B[Auto Provisioning reaction 30s] --> 1C[Node auto-scaling 35s]
     end
 ```
+
+![alt text](image-2.png)
 
 If it is a 30G image (not uncommon in AI inference scenarios), the pull time will exceed 15 minutes, which is unacceptable for users.
 
