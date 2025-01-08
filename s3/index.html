@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/s3/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2024-09-13T21:40:10+00:00" />
-<meta property="article:modified_time" content="2025-01-07T13:19:10+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-01-08T16:33:48+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/s3\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Cloud, AWS, S3, Storage, System Design","wordcount":  224 ,
-        "url": "https:\/\/blog.xieydd.top\/s3\/","datePublished": "2024-09-13T21:40:10+00:00","dateModified": "2025-01-07T13:19:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Cloud, AWS, S3, Storage, System Design","wordcount":  412 ,
+        "url": "https:\/\/blog.xieydd.top\/s3\/","datePublished": "2024-09-13T21:40:10+00:00","dateModified": "2025-01-08T16:33:48+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,7 +129,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">S3</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/cloud/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Cloud</a>&nbsp;<a href="/categories/storage/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Storage</a>&nbsp;<a href="/categories/system-design/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>System Design</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-09-13">2024-09-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 224 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-09-13">2024-09-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 412 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 1 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -141,7 +141,8 @@
     <li>
       <ul>
         <li><a href="#ap-场景下-s3-的最佳实践">AP 场景下 S3 的最佳实践</a></li>
-        <li><a href="#如何利用好-s3-express">如何利用好 S3 Express</a></li>
+        <li><a href="#s3-express-one-zone">S3 Express One Zone</a></li>
+        <li><a href="#如何利用好-s3-express-one-zone">如何利用好 S3 Express One Zone</a></li>
       </ul>
     </li>
   </ul>
@@ -158,20 +159,26 @@ guarantees while being the cheapest storage option</li>
 <li>最佳请求大小：OLAP 中 8~16MiB 最佳 <code>requests=throughput*(baseLatency+size*dataLatency)/size</code></li>
 <li>对于 S3，饱和 100 Gibt/s 实例的最佳请求并发度为 ∼200–250, base latency 30 ms, data latency 20 ms/MiB</li>
 </ul>
-<h3 id="如何利用好-s3-express">如何利用好 S3 Express</h3>
-<p>来源<a href="https://optiowl.cloud/blog/ultimate-guide-to-s3-express-one-zone-costs" target="_blank" rel="noopener noreffer ">博客</a></p>
-<p>Key Points:</p>
-<ul>
-<li>block size 为 512kb 最经济,超过 50MB 的 512KB 块存储文件没有成本优势，因为延迟达到s3 且价格无优势</li>
-<li>在缓存角度如果 item size &gt;8kb 完全可以替换 dynamodb 这类 key value NOSql 数据库</li>
-<li>s3 express 存储是 s3 standard 的7倍</li>
-</ul>
+<h3 id="s3-express-one-zone">S3 Express One Zone</h3>
+<h3 id="如何利用好-s3-express-one-zone">如何利用好 S3 Express One Zone</h3>
+<p>结合<a href="https://news.ycombinator.com/item?id=38449827" target="_blank" rel="noopener noreffer ">HackNews</a>，<a href="https://optiowl.cloud/blog/ultimate-guide-to-s3-express-one-zone-costs" target="_blank" rel="noopener noreffer ">博客</a> 以及文章<a href="https://www.warpstream.com/blog/s3-express-is-all-you-need" target="_blank" rel="noopener noreffer ">S3 Express is All You Need</a>， 我们得出以下结论：</p>
+<ol>
+<li>S3 Express One Zone 比 S3 Standard 的存储价格高7倍，不适合数据湖场景下的“主存储”。</li>
+<li>对于 512KiB 的对象进行 PUT， GET 操作是最省成本的</li>
+<li>超过 50MB 的 512KB 块存储文件没有成本优势，因为延迟达到 S3 Standard 且价格无优势</li>
+<li>One Zone 意味着如果希望数据可以跨 zone 高可用，需要跨 zone 复制，传输有一定的成本</li>
+<li>Express 也不适合压缩层，因为压缩前对象大概率不会是 512KB 以下</li>
+<li>作为 Standard 上的缓存层，当对象小于 645KB 是有性能收益的，但是如果超过那你就需要考虑成本和性能的权衡了</li>
+<li>完全可以作为像 dynamodb 这类 key value NOSql 数据库的缓存层</li>
+<li>不支持 s3 lifecycle policy</li>
+<li>20ms 的延迟，可以作为 replication layer</li>
+</ol>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-01-07&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/c890e2f8ecabeddd2e794acb9fd9157bf66225b3" target="_blank" title="commit by xieydd(xieydd@gmail.com) c890e2f8ecabeddd2e794acb9fd9157bf66225b3: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>c890e2f</a></span>
+                <span>更新于 2025-01-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/ea86c2e4812446b01a1e5250c62a32c77a2d83dc" target="_blank" title="commit by xieydd(xieydd@gmail.com) ea86c2e4812446b01a1e5250c62a32c77a2d83dc: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>ea86c2e</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
