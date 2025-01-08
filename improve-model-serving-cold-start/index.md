@@ -10,40 +10,53 @@
 
 首先我们看下 Serverless 模型推理，从用户请求到模型推理的过程：
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Cloudflare 
-    participant Ingress 
-    participant AutoScaler 
-    participant Node
-    participant containerd
-    User->>Cloudflare: Model Call
-    Cloudflare->>Ingress: Request
-    Ingress->>AutoScaler: Request
-    AutoScaler->>Node: Scale Up
-    Node->>containerd: Container
-    Note right of containerd: 1. Pull Image <br>2. Start Container<br>3. Download model
-```
-![alt text](image-1.png)
+<details>
+  <summary>Click me</summary>
+  
+  ```mermaid 
+  sequenceDiagram
+      participant User
+      participant Cloudflare 
+      participant Ingress 
+      participant AutoScaler 
+      participant Node
+      participant containerd
+      User->>Cloudflare: Model Call
+      Cloudflare->>Ingress: Request
+      Ingress->>AutoScaler: Request
+      AutoScaler->>Node: Scale Up
+      Node->>containerd: Container
+      Note right of containerd: 1. Pull Image <br>2. Start Container<br>3. Download model
+  ```
+</details>
+
+<div align="center">
+  <img src="image-1.png" alt="image 1" />
+</div>
 
 整个流程的链路很长，但是真正耗时的地方在最后 Containerd 拉取镜像和启动容器的过程。我们将这个部分进一步细化,这里的每个阶段的时间大致来自于引用1：
 
-```mermaid
-flowchart TD
-    subgraph Pod Create
-    3A[Pull Image 3.5GB 140s] --> 3B[Download Model]
-    end
-    subgraph GPU Node Provision
-    2A[VM Create 40s] --> 2B[Node Initialize 45s]
-    2B --> 2C[GPU Driver Install 25s]
-    end
-    subgraph AutoScaler
-    1A[HPA reaction 10s] --> 1B[Auto Provisioning reaction 30s] --> 1C[Node auto-scaling 35s]
-    end
-```
+<details>
+  <summary>Click me</summary>
+  
+  ```mermaid
+  flowchart TD
+      subgraph Pod Create
+      3A[Pull Image 3.5GB 140s] --> 3B[Download Model]
+      end
+      subgraph GPU Node Provision
+      2A[VM Create 40s] --> 2B[Node Initialize 45s]
+      2B --> 2C[GPU Driver Install 25s]
+      end
+      subgraph AutoScaler
+      1A[HPA reaction 10s] --> 1B[Auto Provisioning reaction 30s] --> 1C[Node auto-scaling 35s]
+      end
+  ```
+</details>
 
-![alt text](image-2.png)
+<div align="center">
+  <img src="image-2.png" alt="image 2" />
+</div>
 
 如果是 30G（在 AI 推理场景并不稀有） 的镜像，那么拉取时间将超过 15min, 这个时间对于用户来说是不可接受的。
 

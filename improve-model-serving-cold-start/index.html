@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/improve-model-serving-cold-start/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2025-01-08T16:37:10+08:00" />
-<meta property="article:modified_time" content="2025-01-08T23:51:22+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-01-09T00:01:01+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/improve-model-serving-cold-start\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "serving, cold start, inference","wordcount":  1440 ,
-        "url": "https:\/\/blog.xieydd.top\/improve-model-serving-cold-start\/","datePublished": "2025-01-08T16:37:10+08:00","dateModified": "2025-01-08T23:51:22+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "serving, cold start, inference","wordcount":  1444 ,
+        "url": "https:\/\/blog.xieydd.top\/improve-model-serving-cold-start\/","datePublished": "2025-01-08T16:37:10+08:00","dateModified": "2025-01-09T00:01:01+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,7 +129,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">优化模型推理的冷启动</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/serverless/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serverless</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-08">2025-01-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1440 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-08">2025-01-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1444 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -161,6 +161,8 @@
 <h1 id="优化模型推理的冷启动">优化模型推理的冷启动</h1>
 <h2 id="问题">问题</h2>
 <p>首先我们看下 Serverless 模型推理，从用户请求到模型推理的过程：</p>
+<details>
+  <summary>Click me</summary>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -193,15 +195,13 @@
     Note right of containerd: 1. Pull Image &lt;br&gt;2. Start Container&lt;br&gt;3. Download model
 </code></pre></td></tr></table>
 </div>
-</div><p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/improve-model-serving-cold-start/image-1.png"
-        data-srcset="/improve-model-serving-cold-start/image-1.png, /improve-model-serving-cold-start/image-1.png 1.5x, /improve-model-serving-cold-start/image-1.png 2x"
-        data-sizes="auto"
-        alt="/improve-model-serving-cold-start/image-1.png"
-        title="alt text" width="1424" height="577" /></p>
+</div></details>
+<div align="center">
+  <img src="image-1.png" alt="image 1" />
+</div>
 <p>整个流程的链路很长，但是真正耗时的地方在最后 Containerd 拉取镜像和启动容器的过程。我们将这个部分进一步细化,这里的每个阶段的时间大致来自于引用1：</p>
+<details>
+  <summary>Click me</summary>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -230,14 +230,10 @@
     end
 </code></pre></td></tr></table>
 </div>
-</div><p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/improve-model-serving-cold-start/image-2.png"
-        data-srcset="/improve-model-serving-cold-start/image-2.png, /improve-model-serving-cold-start/image-2.png 1.5x, /improve-model-serving-cold-start/image-2.png 2x"
-        data-sizes="auto"
-        alt="/improve-model-serving-cold-start/image-2.png"
-        title="alt text" width="1208" height="501" /></p>
+</div></details>
+<div align="center">
+  <img src="image-2.png" alt="image 2" />
+</div>
 <p>如果是 30G（在 AI 推理场景并不稀有） 的镜像，那么拉取时间将超过 15min, 这个时间对于用户来说是不可接受的。</p>
 <p>而模型下载取决于模型的大小以及模型是否已经存在于 Pod 中，这个时间也是不可控的，但是后文我们也会针对性的提出优化方案。</p>
 <h2 id="deep-dive">Deep Dive</h2>
@@ -318,8 +314,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-01-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/6334e93efe5870d2ea4c60b5c2aab43963f7153b" target="_blank" title="commit by xieydd(xieydd@gmail.com) 6334e93efe5870d2ea4c60b5c2aab43963f7153b: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>6334e93</a></span>
+                <span>更新于 2025-01-09&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/4d79d2a1a651f868c539459fbbe894d01d87ba19" target="_blank" title="commit by xieydd(xieydd@gmail.com) 4d79d2a1a651f868c539459fbbe894d01d87ba19: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>4d79d2a</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

@@ -9,41 +9,53 @@ Previously, while working on Serverless model inference [Modelz](https://modelz.
 
 First, let's look at the process of Serverless model inference, from user request to model inference:
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Cloudflare 
-    participant Ingress 
-    participant AutoScaler 
-    participant Node
-    participant containerd
-    User->>Cloudflare: Model Call
-    Cloudflare->>Ingress: Request
-    Ingress->>AutoScaler: Request
-    AutoScaler->>Node: Scale Up
-    Node->>containerd: Container
-    Note right of containerd: 1. Pull Image <br>2. Start Container<br>3. Download model
-```
+<details>
+  <summary>Click me</summary>
+  
+  ```mermaid 
+  sequenceDiagram
+      participant User
+      participant Cloudflare 
+      participant Ingress 
+      participant AutoScaler 
+      participant Node
+      participant containerd
+      User->>Cloudflare: Model Call
+      Cloudflare->>Ingress: Request
+      Ingress->>AutoScaler: Request
+      AutoScaler->>Node: Scale Up
+      Node->>containerd: Container
+      Note right of containerd: 1. Pull Image <br>2. Start Container<br>3. Download model
+  ```
+</details>
 
-![alt text](image-1.png)
+<div align="center">
+  <img src="image-1.png" alt="image 1" />
+</div>
 
 The entire process chain is very long, but the real time-consuming part is the process of pulling the image and starting the container by Containerd at the end. We further break down this part, and the time for each stage here is roughly from reference 1:
 
-```mermaid
-flowchart TD
-    subgraph Pod Create
-    3A[Pull Image 3.5GB 140s] --> 3B[Download Model]
-    end
-    subgraph GPU Node Provision
-    2A[VM Create 40s] --> 2B[Node Initialize 45s]
-    2B --> 2C[GPU Driver Install 25s]
-    end
-    subgraph AutoScaler
-    1A[HPA reaction 10s] --> 1B[Auto Provisioning reaction 30s] --> 1C[Node auto-scaling 35s]
-    end
-```
+<details>
+  <summary>Click me</summary>
+  
+  ```mermaid
+  flowchart TD
+      subgraph Pod Create
+      3A[Pull Image 3.5GB 140s] --> 3B[Download Model]
+      end
+      subgraph GPU Node Provision
+      2A[VM Create 40s] --> 2B[Node Initialize 45s]
+      2B --> 2C[GPU Driver Install 25s]
+      end
+      subgraph AutoScaler
+      1A[HPA reaction 10s] --> 1B[Auto Provisioning reaction 30s] --> 1C[Node auto-scaling 35s]
+      end
+  ```
+</details>
 
-![alt text](image-2.png)
+<div align="center">
+  <img src="image-2.png" alt="image 2" />
+</div>
 
 If it is a 30G image (not uncommon in AI inference scenarios), the pull time will exceed 15 minutes, which is unacceptable for users.
 

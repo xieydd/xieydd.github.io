@@ -12,7 +12,7 @@
     <guid>https://blog.xieydd.top/en/improve-model-serving-cold-start/</guid>
     <description><![CDATA[Previously, while working on Serverless model inference Modelz, although we have pivoted now, I still want to share how to optimize the cold start problem of model inference. Since our service is based on container orchestration, it also involves the cold start problem of containers.
 Optimizing Model Inference Cold Start Problem First, let's look at the process of Serverless model inference, from user request to model inference:
-1 2 3 4 5 6 7 8 9 10 11 12 13  sequenceDiagram participant User participant Cloudflare participant Ingress participant AutoScaler participant Node participant containerd User-&gt;&gt;Cloudflare: Model Call Cloudflare-&gt;&gt;Ingress: Request Ingress-&gt;&gt;AutoScaler: Request AutoScaler-&gt;&gt;Node: Scale Up Node-&gt;&gt;containerd: Container Note right of containerd: 1.]]></description>
+ Click me 1 2 3 4 5 6 7 8 9 10 11 12 13  sequenceDiagram participant User participant Cloudflare participant Ingress participant AutoScaler participant Node participant containerd User-&gt;&gt;Cloudflare: Model Call Cloudflare-&gt;&gt;Ingress: Request Ingress-&gt;&gt;AutoScaler: Request AutoScaler-&gt;&gt;Node: Scale Up Node-&gt;&gt;containerd: Container Note right of containerd: 1.]]></description>
 </item>
 </channel>
 </rss>
