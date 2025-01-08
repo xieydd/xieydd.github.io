@@ -25,6 +25,7 @@ sequenceDiagram
     Node->>containerd: Container
     Note right of containerd: 1. Pull Image <br>2. Start Container<br>3. Download model
 ```
+![alt text](image-1.png)
 
 整个流程的链路很长，但是真正耗时的地方在最后 Containerd 拉取镜像和启动容器的过程。我们将这个部分进一步细化,这里的每个阶段的时间大致来自于引用1：
 
@@ -41,6 +42,8 @@ flowchart TD
     1A[HPA reaction 10s] --> 1B[Auto Provisioning reaction 30s] --> 1C[Node auto-scaling 35s]
     end
 ```
+
+![alt text](image-2.png)
 
 如果是 30G（在 AI 推理场景并不稀有） 的镜像，那么拉取时间将超过 15min, 这个时间对于用户来说是不可接受的。
 
