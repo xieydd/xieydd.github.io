@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/postgres-ha/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2024-07-26T12:40:32+08:00" />
-<meta property="article:modified_time" content="2025-01-09T00:01:01+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-01-10T17:04:39+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/postgres-ha\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "High Availability, Postgres","wordcount":  3113 ,
-        "url": "https:\/\/blog.xieydd.top\/postgres-ha\/","datePublished": "2024-07-26T12:40:32+08:00","dateModified": "2025-01-09T00:01:01+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "High Availability, Postgres","wordcount":  3082 ,
+        "url": "https:\/\/blog.xieydd.top\/postgres-ha\/","datePublished": "2024-07-26T12:40:32+08:00","dateModified": "2025-01-10T17:04:39+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,7 +129,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Postgres 高可用</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-26">2024-07-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3113 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-26">2024-07-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3082 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -330,39 +330,10 @@
 </ul>
 <p>在上述架构下可为跨区域灾难恢复提供最多大约 5 分钟的 RPO，如果使用同步 Streaming Replication 可以达到 0 RPO, 且具备极低的 RTO。</p>
 <h3 id="supabase-backup">Supabase Backup</h3>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;  
+<details>
+  <summary>Click me</summary>
+<pre><code>```mermaid
+graph TD;  
 A(Supabase Backup)---&gt;B(Pro);
 B(Pro)---&gt;E(Database Size 0-40GB);
 B(Pro)---&gt;F(Database Size 40GB+);
@@ -390,23 +361,16 @@ O(Database Size 0-40GB)---&gt;J(Physical Backup);
 P(Database Size 40GB+)---&gt;J(Physical Backup);
 Q(PITR)---&gt;J(Physical Backup);
 R(Read Replica)---&gt;J(Physical Backup);
-</code></pre></td></tr></table>
+```
+</code></pre>
+</details>
+<div align="center">
+  <img src="mermaid-0.png" alt="mermaid-0" />
 </div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;
+<details>
+  <summary>Click me</summary>
+<pre><code>```mermaid
+graph TD;
 A(Supabase Backup)--&gt;B(Pro);
 A(Supabase Backup)--&gt;C(Team);
 A(Supabase Backup)--&gt;D(Enterprise);
@@ -416,40 +380,44 @@ C(Team)--&gt;F(Daily Backup, Retain 2 weeks);
 F--&gt;H(pg_dumpall logical backup， when database size &gt; 40GB will use physical backup);
 D(Enterprise)--&gt;G(Daily Backup, Retain 1 month);
 D--&gt;J(physical backup);
-</code></pre></td></tr></table>
+```
+</code></pre>
+</details>
+</details>
+<div align="center">
+  <img src="mermaid-1.png" alt="mermaid-1" />
 </div>
-</div><p>用户可以访问每一天生成的 logical backup 的 sql 文件进行 restore。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;
+用户可以访问每一天生成的 logical backup 的 sql 文件进行 restore。
+<details>
+  <summary>Click me</summary>
+<pre><code>```mermaid
+graph LR;
 A(Supabase PITR)--&gt;B(WAL-G, archiving Write Ahead Log files, default 2 min or certain file size threshold and physical backups);
 B--&gt;C(2 minutes RPO);
 C--&gt;D(show database restore available from and latest restore available at);
-</code></pre></td></tr></table>
+```
+</code></pre>
+</details>
+</details>
+<div align="center">
+  <img src="mermaid-2.png" alt="mermaid-2" />
 </div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">graph TD;
+<details>
+  <summary>Click me</summary>
+<pre><code>```mermaid
+graph LR;
 A(PGVecto.rs Cloud PITR)--&gt;B(barman-cloud-wal-archive archiving Write Ahead Log files, default 5 min or certain file size threshold and barman-cloud-backup for physical backups);
 B--&gt;C(5 minutes RPO);
 C--&gt;D(show database restore available from and latest restore available at);
 D--&gt;E(delete cluster will delete all wal and physical backups);
-</code></pre></td></tr></table>
+```
+</code></pre>
+</details>
+</details>
+<div align="center">
+  <img src="mermaid-3.png" alt="mermaid-3" />
 </div>
-</div><h2 id="引用">引用</h2>
+<h2 id="引用">引用</h2>
 <ul>
 <li><a href="https://pigsty.io/">https://pigsty.io/</a></li>
 <li><a href="https://cloudnative-pg.io/">https://cloudnative-pg.io/</a></li>
@@ -462,8 +430,8 @@ D--&gt;E(delete cluster will delete all wal and physical backups);
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-01-09&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/4d79d2a1a651f868c539459fbbe894d01d87ba19" target="_blank" title="commit by xieydd(xieydd@gmail.com) 4d79d2a1a651f868c539459fbbe894d01d87ba19: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>4d79d2a</a></span>
+                <span>更新于 2025-01-10&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/0600a3521de3dca4b971d19916c964a88f44e802" target="_blank" title="commit by xieydd(xieydd@gmail.com) 0600a3521de3dca4b971d19916c964a88f44e802: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>0600a35</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

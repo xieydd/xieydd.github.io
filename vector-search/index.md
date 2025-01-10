@@ -48,7 +48,6 @@ for sentence, embedding in zip(sentences, embeddings):
 #### 3.1.2 图像检索
 
 [immich](https://github.com/immich-app/immich) 是一个高性能的开源 self-hosted 图像以及视频管理解决方案。试想当你把你所有的视频和图片都上传到 immich 之后，你很难在很短的时间内找到你想要的图片或者视频。这个时候就需要一个高效的图像检索系统 [smart search](https://immich.app/docs/features/smart-search)，通过向量搜索技术，你可以通过文本描述以及额外的过滤器（标签，日期等）来快速精准的找到你想要的图片或者视频。
-
 <div align="center">
   <img src="https://immich.app/assets/images/advanced-search-filters-1d755f0d492deb304a7bb924e5f4f046.webp" alt="image tag filter search" />
 </div>
@@ -286,7 +285,8 @@ DiskANN 的优势在于可以在很小的内存占用下配合 SSD 达到不错�
 #### 3.4.1 PQ（Product Quantization）
 
 这里借用知乎网友的一张图，没办法，网友的图画的太好了：
-![](https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg)
+![](v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg)
+
 构建阶段：
 1. 首先将N个原始向量，各自切分为多个子向量。比如256维向量，切分为8个32维子向量
 2. 然后在每个子向量空间内进行聚类，可以采用KMeans等聚类算法。假设每个子空间有1024个聚类，对每个聚类中心编码，得到1024个ID

@@ -143,68 +143,99 @@ Patroni 的 maximum_lag_on_failover 和 pg 的 wal_segsize 的大小，需在可
 
 ### Supabase Backup
 
-```mermaid
-graph TD;  
-A(Supabase Backup)--->B(Pro);
-B(Pro)--->E(Database Size 0-40GB);
-B(Pro)--->F(Database Size 40GB+);
-B(Pro)--->G(PITR);
-B(Pro)--->H(Read Replica);
-E(Database Size 0-40GB)--->I(Logical Backup);
-F(Database Size 40GB+)--->J(Physical Backup);
-G(PITR)--->J(Physical Backup);
-H(Read Replica)--->J(Physical Backup);
-A(Supabase Backup)--->C(Team);
-C(Team)--->K(Database Size 0-40GB);
-C(Team)--->L(Database Size 40GB+);
-C(Team)--->M(PITR);
-C(Team)--->N(Read Replica);
-K(Database Size 0-40GB)--->I(Logical Backup);
-L(Database Size 40GB+)--->J(Physical Backup);
-M(PITR)--->J(Physical Backup);
-N(Read Replica)--->J(Physical Backup);
-A(Supabase Backup)--->D(Enterprise);
-D(Enterprise)--->O(Database Size 0-40GB);
-D(Enterprise)--->P(Database Size 40GB+);
-D(Enterprise)--->Q(PITR);
-D(Enterprise)--->R(Read Replica);
-O(Database Size 0-40GB)--->J(Physical Backup);
-P(Database Size 40GB+)--->J(Physical Backup);
-Q(PITR)--->J(Physical Backup);
-R(Read Replica)--->J(Physical Backup);
-```
+<details>
+  <summary>Click me</summary>
 
-```mermaid
-graph TD;
-A(Supabase Backup)-->B(Pro);
-A(Supabase Backup)-->C(Team);
-A(Supabase Backup)-->D(Enterprise);
-B(Pro)-->E(Daily Backup, Retain 7 days);
-E-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
-C(Team)-->F(Daily Backup, Retain 2 weeks);
-F-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
-D(Enterprise)-->G(Daily Backup, Retain 1 month);
-D-->J(physical backup);
-```
+    ```mermaid
+    graph TD;  
+    A(Supabase Backup)--->B(Pro);
+    B(Pro)--->E(Database Size 0-40GB);
+    B(Pro)--->F(Database Size 40GB+);
+    B(Pro)--->G(PITR);
+    B(Pro)--->H(Read Replica);
+    E(Database Size 0-40GB)--->I(Logical Backup);
+    F(Database Size 40GB+)--->J(Physical Backup);
+    G(PITR)--->J(Physical Backup);
+    H(Read Replica)--->J(Physical Backup);
+    A(Supabase Backup)--->C(Team);
+    C(Team)--->K(Database Size 0-40GB);
+    C(Team)--->L(Database Size 40GB+);
+    C(Team)--->M(PITR);
+    C(Team)--->N(Read Replica);
+    K(Database Size 0-40GB)--->I(Logical Backup);
+    L(Database Size 40GB+)--->J(Physical Backup);
+    M(PITR)--->J(Physical Backup);
+    N(Read Replica)--->J(Physical Backup);
+    A(Supabase Backup)--->D(Enterprise);
+    D(Enterprise)--->O(Database Size 0-40GB);
+    D(Enterprise)--->P(Database Size 40GB+);
+    D(Enterprise)--->Q(PITR);
+    D(Enterprise)--->R(Read Replica);
+    O(Database Size 0-40GB)--->J(Physical Backup);
+    P(Database Size 40GB+)--->J(Physical Backup);
+    Q(PITR)--->J(Physical Backup);
+    R(Read Replica)--->J(Physical Backup);
+    ```
+</details>
+<div align="center">
+  <img src="mermaid-0.png" alt="mermaid-0" />
+</div>
 
+<details>
+  <summary>Click me</summary>
+
+    ```mermaid
+    graph TD;
+    A(Supabase Backup)-->B(Pro);
+    A(Supabase Backup)-->C(Team);
+    A(Supabase Backup)-->D(Enterprise);
+    B(Pro)-->E(Daily Backup, Retain 7 days);
+    E-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
+    C(Team)-->F(Daily Backup, Retain 2 weeks);
+    F-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
+    D(Enterprise)-->G(Daily Backup, Retain 1 month);
+    D-->J(physical backup);
+    ```
+</details>
+
+</details>
+<div align="center">
+  <img src="mermaid-1.png" alt="mermaid-1" />
+</div>
 用户可以访问每一天生成的 logical backup 的 sql 文件进行 restore。
 
-```mermaid
-graph TD;
-A(Supabase PITR)-->B(WAL-G, archiving Write Ahead Log files, default 2 min or certain file size threshold and physical backups);
-B-->C(2 minutes RPO);
-C-->D(show database restore available from and latest restore available at);
-```
+<details>
+  <summary>Click me</summary>
 
+    ```mermaid
+    graph LR;
+    A(Supabase PITR)-->B(WAL-G, archiving Write Ahead Log files, default 2 min or certain file size threshold and physical backups);
+    B-->C(2 minutes RPO);
+    C-->D(show database restore available from and latest restore available at);
+    ```
+</details>
 
-```mermaid
-graph TD;
-A(PGVecto.rs Cloud PITR)-->B(barman-cloud-wal-archive archiving Write Ahead Log files, default 5 min or certain file size threshold and barman-cloud-backup for physical backups);
-B-->C(5 minutes RPO);
-C-->D(show database restore available from and latest restore available at);
-D-->E(delete cluster will delete all wal and physical backups);
-```
+</details>
+<div align="center">
+  <img src="mermaid-2.png" alt="mermaid-2" />
+</div>
 
+<details>
+  <summary>Click me</summary>
+
+    ```mermaid
+    graph LR;
+    A(PGVecto.rs Cloud PITR)-->B(barman-cloud-wal-archive archiving Write Ahead Log files, default 5 min or certain file size threshold and barman-cloud-backup for physical backups);
+    B-->C(5 minutes RPO);
+    C-->D(show database restore available from and latest restore available at);
+    D-->E(delete cluster will delete all wal and physical backups);
+    ```
+</details>
+
+</details>
+<div align="center">
+  <img src="mermaid-3.png" alt="mermaid-3" />
+</div>
 
 ## 引用
 - https://pigsty.io/

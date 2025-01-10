@@ -142,66 +142,100 @@ Under this architecture, cross-region disaster recovery provides approximately 5
 
 ### Supabase Backup
 
-```mermaid
-graph TD;  
-A(Supabase Backup)--->B(Pro);
-B(Pro)--->E(Database Size 0-40GB);
-B(Pro)--->F(Database Size 40GB+);
-B(Pro)--->G(PITR);
-B(Pro)--->H(Read Replica);
-E(Database Size 0-40GB)--->I(Logical Backup);
-F(Database Size 40GB+)--->J(Physical Backup);
-G(PITR)--->J(Physical Backup);
-H(Read Replica)--->J(Physical Backup);
-A(Supabase Backup)--->C(Team);
-C(Team)--->K(Database Size 0-40GB);
-C(Team)--->L(Database Size 40GB+);
-C(Team)--->M(PITR);
-C(Team)--->N(Read Replica);
-K(Database Size 0-40GB)--->I(Logical Backup);
-L(Database Size 40GB+)--->J(Physical Backup);
-M(PITR)--->J(Physical Backup);
-N(Read Replica)--->J(Physical Backup);
-A(Supabase Backup)--->D(Enterprise);
-D(Enterprise)--->O(Database Size 0-40GB);
-D(Enterprise)--->P(Database Size 40GB+);
-D(Enterprise)--->Q(PITR);
-D(Enterprise)--->R(Read Replica);
-O(Database Size 0-40GB)--->J(Physical Backup);
-P(Database Size 40GB+)--->J(Physical Backup);
-Q(PITR)--->J(Physical Backup);
-R(Read Replica)--->J(Physical Backup);
-```
+<details>
+  <summary>Click me</summary>
 
-```mermaid
-graph TD;
-A(Supabase Backup)-->B(Pro);
-A(Supabase Backup)-->C(Team);
-A(Supabase Backup)-->D(Enterprise);
-B(Pro)-->E(Daily Backup, Retain 7 days);
-E-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
-C(Team)-->F(Daily Backup, Retain 2 weeks);
-F-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
-D(Enterprise)-->G(Daily Backup, Retain 1 month);
-D-->J(physical backup);
-```
+    ```mermaid
+    graph TD;  
+    A(Supabase Backup)--->B(Pro);
+    B(Pro)--->E(Database Size 0-40GB);
+    B(Pro)--->F(Database Size 40GB+);
+    B(Pro)--->G(PITR);
+    B(Pro)--->H(Read Replica);
+    E(Database Size 0-40GB)--->I(Logical Backup);
+    F(Database Size 40GB+)--->J(Physical Backup);
+    G(PITR)--->J(Physical Backup);
+    H(Read Replica)--->J(Physical Backup);
+    A(Supabase Backup)--->C(Team);
+    C(Team)--->K(Database Size 0-40GB);
+    C(Team)--->L(Database Size 40GB+);
+    C(Team)--->M(PITR);
+    C(Team)--->N(Read Replica);
+    K(Database Size 0-40GB)--->I(Logical Backup);
+    L(Database Size 40GB+)--->J(Physical Backup);
+    M(PITR)--->J(Physical Backup);
+    N(Read Replica)--->J(Physical Backup);
+    A(Supabase Backup)--->D(Enterprise);
+    D(Enterprise)--->O(Database Size 0-40GB);
+    D(Enterprise)--->P(Database Size 40GB+);
+    D(Enterprise)--->Q(PITR);
+    D(Enterprise)--->R(Read Replica);
+    O(Database Size 0-40GB)--->J(Physical Backup);
+    P(Database Size 40GB+)--->J(Physical Backup);
+    Q(PITR)--->J(Physical Backup);
+    R(Read Replica)--->J(Physical Backup);
+    ```
+</details>
+<div align="center">
+  <img src="mermaid-0.png" alt="mermaid-0" />
+</div>
+
+<details>
+  <summary>Click me</summary>
+
+    ```mermaid
+    graph TD;
+    A(Supabase Backup)-->B(Pro);
+    A(Supabase Backup)-->C(Team);
+    A(Supabase Backup)-->D(Enterprise);
+    B(Pro)-->E(Daily Backup, Retain 7 days);
+    E-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
+    C(Team)-->F(Daily Backup, Retain 2 weeks);
+    F-->H(pg_dumpall logical backup， when database size > 40GB will use physical backup);
+    D(Enterprise)-->G(Daily Backup, Retain 1 month);
+    D-->J(physical backup);
+    ```
+</details>
+
+</details>
+<div align="center">
+  <img src="mermaid-1.png" alt="mermaid-1" />
+</div>
 
 Users can access the daily generated logical backup SQL files for restore.
 
-```mermaid
-graph TD;
-A(Supabase PITR)-->B(WAL-G, archiving Write Ahead Log files, default 2 min or certain file size threshold and physical backups);
-B-->C(2 minutes RPO);
-C-->D(show database restore available from and latest restore available at);
-```
+<details>
+  <summary>Click me</summary>
 
-```mermaid
-graph TD;
-A(PGVecto.rs Cloud PITR)-->B(barman-cloud-wal-archive archiving Write Ahead Log files, default 5 min or certain file size threshold and barman-cloud-backup for physical backups);
-B-->C(5 minutes RPO);
-C-->D(show database restore available from and latest restore available at);
-D-->E(delete cluster will delete all wal and physical backups);
-```
+    ```mermaid
+    graph LR;
+    A(Supabase PITR)-->B(WAL-G, archiving Write Ahead Log files, default 2 min or certain file size threshold and physical backups);
+    B-->C(2 minutes RPO);
+    C-->D(show database restore available from and latest restore available at);
+    ```
+</details>
+
+</details>
+<div align="center">
+  <img src="mermaid-2.png" alt="mermaid-2" />
+</div>
+
+<details>
+  <summary>Click me</summary>
+
+    ```mermaid
+    graph LR;
+    A(PGVecto.rs Cloud PITR)-->B(barman-cloud-wal-archive archiving Write Ahead Log files, default 5 min or certain file size threshold and barman-cloud-backup for physical backups);
+    B-->C(5 minutes RPO);
+    C-->D(show database restore available from and latest restore available at);
+    D-->E(delete cluster will delete all wal and physical backups);
+    ```
+</details>
+
+</details>
+<div align="center">
+  <img src="mermaid-3.png" alt="mermaid-3" />
+</div>
 
 ## References
 - https://pigsty.io/

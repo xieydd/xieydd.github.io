@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>llm - 标签 - Xieydd&#39;s Blog</title>
+        <link>https://blog.xieydd.top/tags/llm/</link>
+        <description>llm - 标签 - Xieydd&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 09 Jan 2025 10:20:28 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/llm/" rel="self" type="application/rss+xml" /><item>
+    <title>LLM Infra 你需要知道的一切</title>
+    <link>https://blog.xieydd.top/llm-infra/</link>
+    <pubDate>Thu, 09 Jan 2025 10:20:28 &#43;0800</pubDate>
+    <author>xieydd</author>
+    <guid>https://blog.xieydd.top/llm-infra/</guid>
+    <description><![CDATA[LLM Infra 你需要知道的一切 GPT 3 GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给]]></description>
+</item>
+</channel>
+</rss>

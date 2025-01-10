@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/en/vector-search/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
-<meta property="article:modified_time" content="2025-01-09T00:01:01+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-01-10T17:04:39+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -31,7 +31,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/en\/vector-search\/"
         },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  5149 ,
-        "url": "https:\/\/blog.xieydd.top\/en\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-01-09T00:01:01+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/blog.xieydd.top\/en\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-01-10T17:04:39+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -430,7 +430,6 @@
 <p>Skip List is an efficient data structure that can find the vector most similar to a given query vector in O(log(n)) time complexity. The core idea of Skip List is to build a multi-layer linked list, where each layer is an ordered linked list. By searching for the nearest nodes in each layer and then searching for the nearest nodes in the next layer, the vector most similar to the given query vector is finally found.</p>
 <div align="center">
   <img src="https://pic1.zhimg.com/80/v2-714a3944759f3c85e7eb0d8a50c29b70_720w.webp" alt="skiplist" />
-</div>
 <p>Here are a few points to note about HNSW:</p>
 <ol>
 <li>Note that the maximum number of connections per layer Max needs to be controlled. When randomly inserting nodes (the lower the layer, the greater the probability), if the number of connections of neighbor node N is greater than Max, perform a KNN search on N and re-establish connections with new neighbors.</li>
@@ -508,11 +507,11 @@
 <img
         class="lazyload"
         src="/svg/loading.min.svg"
-        data-src="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
-        data-srcset="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg, https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 1.5x, https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 2x"
+        data-src="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
+        data-srcset="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg, /en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 1.5x, /en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 2x"
         data-sizes="auto"
-        alt="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
-        title="https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" />
+        alt="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
+        title="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" width="600" height="196" />
 Construction phase:</p>
 <ol>
 <li>First, split N original vectors into multiple sub-vectors. For example, a 256-dimensional vector is split into 8 32-dimensional sub-vectors.</li>
@@ -620,8 +619,8 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>Updated on 2025-01-09&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/4d79d2a1a651f868c539459fbbe894d01d87ba19" target="_blank" title="commit by xieydd(xieydd@gmail.com) 4d79d2a1a651f868c539459fbbe894d01d87ba19: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>4d79d2a</a></span>
+                <span>Updated on 2025-01-10&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/0600a3521de3dca4b971d19916c964a88f44e802" target="_blank" title="commit by xieydd(xieydd@gmail.com) 0600a3521de3dca4b971d19916c964a88f44e802: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>0600a35</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

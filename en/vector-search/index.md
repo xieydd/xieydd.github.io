@@ -209,7 +209,6 @@ The search process of NSW is as follows, here I borrow a diagram from Zhihu user
 Skip List is an efficient data structure that can find the vector most similar to a given query vector in O(log(n)) time complexity. The core idea of Skip List is to build a multi-layer linked list, where each layer is an ordered linked list. By searching for the nearest nodes in each layer and then searching for the nearest nodes in the next layer, the vector most similar to the given query vector is finally found.
 <div align="center">
   <img src="https://pic1.zhimg.com/80/v2-714a3944759f3c85e7eb0d8a50c29b70_720w.webp" alt="skiplist" />
-</div>
 
 Here are a few points to note about HNSW:
 1. Note that the maximum number of connections per layer Max needs to be controlled. When randomly inserting nodes (the lower the layer, the greater the probability), if the number of connections of neighbor node N is greater than Max, perform a KNN search on N and re-establish connections with new neighbors.
@@ -278,7 +277,7 @@ By reducing the size of vectors or reducing dimensions to make searches faster, 
 #### 3.4.1 PQ（Product Quantization）
 
 Here I borrow a diagram from a Zhihu user, as the user's diagram is very well-drawn:
-![](https://pic1.zhimg.com/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg)
+![](v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg)
 Construction phase:
 1. First, split N original vectors into multiple sub-vectors. For example, a 256-dimensional vector is split into 8 32-dimensional sub-vectors.
 2. Then perform clustering in each sub-vector space, using clustering algorithms such as KMeans. Assuming there are 1024 clusters in each subspace, encode each cluster center to get 1024 IDs.
