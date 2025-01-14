@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/llm-infra/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2025-01-09T10:20:28+08:00" />
-<meta property="article:modified_time" content="2025-01-10T17:04:39+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-01-14T22:53:08+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/llm-infra\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  2372 ,
-        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-01-10T17:04:39+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  5706 ,
+        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-01-14T22:53:08+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,8 +129,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">LLM Infra 你需要知道的一切</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/training/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>training</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2372 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5706 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 12 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -153,11 +153,21 @@
     </li>
     <li><a href="#training">Training</a>
       <ul>
+        <li><a href="#hardware">Hardware</a>
+          <ul>
+            <li><a href="#gpu">GPU</a></li>
+            <li><a href="#network">Network</a></li>
+            <li><a href="#storage-system">Storage System</a></li>
+          </ul>
+        </li>
         <li><a href="#pretraining">Pretraining</a>
           <ul>
             <li><a href="#distributed-training">Distributed Training</a>
               <ul>
                 <li><a href="#data-parallelism">Data Parallelism</a></li>
+                <li><a href="#pipeline-parallelism-model-parallelism">Pipeline Parallelism (Model Parallelism)</a></li>
+                <li><a href="#tensor-parallelism">Tensor Parallelism</a></li>
+                <li><a href="#expert-parallelism">Expert Parallelism</a></li>
               </ul>
             </li>
             <li><a href="#prepare-data">Prepare Data</a></li>
@@ -170,7 +180,6 @@
         <li><a href="#reinforcement-learning">Reinforcement Learning</a></li>
       </ul>
     </li>
-    <li><a href="#finetuning">FineTuning</a></li>
     <li><a href="#serving">Serving</a>
       <ul>
         <li><a href="#serving-pattern">Serving Pattern</a>
@@ -271,7 +280,7 @@
 <div align="center">
   <img src="unembedding2.png" alt="decoding2" />
 </div>
-<p>了解了 GPT3 的架构，我们就可以更好的理解 LLM Infra 的设计。下面我们进入如何训练大模型的话题。</p>
+<p>了解了 GPT3 的架构，我们就可以更好的理解 LLM Infra 的设计。下面我们进入如何训练大模型的话题。这里我们使用目前 SOTA 的开源模型 <a href="https://github.com/deepseek-ai/DeepSeek-V3" target="_blank" rel="noopener noreffer ">DeepSeek-V3</a> 来进行讲解。</p>
 <h2 id="training">Training</h2>
 <p>大模型训练，这里我们主要参考 Andrej Karpathy 在 2023 年 MSBuild 的分享，分为以下四个阶段：</p>
 <ol>
@@ -280,25 +289,157 @@
 <li>Reward Modeling</li>
 <li>Reforcement Learning</li>
 </ol>
+<p>在介绍这四个阶段之前，首先普及下 Hardware 的只是，因为大模型训练需要大量的计算资源，比如 GPU，此外数据的存储和网络通信都是需要考虑的。</p>
+<h3 id="hardware">Hardware</h3>
+<h4 id="gpu">GPU</h4>
+<p>一提到 GPU （Graphics Processing Unit）我们自然而然将其和 NVIDIA 挂钩，这个是有一定的道理的，因为 NVIDIA 的 GPU 在深度学习领域占有很大的市场份额。不过这个市场巨大，有 AMD 以及 Brodcom 的 Application-specific Integrated Circuits (ASICs) 芯片也在不断地吞噬市场份额。</p>
+<p>虽然 GPU 带了个 Graph，但是在 AI 中我们更多的是使用 GPGPU (General-purpose computing on graphics processing units)。如果你不了解 GPU 的术语，推荐你看看 Modal 维护的 <a href="https://modal.com/gpu-glossary" target="_blank" rel="noopener noreffer ">GPU 术语表</a>。GPU 相对于  CPU</p>
+<h4 id="network">Network</h4>
+<h4 id="storage-system">Storage System</h4>
 <h3 id="pretraining">Pretraining</h3>
 <p>Pretaining model 是大模型训练最消耗算力和数据的阶段，这个阶段的目标是让模型学习到语言的基本规律，比如语法，语义等。这个阶段的数据量很大，通常是 TB 级别的数据，通常是几周到数月。这个阶段的训练通常是无监督的，也就是说我们不需要标注数据。这个阶段的训练通常是在大规模的 GPU 集群上进行的，比如 OpenAI 的 GPT3 数千张 V100 上训练一个月天。</p>
 <p>作为最消耗计算资源的预训练，我们在这个章节来分享 LLM 训练的一些技术，比如说分布式训练并行技术，训练优化技术。</p>
+<p>目前 DeepSeek-V3 是在14.8T token 上进行训练的 MoE 架构，总参数为 671B，每个 token 激活 38B。</p>
 <h4 id="distributed-training">Distributed Training</h4>
 <p>参考 OpenAI 的文章 <a href="https://openai.com/index/techniques-for-training-large-neural-networks/" target="_blank" rel="noopener noreffer ">Techniques for training large neural networks
 </a>, 主要分为以下四个部分：</p>
 <ol>
 <li>Data Parallelism</li>
-<li>Model Parallelism</li>
 <li>Pipeline Parallelism</li>
+<li>Tensor Parallelism</li>
 <li>Expert Parallelism</li>
 </ol>
 <div align="center">
-  <img src="parallelism-b.svg" alt="parallelism-b" />
+  <img src="parallelism.png" alt="parallelism" />
 </div>
-1. 这里不同颜色的块代表模型不同的层
-2. 虚线代表分割到不同的 GPU
-3. 箭头表示
+<ol>
+<li>这里不同颜色的块代表模型不同的层</li>
+<li>虚线代表分割到不同的 GPU</li>
+<li>箭头表示模型的前向传播以及反向传播</li>
+</ol>
 <h5 id="data-parallelism">Data Parallelism</h5>
+<p>Data Parallelism 将数据分成不同的 subset, 然后分发到不同的 GPU 上。对于每一个 GPU, 模型是完整的，所以每一个 GPU 都需要存储模型完整的参数。所以当 GPU 显存无法存储模型参数时，Data Parallelism 就不适用了，不过现在有些 Offload Memory 的技术或者 KV Cache 可以缓解这个问题。</p>
+<p>正是因为每个 GPU 需要完整的参数，所以当更新的时候，需要保证工作线程（一般和 GPU 保持一致）的参数保持一致。这样在工作线程上需要引入阻塞通信：</p>
+<ol>
+<li>每个 worker 计算梯度</li>
+<li>平均每个 worker 的梯度</li>
+<li>每个 worker 更新参数</li>
+</ol>
+<p>当参数量越大，线程数越多，这个阻塞通信的开销就越大，当然可以使用异步的方式进行通信，但是这样可能会损害学习率，得不偿失，尤其对于 LLM 模型，投入资源大，不容有失。GPU 之间的通信通过 NCCL (NVIDIA Collective Communication Library) 这个库来实现。上述通信过程通常的叫法是 AllReduce 如下图所示：</p>
+<div align="center">
+  <img src="fig_1.png" alt="all reduce" />
+</div>
+<p>我们注意到如果 AllReduce 在一个单独的进程进行处理，那么这个进程需要 Gather All 以及 Scatter All, 这样单进程的通信开销和节点数以及参数量成正比。为了消除节点数以及参数量带来的阻塞等待浪费，我们可以使用 Ring AllReduce，如下图所示：</p>
+<div align="center">
+  <img src="fig_2.png" alt="ring all reduce 1" />
+</div>
+<p>首先将 N 个 worker 构建一个 ring, 每个进程将数据划分成 N 个 chunk。</p>
+<div align="center">
+  <img src="fig_3.png" alt="ring all reduce 2" />
+</div>
+<p>第 N 个 worker 将第 N 个 chunk 发送给第 worker[N+1]，同时从 worker[N-1] 接受 chunk。</p>
+<div align="center">
+  <img src="fig_4.png" alt="ring all reduce 3" />
+</div>
+<p>第 N 个 worker 将接受到的 N-1 chunk 和自己的 N-1 chunk 进行 reduce，然后发送到 worker[N+1]。</p>
+<div align="center">
+  <img src="fig_5.png" alt="ring all reduce 4" />
+</div>
+<p>重复接受，reduce，发送的过程，重复 N-1 次，这样每个 worker 获得结果的一部分。最后再进行一轮的 Send 操作而不做 reduce 操作，这样每个 worker 就获得了最终的结果。</p>
+<h5 id="pipeline-parallelism-model-parallelism">Pipeline Parallelism (Model Parallelism)</h5>
+<p>Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GPU 上。对于大模型来说，比如 LLaMA 65B, 如果参数是 FP32 那么总显存需要 260GB 但是一般训练都采用半精度也就是 FP16，那么也需要 130GB 显存，目前最前进的 H200 显存也就是 80GB。目前来自 DeepSeek 团队训练的 <a href="https://huggingface.co/deepseek-ai/DeepSeek-V3" target="_blank" rel="noopener noreffer ">DeepSeek V3</a> 已经首次在超大规模模型上验证了FP8训练的可行性和有效性。但是 DeepSeek V3 是 MOE (Mixtures of Experts) 模型，参数达到 671B, 这个我们后面再聊。</p>
+<div align="center">
+  <img src="model-parallelism.svg" alt="model-parallelism" />
+</div>
+1. 模型每一层的输入和输出都有顺序，F 代表 Forward, B 代表 Backward, U 代表 Update
+2. 每个 worker (GPU) 在同一时间只负责处理一个 stage
+3. 时间序列上，资源利用出现大量的气泡
+<p>为了优化这个问题，我们可以将刚才 ring allreduce 的思想拿过来，也就是将一个 batch 数据进行切分，将计算时间和等待时间 overlap，如下图所示：</p>
+<div align="center">
+  <img src="gpipe.svg" alt="gpipe" />
+</div>
+上图为 GPipe 的示意图，GPipe 将模型 layer 的 chunk 数据的激活值连续传递给下一个 worker，也连续进行向后传递。然后同步聚合梯度，更新参数。
+<div align="center">
+  <img src="pipedream.svg" alt="pipedream" />
+</div>
+<p>而 PipeDream 则让 worker 交替处理向前和向后传递。相对 GPiPe，PipeDream 有更好的资源利用率，但是需要更多的通信开销。</p>
+<h5 id="tensor-parallelism">Tensor Parallelism</h5>
+<p>Tensor Parallelism 将模型的 operator 分成不同的 subset, 然后分发到不同的 GPU 上, 比如说矩阵乘法。Pipeline parallelism 是将模型的层分到不同的 GPU, 而 Tensor Parallelism 是将模型层内的 operator 分到不同的 GPU。对于现代模型比如 Transformer, 将激活值和大的权重进行点积计算是计算的瓶颈。比如 <a href="https://nv-adlr.github.io/MegatronLM" target="_blank" rel="noopener noreffer ">MegatronLM</a> 在 Transformer 的Self-Attention 和 MLP 层进行了并行化矩阵乘法。<a href="https://arxiv.org/abs/2104.04473" target="_blank" rel="noopener noreffer ">PTD-P</a> 使用tensor，pipeline，以及data parallelism， pipeline scheduler 为每个设备分配多个非连续层，以网络通信为代价减少气泡开销。</p>
+<h5 id="expert-parallelism">Expert Parallelism</h5>
+<p>Mixture-of-Experts (MoE) 是一种将模型每一层的某些部分放在同一个 GPU 上执行，这意味着你可以通过门控制器控制模型中哪些部分会应用到本次输入和输出。每一组门控制的一组参数都是一个 Expert，不同的 Expert 在不同的 GPU 上。</p>
+<div align="center">
+  <img src="moe.svg" alt="moe" />
+</div>
+<p>很明显 MoE 架构可以显著的提升模型的大小，这来源于一个经验，在有限的计算资源预算下，用更少的训练步数训练一个更大的模型，往往比用更多的步数训练一个较小的模型效果更佳。特别是在预训练阶段，与稠密模型相比，混合专家模型通常能够更快地达到相同的质量水平。MoE 是基于 Transformer 架构的，由下面两个部分组成：</p>
+<ol>
+<li>稀疏 MoE 层：MoE 层有若干个专家，如下图为 8 个专家，这些专家可以是 FFN 层，也可以是 MoE 层，像俄罗斯套娃。</li>
+<li>门控网络或路由：这个路由决定 token 会被发送到哪个专家，路由器的参数会在训练中进行训练。</li>
+</ol>
+<div align="center">
+  <img src="00_switch_transformer.png" alt="moe2" />
+</div>
+<p>上面讲到 MoE 的优点，但是 MoE 也有一些缺点：</p>
+<ol>
+<li>微调过程中泛化能力不足，容易过拟合</li>
+<li>推理过程中需要加载所有的参数到内存，即使只有一个专家被激活，比如  Mixtral 8x7B ，VRAM 需要放的下 47B 的参数，这里不是 56B 是因为 MoE 只有 FFN 是独立的，其他层会共享参数。</li>
+<li>Token 被路由到不同的专家，导致批量大小分布不均，导致计算资源浪费。</li>
+</ol>
+<p>对于门控网络，除了最典型的带有 Softmax 的网络，还有其他网络，比如包括带噪声的 TopK 门控 (Noisy Top-K Gating)，引入可调节的随机噪声并保留前 k 值。</p>
+<ul>
+<li>随机噪声是为了让专家间的负载更加均衡，在训练过程中才避免只有受欢迎的专家得到训练，在 transformers 库中，可以通过 aux_loss 参数来控制辅助损失。</li>
+<li>topk 可以选择性的保留前 k 个值，加速训练和推理</li>
+</ul>
+<p>列举两个典型的 MoE 模型或者说方法：</p>
+<ol>
+<li>Gshard</li>
+</ol>
+<div align="center">
+  <img src="02_moe_block.png" alt="gshard" />
+</div>
+为了保证负载平衡和训练效率，Gshard 除了使用上述的辅助损失外，还进行了以下的优化：
+- 随机路由: 在 Top-2 设置中，我们始终选择排名最高的专家，但第二个专家是根据其权重比例随机选择的。
+- 定义一个专家能处理多少令牌。如果两个专家的容量都达到上限，令牌就会溢出，并通过残差连接传递到下一层，或在某些情况下被完全丢弃。
+<ol start="2">
+<li>Switch Transformer</li>
+</ol>
+<p>Switch Transformer 使用接受两个输入，每个输入4个专家，而并非单输入，至少两个专家的设定。这样做的优势是：</p>
+<ol>
+<li>减少门控网络 (路由) 计算负担</li>
+<li>每个专家的输入 batch 至少可以减半</li>
+<li>降低通信成本，保持模型质量</li>
+</ol>
+<p>于此同时 Switch Transformer 也对专家容量进行了研究，通过大于 1 的容量因子为 token分配不均匀时提供缓冲。提高容量因子 (Capacity Factor, CF) 可以增强模型的性能，但这也意味着更高的通信成本和对保存激活值的显存的需求。
+在训练期间，对于每个 Switch 层的辅助损失被添加到总模型损失中。这种损失鼓励均匀路由，并可以使用超参数进行加权。
+Switch Transformer 还探索了混合精度，也就是专家使用原始精度，其他部分使用 Bfloat16 精度，在保证训练稳定性的同时，增加了训练速度。</p>
+<p>ST-MoE 的研究者们发现，编码器中不同的专家倾向于专注于特定类型的令牌或浅层概念。例如，某些专家可能专门处理标点符号，而其他专家则专注于专有名词等。与此相反，解码器中的专家通常具有较低的专业化程度。</p>
+<p>训练 MoE 模型有哪些 tricks:</p>
+<ol>
+<li>稀疏模型更易于出现过拟合现象，因此在处理这些模型时，尝试更强的内部正则化措施是有益的，比如使用更高比例的 dropout。例如，我们可以为稠密层设定一个较低的 dropout 率，而为稀疏层设置一个更高的 dropout 率，以此来优化模型性能；</li>
+<li>MoE 模型在小任务比如 SuperGLUE 容易过拟合，不如在大任务比如 TriviaQA 效果好；</li>
+<li>冻结 MoE 参数进行微调，可以显著加速并且对模型效果影响很小；</li>
+<li>MoE 适合更小的 batch 和更高的学习率；</li>
+<li>在稀疏模型上进行微调效果好用稠密模型。</li>
+</ol>
+<p>对于稀疏模型和稠密模型如何选择呢？</p>
+<ol>
+<li>稀疏混合专家模型 (MoE) 适用于拥有多台机器且要求高吞吐量的场景。在固定的预训练计算资源下，稀疏模型往往能够实现更优的效果。相反，在显存较少且吞吐量要求不高的场景，稠密模型则是更合适的选择。</li>
+<li>直接比较稀疏模型和稠密模型的参数数量是不恰当的，因为这两类模型基于的概念和参数量的计算方法完全不同。</li>
+</ol>
+<div align="center">
+  <img src="10_parallelism.png" alt="10_parallelism" />
+</div>
+<p>我们刚才在讲分布式训练的优化手段，讲到了 Expert Parallelism，从而引申到 MoE 模型，那么为什么 MoE 模型需要 Expert Parallelism 呢？</p>
+<ol>
+<li>在 Expert Parallelism 中，专家被放置在不同的设备上，每个设备处理不同批次的训练样本；</li>
+<li>当单个专家参数可以在一个设备上时候，采用数据并行和专家并行的方式训练</li>
+<li>如果单个专家模型不能再一个设备上，需要加入模型并行，将单个专家模型分布到不同的设备上，同时配合数据进行并行训练加速</li>
+</ol>
+<p>部署专家模型优化方式：</p>
+<ol>
+<li>对专家模型进行蒸馏</li>
+<li>路由器被修改为将整个句子或任务直接路由到一个专家。这样做可以提取出一个用于服务的子网络，有助于简化模型的结构。</li>
+<li>合并各个专家的权重，在推理时减少了所需的参数数量</li>
+</ol>
 <h4 id="prepare-data">Prepare Data</h4>
 <p>LLaMA 做 pretraining 时的训练数据如下所示：</p>
 <div align="center">
@@ -364,10 +505,6 @@
   <img src="why-rlhf.png" alt="why-rlhf" />
 </div>
 ![alt text](image.png)
-<h2 id="finetuning">FineTuning</h2>
-<ul>
-<li>Parameter Efficient FineTuning (PEFT), e.g. LoRA</li>
-</ul>
 <h2 id="serving">Serving</h2>
 <h3 id="serving-pattern">Serving Pattern</h3>
 <p>随着 Chat，Code Assistant 等 LLM 应用的蓬勃发展，LLM Serving 由单卡逐步拓展到多卡，甚至是多个实例。由此衍生出 Orchestration Pattern, 例如 prefill-decode disaggregation, context cache migration, traffic-adaptive request routing 等。</p>
@@ -375,16 +512,19 @@
 <h4 id="context-cache-migration">Context Cache Migration</h4>
 <h4 id="traffic-adaptive-request-routing">Traffic-Adaptive Request Routing</h4>
 <h2 id="引用">引用</h2>
-<p><a href="https://dugas.ch/artificial_curiosity/GPT_architecture.html" target="_blank" rel="noopener noreffer ">GPT3 Architecture</a>
-<a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines" target="_blank" rel="noopener noreffer ">Microserving LLM engines</a>
-<a href="https://www.youtube.com/watch?v=bZQun8Y4L2A" target="_blank" rel="noopener noreffer ">State of GPT Andrej Karpathy</a>
-<a href="https://github.com/liguodongiot/llm-action" target="_blank" rel="noopener noreffer ">LLM Action</a></p>
+<ol>
+<li><a href="https://dugas.ch/artificial_curiosity/GPT_architecture.html" target="_blank" rel="noopener noreffer ">GPT3 Architecture</a></li>
+<li><a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines" target="_blank" rel="noopener noreffer ">Microserving LLM engines</a></li>
+<li><a href="https://www.youtube.com/watch?v=bZQun8Y4L2A" target="_blank" rel="noopener noreffer ">State of GPT Andrej Karpathy</a></li>
+<li><a href="https://github.com/liguodongiot/llm-action" target="_blank" rel="noopener noreffer ">LLM Action</a></li>
+<li><a href="https://huggingface.co/blog/moe" target="_blank" rel="noopener noreffer ">MOE Architecture</a></li>
+</ol>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-01-10&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/0600a3521de3dca4b971d19916c964a88f44e802" target="_blank" title="commit by xieydd(xieydd@gmail.com) 0600a3521de3dca4b971d19916c964a88f44e802: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>0600a35</a></span>
+                <span>更新于 2025-01-14&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/69c6eddbb45d2eac35c15654af71254344e04421" target="_blank" title="commit by xieydd(xieydd@gmail.com) 69c6eddbb45d2eac35c15654af71254344e04421: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>69c6edd</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
