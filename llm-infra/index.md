@@ -168,7 +168,7 @@ NVLink 最新的技术 [NVLink C2C interconnect](https://www.nvidia.com/en-us/da
 
 #### NVSwitch
 
-</div align="center">
+<div align="center">
   <img src="gpu-to-gpu-bandwidth-nvswitch-comparison-b.png" alt="nvswitch" />
 </div>
 
@@ -389,6 +389,11 @@ Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GP
 
 Tensor Parallelism 将模型的 operator 分成不同的 subset, 然后分发到不同的 GPU 上, 比如说矩阵乘法。Pipeline parallelism 是将模型的层分到不同的 GPU, 而 Tensor Parallelism 是将模型层内的 operator 分到不同的 GPU。对于现代模型比如 Transformer, 将激活值和大的权重进行点积计算是计算的瓶颈。比如 [MegatronLM](https://nv-adlr.github.io/MegatronLM) 在 Transformer 的Self-Attention 和 MLP 层进行了并行化矩阵乘法。[PTD-P](https://arxiv.org/abs/2104.04473) 使用tensor，pipeline，以及data parallelism， pipeline scheduler 为每个设备分配多个非连续层，以网络通信为代价减少气泡开销。
 
+下图是采用的是 8DP 12PP 4TP 方案，因此需要的 GPU 为 8*12*4=384：
+<div align="center">
+  <img src="3d-parallelism.png" alt="3d-parallelism" />
+</div>
+
 ##### Expert Parallelism
 
 Mixture-of-Experts (MoE) 是一种将模型每一层的某些部分放在同一个 GPU 上执行，这意味着你可以通过门控制器控制模型中哪些部分会应用到本次输入和输出。每一组门控制的一组参数都是一个 Expert，不同的 Expert 在不同的 GPU 上。
@@ -599,8 +604,6 @@ MLA（Multi-Latent Attention）很多的数学概念，对于我有点复杂了�
 #### Context Cache Migration
 
 #### Traffic-Adaptive Request Routing
-
-
 
 ## DeepSeek V3
 
