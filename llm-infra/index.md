@@ -369,6 +369,7 @@ Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GP
 <div align="center">
   <img src="model-parallelism.svg" alt="model-parallelism" />
 </div>
+
 1. 模型每一层的输入和输出都有顺序，F 代表 Forward, B 代表 Backward, U 代表 Update
 2. 每个 worker (GPU) 在同一时间只负责处理一个 stage
 3. 时间序列上，资源利用出现大量的气泡
