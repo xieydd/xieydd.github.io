@@ -390,7 +390,7 @@ Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GP
 
 Tensor Parallelism 将模型的 operator 分成不同的 subset, 然后分发到不同的 GPU 上, 比如说矩阵乘法。Pipeline parallelism 是将模型的层分到不同的 GPU, 而 Tensor Parallelism 是将模型层内的 operator 分到不同的 GPU。对于现代模型比如 Transformer, 将激活值和大的权重进行点积计算是计算的瓶颈。比如 [MegatronLM](https://nv-adlr.github.io/MegatronLM) 在 Transformer 的Self-Attention 和 MLP 层进行了并行化矩阵乘法。[PTD-P](https://arxiv.org/abs/2104.04473) 使用tensor，pipeline，以及data parallelism， pipeline scheduler 为每个设备分配多个非连续层，以网络通信为代价减少气泡开销。
 
-下图是采用的是 8DP 12PP 4TP 方案，因此需要的 GPU 为 8*12*4=384：
+下图是采用的是 8DP 12PP 4TP 方案，因此需要的 GPU 为 8x12x4=384：
 <div align="center">
   <img src="3d-parallelism.png" alt="3d-parallelism" />
 </div>
