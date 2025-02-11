@@ -60,4 +60,6 @@ Math and Science | 苏剑林 | https://kexue.fm/
 AI Infra| Colfax | https://research.colfax-intl.com/blog/
 Postgres | [Gabriele Bartolini](https://www.gabrielebartolini.it/about/) | https://www.gabrielebartolini.it/articles/
 AI | [Sebastian Raschka](https://sebastianraschka.com/) | https://magazine.sebastianraschka.com/archive?sort=new
+AI Algorithm | [Tom Yeh](https://www.linkedin.com/in/tom-yeh/) | https://www.byhand.ai/
+AI Infra | [Chip Huyen](https://huyenchip.com/) | https://huyenchip.com/blog/
 
