@@ -42,6 +42,7 @@
 
 技能栈：Kubernetes, GCP, AWS, Kubeflow, FinOps, RAG, Vector Database, Storage Accelerate, Tensorflow , Pytorch, Cloud Native, MLOps, AI Infra, etc.
 
+### 开源项目
 
 🌱 目前专注在 MLOps 以及 FinOps 领域,贡献了一些开源项目：
 1. [fluid](https://github.com/fluid-cloudnative/fluid) Fluid, elastic data abstraction and acceleration for BigData/AI applications in cloud. (Project under CNCF)
@@ -52,4 +53,14 @@
 6. [clusternet](https://github.com/clusternet/clusternet) [CNCF Sandbox Project] Managing your Kubernetes clusters (including public, private, edge, etc.) as easily as visiting the Internet
 7. [vectorchord](https://github.com/tensorchord/VectorChord) Scalable, fast, and disk-friendly vector search in Postgres, the successor of pgvecto.rs.
 
+### 推荐博客
+
+Type | Author/Company | Blog URL
+--- | --- | ---
+Infra |  [Chris Riccomini](https://cnr.sh/) | https://materializedview.io/
+Infra | [Jack Vanlightly](https://jack-vanlightly.com/home) | https://jack-vanlightly.com/
+Math and Science | 苏剑林 | https://kexue.fm/
+AI Infra| Colfax | https://research.colfax-intl.com/blog/
+Postgres | [Gabriele Bartolini](https://www.gabrielebartolini.it/about/) | https://www.gabrielebartolini.it/articles/
+AI | [Sebastian Raschka](https://sebastianraschka.com/) | https://magazine.sebastianraschka.com/archive?sort=new
 

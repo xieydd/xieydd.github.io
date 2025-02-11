@@ -276,6 +276,42 @@ NCCL P2P 的几种 Level:
 - PHB：当 GPU 位于同一 NUMA 节点上时使用 P2P。 流量将通过 CPU。
 - SYS：在 NUMA 节点之间使用 P2P，可能跨越 SMP 互连（例如：QPI/UPI）。
 
+### Storage
+
+### Operation and Maintenance
+
+#### Failure
+
+Hardware Exception：
+1. GPU ECC Error：通常需要重启机器或 Reset GPU。128 个节点每 1-2 天就有一个。
+2. IB（Infiniband）/NCCL问题：通常是硬件问题，比如网卡坏了，或者网络抖动等。
+  - 由于网络问题导致训练降速，比如降速 20% 左右，需要通过二分法来判断异常的节点进行相应替换。
+  - 也可能导致任务直接异常，比如 ：`p2p_plugin.c:141 NCCL WARN NET/IB : Got async event : port error`。
+3. 任务 Hang 住：通常和 IB/NCCL 问题相关，也需要人工检测。OPT-175B 训练中多次出现任务 Hang 住的情况。
+4. GPU 掉卡：此时一般会触发 CUDA Error 或程序异常退出，比如：“RuntimeError: Caught RuntimeError in pin memory thread for device 4.”。 
+5. 机器异常：GPU 之外的硬件异常，比如硬盘、CPU 等异常，甚至机器直接挂掉。
+6. 机器配置异常：比如发现某个机器开启了 MIG。
+7. 集群维护：通常一个集群里不仅仅是支持一个任务，偶尔会需要维护升级，可能需要停止任务。
+8. 存储挂掉：比如 Lustre 存储挂掉
+
+##### Monitoring & Fault Tolerance
+
+需要自动故障检测和快速恢复机制：
+1. 当用户提交训练任务后，除了在每个 GPU 上创建一个训练 Executor 外，还会创建一个训练守护进程，定期向 Driver 发送心跳。心跳信号包含各种信息，以实现实时的异常检测和发送告警信息。Driver 在特定时间内未收到心跳信号时，也会触发故障恢复流程，包括：
+  - 暂停所有训练的 Executor，并执行一系列的自检诊断。
+  - 一旦识别到异常机器，将其驱逐，并将通过测试的同等数量的健康机器加入集群。除此之外，还提供了用户接口，允许用户手动识别并驱逐异常机器。
+  - 机器恢复完成之后，将从最近的 Checkpoint 恢复训练。对 Checkpoint 的保存和恢复过程也需要进行了优化，以最大限度减少对训练进度的影响。引入了两阶段方案，第一阶段每个 GPU 训练进程将显存中的状态信息写入主机内存中，由于高速 PCIe 带宽，这个过程通常只要几秒钟，这样训练进程可以马上继续训练。第二阶段中，一个后台进程异步的将状态信息同步到分布式文件系统，MegaScale 使用的是 HDFS。
+  - 其心跳信号包括 IP 地址，Pod 名字，硬件信息等，还包含当前的训练进度信息。除此之外，训练进程的 stdout/stderr 日志也会被收集，以便进行实时的聚合、过滤和分析。如果识别到 warning 或 error 等关键字，Driver 将实时的上报这些诊断信息。最后，RAMA 的流量指标也会包含在内，以便更好的识别网络利用率和通信效率
+
+日常巡检（需要精确到毫秒级的监控系统，避免 Spike）：
+- 启动大型矩阵乘法任务，捕获这些故障
+- 还会启动一些简单的通信测试，以保证网络的正常
+- 机内测试：回环测试（Loopback test）：测量机器内所有的 RAMA 网卡到各种机内端点（包括内存、GPU）的回环带宽。会进行 full-mesh 测试，覆盖所有可能的链路组合，以便推断 PCIe 配置中潜在的链路问题。
+- RNIC-to-RNIC 测试：主要测试机内不同 RNIC 之间的连通性和带宽性能。以便发现 RNIC 是否符合速度规格或存在路由问题。
+- NCCL 测试：在机内进行 All-to-All 测试，也会在同一个 TOR 交换机的机器之间进行 All Reduce 测试，以发现潜在的硬件故障和性能问题
+
+
+
 ## Training
 
 大模型训练，这里我们主要参考 Andrej Karpathy 在 2023 年 MSBuild 的分享，分为以下四个阶段：
@@ -364,7 +400,7 @@ Data Parallelism 将数据分成不同的 subset, 然后分发到不同的 GPU �
 
 ##### Pipeline Parallelism (Model Parallelism)
 
-Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GPU 上。对于大模型来说，比如 LLaMA 65B, 如果参数是 FP32 那么总显存需要 260GB 但是一般训练都采用半精度也就是 FP16，那么也需要 130GB 显存，目前最前进的 H200 显存也就是 80GB。目前来自 DeepSeek 团队训练的 [DeepSeek V3](https://huggingface.co/deepseek-ai/DeepSeek-V3) 已经首次在超大规模模型上验证了FP8训练的可行性和有效性。但是 DeepSeek V3 是 MOE (Mixtures of Experts) 模型，参数达到 671B, 这个我们后面再聊。
+Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GPU 上。对于大模型来说，比如 LLaMA 65B, 如果参数是 FP32 那么总显存需要 260GB 但是一般训练都采用半精度也就是 FP16，那么也需要 130GB 显存，目前最前进的 H200 显存也就是 80GB。目前来自 DeepSeek 团队训练的 [DeepSeek V3](https://huggingface.co/deepseek-ai/DeepSeek-V3) 已经首次在超大规模模型上验证了FP8训练的可行性和有效性。但是 DeepSeek V3 是 MOE (Mixtures of Experts) 模型，参数达到 671B, 这个我们后面再聊。PP 的通信量相对比较小，因此常常会放在不同的机器上。
 
 <div align="center">
   <img src="model-parallelism.svg" alt="model-parallelism" />
@@ -388,7 +424,7 @@ Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GP
 
 ##### Tensor Parallelism
 
-Tensor Parallelism 将模型的 operator 分成不同的 subset, 然后分发到不同的 GPU 上, 比如说矩阵乘法。Pipeline parallelism 是将模型的层分到不同的 GPU, 而 Tensor Parallelism 是将模型层内的 operator 分到不同的 GPU。对于现代模型比如 Transformer, 将激活值和大的权重进行点积计算是计算的瓶颈。比如 [MegatronLM](https://nv-adlr.github.io/MegatronLM) 在 Transformer 的Self-Attention 和 MLP 层进行了并行化矩阵乘法。[PTD-P](https://arxiv.org/abs/2104.04473) 使用tensor，pipeline，以及data parallelism， pipeline scheduler 为每个设备分配多个非连续层，以网络通信为代价减少气泡开销。
+Tensor Parallelism 将模型的 operator 分成不同的 subset, 然后分发到不同的 GPU 上, 比如说矩阵乘法。Pipeline parallelism 是将模型的层分到不同的 GPU, 而 Tensor Parallelism 是将模型层内的 operator 分到不同的 GPU。对于现代模型比如 Transformer, 将激活值和大的权重进行点积计算是计算的瓶颈。比如 [MegatronLM](https://nv-adlr.github.io/MegatronLM) 在 Transformer 的Self-Attention 和 MLP 层进行了并行化矩阵乘法。[PTD-P](https://arxiv.org/abs/2104.04473) 使用tensor，pipeline，以及data parallelism， pipeline scheduler 为每个设备分配多个非连续层，以网络通信为代价减少气泡开销。其通信量更大，因此往往会将 TP 放在单个机器内部，可以充分利用机内的 NVLink 高速带宽。
 
 下图是采用的是 8DP 12PP 4TP 方案，因此需要的 GPU 为 8x12x4=384：
 <div align="center">
@@ -467,6 +503,11 @@ ST-MoE 的研究者们发现，编码器中不同的专家倾向于专注于特�
 2. 路由器被修改为将整个句子或任务直接路由到一个专家。这样做可以提取出一个用于服务的子网络，有助于简化模型的结构。
 3. 合并各个专家的权重，在推理时减少了所需的参数数量
 
+##### Zero-DP
+
+##### Sequence Parallel
+
+##### Context Parallelism
 #### Prepare Data
 
 LLaMA 做 Pre-training 时的训练数据如下所示： 

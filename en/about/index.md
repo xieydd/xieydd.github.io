@@ -39,6 +39,8 @@ As of 2024, I have over 6 years of experience in AI Infrastructure:
 
 Skill set: Kubernetes, GCP, AWS, Kubeflow, FinOps, RAG, Vector Database, Storage Acceleration, Tensorflow, Pytorch, Cloud Native, MLOps, AI Infrastructure, etc.
 
+### Open Source Projects
+
 🌱 Currently focusing on MLOps and FinOps, contributing to several open source projects:
 1. [fluid](https://github.com/fluid-cloudnative/fluid) Fluid, elastic data abstraction and acceleration for BigData/AI applications in the cloud. (Project under CNCF)
 2. [crane](https://github.com/gocrane/crane) Crane is a FinOps Platform for Cloud Resource Analytics and Economics in Kubernetes clusters. The goal is to help users manage cloud costs more easily while ensuring application quality.
@@ -47,3 +49,15 @@ Skill set: Kubernetes, GCP, AWS, Kubeflow, FinOps, RAG, Vector Database, Storage
 5. [openmodelz](https://github.com/tensorchord/openmodelz) One-click machine learning deployment (LLM, text-to-image, etc.) at scale on any cluster (GCP, AWS, Lambda labs, your home lab, or even a single machine).
 6. [clusternet](https://github.com/clusternet/clusternet) [CNCF Sandbox Project] Managing your Kubernetes clusters (including public, private, edge, etc.) as easily as browsing the Internet
 7. [vectorchord](https://github.com/tensorchord/VectorChord) Scalable, fast, and disk-friendly vector search in Postgres, the successor of pgvecto.rs.
+
+### Recommended Blogs
+
+Type | Author/Company | Blog URL
+--- | --- | ---
+Infra |  [Chris Riccomini](https://cnr.sh/) | https://materializedview.io/
+Infra | [Jack Vanlightly](https://jack-vanlightly.com/home) | https://jack-vanlightly.com/
+Math and Science | 苏剑林 | https://kexue.fm/
+AI Infra| Colfax | https://research.colfax-intl.com/blog/
+Postgres | [Gabriele Bartolini](https://www.gabrielebartolini.it/about/) | https://www.gabrielebartolini.it/articles/
+AI | [Sebastian Raschka](https://sebastianraschka.com/) | https://magazine.sebastianraschka.com/archive?sort=new
+
