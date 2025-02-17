@@ -679,9 +679,20 @@ P/D 分离带来了架构上的创新，例如：
 
 chunked prefill 可以参考 [基于 chunked prefill 理解 prefill 和 decode 的计算特性 - Chayenne Zhao的文章 - 知乎](https://zhuanlan.zhihu.com/p/718715866).
 
+MLC 的 MicroServing API 通过[细粒度的 API](https://blog.mlc.ai/2025/01/07/microserving-llm-engines)编排推理引擎实现：
+- Data Parallel
+- Prefill-Decode Disaggregation
+- Balanced prefill-decode disaggregation： prefill 和 decode 工作负载可能会不平衡。当处理长 prompts 时，prefill引擎可能会被过度利用，而decode引擎则以低利用率运行，甚至保持空闲状态。将部分prefill计算动态卸载到decode引擎中。为了实现这一点，路由器需要决定“decode_start”（decode引擎开始prefill的位置）并将其传递给所有 API.
+
 #### Context Cache Migration
 
+在为 QA 工作负载提供服务时，开发人员倾向于将不同类别的上下文缓存放入不同的引擎中，并根据其匹配的上下文类别来调度传入流量。考虑有多个引擎，其中一些专门用于历史背景，另一些则专门用于科学背景。如果科学请求多于历史请求，我们可能希望通过上下文迁移将一些历史引擎切换到科学引擎，反之亦然。上面的 MicroServing 细粒度控制推理引擎 API,在引擎之间实现高效的 KV 传输，而无需中断服务。
+
 #### Traffic-Adaptive Request Routing
+
+根据工作负载特征动态重新配置编排模式，而无需更改底层引擎。可编程路由器允许不同编排策略之间的无缝切换：
+- 当prefill：decode比率（prefill输入token的时间/decode所有输出token的总时间）增加时，可以通过balanced prefill-decode disaggregation 将更多prefill计算转移到 decode引擎。
+- 如果大部分 prompt 数据在 decode 引擎的Context Cache中找到，系统可以完全绕过prefill引擎，直接调用start_generate来处理 prompt 的非 cache 部分。
 
 ## DeepSeek V3
 

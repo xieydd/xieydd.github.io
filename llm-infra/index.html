@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/llm-infra/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2025-01-09T10:20:28+08:00" />
-<meta property="article:modified_time" content="2025-02-17T21:10:43+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-02-17T23:07:10+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/llm-infra\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  17102 ,
-        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-02-17T21:10:43+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  17701 ,
+        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-02-17T23:07:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,8 +129,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">LLM Infra 你需要知道的一切</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/training/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>training</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17102 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 35 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17701 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 36 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -834,8 +834,20 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <li>在 prefill 阶段进行预估而没有被拒绝的请求可能在 decode 阶段出于 SLO 的缘故而被拒绝，这也是一个显著的 staleness 问题。</li>
 </ul>
 <p>chunked prefill 可以参考 <a href="https://zhuanlan.zhihu.com/p/718715866" target="_blank" rel="noopener noreffer ">基于 chunked prefill 理解 prefill 和 decode 的计算特性 - Chayenne Zhao的文章 - 知乎</a>.</p>
+<p>MLC 的 MicroServing API 通过<a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines" target="_blank" rel="noopener noreffer ">细粒度的 API</a>编排推理引擎实现：</p>
+<ul>
+<li>Data Parallel</li>
+<li>Prefill-Decode Disaggregation</li>
+<li>Balanced prefill-decode disaggregation： prefill 和 decode 工作负载可能会不平衡。当处理长 prompts 时，prefill引擎可能会被过度利用，而decode引擎则以低利用率运行，甚至保持空闲状态。将部分prefill计算动态卸载到decode引擎中。为了实现这一点，路由器需要决定“decode_start”（decode引擎开始prefill的位置）并将其传递给所有 API.</li>
+</ul>
 <h4 id="context-cache-migration">Context Cache Migration</h4>
+<p>在为 QA 工作负载提供服务时，开发人员倾向于将不同类别的上下文缓存放入不同的引擎中，并根据其匹配的上下文类别来调度传入流量。考虑有多个引擎，其中一些专门用于历史背景，另一些则专门用于科学背景。如果科学请求多于历史请求，我们可能希望通过上下文迁移将一些历史引擎切换到科学引擎，反之亦然。上面的 MicroServing 细粒度控制推理引擎 API,在引擎之间实现高效的 KV 传输，而无需中断服务。</p>
 <h4 id="traffic-adaptive-request-routing">Traffic-Adaptive Request Routing</h4>
+<p>根据工作负载特征动态重新配置编排模式，而无需更改底层引擎。可编程路由器允许不同编排策略之间的无缝切换：</p>
+<ul>
+<li>当prefill：decode比率（prefill输入token的时间/decode所有输出token的总时间）增加时，可以通过balanced prefill-decode disaggregation 将更多prefill计算转移到 decode引擎。</li>
+<li>如果大部分 prompt 数据在 decode 引擎的Context Cache中找到，系统可以完全绕过prefill引擎，直接调用start_generate来处理 prompt 的非 cache 部分。</li>
+</ul>
 <h2 id="deepseek-v3">DeepSeek V3</h2>
 <p>在最后，我们来分析下国产的 LLM 模型 DeepSeek V3，这个模型是由 DeepSeek 团队开发的，通过分析和我们上面的技术做对应。
 目前 DeepSeek-V3 是在 14.8T token 上进行训练的 <a href="#expert-parallelism" rel="">MoE</a> 架构，总参数为 671B，每个 token 激活 38B。 完整训练在 H800 上用时 2.788M hours。</p>
@@ -1031,8 +1043,8 @@ GPUs (Blackwell series)</li>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-02-17&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/018cd70f70567daba5dc75340771b8e4f67270d4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 018cd70f70567daba5dc75340771b8e4f67270d4: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>018cd70</a></span>
+                <span>更新于 2025-02-17&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/f16319a1e5ba3c0843835ab4bcdc848f700c86ed" target="_blank" title="commit by xieydd(xieydd@gmail.com) f16319a1e5ba3c0843835ab4bcdc848f700c86ed: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>f16319a</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
