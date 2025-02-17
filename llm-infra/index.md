@@ -555,7 +555,7 @@ Tokenization 后的结果如下：
 
 在这个阶段需要小的高质量的数据，一般是人类标注的数据，比如 prompt 以及相应理想的回复， 一般需要 10~100k。
 
-这一阶段会将 Pre-training 的模型加载进来，然后在这个数据集上进行训练，得到的数据就是 SFT(Supervised Fine-Tuning) 模型。这时候你可以部署这个模型，提供类似 QA 的服务了。
+这一阶段会将 Pre-training 的模型加载进来，然后在这个数据集上进行训练，得到的数据就是 SFT(Supervised Fine-Tuning) 模型。目前进行 SFT 的模型有很多，比如 Instruct, Coder, Math 以及 Reasoning 分别针对指令性的 QA、编程、数学以及推理任务场景。
 
 
 ### Reward Modeling
@@ -574,6 +574,7 @@ Reward Model 会将数据收集变成比较的形式，举个例子
 <div align="center">
   <img src="reward-model-train.png" alt="reward-model-train" />
 </div>
+
 1. 每一行的蓝色 prompt 是一样的
 2. 黄色是 SFT 模型输出
 3. 绿色是 reward token，也就是 SFT 评价模型输出的质量，和人类评价的质量进行比较
@@ -586,6 +587,7 @@ Reward Model 会将数据收集变成比较的形式，举个例子
 <div align="center">
   <img src="rf-train.png" alt="rf-train" />
 </div>
+
 1. 每一行的蓝色 prompt 是一样的
 2. 黄色是 SFT 模型输出, 作为初始化值，作为 Reward Model 的训练数据
 3. 绿色是 reward token，这个 token 会将 sampled token, 也就是黄色部分进行评价，如果高，则黄色部分 token 在后续的采样中会被采样的概率会增加。
@@ -595,7 +597,10 @@ PPO 算法就是 RLHF 模型, 为什么要使用 RLHF, 参见下图，RLHF 可�
 <div align="center">
   <img src="why-rlhf.png" alt="why-rlhf" />
 </div>
-![alt text](image.png)
+
+参考知乎姜富春​博士总结的 [聊聊Reasoning Model的精巧实现（ReFT, Kimi K1.5, DeepSeek R1）](https://zhuanlan.zhihu.com/p/20356958978) 介绍了 ReFT, Kimi K1.5, DeepSeek R1 这三个 Reasoning Model 的实现,其中 RL 是关键。
+
+RLHF 可以参考 [OpenRLHF](https://github.com/OpenRLHF/OpenRLHF/blob/main/README_zh.md).
 
 ## Serving
 
@@ -642,6 +647,37 @@ MLA（Multi-Latent Attention）很多的数学概念，对于我有点复杂了�
 随着 Chat，Code Assistant 等 LLM 应用的蓬勃发展，LLM Serving 由单卡逐步拓展到多卡，甚至是多个实例。由此衍生出 Orchestration Pattern, 例如 prefill-decode disaggregation, context cache migration, traffic-adaptive request routing 等。
 
 #### Prefill-Decode Disaggregation
+
+为什么要将 P(Prefill) 以及 D(Decode) 分开呢？参考[prefill 和 decode 该分离到不同的卡上么？ - Chayenne Zhao的文章 - 知乎](https://zhuanlan.zhihu.com/p/1280567902)
+
+P 和 D 分离的本质还是 P 和 D 阶段的计算模型不同，P 阶段是 Compute bound，D 阶段是 Memory bound。
+- Compute bound: 输入所有 tokens Attention 的计算，增大 batch 会被这个所限制，没有更多算力可算。
+- Memory bound: 每一个 token 生成都需要 KV Cache 从显存中频繁的读取，增大 batch 会被这个所限制。
+
+优势：
+- 显著的降低了显存的；P 阶段计算时中间激活值参数保留在显存中，而 D 阶段只需要 P 阶段的 KV Cache 即可，如果 P 和 D 不分离，在 D 阶段激活值占据的显存就是浪费，在模型较大以及 context 较长的情况下，显存的浪费会更加明显。
+- 提高吞吐量：多卡系统上分离 prefill 卡和 decode 卡可以实现更高效的 pineline 并行，提高吞吐量。
+
+缺点：
+1. 通讯开销：跨卡传输 KV cache 无疑会带来新的通讯压力。
+2. 隐藏的开销：为了加强通讯，networking 硬件的成本不可忽略。此外，大规模的 data center 部署很多不同机型造成的 fragmentation 也有不小代价。
+
+P/D 分离带来了架构上的创新，例如：
+
+<div align="center">
+  <img src="mooncake-arch.png" alt="mooncake" />
+</div>
+
+1. [MoonCake](https://github.com/kvcache-ai/Mooncake)
+  - 在满足 SLO(TTFT（time to first token），TBT(token between token)) 情况下最大化 KV Cache 的缓存命中以及最大化 MFU（Model FLOPs Utilization）。因为复用 KV Cache 涉及到远程通信，例如从其他介质（CPU,DRAM,SSD）中读取到显存，所以会增大 TTFT；而更大的batch 增加 MFU 的同时也会增加 TBT 的时间。
+  - Mooncake 设计了 global scheduler（conductor）。对于每个 request，Conductor 需要为其选择一组用于 prefiil 和 decode 的设备，然后进行调度。首先迁移尽可能多的 KV cache 到 prefill 设备上；接着在 prefill 设备上通过 chunked and layer-wise prefill 的方法连续地 stream prefill 所得的 KV cache 到 decode 设备上；最后在 decode 设备上加载 KV cache，将此 request 加入到 continuous batching 中，完成 decode。
+  - Mooncake 将 GPU 集群内的 CPU DRAM SSD RDMA 资源分别建立了资源池。
+  - 在 GPU 和 GPU 之间转移 KV cache 由单独的 GPU direct RDMA 设备完成，被称为 messager。原文中基于哈希的前缀存储能够为上层用户提供 context caching API。
+  - 如果某个请求中未被 cache 的 tokens 数目超过了一个特定的 threshold（prefill_chunk）。这个请求将会被拆为多个 chunks，然后流水执行。通常而言，prefill_chunk 的大小大于 1k。
+  - 在 prefill 阶段进行预估而没有被拒绝的请求可能在 decode 阶段出于 SLO 的缘故而被拒绝，这也是一个显著的 staleness 问题。
+
+
+chunked prefill 可以参考 [基于 chunked prefill 理解 prefill 和 decode 的计算特性 - Chayenne Zhao的文章 - 知乎](https://zhuanlan.zhihu.com/p/718715866).
 
 #### Context Cache Migration
 

@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/llm-infra/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2025-01-09T10:20:28+08:00" />
-<meta property="article:modified_time" content="2025-02-12T21:49:01+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-02-17T21:10:43+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/llm-infra\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  16046 ,
-        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-02-12T21:49:01+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  17102 ,
+        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-02-17T21:10:43+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,8 +129,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">LLM Infra 你需要知道的一切</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/training/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>training</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 16046 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 33 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17102 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 35 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -736,7 +736,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <h4 id="training-1">Training</h4>
 <h3 id="supervised-fine-tuning">Supervised Fine-Tuning</h3>
 <p>在这个阶段需要小的高质量的数据，一般是人类标注的数据，比如 prompt 以及相应理想的回复， 一般需要 10~100k。</p>
-<p>这一阶段会将 Pre-training 的模型加载进来，然后在这个数据集上进行训练，得到的数据就是 SFT(Supervised Fine-Tuning) 模型。这时候你可以部署这个模型，提供类似 QA 的服务了。</p>
+<p>这一阶段会将 Pre-training 的模型加载进来，然后在这个数据集上进行训练，得到的数据就是 SFT(Supervised Fine-Tuning) 模型。目前进行 SFT 的模型有很多，比如 Instruct, Coder, Math 以及 Reasoning 分别针对指令性的 QA、编程、数学以及推理任务场景。</p>
 <h3 id="reward-modeling">Reward Modeling</h3>
 <p>RLHF(Reward Learning from Human Feedback) 阶段分为两个部分，一个是 Reward Model，一个是 Reinforcement Learning。</p>
 <p>Reward Model 会将数据收集变成比较的形式，举个例子</p>
@@ -748,23 +748,28 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <div align="center">
   <img src="reward-model-train.png" alt="reward-model-train" />
 </div>
-1. 每一行的蓝色 prompt 是一样的
-2. 黄色是 SFT 模型输出
-3. 绿色是 reward token，也就是 SFT 评价模型输出的质量，和人类评价的质量进行比较
-4. 损失函数衡量 reward token 与人类标记的 ground truth 的一致性
+<ol>
+<li>每一行的蓝色 prompt 是一样的</li>
+<li>黄色是 SFT 模型输出</li>
+<li>绿色是 reward token，也就是 SFT 评价模型输出的质量，和人类评价的质量进行比较</li>
+<li>损失函数衡量 reward token 与人类标记的 ground truth 的一致性</li>
+</ol>
 <h3 id="reinforcement-learning">Reinforcement Learning</h3>
 <p>准备 10k~100k 的 Prompt 数据, Reward Model 对这些模型进行训练, 100 GPUs天级别。</p>
 <div align="center">
   <img src="rf-train.png" alt="rf-train" />
 </div>
-1. 每一行的蓝色 prompt 是一样的
-2. 黄色是 SFT 模型输出, 作为初始化值，作为 Reward Model 的训练数据
-3. 绿色是 reward token，这个 token 会将 sampled token, 也就是黄色部分进行评价，如果高，则黄色部分 token 在后续的采样中会被采样的概率会增加。
+<ol>
+<li>每一行的蓝色 prompt 是一样的</li>
+<li>黄色是 SFT 模型输出, 作为初始化值，作为 Reward Model 的训练数据</li>
+<li>绿色是 reward token，这个 token 会将 sampled token, 也就是黄色部分进行评价，如果高，则黄色部分 token 在后续的采样中会被采样的概率会增加。</li>
+</ol>
 <p>PPO 算法就是 RLHF 模型, 为什么要使用 RLHF, 参见下图，RLHF 可以显著减少 predict 的熵，也就是预测的更加稳定。</p>
 <div align="center">
   <img src="why-rlhf.png" alt="why-rlhf" />
 </div>
-![alt text](image.png)
+<p>参考知乎姜富春​博士总结的 <a href="https://zhuanlan.zhihu.com/p/20356958978" target="_blank" rel="noopener noreffer ">聊聊Reasoning Model的精巧实现（ReFT, Kimi K1.5, DeepSeek R1）</a> 介绍了 ReFT, Kimi K1.5, DeepSeek R1 这三个 Reasoning Model 的实现,其中 RL 是关键。</p>
+<p>RLHF 可以参考 <a href="https://github.com/OpenRLHF/OpenRLHF/blob/main/README_zh.md" target="_blank" rel="noopener noreffer ">OpenRLHF</a>.</p>
 <h2 id="serving">Serving</h2>
 <h3 id="model-optimization">Model Optimization</h3>
 <p>模型这块本来想放在 <a href="#model" rel="">Model</a> 里面，但是这里的模型优化主要是让推理更快，所以放在 Serving 里面。</p>
@@ -797,6 +802,38 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <h3 id="serving-pattern">Serving Pattern</h3>
 <p>随着 Chat，Code Assistant 等 LLM 应用的蓬勃发展，LLM Serving 由单卡逐步拓展到多卡，甚至是多个实例。由此衍生出 Orchestration Pattern, 例如 prefill-decode disaggregation, context cache migration, traffic-adaptive request routing 等。</p>
 <h4 id="prefill-decode-disaggregation">Prefill-Decode Disaggregation</h4>
+<p>为什么要将 P(Prefill) 以及 D(Decode) 分开呢？参考<a href="https://zhuanlan.zhihu.com/p/1280567902" target="_blank" rel="noopener noreffer ">prefill 和 decode 该分离到不同的卡上么？ - Chayenne Zhao的文章 - 知乎</a></p>
+<p>P 和 D 分离的本质还是 P 和 D 阶段的计算模型不同，P 阶段是 Compute bound，D 阶段是 Memory bound。</p>
+<ul>
+<li>Compute bound: 输入所有 tokens Attention 的计算，增大 batch 会被这个所限制，没有更多算力可算。</li>
+<li>Memory bound: 每一个 token 生成都需要 KV Cache 从显存中频繁的读取，增大 batch 会被这个所限制。</li>
+</ul>
+<p>优势：</p>
+<ul>
+<li>显著的降低了显存的；P 阶段计算时中间激活值参数保留在显存中，而 D 阶段只需要 P 阶段的 KV Cache 即可，如果 P 和 D 不分离，在 D 阶段激活值占据的显存就是浪费，在模型较大以及 context 较长的情况下，显存的浪费会更加明显。</li>
+<li>提高吞吐量：多卡系统上分离 prefill 卡和 decode 卡可以实现更高效的 pineline 并行，提高吞吐量。</li>
+</ul>
+<p>缺点：</p>
+<ol>
+<li>通讯开销：跨卡传输 KV cache 无疑会带来新的通讯压力。</li>
+<li>隐藏的开销：为了加强通讯，networking 硬件的成本不可忽略。此外，大规模的 data center 部署很多不同机型造成的 fragmentation 也有不小代价。</li>
+</ol>
+<p>P/D 分离带来了架构上的创新，例如：</p>
+<div align="center">
+  <img src="mooncake-arch.png" alt="mooncake" />
+</div>
+<ol>
+<li><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener noreffer ">MoonCake</a></li>
+</ol>
+<ul>
+<li>在满足 SLO(TTFT（time to first token），TBT(token between token)) 情况下最大化 KV Cache 的缓存命中以及最大化 MFU（Model FLOPs Utilization）。因为复用 KV Cache 涉及到远程通信，例如从其他介质（CPU,DRAM,SSD）中读取到显存，所以会增大 TTFT；而更大的batch 增加 MFU 的同时也会增加 TBT 的时间。</li>
+<li>Mooncake 设计了 global scheduler（conductor）。对于每个 request，Conductor 需要为其选择一组用于 prefiil 和 decode 的设备，然后进行调度。首先迁移尽可能多的 KV cache 到 prefill 设备上；接着在 prefill 设备上通过 chunked and layer-wise prefill 的方法连续地 stream prefill 所得的 KV cache 到 decode 设备上；最后在 decode 设备上加载 KV cache，将此 request 加入到 continuous batching 中，完成 decode。</li>
+<li>Mooncake 将 GPU 集群内的 CPU DRAM SSD RDMA 资源分别建立了资源池。</li>
+<li>在 GPU 和 GPU 之间转移 KV cache 由单独的 GPU direct RDMA 设备完成，被称为 messager。原文中基于哈希的前缀存储能够为上层用户提供 context caching API。</li>
+<li>如果某个请求中未被 cache 的 tokens 数目超过了一个特定的 threshold（prefill_chunk）。这个请求将会被拆为多个 chunks，然后流水执行。通常而言，prefill_chunk 的大小大于 1k。</li>
+<li>在 prefill 阶段进行预估而没有被拒绝的请求可能在 decode 阶段出于 SLO 的缘故而被拒绝，这也是一个显著的 staleness 问题。</li>
+</ul>
+<p>chunked prefill 可以参考 <a href="https://zhuanlan.zhihu.com/p/718715866" target="_blank" rel="noopener noreffer ">基于 chunked prefill 理解 prefill 和 decode 的计算特性 - Chayenne Zhao的文章 - 知乎</a>.</p>
 <h4 id="context-cache-migration">Context Cache Migration</h4>
 <h4 id="traffic-adaptive-request-routing">Traffic-Adaptive Request Routing</h4>
 <h2 id="deepseek-v3">DeepSeek V3</h2>
@@ -994,8 +1031,8 @@ GPUs (Blackwell series)</li>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-02-12&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/71e97801d7ca16df48060ecfd2d6963801c1aae4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 71e97801d7ca16df48060ecfd2d6963801c1aae4: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>71e9780</a></span>
+                <span>更新于 2025-02-17&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/018cd70f70567daba5dc75340771b8e4f67270d4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 018cd70f70567daba5dc75340771b8e4f67270d4: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>018cd70</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
