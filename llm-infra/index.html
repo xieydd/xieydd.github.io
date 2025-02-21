@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/llm-infra/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2025-01-09T10:20:28+08:00" />
-<meta property="article:modified_time" content="2025-02-17T23:07:10+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-02-21T22:22:47+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/llm-infra\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  17701 ,
-        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-02-17T23:07:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  18923 ,
+        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-02-21T22:22:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,8 +129,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">LLM Infra 你需要知道的一切</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/training/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>training</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17701 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 36 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 18923 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 38 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -229,6 +229,18 @@
             <li><a href="#prefill-decode-disaggregation">Prefill-Decode Disaggregation</a></li>
             <li><a href="#context-cache-migration">Context Cache Migration</a></li>
             <li><a href="#traffic-adaptive-request-routing">Traffic-Adaptive Request Routing</a></li>
+          </ul>
+        </li>
+        <li><a href="#serving-optimization">Serving Optimization</a>
+          <ul>
+            <li><a href="#kv-cache">KV Cache</a></li>
+            <li><a href="#paged-attention">Paged Attention</a></li>
+            <li><a href="#speculate-decoding">Speculate Decoding</a></li>
+            <li><a href="#constrainted-decoding">Constrainted Decoding</a></li>
+            <li><a href="#chunked-prefill">Chunked prefill</a></li>
+            <li><a href="#prompt-cache">Prompt Cache</a></li>
+            <li><a href="#kv-compression">KV Compression</a></li>
+            <li><a href="#quantization">Quantization</a></li>
           </ul>
         </li>
       </ul>
@@ -848,6 +860,60 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <li>当prefill：decode比率（prefill输入token的时间/decode所有输出token的总时间）增加时，可以通过balanced prefill-decode disaggregation 将更多prefill计算转移到 decode引擎。</li>
 <li>如果大部分 prompt 数据在 decode 引擎的Context Cache中找到，系统可以完全绕过prefill引擎，直接调用start_generate来处理 prompt 的非 cache 部分。</li>
 </ul>
+<h3 id="serving-optimization">Serving Optimization</h3>
+<ul>
+<li><a href="#kv-cache" rel="">KV Cache</a></li>
+<li><a href="#paged-attention" rel="">Paged Attention</a></li>
+<li><a href="#quantization" rel="">Quantization</a></li>
+<li><a href="#speculate-decode" rel="">Speculate Decode</a></li>
+<li><a href="#constrainted-decoding" rel="">Constrainted Decoding</a></li>
+<li><a href="#chunked-prefill" rel="">Chunked prefill</a></li>
+<li><a href="#prompt-cache" rel="">Prompt Cache</a></li>
+<li><a href="#kv-compression" rel="">KV Compression</a></li>
+</ul>
+<h4 id="kv-cache">KV Cache</h4>
+<p>参看<a href="https://zhuanlan.zhihu.com/p/662498827" target="_blank" rel="noopener noreffer ">大模型推理加速：看图学KV Cache - 看图学的文章 - 知乎</a>。</p>
+<p>大模型推理性能优化的一个常用技术是KV Cache，该技术可以在不影响任何计算精度的前提下，通过空间换时间思想，提高推理性能。具体可以参考👆的参考，总结下：</p>
+<ul>
+<li>Transformer Encode 阶段是自回归的</li>
+<li>自回归下 Attention 的第 k 次计算只依赖于第 k 个 Q,其他部分是重复计算，可以通过 KV Cache 来缓存</li>
+</ul>
+<h4 id="paged-attention">Paged Attention</h4>
+<p>参看 <a href="https://zhuanlan.zhihu.com/p/691038809" target="_blank" rel="noopener noreffer ">图解大模型计算加速系列之：vLLM核心技术PagedAttention原理 - 猛猿的文章 - 知乎</a>。</p>
+<p>Paged Attention 主要解决直接给输入请求预分配显存导致的显存利用率低的问题；通过借鉴现代操作系统的内存分页技术，提高推理的显存利用率。</p>
+<p>&lt;\div align=&quot;center&quot;&gt;
+<img src="v2-e0209cc4bb1fb2b7bd5b3b88dae70476_1440w.jpg" alt="paged-attention" /></p>
+</div>
+<p>如上图所示：</p>
+<ol>
+<li>Request A 是模型请求，相当于操作系统中的进程</li>
+<li>Logical KV Blocks 相当于操作系统中的虚拟内存页，每个 Block 有固定大小，在vLLM中默认大小为16，即可装16个token的K/V值</li>
+<li>Block Table 相当于操作系统中的页表，记录了每个 Logical Block 在物理内存中的位置</li>
+<li>Physical KV blocks 相当于操作系统中的物理内存页，存储真实的K/V值，这里是存在 vRAM 中的.</li>
+</ol>
+<p>Paged Attention 在不同场景是如何工作的：</p>
+<ul>
+<li>场景
+<ol>
+<li>Parallel Sampling: 我给模型发送一个请求，希望它对prompt做续写，并给出三种不同的回答。我们管这个场景叫parallel sampling。</li>
+<li>Beam Search: 即在每个decode阶段，我不是只产生1个token，而是产生top k个token（这里k也被称为束宽）。top k个token必然对应着此刻的top k个序列。我把这top k个序列喂给模型，假设词表的大小为|V|，那么在下一时刻，我就要在k*|V|个候选者中再选出top k，以此类推。不难想象每一时刻我把top k序列喂给模型时，它们的前置token中有大量的KV cache是重复的。</li>
+</ol>
+</li>
+<li>vLLM 如何调度：
+<ol>
+<li>Parallel Sampling: 每个请求都会被分配一个Logical Block，这个Block会被映射到vRAM中的一个Physical Block。对于 Parallel Sampling，每个请求的Logical Block都是独立的，但是 Physical Block 是共享的，通过 ref count 来判断是否需要释放,而不是再独立分配 Physical Block。在 Decode 阶段，通过 Copy-on-Write 的方式，将新生成 token 的 KV Block 复制到新的 Physical Block 中，同时新生成 token 前面 token 所在的 Block ref count -1。</li>
+<li>Beam Search: 根据最新时刻的beam search decoding结果，释放掉不再被需要的逻辑块和对应的物理内存空间，达到节省显存目的，具体过程可参考上面知乎的文章。</li>
+</ol>
+</li>
+</ul>
+<h4 id="speculate-decoding">Speculate Decoding</h4>
+<p>参看佳瑞大佬的这篇文章 <a href="https://zhuanlan.zhihu.com/p/651359908" target="_blank" rel="noopener noreffer ">大模型推理妙招—投机采样（Speculative Decoding） - 方佳瑞的文章 - 知乎</a>。</p>
+<p>投机采样这个专业名称比较拗口，应该叫推理采样；这个技术的核心是解码过程中，某些token的解码相对容易，某些token的解码则很困难。因此，简单的token生成可以交给小型模型处理，而困难的token则交给大型模型处理。这里的小型模型可以采用与原始模型相同的结构，但参数更少，或者干脆使用n-gram模型。小型模型不仅计算量较小，更重要的是小模型生成，大模型校正可以减少了内存访问的需求。</p>
+<h4 id="constrainted-decoding">Constrainted Decoding</h4>
+<h4 id="chunked-prefill">Chunked prefill</h4>
+<h4 id="prompt-cache">Prompt Cache</h4>
+<h4 id="kv-compression">KV Compression</h4>
+<h4 id="quantization">Quantization</h4>
 <h2 id="deepseek-v3">DeepSeek V3</h2>
 <p>在最后，我们来分析下国产的 LLM 模型 DeepSeek V3，这个模型是由 DeepSeek 团队开发的，通过分析和我们上面的技术做对应。
 目前 DeepSeek-V3 是在 14.8T token 上进行训练的 <a href="#expert-parallelism" rel="">MoE</a> 架构，总参数为 671B，每个 token 激活 38B。 完整训练在 H800 上用时 2.788M hours。</p>
@@ -1043,8 +1109,8 @@ GPUs (Blackwell series)</li>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-02-17&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/f16319a1e5ba3c0843835ab4bcdc848f700c86ed" target="_blank" title="commit by xieydd(xieydd@gmail.com) f16319a1e5ba3c0843835ab4bcdc848f700c86ed: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>f16319a</a></span>
+                <span>更新于 2025-02-21&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/341eaa86fe4a5d0b1faa6cee5433283e36c1cd7e" target="_blank" title="commit by xieydd(xieydd@gmail.com) 341eaa86fe4a5d0b1faa6cee5433283e36c1cd7e: udpate">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>341eaa8</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

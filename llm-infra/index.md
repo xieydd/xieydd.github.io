@@ -694,6 +694,65 @@ MLC 的 MicroServing API 通过[细粒度的 API](https://blog.mlc.ai/2025/01/07
 - 当prefill：decode比率（prefill输入token的时间/decode所有输出token的总时间）增加时，可以通过balanced prefill-decode disaggregation 将更多prefill计算转移到 decode引擎。
 - 如果大部分 prompt 数据在 decode 引擎的Context Cache中找到，系统可以完全绕过prefill引擎，直接调用start_generate来处理 prompt 的非 cache 部分。
 
+### Serving Optimization
+
+- [KV Cache](#kv-cache)
+- [Paged Attention](#paged-attention)
+- [Quantization](#quantization)
+- [Speculate Decode](#speculate-decode)
+- [Constrainted Decoding](#constrainted-decoding)
+- [Chunked prefill](#chunked-prefill)
+- [Prompt Cache](#prompt-cache)
+- [KV Compression](#kv-compression)
+
+#### KV Cache
+
+参看[大模型推理加速：看图学KV Cache - 看图学的文章 - 知乎](https://zhuanlan.zhihu.com/p/662498827)。
+
+大模型推理性能优化的一个常用技术是KV Cache，该技术可以在不影响任何计算精度的前提下，通过空间换时间思想，提高推理性能。具体可以参考👆的参考，总结下：
+- Transformer Encode 阶段是自回归的
+- 自回归下 Attention 的第 k 次计算只依赖于第 k 个 Q,其他部分是重复计算，可以通过 KV Cache 来缓存
+
+#### Paged Attention
+
+参看 [图解大模型计算加速系列之：vLLM核心技术PagedAttention原理 - 猛猿的文章 - 知乎](https://zhuanlan.zhihu.com/p/691038809)。
+
+Paged Attention 主要解决直接给输入请求预分配显存导致的显存利用率低的问题；通过借鉴现代操作系统的内存分页技术，提高推理的显存利用率。
+
+<\div align="center">
+  <img src="v2-e0209cc4bb1fb2b7bd5b3b88dae70476_1440w.jpg" alt="paged-attention" />
+</div>
+
+如上图所示：
+1. Request A 是模型请求，相当于操作系统中的进程
+2. Logical KV Blocks 相当于操作系统中的虚拟内存页，每个 Block 有固定大小，在vLLM中默认大小为16，即可装16个token的K/V值
+3. Block Table 相当于操作系统中的页表，记录了每个 Logical Block 在物理内存中的位置
+4. Physical KV blocks 相当于操作系统中的物理内存页，存储真实的K/V值，这里是存在 vRAM 中的.
+
+Paged Attention 在不同场景是如何工作的：
+- 场景
+  1. Parallel Sampling: 我给模型发送一个请求，希望它对prompt做续写，并给出三种不同的回答。我们管这个场景叫parallel sampling。
+  2. Beam Search: 即在每个decode阶段，我不是只产生1个token，而是产生top k个token（这里k也被称为束宽）。top k个token必然对应着此刻的top k个序列。我把这top k个序列喂给模型，假设词表的大小为|V|，那么在下一时刻，我就要在k*|V|个候选者中再选出top k，以此类推。不难想象每一时刻我把top k序列喂给模型时，它们的前置token中有大量的KV cache是重复的。
+- vLLM 如何调度：
+  1. Parallel Sampling: 每个请求都会被分配一个Logical Block，这个Block会被映射到vRAM中的一个Physical Block。对于 Parallel Sampling，每个请求的Logical Block都是独立的，但是 Physical Block 是共享的，通过 ref count 来判断是否需要释放,而不是再独立分配 Physical Block。在 Decode 阶段，通过 Copy-on-Write 的方式，将新生成 token 的 KV Block 复制到新的 Physical Block 中，同时新生成 token 前面 token 所在的 Block ref count -1。
+  2. Beam Search: 根据最新时刻的beam search decoding结果，释放掉不再被需要的逻辑块和对应的物理内存空间，达到节省显存目的，具体过程可参考上面知乎的文章。
+
+#### Speculate Decoding
+
+参看佳瑞大佬的这篇文章 [大模型推理妙招—投机采样（Speculative Decoding） - 方佳瑞的文章 - 知乎](https://zhuanlan.zhihu.com/p/651359908)。
+
+投机采样这个专业名称比较拗口，应该叫推理采样；这个技术的核心是解码过程中，某些token的解码相对容易，某些token的解码则很困难。因此，简单的token生成可以交给小型模型处理，而困难的token则交给大型模型处理。这里的小型模型可以采用与原始模型相同的结构，但参数更少，或者干脆使用n-gram模型。小型模型不仅计算量较小，更重要的是小模型生成，大模型校正可以减少了内存访问的需求。
+
+#### Constrainted Decoding
+
+#### Chunked prefill
+
+#### Prompt Cache
+
+#### KV Compression
+
+#### Quantization
+
 ## DeepSeek V3
 
 在最后，我们来分析下国产的 LLM 模型 DeepSeek V3，这个模型是由 DeepSeek 团队开发的，通过分析和我们上面的技术做对应。
