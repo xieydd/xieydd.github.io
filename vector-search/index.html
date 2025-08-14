@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/vector-search/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
-<meta property="article:modified_time" content="2025-02-21T22:22:47+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-08-14T14:04:26+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/vector-search\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  9148 ,
-        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-02-21T22:22:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  12622 ,
+        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-08-14T14:04:26+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,8 +129,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">向量数据库中的门门道道</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/vector-search/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>vector search</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 9148 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 19 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 12622 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 26 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -149,7 +149,14 @@
             <li><a href="#313-rag">3.1.3 RAG</a></li>
           </ul>
         </li>
-        <li><a href="#32-相似度指标">3.2 相似度指标</a></li>
+        <li><a href="#32-相似度指标">3.2 相似度指标</a>
+          <ul>
+            <li><a href="#321-余弦相似度">3.2.1 余弦相似度</a></li>
+            <li><a href="#322-欧氏距离">3.2.2 欧氏距离</a></li>
+            <li><a href="#323-负内积">3.2.3 负内积</a></li>
+            <li><a href="#324-曼哈顿距离">3.2.4 曼哈顿距离</a></li>
+          </ul>
+        </li>
         <li><a href="#33-向量搜索算法">3.3 向量搜索算法</a>
           <ul>
             <li><a href="#331-lsh-locality-sensitive-hashing">3.3.1 LSH (Locality Sensitive Hashing)</a></li>
@@ -157,6 +164,7 @@
             <li><a href="#333-hnsw-hierarchical-navigable-small-world">3.3.3 HNSW (Hierarchical Navigable Small World)</a></li>
             <li><a href="#nsg-navigating-spreading-out-graph">NSG (Navigating Spreading-out Graph)</a></li>
             <li><a href="#334-diskann">3.3.4 DiskANN</a></li>
+            <li><a href="#335-summary">3.3.5 Summary</a></li>
           </ul>
         </li>
         <li><a href="#34-向量搜索算法优化">3.4 向量搜索算法优化</a>
@@ -295,46 +303,36 @@
 <li>输入到 LLM 中生成答案</li>
 </ol>
 <h3 id="32-相似度指标">3.2 相似度指标</h3>
+<h4 id="321-余弦相似度">3.2.1 余弦相似度</h4>
 <p>余弦相似度是一种用于衡量两个向量之间的相似性的方法，它是通过计算两个向量之间的夹角来衡量的。余弦相似度的取值范围是[-1, 1]，其中1表示两个向量之间的夹角为0度，表示两个向量完全相同；-1表示两个向量之间的夹角为180度，表示两个向量完全相反；0表示两个向量之间的夹角为90度，表示两个向量之间没有相似性。计算公式如下：</p>
 <div align="center">
   <img src="cosine_distance.png" alt="cos" />
 </div>
 <p>这个公式计算了向量 𝐴 和 𝐵 之间的夹角余弦值。</p>
+<h4 id="322-欧氏距离">3.2.2 欧氏距离</h4>
 <p>欧氏距离是一种用于衡量两个向量之间的相似性的方法，它是通过计算两个向量之间的距离来衡量的。欧氏距离的取值范围是[0, ∞]，其中0表示两个向量完全相同， 数值越大则表示两个向量之间的差异越大。计算公式如下：</p>
 <div align="center">
   <img src="euclidean_distance.png" alt="l2" />
 </div>
 <p>这个公式计算了向量 𝐴 和 𝐵 之间的欧氏距离, 有些直接不开根号其只是数值不同，并无本质区别。</p>
+<h4 id="323-负内积">3.2.3 负内积</h4>
 <p>负内积（Negative inner product），它是通过计算两个向量之间的内积来衡量的。数值越大则表示两个向量之间的相似性越高。计算公式如下：</p>
 <div align="center">
   <img src="negative_inner_product.png" alt="negative_inner_product" />
 </div>
+<h4 id="324-曼哈顿距离">3.2.4 曼哈顿距离</h4>
 <p>曼哈顿距离（taxicab distance），它是通过计算两个向量之间的距离来衡量的。曼哈顿距离的取值范围是[0, ∞]，其中0表示两个向量完全相同， 数值越大则表示两个向量之间的差异越大。计算公式如下：</p>
 <div align="center">
   <img src="taxicab_distance.png" alt="taxicab_distance" />
 </div>
 <h3 id="33-向量搜索算法">3.3 向量搜索算法</h3>
-<p>直觉上，我们可以通过遍历所有的向量来找到与给定查询向量最相似的向量，但是这种方法的时间复杂度是 O(n)，当向量的数量很大时，这种方法是不可行的。为了加速向量搜索，我们通常会使用索引结构，比如 IVF(Inverted File Index)，HNSW(Hierarchical Navigable Small World)等。通过 ANNs (Approximate Nearest Neighbors Search) 算法，我们可以在更低的时间复杂度，比如 O(log(n))，找到与给定查询向量最相似的向量。</p>
+<p>直觉上，我们可以通过遍历所有的向量来找到与给定查询向量最相似的向量，但是这种方法的时间复杂度是 O(n)。当向量的数量很大时，这种方法是不可行的，对于你的应用延迟不可接受。为了加速向量搜索，我们通常会使用索引结构，比如 IVF(Inverted File Index)，HNSW(Hierarchical Navigable Small World)等。通过 ANNs (Approximate Nearest Neighbors Search) 算法，我们可以在更低的时间复杂度，比如 O(log(n))，找到与给定查询向量最相似的向量。</p>
 <h4 id="331-lsh-locality-sensitive-hashing">3.3.1 LSH (Locality Sensitive Hashing)</h4>
 <p>局部敏感哈希 (LSH) 的工作原理是通过哈希函数处理每个向量，将向量分组到存储桶中，从而最大化哈希冲突，而不是像通常的哈希函数那样最小化冲突。</p>
-<p>这里引用 Pinecone 的一张图
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75" /></p>
+<p>这里引用 Pinecone 的一张图：</p>
+<p><img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&w=750&q=75" alt="lsh" /></p>
 <p>LSH 的具体细节如下图所示：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75" /></p>
+<p><img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&w=1920&q=75" alt="lsh_details" /></p>
 <ol>
 <li>Shingling：使用 k-shingling 以及 one-hot encoding 将文本转换成稀疏向量
 <ul>
@@ -391,7 +389,7 @@
 <li>通过聚类算法将向量分成 nlist 个簇</li>
 <li>将向量分配到对应的簇中</li>
 </ol>
-<p>搜索时候，设定需要需要搜索的单元格数量 nprobe</p>
+<p>搜索时候，设定需要搜索的聚类个数 nprobe</p>
 <div align="center">
   <img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fe68c5241fd2726395449721f5414bc21b038f615-2020x1270.png&w=2048&q=75" alt="ivf" />
 </div>
@@ -436,16 +434,18 @@
 <div align="center">
   <img src="https://pic1.zhimg.com/80/v2-714a3944759f3c85e7eb0d8a50c29b70_720w.webp" alt="skiplist" />
 </div>
-<p>这里需要主要 HNSW 的几个点：</p>
+<p>这里需要注意 HNSW 的几个点：</p>
 <ol>
-<li>注意这里需要控制 HNSW 每一层的点最大连接数 Max, 在随机（越底层概率越大）插入节点时，如果有邻居节点 N 的连接数大于 Max，则对 N 进行 KNN 搜索重新与新的邻居建立连接。</li>
+<li>需要控制 HNSW 每一层的点最大连接数 Max, 在随机（越底层概率越大）插入节点时，如果有邻居节点 N 的连接数大于 Max，则对 N 进行 KNN 搜索重新与新的邻居建立连接。</li>
 <li>启发式选边策略：在每一层搜索与插入点最邻近的 M 个节点的时候，它是先召回了 efConstruction 个，然后再选择出 M 个(efConstruction &gt;= M)，选择 M 的过程可以直接选择 Top-M 但是可能会降低整体的连通性，“工牌厂程序猿” 的文章具体列举了这个 case:</li>
 </ol>
 <div align="center">
   <img src="https://pic3.zhimg.com/80/v2-239f6f6e2790a8a130fc72c97756c68a_720w.webp" alt="hnsw" />
 </div>
-<p>这里的 efConstruction 是 4，M 是 2，如果直接选择 Top-M 的话，一定会选择 A 和 B, 这样 ABQ 和 CD 的连通性就降低了，这里在选择 A 后寻找第二个最近邻的时候检测 QA 和 AB 距离，如果 QA &gt; AB 则再寻找下一个最近邻，知道大于 QA 为止,这里找到 C 点时 AC &gt; AQ。
-3. High degree vertex 越靠近最上层，这样可以减少搜索路径，提高搜索效率</p>
+<p>这里的 efConstruction 是 4，M 是 2，如果直接选择 Top-M 的话，一定会选择 A 和 B, 这样 ABQ 和 CD 的连通性就降低了，这里在选择 A 后寻找第二个最近邻的时候检测 QA 和 AB 距离，如果 QA &gt; AB 则再寻找下一个最近邻，知道大于 QA 为止,这里找到 C 点时 AC &gt; AQ。</p>
+<ol start="3">
+<li>High degree vertex 越靠近最上层，这样可以减少搜索路径，提高搜索效率</li>
+</ol>
 <p>构建参数：</p>
 <ul>
 <li>efConstruction: 图构建过程中的一个参数，用来控制在为每个节点建立连接时，考虑的最近邻候选节点的数量。该参数具体影响的是图在构建过程中节点之间连接的质量。较高的 efConstruction 值意味着在为一个节点选择邻居时会考虑更多的候选节点，从而生成更优质的图结构。但是，较高的 efConstruction 值会增加构建图的时间和空间复杂度，而且在搜索时也会增加搜索时间。</li>
@@ -465,34 +465,24 @@
 <li>在建图过程中，逐渐会将子图都和 Navigation point 相连接，这样其他的节点只需保持很少的边即可，从而减少了图的大小</li>
 <li>每次搜索从 Navigation Point 出发能够指向具体的子图，从而减少无效搜索，获得更好搜索性能。</li>
 </ul>
-<p>NSG 选边跟 HNSW 选择最小边策略不同。以点 r 为例，当 r 与 p 建立连接时，以 r 和 p 为圆心，r 和 p 的距离为半径，分别做圆，如果两个圆的交集内没有其他与 p 相连接的点，则 r 与 p 相连。在连接点 s 时，由于以 s 和 p 距离为半径的交集圆内，已有点 r 与 p 相连，所以 s 和 p 不相连。t点因为s点已经排除，所以保留,下图中最终与点 p 相连的点只有r, t 和 q，这样减少了冗余边，减少了平均出度。
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp"
-        data-srcset="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp, https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp 1.5x, https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp 2x"
-        data-sizes="auto"
-        alt="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp"
-        title="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" /></p>
+<p>NSG 选边跟 HNSW 选择最小边策略不同。以点 r 为例，当 r 与 p 建立连接时，以 r 和 p 为圆心，r 和 p 的距离为半径，分别做圆，如果两个圆的交集内没有其他与 p 相连接的点，则 r 与 p 相连。在连接点 s 时，由于以 s 和 p 距离为半径的交集圆内，已有点 r 与 p 相连，所以 s 和 p 不相连。t点因为s点已经排除，所以保留,下图中最终与点 p 相连的点只有r, t 和 q，这样减少了冗余边，减少了平均出度。</p>
+<div align="center">
+  <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" alt="nsg" />
+</div>
 <h4 id="334-diskann">3.3.4 DiskANN</h4>
 <p>DiskANN 系列有三篇文章，DiskANN，FreshDiskANN，FilterDiskANN， 从本质上是对 HNSW或者说 NSG 算法的优化。</p>
 <p>DiskANN 通过引入 SSD 友好型的图算法 Vamana,最小化磁盘操作。Vamana 图与 HNSW、NSG 图类似，区别在于初始图的选择、以及构图剪枝过程中引入宽松参数 alpha ，在图直径和节点连通度上达到平衡，图的质量相对有所提升。其次，为了规避多次随机读写磁盘数据，DiskANN 算法结合两类算法：聚类压缩算法和图结构算法，一是通过压缩原始数据，仅将压缩后的码表信息和中心点映射信息放到内存中，而原始数据和构建好的图结构数据存放到磁盘中，只需在查询匹配到特定节点时到磁盘中读取；二是修改向量数据和图结构的排列方式，将数据点与其邻居节点并排存放，这种方式使得一次磁盘操作即可完成节点的向量数据、邻接节点等信息的读取。</p>
 <p>构图过程:</p>
 <ol>
 <li>首先构建随机图，这里和 NSG 的K最近邻图不一样，对每一个节点随机选择 R 个节点相连接</li>
-<li>计算起点，找全局质新最近的点，目的是尽量减少平均搜索半径</li>
-<li>搜索起点对每个点做 ANN，将搜索路径上所有的点作为候选邻居集，执行 alpha = 1 的裁边策略</li>
+<li>计算起点，找全局质心最近的点，目的是尽量减少平均搜索半径</li>
+<li>搜索起点对每个点做 ANN，将搜索路径上所有的点作为候选邻居集，执行 alpha = 1 的裁边策略 （参考 NSG）</li>
 <li>整 alpha &gt; 1(论文推荐 1.2）重复步骤 3。因为 3 是基于随机近邻图做的，第一次迭代后图的质量不高，所以需要再迭代一次来提升图的质量，这个对召回率很重要。这里拿上图举例，如果 alpha为1.2，当 ps 的距离大于 1.2 * pr 的距离，才会裁撤 ps 边。</li>
 </ol>
-<p>下图可以直观感受下，alpha=1 以及 alpha=1.2 最后图的区别,第一行是 alpha=1, 第二行是 alpha=1.2，alpha=1.2 的图更加稠密，明显多了长边，减少了搜索半径。
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp"
-        data-srcset="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp, https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp 1.5x, https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp 2x"
-        data-sizes="auto"
-        alt="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp"
-        title="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp" /></p>
+<p>下图可以直观感受下，alpha=1 以及 alpha=1.2 最后图的区别,第一行是 alpha=1, 第二行是 alpha=1.2，alpha=1.2 的图更加稠密，明显多了长边，减少了搜索半径。</p>
+<div align="center">
+  <img src="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp" alt="diskann" />
+</div>
 <p>这时候你可能有疑问，如果按照这样建图，根本不可能在 64GB 的机器上存放超过 1B 的数据，这里就要有一些优化手段：</p>
 <ol>
 <li>先做全局 kmeans，将数据分成 k 个簇，然后将每个点分到距离最近的 I 个簇中，一般 I 取 2 就够了。对每个簇建基于内存的 Vamana 索引，最后将 k 个 Vamana 索引合并成一个索引。</li>
@@ -505,6 +495,13 @@
 <li>beam search： 简单的说就是预加载，搜索 p 点时，如果 p 的邻居点不在缓存中，需要从磁盘加载 p 点的邻居点。由于一次少量的 SSD 随机访问操作和一次 SSD 单扇区访问操作耗时差不多，所以我们可以一次加载 W 个未访问点的邻居信息，W 不能过大也不能过小，过大会浪费计算和 SSD 带宽，太小了也不行，会增加搜索时延。</li>
 </ol>
 <p>DiskANN 的优势在于可以在很小的内存占用下配合 SSD 达到不错的搜索性能，但是规格小的机器在构建索引的时候会比较慢，这里需要做好权衡。</p>
+<p>FreshDiskANN 在 DiskANN 基础上做了进一步的优化，主要是针对数据更新的场景。FreshDiskANN 通过引入一个新的索引结构，称为 FreshVamana，并引入删除列表，来支持并加速对数据的的插入和删除。于此同时采用两阶段 StreamingMerge 算法，将索引分为长期索引，临时索引，通过分层支持大规模数据。</p>
+<p>FilterDiskANN 从满足查询标签条件（如日期、价格范围、语言）的索引点中找到查询嵌入的最近邻，支持两种过滤算法：</p>
+<ol>
+<li>FilteredVamana：构建单一索引，其中每个顶点的邻居基于几何结构和共同标签来决定。该算法在图构建过程中同时考虑向量距离和标签信息，形成既考虑几何邻近性又考虑标签相关性的连接</li>
+<li>StitchedVamana：为每个标签构建单独的子图，然后将这些子图叠加并剪枝形成最终图。这种方法在实际数据集上consistently提供比FilteredVamana高2倍的QPS，但构建时间更长</li>
+</ol>
+<h4 id="335-summary">3.3.5 Summary</h4>
 <p>这里总结下，内存占用上 HNSW 明显大于 IVF，LSH 以及 Flat(KNN)，召回率以及搜索速度上 HNSW 优于 IVF，LSH。DiskANN 在内存占用上优于 HNSW，但是在构建索引的时候会比较慢，搜索速度上优于 HNSW，但是召回率上不如 HNSW。所以在选择向量搜索算法的时候需要根据自己的需求来选择。</p>
 <h3 id="34-向量搜索算法优化">3.4 向量搜索算法优化</h3>
 <p>通过减少 Vector 大小，或者通过降维让搜索更快，这里列举了一些常见的向量搜索算法优化方法。</p>
@@ -536,11 +533,12 @@
 编码： scalar = (max-min)/255, floor(value-min/scaler) 如果小于0 则取 0，大于 255 则取 255，这样就将向量压缩到 0-255 之间，这样可以减少向量的大小，但是会损失一些信息。
 解码：value = min + (code + 0.5)*(max-min)/255</p>
 <h4 id="343-rabitq">3.4.3 RabitQ</h4>
-<p>RabitQ 来源于论文 <a href="https://arxiv.org/abs/2405.12497" target="_blank" rel="noopener noreffer ">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>.</p>
+<p>RabitQ 来源于论文 <a href="https://arxiv.org/abs/2405.12497" target="_blank" rel="noopener noreffer ">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>, 具体理论细节可以参考 RabitQ 的作者 Jianyang Gao 的 <a href="https://dev.to/gaoj0017/quantization-in-the-counterintuitive-high-dimensional-space-4feg" target="_blank" rel="noopener noreffer ">blog</a>。</p>
 <p>RabitQ 指出现阶段 PQ 算法的两个问题：</p>
 <ol>
 <li>用 kmeans 的质心作为 codebook， 构建时启发式的近似估计，没有理论保证</li>
-<li>距离估计，用量化后的向量和 query向量的距离估计原始向量和 query 向量的距离，缺乏近似误差范围</li>
+<li>距离估计，用量化后的向量和 query向量的距离估计原始向量和 query 向量的距离，缺乏近似误差范围
+上述的两个问题就导致 PQ 可能在一些数据集或者真实场景下的误差非常大。</li>
 </ol>
 <p>如何解决上述问题：</p>
 <ol>
@@ -548,8 +546,8 @@
 <ol>
 <li>首先对数据向量进行归一化，以便将它们对齐在单位超球面上D维空间</li>
 <li>构建一组 $2^{D}$ 坐标为的双值向量 $−1/\sqrt{D}$或者 $+1/\sqrt{D}$（即，该集合由超立方体的顶点组成，这些顶点均匀地分布在单位超球面上）</li>
-<li>通过将每个双值向量乘以随机正交矩阵来随机旋转双值向量（即执行一种 Johnson-Lindenstrauss 变换)</li>
-<li>对于每个向量，将其与码本最接近的向量作为量化向量。 由于每个量化向量都是旋转的 D 维双值向量，我们将其量化码表示为长度的位串D，其中 0 和 1 表示两个不同的值。 码本构造的基本原理是它具有清晰的几何解释（即码本中的向量是单位超球面上的一组随机旋转向量） 使得可以明确地分析数据向量、它们的量化向量和查询向量之间的几何关系。</li>
+<li>通过将每个双值向量乘以随机正交矩阵来随机旋转双值向量（即执行一种 Johnson-Lindenstrauss 变换)，为了消除确定性码本对特定向量的偏好</li>
+<li>对于每个向量，将其与码本最接近的向量作为量化向量， 最小化内积。 由于每个量化向量都是旋转的 D 维双值向量，我们将其量化码表示为长度的位串D，其中 0 和 1 表示两个不同的值。 码本构造的基本原理是它具有清晰的几何解释（即码本中的向量是单位超球面上的一组随机旋转向量） 使得可以明确地分析数据向量、它们的量化向量和查询向量之间的几何关系。</li>
 </ol>
 </li>
 <li>距离估计
@@ -565,6 +563,100 @@
 <li>批量数据使用 SIMD 加速</li>
 </ul>
 <p>使用随机 codebook 避免双值 codebook 在一些特定向量表现不佳，比如 ($1/\sqrt{D}$&hellip; $−1/\sqrt{D}$) 和 (1, 0, 0, 0) 的量化，我们使用随机正交矩阵去乘这个 codebook, 让 codebook 单位向量有相同的概率旋转到单位超球面上的任意位置</p>
+<p>这里使用通俗的话讲解下 RabitQ 的核心思想：
+<strong>终极解说：高维空间中的闪电搜图术 (RaBiT-Q 算法)</strong></p>
+<p>想象一下，我们正在为世界上最大的图片分享网站（比如Instagram或Pinterest）构建一个“以图搜图”的功能。这意味着，当用户上传一张“沙滩上的柯基犬”的照片时，我们要能从包含数十亿张图片的数据库里，瞬间找出所有其他“沙舍上的柯基犬”或者类似的图片。</p>
+<p>这是一个巨大的挑战。计算机是如何“看懂”并比较图片的呢？</p>
+<ol>
+<li><strong>第一步：把图片变成“数字指纹”——向量化</strong></li>
+</ol>
+<p>计算机无法直接理解图片。它首先需要通过一个复杂的神经网络（比如 ResNet），将每一张图片都转换成一个由很多数字组成的“列表”，我们称之为<strong>向量 (Vector)</strong>。这个向量就是这张图片的“数字指纹”，它捕捉了图片的核心特征。</p>
+<ul>
+<li><strong>小白理解：</strong> 就像我们给人办身份证，除了照片，还会记录身高、体重、血型等信息。这里的“向量”就是一张图片的“数字身份证”，包含了成百上千个描述它的“特征值”。</li>
+<li><strong>专业说明：</strong> 我们使用预训练的深度学习模型（如CNN）提取图像的高维特征嵌入（Embedding）。例如，一张图片可以被表示为一个128维或更高维度的浮点数向量 <code>o_r</code>。我们的目标是，对于一个查询向量 <code>q_r</code>，找到数据库中与它<strong>欧几里得距离</strong> <code>||o_r - q_r||</code> 最小的那些 <code>o_r</code>。</li>
+</ul>
+<ol start="2">
+<li><strong>第二步：数据大扫除——归一化</strong></li>
+</ol>
+<p>直接比较这些原始的“数字指纹”既慢又困难。数据可能存在整体的偏移，而且每个向量的“长度”（数值大小的综合体现）也各不相同，会干扰我们对“方向”（内容相似度）的判断。</p>
+<p><strong>操作：</strong></p>
+<ol>
+<li><strong>中心化 (Centering):</strong> 找到所有图片向量的“平均位置”（即<strong>质心 <code>c</code></strong>），然后让每个向量都减去这个中心。这相当于把整个坐标系的原点“搬”到了数据中心。</li>
+<li><strong>归一化 (Normalization):</strong> 将每个中心化后的向量，都除以它自身的长度。</li>
+</ol>
+<p><strong>结果：</strong> 经过这一步，所有的“数字指纹”都发生了两个变化：</p>
+<ol>
+<li>它们不再是散乱的，而是都围绕着同一个中心。</li>
+<li>它们的“长度”都变成了 <strong>1</strong>。它们现在都“趴”在一个巨大的、高维的“单位球”的球面上。这个操作保留了向量的<strong>方向</strong>（代表图片内容），而舍弃了其原始的<strong>长度</strong>。</li>
+</ol>
+<ul>
+<li><strong>小白理解：</strong> 想象一下，我们把所有人的身高都统一拉伸或压缩到1米8，但保持他们高矮胖瘦的“比例”不变。这样一来，大家就都站在了同一个起跑线上，比较起来更公平。</li>
+<li><strong>专业说明：</strong> 我们将欧氏距离的计算问题，通过 <code>||o_r - q_r||² = ||o_r - c||² + ||q_r - c||² - 2 · ||o_r - c|| · ||q_r - c|| · &lt;q, o&gt;</code> 这个公式，转化为了一个求解归一化后的单位向量 <code>q</code> 和 <code>o</code> 之间<strong>内积 <code>&lt;q, o&gt;</code></strong> 的问题。<code>||o_r - c||</code> 可以在索引时预计算，<code>||q_r - c||</code> 在查询时计算一次即可。问题的核心变成了如何快速估算 <code>&lt;q, o&gt;</code>。</li>
+</ul>
+<ol start="3">
+<li><strong>第三步：建立“宇宙坐标系”——码本构建与随机化</strong></li>
+</ol>
+<p>即使所有向量都在单位球面上，它们的数量依然是海量的。逐一比较内积还是太慢。我们需要一套“参考坐标系”来快速给向量定位。</p>
+<p><strong>操作：</strong></p>
+<ol>
+<li><strong>码本 (Codebook):</strong> 我们在球面上建立一套“参考点”。一个绝妙的方法是，在球内部嵌入一个<strong>超立方体 (Hypercube)</strong>，它的所有顶点正好落在球面上。这些顶点非常均匀、对称地分布，是理想的参考点。这些顶点的集合，就是我们的“码本”。</li>
+<li><strong>随机化 (Randomization):</strong> 一个固定的码本有其“盲区”。为了解决这个问题，我们不使用一个固定的立方体，而是将它进行<strong>随机旋转</strong>。我们生成M个（比如16个）不同的随机旋转，得到<strong>M个</strong>姿态各异的“码本”。</li>
+</ol>
+<ul>
+<li><strong>小白理解：</strong> 为了快速找到地球上的某个城市，我们不会去拿尺子量。我们会先看它属于哪个大洲（亚洲、欧洲&hellip;）。这里的“码本”就是“七大洲”的划分。但固定的七大洲划分可能对某些边界城市不友好。于是我们干脆设计了M套不同的、随机的“大洲划分法”，从多个角度来给城市定位。</li>
+<li><strong>专业说明：</strong> 码本由超立方体的顶点 <code>{-1, 1}^D</code> 构成。我们生成M个随机正交旋转矩阵 <code>R_1, ..., R_M</code>。这样我们就拥有了M个码本 <code>C_1, ..., C_M</code>，其中 <code>C_i</code> 是由 <code>R_i</code> 旋转后的超立方体顶点组成。</li>
+</ul>
+<ol start="4">
+<li><strong>第四步：给每张图片打上“压缩编码”——索引构建</strong></li>
+</ol>
+<p>这是离线完成的工作，为整个数据库建立一个可以被闪电搜索的索引。</p>
+<p><strong>操作：</strong>
+对于数据库中的<strong>每一张</strong>图片（即每一个向量 <code>o</code>），我们：</p>
+<ol>
+<li>用之前生成的那M个旋转矩阵，去旋转 <code>o</code>。</li>
+<li>将M个旋转后的 <code>o</code>，分别在M个码本中找到离它<strong>最近的那个顶点</strong>。</li>
+<li>因为超立方体的顶点坐标只有+1和-1，我们可以用<strong>1个比特</strong>（0或1）来表示。比如+1记为1，-1记为0。</li>
+<li>这样，每个 <code>o</code> 就被转换成了 <strong>M个</strong>D维的二进制码。</li>
+</ol>
+<p><strong>结果：</strong> 一个原本需要数千比特存储的浮点数向量，现在被压缩成了M个D比特的二进制码。存储空间大大减少，而且为后续的快速位运算比较铺平了道路。</p>
+<ul>
+<li><strong>小白理解：</strong> 我们为公司里的每个员工，都从M个不同的角度拍了一张照片，并根据照片生成了一个极简的“素描码”（二进制码），存入他的档案。</li>
+<li><strong>专业说明：</strong> 对于每个 <code>o</code>，我们计算 <code>b_i = Quantize(R_i * o)</code>，其中 <code>i=1...M</code>。<code>Quantize</code> 函数找到超立方体中最近的顶点，并将其表示为D比特的二进制码 <code>b_i</code>。同时，我们也预计算并存储 <code>&lt;ō, o&gt;</code>，即量化误差项，为后续的精确估算做准备。</li>
+</ul>
+<ol start="5">
+<li><strong>第五步：闪电搜索——查询与估算</strong></li>
+</ol>
+<p>当用户上传新图片（查询向量 <code>q</code>）时，实时搜索开始。</p>
+<ol>
+<li><strong>查询编码：</strong> <code>q</code> 必须经历和数据库图片完全相同的处理：归一化、用M个相同的旋转矩阵旋转、生成M个二进制码。</li>
+<li><strong>粗筛 (Candidate Search):</strong> 我们拿着 <code>q</code> 的M个二进制码，去数据库中进行M次搜索。搜索方式不是慢速的浮点数计算，而是超高速的<strong>位运算</strong>。我们计算查询码和数据库码的<strong>汉明距离</strong>（有多少位不同），快速捞出几百个最相似的“候选图片”。</li>
+<li><strong>精排 (Re-ranking &amp; Estimation):</strong> 对这几百个候选图片，我们不能再用粗糙的二进制码了。我们需要一个更精确的估算。这时，那个神奇的<strong>估算公式</strong>登场了：
+<strong><code>&lt;o, q&gt; ≈ &lt;ō, q&gt; / &lt;ō, o&gt;</code></strong>
+<ul>
+<li>这个公式告诉我们，我们想知道的真实内积 <code>&lt;o, q&gt;</code>，可以用两个可以被高效计算或提前算好的值来近似！</li>
+<li><strong>为什么可以这么近似？</strong> 因为我们天才地利用了<strong>高维空间的集中现象</strong>。我们证明了，在随机旋转下，那个导致公式无法简化的“麻烦项”<code>&lt;ō, e₁&gt;</code> 的值会高度集中于0，可以忽略不计。这是整个算法的理论基石和点睛之笔。</li>
+</ul>
+</li>
+<li><strong>最终排序：</strong> 我们用这个估算公式，为几百个候选图片计算出近似的内积，再结合之前的第一步公式，得到最终的距离排序。将最靠前的结果返回给用户。</li>
+</ol>
+<ul>
+<li><strong>小白理解：</strong>
+<ol>
+<li>新来的访客也被从M个角度拍了照，生成M个“素描码”。</li>
+<li>安保拿着这些素描码去档案室飞快地比对（位运算），找出几百个长得最像的员工。</li>
+<li>对于这几百个员工，安保不再看素描了，而是拿出一个“神奇估算器”，通过一个简单的除法，就估算出了访客和每个候选员工的真实“亲近度”，然后排出名次。</li>
+</ol>
+</li>
+</ul>
+<p><strong>总结</strong></p>
+<p>这个算法的精髓在于，它完美地融合了多个强大的思想：</p>
+<ol>
+<li><strong>降维思想：</strong> 将复杂的欧氏距离问题，转化为更简单的单位向量内积问题。</li>
+<li><strong>量化压缩：</strong> 用超立方体码本将浮点向量压缩成二进制码，极大节省了存储和计算。</li>
+<li><strong>随机化思想：</strong> 通过随机旋转码本，避免了算法的“盲区”，并激活了高维空间的奇特性质。</li>
+<li><strong>高维几何：</strong> 深刻利用了“集中现象”这一反直觉的数学事实，推导出了一个极为高效的近似估算公式，完成了从“粗筛”到“精排”的最后一跃。</li>
+</ol>
+<p>最终，一个原本需要在数十亿数据上进行慢速、精确计算的“不可能完成的任务”，被巧妙地分解为**“离线编码”**和**“在线闪搜”**两部分，实现了在保证高精度的前提下的数量级加速。</p>
 <h2 id="4-常见的向量数据库极其优劣">4. 常见的向量数据库极其优劣</h2>
 <p>以下列举了一些常见的向量数据库，以及他们的优劣势, 有些是专用向量数据库，有些是对现有关系型数据库的扩展。</p>
 <h3 id="41-milvushttpsmilvusio">4.1 <a href="https://milvus.io/" target="_blank" rel="noopener noreffer ">Milvus</a></h3>
@@ -605,6 +697,7 @@
 <h3 id="46-pgvectorhttpsgithubcompgvectorpgvector">4.6 <a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener noreffer ">Pgvector</a></h3>
 <h3 id="47-pgvectorshttpsgithubcomtensorchordpgvectors">4.7 <a href="https://github.com/tensorchord/pgvecto.rs" target="_blank" rel="noopener noreffer ">Pgvecto.rs</a></h3>
 <h3 id="48-vectorchordhttpsgithubcomtensorchordvectorchord">4.8 <a href="https://github.com/tensorchord/VectorChord" target="_blank" rel="noopener noreffer ">VectorChord</a></h3>
+<p>如何选型参考 <a href="https://mp.weixin.qq.com/s/LtMCoSgGLSSWJU4IceRwiA" target="_blank" rel="noopener noreffer ">大模型时代如何选向量数据库？Milvus（Zilliz）、LanceDB、Chroma、Pinecone四大热门技术全解析！</a>。</p>
 <h2 id="5-优秀的向量搜索库以及向量数据库开源项目">5. 优秀的向量搜索库以及向量数据库开源项目</h2>
 <h2 id="6-向量数据库商业化你需要知道什么">6. 向量数据库商业化你需要知道什么</h2>
 <h2 id="7-总结">7. 总结</h2>
@@ -625,8 +718,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-02-21&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/341eaa86fe4a5d0b1faa6cee5433283e36c1cd7e" target="_blank" title="commit by xieydd(xieydd@gmail.com) 341eaa86fe4a5d0b1faa6cee5433283e36c1cd7e: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>341eaa8</a></span>
+                <span>更新于 2025-08-14&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/5594e77d99aa9628c90dddc060d9ae1f71fdad57" target="_blank" title="commit by xieydd(xieydd@gmail.com) 5594e77d99aa9628c90dddc060d9ae1f71fdad57: update">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>5594e77</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

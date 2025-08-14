@@ -719,7 +719,7 @@ MLC 的 MicroServing API 通过[细粒度的 API](https://blog.mlc.ai/2025/01/07
 
 Paged Attention 主要解决直接给输入请求预分配显存导致的显存利用率低的问题；通过借鉴现代操作系统的内存分页技术，提高推理的显存利用率。
 
-<\div align="center">
+<div align="center">
   <img src="v2-e0209cc4bb1fb2b7bd5b3b88dae70476_1440w.jpg" alt="paged-attention" />
 </div>
 
@@ -833,6 +833,7 @@ HAI-LLM：
 <div align="center">
   <img src="dualpipeline.png" alt="dualpipeline" />
 </div>
+
 根据上图：
 1. DualPipe 显著减小了气泡
 2. DualPipe 将峰值激活内存增加了数倍，PP < 1

@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/llm-infra/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2025-01-09T10:20:28+08:00" />
-<meta property="article:modified_time" content="2025-02-21T22:22:47+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-08-14T14:04:26+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/llm-infra\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  18923 ,
-        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-02-21T22:22:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  18986 ,
+        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-08-14T14:04:26+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,7 +129,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">LLM Infra 你需要知道的一切</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/training/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>training</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 18923 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 18986 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 38 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -881,8 +881,8 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <h4 id="paged-attention">Paged Attention</h4>
 <p>参看 <a href="https://zhuanlan.zhihu.com/p/691038809" target="_blank" rel="noopener noreffer ">图解大模型计算加速系列之：vLLM核心技术PagedAttention原理 - 猛猿的文章 - 知乎</a>。</p>
 <p>Paged Attention 主要解决直接给输入请求预分配显存导致的显存利用率低的问题；通过借鉴现代操作系统的内存分页技术，提高推理的显存利用率。</p>
-<p>&lt;\div align=&quot;center&quot;&gt;
-<img src="v2-e0209cc4bb1fb2b7bd5b3b88dae70476_1440w.jpg" alt="paged-attention" /></p>
+<div align="center">
+  <img src="v2-e0209cc4bb1fb2b7bd5b3b88dae70476_1440w.jpg" alt="paged-attention" />
 </div>
 <p>如上图所示：</p>
 <ol>
@@ -995,11 +995,13 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <div align="center">
   <img src="dualpipeline.png" alt="dualpipeline" />
 </div>
-根据上图：
-1. DualPipe 显著减小了气泡
-2. DualPipe 将峰值激活内存增加了数倍，PP < 1
-3. 尽管 DualPipe 需要保留模型参数的两个副本，但这并不会显着增加内存消耗，因为在训练期间使用了较大的 [EP](#expert-parallelism) 大小
-4. 气泡和激活内存都不会因为 mini-batch 增加而增加
+<p>根据上图：</p>
+<ol>
+<li>DualPipe 显著减小了气泡</li>
+<li>DualPipe 将峰值激活内存增加了数倍，PP &lt; 1</li>
+<li>尽管 DualPipe 需要保留模型参数的两个副本，但这并不会显着增加内存消耗，因为在训练期间使用了较大的 <a href="#expert-parallelism" rel="">EP</a> 大小</li>
+<li>气泡和激活内存都不会因为 mini-batch 增加而增加</li>
+</ol>
 <h4 id="通信">通信</h4>
 <p>Cross-Node All-to-All Communication:</p>
 <ol>
@@ -1109,8 +1111,8 @@ GPUs (Blackwell series)</li>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-02-21&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/341eaa86fe4a5d0b1faa6cee5433283e36c1cd7e" target="_blank" title="commit by xieydd(xieydd@gmail.com) 341eaa86fe4a5d0b1faa6cee5433283e36c1cd7e: udpate">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>341eaa8</a></span>
+                <span>更新于 2025-08-14&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/5594e77d99aa9628c90dddc060d9ae1f71fdad57" target="_blank" title="commit by xieydd(xieydd@gmail.com) 5594e77d99aa9628c90dddc060d9ae1f71fdad57: update">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>5594e77</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
