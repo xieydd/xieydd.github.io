@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/vector-search/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
-<meta property="article:modified_time" content="2025-08-14T14:04:26+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-08-14T16:48:09+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/vector-search\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  12622 ,
-        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-08-14T14:04:26+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  17280 ,
+        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-08-14T16:48:09+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,8 +129,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">向量数据库中的门门道道</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/vector-search/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>vector search</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 12622 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 26 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17280 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 35 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -457,21 +457,153 @@
 </ul>
 <p>HNSW 由于检索过程中涉及平均单条查询会产生数百个读磁盘操作，需要不停的寻找下一个随机点，放到 SSD 会导致极高的时延，所以是全内存的。</p>
 <h4 id="nsg-navigating-spreading-out-graph">NSG (Navigating Spreading-out Graph)</h4>
-<p>NSG 围绕图的连通性、减少平均出度，缩短搜索路径以及图的大小等方面进行了优化， 提出新的图结构 Monotonic Relative Neighborhood Graph (MRNG)。</p>
-<p>具体流程如下：</p>
+<p>虽然 HNSW 的查询速度快，精度高，但是并非完美，它主要有以下几个痛点：</p>
 <ul>
-<li>构建 K-nearest-neighbor-graph (KNNG) 作为构图基准</li>
-<li>随机选择一个点作为 Navigation Point，后续所有新插入的节点在选边时都会将Navigation Point加入候选集合</li>
-<li>在建图过程中，逐渐会将子图都和 Navigation point 相连接，这样其他的节点只需保持很少的边即可，从而减少了图的大小</li>
-<li>每次搜索从 Navigation Point 出发能够指向具体的子图，从而减少无效搜索，获得更好搜索性能。</li>
+<li>索引复杂且占用内存大：HNSW 的核心是“多层高速公路”网络。这个多层结构虽然效果好，但实现起来相对复杂，而且为了存储每一层的图结构，需要占用不小的内存（RAM）。当数据量达到十亿、百亿级别时，内存成本会非常高。</li>
+<li>构建过程复杂：在构建 HNSW 索引时，需要为每个新加入的节点随机选择一个层级，然后在该层级及以下的所有层级中寻找邻居并连接，这个过程也比较耗时。</li>
+</ul>
+<p>NSG 论文要解决的核心问题是：能不能设计一种**结构更简单、索引更小（更省内存）**的图，但搜索性能却能和复杂、庞大的 HNSW 相媲美，甚至超越它？
+NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。</p>
+<ol>
+<li>核心理论：从“任意两点”到“一个中心”的思想转变 (MRNG)</li>
+</ol>
+<ul>
+<li>理想的图 (MSNET)：学术界早就提出过一种理想的图，叫做“单调搜索网络”（Monotonic Search Network, MSNET）。在这种图上搜索，你从任何一个点出发，每走一步都必然离你的目标更近。就像在一个山谷里找最低点，你只要一直往下走，保证能找到。这种图上搜索不会“走回头路”，效率极高。但问题是，构建一个完美的 MSNET 非常非常耗时，不切实际。</li>
+<li>NSG的理论基础 (MRNG)：论文作者基于 MSNET 的思想，提出了一种新的、更稀疏的图叫 MRNG (Monotonic Relative Neighborhood Graph)。它也是一种能保证“单调性”的图，但构建规则更巧妙。然而，构建一个完整的 MRNG 仍然太慢了。</li>
+<li>思想的飞跃：作者们意识到，我们真的需要保证任意两个点之间都有单调路径吗？在实际搜索中，我们总是从一个（或少数几个）入口点开始搜索。
+<ul>
+<li>HNSW 的思路：从顶层图的入口点开始，层层下沉。</li>
+<li>NSG 的革命性思路：我们干脆只设置一个全局的“入口点”，我们称之为“导航节点”（Navigating Node）。我们不再追求构建一个“任意两点都能高效互通”的复杂网络，而是构建一个“从这个导航节点出发，到任何其他节点都有一条高效路径”的中心化网络。
+这就好比城市交通规划：</li>
+</ul>
+</li>
+<li>HNSW：建立了一个“地铁 + 公交 + 快速路”的立体交通网，你从任何地方到任何地方都很方便，但系统复杂，建设成本高。</li>
+<li>NSG：在城市正中心建立一个巨大的“宇宙中心交通枢纽”。所有远距离出行，都先到这个枢纽，再从枢纽出发去目的地。整个网络结构变成了以枢纽为中心的放射状，大大简化了。</li>
+</ul>
+<ol start="2">
+<li>核心设计：导航节点 (Navigating Node)</li>
+</ol>
+<p>这个“宇宙中心交通枢纽”就是 NSG 的灵魂——导航节点。</p>
+<ul>
+<li>如何选择？ 通常选择整个数据集的“质心”（几何中心）附近的一个点。这个点具有最好的全局视野。</li>
+<li>它有什么用？
+<ul>
+<li>搜索的唯一入口：所有的查询，无论目标在哪里，都统一从这个导航节点开始。</li>
+<li>建图的绝对核心：在为每个节点 p 选择邻居时，NSG 不再是盲目地在全局找，而是利用一个非常聪明的技巧。</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>核心技巧：高效的邻居选择策略</li>
+</ol>
+<p>这是 NSG 能够兼顾“图的稀疏性”（省内存）和“搜索的高效性”的关键。当给节点 p 构建边时，如何为它选择邻居？</p>
+<ul>
+<li>传统方法：在 p 周围一定范围内找最近的几个点。范围选多大？邻居选多少个？很难权衡。</li>
+<li>NSG 的天才技巧：
+<ul>
+<li>我们先在图上（一个预先构建的粗糙 k-NN 图）模拟一次从“导航节点”到 p 的搜索。</li>
+<li>这次搜索会经过一条路径，比如 导航节点 → a → b → &hellip; → p。</li>
+<li>NSG 认为，这条路径上经过的所有节点 (a, b, &hellip;)，都是 p 的“绝佳邻居候选人”。为什么？因为这些点是连接全局中心和局部点 p 的关键桥梁。</li>
+<li>最后，NSG 只需要在这些少量的“候选人”中，再使用 MRNG 的规则精选出最终的邻居。
+这个技巧的妙处在于，它把一个全局的、开放的邻居选择问题，变成了一个局部的、数量有限的优化问题，极大地降低了建图的计算复杂度。</li>
+</ul>
+</li>
+</ul>
+<p>结合上面的创新点，我们来梳理一下 NSG 的完整流程：</p>
+<ol>
+<li>构建 (Build)</li>
+</ol>
+<ul>
+<li>步骤一：找枢纽。计算数据质心，找到离质心最近的点作为“导航节点”。</li>
+<li>步骤二：打基础。构建一个基础的、粗糙的 k-近邻图（k-NN Graph）。这一步是为了后续的路径搜索。</li>
+<li>步骤三：连主路 (核心)。遍历图中除导航节点外的每一个节点 p：
+<ol>
+<li>以 p 为目标，从“导航节点”在上一步的 k-NN 图上进行一次搜索。</li>
+<li>把搜索路径上访问过的所有节点都收集起来，形成 p 的“候选邻居池”。</li>
+<li>从这个池子里，为 p 精心挑选出固定数量（比如 m 个）的邻居并连接。同时，为了保证图的稀疏性，严格控制每个节点出度的上限。</li>
+</ol>
+</li>
+<li>步骤四：查漏补缺。由于严格限制了出度，可能会导致图的某些部分断开连接。最后，从导航节点开始做一次深度优先搜索（DFS），检查是否所有点都可达，如果发现有“孤岛”，就强行给孤岛上的点连一条边到主网络，确保图的连通性。</li>
+</ul>
+<ol start="2">
+<li>搜索 (Search) NSG 的搜索过程异常简洁：</li>
+</ol>
+<ul>
+<li>从“导航节点”出发。</li>
+<li>不断地、贪心地跳到当前节点的所有邻居中，离查询目标最近的那个邻居。</li>
+<li>重复上一步，直到找不到比当前节点更近的邻居为止，此时就到达了局部最优，也就是搜索结果。</li>
 </ul>
 <p>NSG 选边跟 HNSW 选择最小边策略不同。以点 r 为例，当 r 与 p 建立连接时，以 r 和 p 为圆心，r 和 p 的距离为半径，分别做圆，如果两个圆的交集内没有其他与 p 相连接的点，则 r 与 p 相连。在连接点 s 时，由于以 s 和 p 距离为半径的交集圆内，已有点 r 与 p 相连，所以 s 和 p 不相连。t点因为s点已经排除，所以保留,下图中最终与点 p 相连的点只有r, t 和 q，这样减少了冗余边，减少了平均出度。</p>
 <div align="center">
   <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" alt="nsg" />
 </div>
+<p>NSG 相对 HNSW 的优势：</p>
+<ul>
+<li>索引大小 (Index Size)：NSG 完胜。NSG 的索引（图占用的内存）通常只有 HNSW 的 1/2 到 1/3。这是 NSG 最大的优势，尤其是在处理超大规模数据集时，能节省巨大的硬件成本。</li>
+<li>搜索性能 (Performance)：两者旗鼓相当，NSG 略有优势。在很多数据集上，NSG 的搜索速度（QPS, Queries Per Second）都超过了 HNSW，尤其是在要求高精度（High Recall）的场景下。</li>
+<li>简洁性 (Simplicity)：NSG 完胜。NSG 是单层图结构，没有 HNSW 复杂的层级概念，无论是理解还是实现都更加简单。</li>
+</ul>
+<p>但是业界普遍还是采用 HNSW, 主要原因有以下几点：</p>
+<ol>
+<li>增量索引 (Incremental Indexing) 的能力至关重要</li>
+</ol>
+<ul>
+<li>工业场景：在实际应用中，数据是动态变化的。比如，电商网站每秒都有新商品上架，社交网络每秒都有新图片发布。我们不可能每次都为了新增的几个数据点，就花几小时甚至几天去重建整个索引。我们需要一个能高效“添加”和“删除”单个数据点的索引。</li>
+<li>HNSW 的优势：HNSW 的多层结构天然支持增量索引。当一个新节点加入时，算法会给它随机分配一个层级，然后从顶层开始，像普通查询一样找到它应该插入的位置，并连接附近的邻居。这个过程是局部化的，非常高效，不会影响整个图的结构。删除节点也相对容易处理。</li>
+<li>NSG 的劣势：NSG 的设计哲学——依赖一个固定的全局“导航节点”——让增量索引变得非常困难。
+<ul>
+<li>添加节点：新节点 p 的邻居是通过从“导航节点”到 p 的路径来决定的。但新节点 p 还没有加入图，怎么找路径？即便加入，它的存在也可能会改变其他节点的最优路径，理论上可能需要更新大量节点的边，这违背了增量索引的初衷。</li>
+<li>删除节点：如果删除的节点恰好是某个关键路径上的一环，可能会导致图的连通性被破坏，或者搜索效率下降。
+这是 HNSW 在工业界占据主导地位的最核心、最关键的原因。 对于静态数据集（比如一次性构建好，不再改变的图像库），NSG 是个好选择。但对于绝大多数需要持续更新的在线服务，HNSW 的灵活性是不可替代的。</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>生态系统和成熟度 (Ecosystem and Maturity)</li>
+</ol>
+<ul>
+<li>先发优势：HNSW 提出得更早，并且其作者很快将其集成到了当时非常流行的 nmslib 库中。随后，像 Faiss (Facebook AI)、Lucene (Apache) 等业界顶级的开源库都迅速跟进，提供了稳定、高效的 HNSW 实现。</li>
+<li>社区和文档：有了这些顶级库的支持，HNSW 迅速积累了庞大的用户社区、丰富的文档、教程和生产环境下的实践经验。当一个工程师遇到问题时，他能很容易地找到解决方案。</li>
+<li>信任和稳定性：HNSW 已经在无数公司的生产环境中经受了多年的考验，其鲁棒性（robustness）和稳定性得到了充分验证。对于追求稳定压倒一切的工业界来说，选择一个“久经沙场的老将”远比选择一个“初出茅庐的天才”要稳妥。</li>
+</ul>
+<ol start="3">
+<li>鲁棒性和参数敏感度 (Robustness &amp; Parameter Sensitivity)</li>
+</ol>
+<ul>
+<li>HNSW：其多层结构提供了很好的容错性。即使在高层走错了一步，下沉到更稠密的低层后，仍然有很大的机会修正路线，最终找到正确的目标。它的性能对参数（如 M, efConstruction）虽然敏感，但调整起来相对直观。</li>
+<li>NSG：其性能高度依赖于“导航节点”的选择和图的连通质量。如果导航节点选得不好（比如选在了数据分布的边缘），或者在建图过程中为了稀疏性而剪枝过多，导致关键路径丢失，那么搜索性能可能会急剧下降。它的“天花板”可能很高，但“地板”也可能更低。</li>
+</ul>
 <h4 id="334-diskann">3.3.4 DiskANN</h4>
-<p>DiskANN 系列有三篇文章，DiskANN，FreshDiskANN，FilterDiskANN， 从本质上是对 HNSW或者说 NSG 算法的优化。</p>
-<p>DiskANN 通过引入 SSD 友好型的图算法 Vamana,最小化磁盘操作。Vamana 图与 HNSW、NSG 图类似，区别在于初始图的选择、以及构图剪枝过程中引入宽松参数 alpha ，在图直径和节点连通度上达到平衡，图的质量相对有所提升。其次，为了规避多次随机读写磁盘数据，DiskANN 算法结合两类算法：聚类压缩算法和图结构算法，一是通过压缩原始数据，仅将压缩后的码表信息和中心点映射信息放到内存中，而原始数据和构建好的图结构数据存放到磁盘中，只需在查询匹配到特定节点时到磁盘中读取；二是修改向量数据和图结构的排列方式，将数据点与其邻居节点并排存放，这种方式使得一次磁盘操作即可完成节点的向量数据、邻接节点等信息的读取。</p>
+<p>DiskANN 是建立在这样一个背景下：</p>
+<ol>
+<li>ANNS 算法（如 HNSW、NSG）为了保证速度，都依赖于将索引存储在内存中。这导致存储成本非常高，限制了可以处理的数据集大小。</li>
+<li>SSD 的潜力： 固态硬盘（Solid-State Drives, SSDs）相比传统的硬盘更快，但仍然比内存慢很多。大家普遍认为，将索引放在 SSD 上会导致搜索速度大幅下降，无法满足实际应用的需求。</li>
+</ol>
+<p>DiskANN 要解决的问题：如何设计一种新的 ANNS 索引，突破内存限制，使得我们能够在单台机器上，利用廉价的 SSD 存储十亿级别的数据，并保持高精度和低延迟？</p>
+<p>DiskANN 系列有三篇文章，DiskANN，FreshDiskANN，FilterDiskANN。</p>
+<p>DiskANN 的核心创新在于：算法 (Vamana 图) + 系统设计（SSD 优化）。</p>
+<ol>
+<li>核心算法：Vamana 图</li>
+</ol>
+<p>Vamana 图是 DiskANN 论文提出的新型图索引，它主要解决了以下两个问题：</p>
+<ul>
+<li>优化 SSD 访问模式： 普通的图索引（如 NSG、HNSW）在 SSD 上进行搜索时，会产生大量的随机读取，导致延迟很高。Vamana 图旨在减少 SSD 的随机读取次数，使其更倾向于顺序读取。</li>
+<li>更好的搜索性能： 相比于 NSG 和 HNSW，Vamana 图在特定场景下可以提供更好的搜索精度和速度。
+为了实现这些目标，Vamana 图的设计有以下几个关键点：</li>
+<li>Robust Prune: 在构建图的过程中，Vamana 图使用了一种名为 Robust Prune 的策略来选择每个节点的邻居。这个策略的目标是确保搜索路径上的节点能够以一定的比例因子 alpha 更快地接近查询目标，从而减少搜索的跳数和 SSD 的读取次数。</li>
+<li>Iterative Construction: Vamana 图的构建是一个迭代的过程。首先，图被初始化为随机连接的图，然后通过迭代地优化每个节点的邻居来改进图的结构，使其更适合于近似最近邻搜索。</li>
+<li>Graph Merging: 为了处理大规模数据集，Vamana 图支持将多个小的图索引合并成一个大的图索引。这个特性使得我们可以并行地构建索引，并将其合并成一个完整的索引，从而提高构建效率。</li>
+</ul>
+<ol start="2">
+<li>系统设计：SSD 优化策略</li>
+</ol>
+<p>DiskANN 的另一大创新在于针对 SSD 的特性进行了一系列优化，从而最大限度地发挥 SSD 的性能。这些优化策略包括：</p>
+<ul>
+<li>Beam Search: 为了减少 SSD 的随机读取次数，DiskANN 使用了一种名为 Beam Search 的策略。在搜索过程中，算法维护一个包含多个候选节点的集合（beam），并并行地从 SSD 中读取这些节点的邻居信息。这样可以减少搜索过程中的 round-trip 次数，从而降低延迟。</li>
+<li>Caching: DiskANN 利用内存来缓存频繁访问的节点信息。通过将热点数据缓存在内存中，可以减少对 SSD 的访问次数，从而提高搜索速度。</li>
+<li>Implicit Re-Ranking: DiskANN 使用 Product Quantization (PQ) 等向量压缩技术来减少内存占用。但是，压缩后的向量会损失精度。为了弥补这个损失，DiskANN 在从 SSD 中读取邻居信息时，同时读取原始的、未压缩的向量，并使用这些向量来重新排序候选结果，从而提高搜索精度。</li>
+<li>Full-Precision with Neighborhoods: 将全精度向量和邻居信息一起存储在 SSD 上，读取邻居信息时也可以一起读取全精度信息，无需额外开销，便于使用全精度信息rerank。</li>
+</ul>
 <p>构图过程:</p>
 <ol>
 <li>首先构建随机图，这里和 NSG 的K最近邻图不一样，对每一个节点随机选择 R 个节点相连接</li>
@@ -494,6 +626,35 @@
 <li>缓存热点：将起点开始 C 跳内的点常驻内存，C 取 3~4 就比较好。</li>
 <li>beam search： 简单的说就是预加载，搜索 p 点时，如果 p 的邻居点不在缓存中，需要从磁盘加载 p 点的邻居点。由于一次少量的 SSD 随机访问操作和一次 SSD 单扇区访问操作耗时差不多，所以我们可以一次加载 W 个未访问点的邻居信息，W 不能过大也不能过小，过大会浪费计算和 SSD 带宽，太小了也不行，会增加搜索时延。</li>
 </ol>
+<p>此外 DiskANN 相对于 HNSW 或者 NSW 还有一个优势就是，其删除一个节点是真删除，而且删除后不会影响图的连通性。HNSW 删除一个节点后，可能会导致图的连通性被破坏，需要重新构建索引。而 DiskANN 删除一个节点后，策略是这样的：假设我们要删除的节点是**“郑州”**这个交通枢纽。郑州在中国的交通网络中是一个至关重要的“十字路口”。</p>
+<ul>
+<li>有高速公路从“北京”、“西安”开往郑州（这些是郑州的in-neighbors）。</li>
+<li>也有高速公路从郑州通往“武汉”、“南京”（这些是郑州的out-neighbors）。
+当我们要删除“郑州”时：
+<ol>
+<li>确定“受影响的节点”：谁最受伤？是那些原本有路通往郑州的城市，比如“北京”和“西安”。它们的出行选择变少了。</li>
+<li>提供“修复候选方案”：规划师对北京说：“你原来可以去郑州，现在郑州没了。但是郑州原来可以通往‘武汉’和‘南京’。现在我把‘武汉’和‘南京’作为新的高速公路修建提案交给你。”</li>
+<li>运行 RobustPrune 进行智能决策：现在，北京的工程师（RobustPrune 算法）开始工作了。他会评估：</li>
+</ol>
+<ul>
+<li>输入：我（北京）现有的所有高速公路 + 新的提案（通往武汉、南京）。</li>
+<li>决策过程：在所有这些选项中，根据 RobustPrune 的核心原则（即选择那些能最大化导航效率、提供“捷径”且不冗余的连接），重新选出不超过 R 条最优的高速公路。</li>
+<li>可能的结果：
+<ul>
+<li>北京的工程师发现，修一条到“武汉”的高速确实是个好捷径，于是决定修建。</li>
+<li>他发现到“南京”的提案并不比现有路线好，于是放弃。</li>
+<li>他甚至可能为了给到武汉的新路腾出名额（保持总数不超过R），拆掉了一条原来通往某个小城市的、不太重要的旧路。</li>
+</ul>
+</li>
+</ul>
+<ol start="4">
+<li>对所有受影响节点重复此过程：“西安”的工程师也会做同样的事情。</li>
+</ol>
+</li>
+</ul>
+<p>最终结果：
+通过在每个受影响的节点上运行 RobustPrune，我们不是盲目地添加所有可能的连接，而是让每个节点根据自己的局部情况和全局导航目标，自主地、智能地选择最优的连接来“修复”网络破损的地方。
+这样，我们既成功删除了目标节点“郑州”，又没有破坏网络的稀疏性（度限制 R），同时还最大程度地保持了整个高速公路网的导航质量。这就是 Vamana 删除操作的精髓所在。</p>
 <p>DiskANN 的优势在于可以在很小的内存占用下配合 SSD 达到不错的搜索性能，但是规格小的机器在构建索引的时候会比较慢，这里需要做好权衡。</p>
 <p>FreshDiskANN 在 DiskANN 基础上做了进一步的优化，主要是针对数据更新的场景。FreshDiskANN 通过引入一个新的索引结构，称为 FreshVamana，并引入删除列表，来支持并加速对数据的的插入和删除。于此同时采用两阶段 StreamingMerge 算法，将索引分为长期索引，临时索引，通过分层支持大规模数据。</p>
 <p>FilterDiskANN 从满足查询标签条件（如日期、价格范围、语言）的索引点中找到查询嵌入的最近邻，支持两种过滤算法：</p>
@@ -713,13 +874,14 @@
 <li><a href="https://whenever5225.github.io/2020/05/11/hnsw-heuristic/">https://whenever5225.github.io/2020/05/11/hnsw-heuristic/</a></li>
 <li>Search Engine For AI：高维数据检索工业级解决方案 <a href="https://zhuanlan.zhihu.com/p/50143204">https://zhuanlan.zhihu.com/p/50143204</a></li>
 <li><a href="https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw">https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw</a></li>
+<li><a href="https://blog.wilsonl.in/graph-vector-search/">https://blog.wilsonl.in/graph-vector-search/</a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-08-14&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/5594e77d99aa9628c90dddc060d9ae1f71fdad57" target="_blank" title="commit by xieydd(xieydd@gmail.com) 5594e77d99aa9628c90dddc060d9ae1f71fdad57: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>5594e77</a></span>
+                <span>更新于 2025-08-14&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/5559131443ba44ce9b61c3616a23c4b59e9137c8" target="_blank" title="commit by xieydd(xieydd@gmail.com) 5559131443ba44ce9b61c3616a23c4b59e9137c8: update">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>5559131</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
