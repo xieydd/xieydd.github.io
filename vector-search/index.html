@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://blog.xieydd.top/vector-search/" />
 <meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
 <meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
-<meta property="article:modified_time" content="2025-08-14T16:48:09+08:00" /><meta property="og:site_name" content="小猪窝" />
+<meta property="article:modified_time" content="2025-08-27T15:23:55+08:00" /><meta property="og:site_name" content="小猪窝" />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
 
@@ -30,8 +30,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/blog.xieydd.top\/vector-search\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  17280 ,
-        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-08-14T16:48:09+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  17267 ,
+        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-08-27T15:23:55+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
                     "@type": "ImageObject",
@@ -129,7 +129,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">向量数据库中的门门道道</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/vector-search/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>vector search</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17280 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17267 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 35 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -723,9 +723,9 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
 <li>单个 data vector 使用 bitwise 按位操作</li>
 <li>批量数据使用 SIMD 加速</li>
 </ul>
-<p>使用随机 codebook 避免双值 codebook 在一些特定向量表现不佳，比如 ($1/\sqrt{D}$&hellip; $−1/\sqrt{D}$) 和 (1, 0, 0, 0) 的量化，我们使用随机正交矩阵去乘这个 codebook, 让 codebook 单位向量有相同的概率旋转到单位超球面上的任意位置</p>
-<p>这里使用通俗的话讲解下 RabitQ 的核心思想：
-<strong>终极解说：高维空间中的闪电搜图术 (RaBiT-Q 算法)</strong></p>
+<p>使用随机 codebook 避免双值 codebook 在一些特定向量表现不佳，比如 $1/\sqrt{D}$&hellip; $−1/\sqrt{D}$ 和 (1, 0, 0, 0) 的量化，我们使用随机正交矩阵去乘这个 codebook, 让 codebook 单位向量有相同的概率旋转到单位超球面上的任意位置</p>
+<p>这里使用通俗的话讲解下 RabitQ 的核心思想：</p>
+<p><strong>终极解说：高维空间中的闪电搜图术 (RaBiT-Q 算法)</strong></p>
 <p>想象一下，我们正在为世界上最大的图片分享网站（比如Instagram或Pinterest）构建一个“以图搜图”的功能。这意味着，当用户上传一张“沙滩上的柯基犬”的照片时，我们要能从包含数十亿张图片的数据库里，瞬间找出所有其他“沙舍上的柯基犬”或者类似的图片。</p>
 <p>这是一个巨大的挑战。计算机是如何“看懂”并比较图片的呢？</p>
 <ol>
@@ -817,7 +817,7 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
 <li><strong>随机化思想：</strong> 通过随机旋转码本，避免了算法的“盲区”，并激活了高维空间的奇特性质。</li>
 <li><strong>高维几何：</strong> 深刻利用了“集中现象”这一反直觉的数学事实，推导出了一个极为高效的近似估算公式，完成了从“粗筛”到“精排”的最后一跃。</li>
 </ol>
-<p>最终，一个原本需要在数十亿数据上进行慢速、精确计算的“不可能完成的任务”，被巧妙地分解为**“离线编码”**和**“在线闪搜”**两部分，实现了在保证高精度的前提下的数量级加速。</p>
+<p>最终，一个原本需要在数十亿数据上进行慢速、精确计算的“不可能完成的任务”，被巧妙地分解为<strong>离线编码</strong>和<strong>在线闪搜</strong>两部分，实现了在保证高精度的前提下的数量级加速。</p>
 <h2 id="4-常见的向量数据库极其优劣">4. 常见的向量数据库极其优劣</h2>
 <p>以下列举了一些常见的向量数据库，以及他们的优劣势, 有些是专用向量数据库，有些是对现有关系型数据库的扩展。</p>
 <h3 id="41-milvushttpsmilvusio">4.1 <a href="https://milvus.io/" target="_blank" rel="noopener noreffer ">Milvus</a></h3>
@@ -880,8 +880,8 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-08-14&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/5559131443ba44ce9b61c3616a23c4b59e9137c8" target="_blank" title="commit by xieydd(xieydd@gmail.com) 5559131443ba44ce9b61c3616a23c4b59e9137c8: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>5559131</a></span>
+                <span>更新于 2025-08-27&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/f1c83a8f0baf52264b1bcd0208803598112c53e0" target="_blank" title="commit by xieydd(xieydd@gmail.com) f1c83a8f0baf52264b1bcd0208803598112c53e0: update">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>f1c83a8</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
