@@ -19,11 +19,11 @@ As of 2025, I have over 7 years of experience in AI Infrastructure:
 ### 2021.2-2023.5 Tencent Cloud
 
 1. Developed a large-scale AI platform for public cloud:
-  - Built a high-performance, scalable elastic offline training platform using EKS (Elastic Kubernetes Service).
+  - Built a high-performance, scalable elastic offline training platform using EKS (Elastic Kubernetes Service)
   - Integrated public cloud object storage and the GooseFS accelerator to create a high-performance cache scheduling system on the cloud
 
 2. Established FinOps infrastructure to help public cloud customers manage and optimize cloud costs more effectively, enhancing cloud resource utilization:
-  - Optimized scheduling and rescheduling, identified high and low priority tasks, and implemented intelligent elastic scaling.
+  - Optimized scheduling and rescheduling, identified high and low priority tasks, and implemented intelligent elastic scaling
   - Combined Tencent's Ruyi kernel scheduler optimization and observability to optimize costs while maintaining service quality
   - Launched a large-scale cost reduction initiative in the internal cloud, improving resource utilization through efficient resource allocation
 
