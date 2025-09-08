@@ -5,7 +5,7 @@
 
 💻
 
-As of 2024, I have over 6 years of experience in AI Infrastructure:
+As of 2025, I have over 7 years of experience in AI Infrastructure:
 
 ### 2018-2021.2 (including internship) [Unisound](https://www.unisound.com/)
 
@@ -33,11 +33,12 @@ As of 2024, I have over 6 years of experience in AI Infrastructure:
   - Reduced model service cold start time through cache model services and image preheating
   - Implemented JuiceFS to build a high-performance cache scheduling system, enhancing model service performance
 
-2. Leading the Cloud Team, developing the vector database VectorChord's cloud service and customer support [VectorChord Cloud](https://vectorchord.ai):
-  - Built a vector database based on Postgres on AWS, achieving control and data plane separation, BYOC (Bring Your Own Cloud), BYOD (Bring Your Own Data) capabilities
-  - Implemented cloud-native architecture to achieve Postgres storage and compute separation, high availability, Backup, PITR (Point-In-Time Recovery), In-Place Upgrade features
+2. Cloud Team Leader, developing the vector database VectorChord's cloud service and customer support [VectorChord Cloud](https://vectorchord.ai):
+  - Built a vector database based on PostgreSQL on AWS, achieving control and data plane separation, BYOC (Bring Your Own Cloud), BYOD (Bring Your Own Data) capabilities
+  - Implemented cloud-native architecture to achieve PostgreSQL storage and compute separation, high availability, Backup, PITR (Point-In-Time Recovery), In-Place Upgrade features
+  - Build an enterprise-level RAG (Retrieval-Augmented Generation) system based on PostgreSQL as the agent's memory module.
 
-Skill set: Kubernetes, GCP, AWS, Kubeflow, FinOps, RAG, Vector Database, Storage Acceleration, Tensorflow, Pytorch, Cloud Native, MLOps, AI Infrastructure, etc.
+Skill set: Kubernetes, GCP, AWS, Kubeflow, FinOps, RAG, Vector Database, Storage Acceleration, Tensorflow, Pytorch, Cloud Native, MLOps, AI Infrastructure, PostgreSQL etc.
 
 ### Open Source Projects
 
