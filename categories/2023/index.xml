@@ -1,16 +1,26 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>2023 - 分类 - Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/categories/2023/</link>
-        <description>2023 - 分类 - Xieydd&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/categories/2023/" rel="self" type="application/rss+xml" /><item>
-    <title>调度系统</title>
-    <link>https://blog.xieydd.top/scheduler/</link>
-    <pubDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/scheduler/</guid>
-    <description><![CDATA[最近在进行晋级答辩(已失败 :&lt;)，主题还是去年做了一些调度方面的工作，借此机会对调度系统进行一些高维度的思考，在此记录下，如有不足之处]]></description>
-</item>
-</channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>2023 on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/categories/2023/</link>
+    <description>Recent content in 2023 on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Thu, 02 Feb 2023 16:27:06 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/categories/2023/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>调度系统</title>
+      <link>https://blog.xieydd.top/scheduler/</link>
+      <pubDate>Thu, 02 Feb 2023 16:27:06 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/scheduler/</guid>
+      <description>最近在进行晋级答辩(已失败 :&amp;lt;)，主题还是去年做了一些调度方面的工作，借此机会对调度系统进行一些高维度的思考，在此记录下，如有不足之处</description>
+    </item>
+    
+  </channel>
 </rss>

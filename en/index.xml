@@ -1,47 +1,79 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/en/</link>
-        <description>远东的小猪窝</description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 08 Jan 2025 16:37:10 &#43;0800</lastBuildDate>
-            <atom:link href="https://blog.xieydd.top/en/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-    <title>Optimizing Model Inference Cold Start</title>
-    <link>https://blog.xieydd.top/en/improve-model-serving-cold-start/</link>
-    <pubDate>Wed, 08 Jan 2025 16:37:10 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/improve-model-serving-cold-start/</guid>
-    <description><![CDATA[Previously, while working on Serverless model inference Modelz, although we have pivoted now, I still want to share how to optimize the cold start problem of model inference. Since our service is based on container orchestration, it also involves the cold start problem of containers.
-Optimizing Model Inference Cold Start Problem First, let's look at the process of Serverless model inference, from user request to model inference:
- Click me 1 2 3 4 5 6 7 8 9 10 11 12 13  sequenceDiagram participant User participant Cloudflare participant Ingress participant AutoScaler participant Node participant containerd User-&gt;&gt;Cloudflare: Model Call Cloudflare-&gt;&gt;Ingress: Request Ingress-&gt;&gt;AutoScaler: Request AutoScaler-&gt;&gt;Node: Scale Up Node-&gt;&gt;containerd: Container Note right of containerd: 1.]]></description>
-</item>
-<item>
-    <title>PostgreSQL High Availability</title>
-    <link>https://blog.xieydd.top/en/postgres-ha/</link>
-    <pubDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/postgres-ha/</guid>
-    <description><![CDATA[I've been researching PostgreSQL high availability solutions recently, and here's what I've learned.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/en/</link>
+    <description>Recent content on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Thu, 09 Jan 2025 10:20:28 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/en/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Everything You Need to Know About LLM Infra</title>
+      <link>https://blog.xieydd.top/en/llm-infra/</link>
+      <pubDate>Thu, 09 Jan 2025 10:20:28 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/llm-infra/</guid>
+      <description>Everything You Need to Know About LLM Infra GPT 3 The GPT model is the starting point of LLM models. If you say Transformer is the starting point, that&#39;s also correct. Since we&#39;re going to discuss LLM Infra, we need to know who our system architecture and design are serving. Without understanding the model architecture, you&#39;ll feel confused about the Infra designs introduced later, such as Prefill-Decode Disaggregation during inference, Context Cache Migration, Traffic-Adaptive Request Routing, etc.</description>
+    </item>
+    
+    <item>
+      <title>Optimizing Model Inference Cold Start</title>
+      <link>https://blog.xieydd.top/en/improve-model-serving-cold-start/</link>
+      <pubDate>Wed, 08 Jan 2025 16:37:10 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/improve-model-serving-cold-start/</guid>
+      <description>Previously, while working on Serverless model inference Modelz, although we have pivoted now, I still want to share how to optimize the cold start problem of model inference. Since our service is based on container orchestration, it also involves the cold start problem of containers.
+Optimizing Model Inference Cold Start Problem First, let&#39;s look at the process of Serverless model inference, from user request to model inference:
+ Click me 1 2 3 4 5 6 7 8 9 10 11 12 13  sequenceDiagram participant User participant Cloudflare participant Ingress participant AutoScaler participant Node participant containerd User-&amp;gt;&amp;gt;Cloudflare: Model Call Cloudflare-&amp;gt;&amp;gt;Ingress: Request Ingress-&amp;gt;&amp;gt;AutoScaler: Request AutoScaler-&amp;gt;&amp;gt;Node: Scale Up Node-&amp;gt;&amp;gt;containerd: Container Note right of containerd: 1.</description>
+    </item>
+    
+    <item>
+      <title>PostgreSQL High Availability</title>
+      <link>https://blog.xieydd.top/en/postgres-ha/</link>
+      <pubDate>Fri, 26 Jul 2024 12:40:32 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/postgres-ha/</guid>
+      <description>I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
 PostgreSQL High Availability High Availability Goals PostgreSQL high availability typically has two main objectives:
- RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again.]]></description>
-</item>
-<item>
-    <title>All You Need to Know About Topology Awareness in Kubernetes</title>
-    <link>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</link>
-    <pubDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</guid>
-    <description><![CDATA[Recently, I've been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
-Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.]]></description>
-</item>
-<item>
-    <title>The internals of Vector Databases</title>
-    <link>https://blog.xieydd.top/en/vector-search/</link>
-    <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/vector-search/</guid>
-    <description><![CDATA[It has been over a year since I joined Tensorchord, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.]]></description>
-</item>
-</channel>
+ RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again.</description>
+    </item>
+    
+    <item>
+      <title>All You Need to Know About Topology Awareness in Kubernetes</title>
+      <link>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</link>
+      <pubDate>Thu, 29 Dec 2022 16:27:06 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</guid>
+      <description>Recently, I&#39;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
+Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.</description>
+    </item>
+    
+    <item>
+      <title>The internals of Vector Databases</title>
+      <link>https://blog.xieydd.top/en/vector-search/</link>
+      <pubDate>Sat, 13 Jul 2024 14:52:44 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/vector-search/</guid>
+      <description>It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+    </item>
+    
+    <item>
+      <title>About xieydd</title>
+      <link>https://blog.xieydd.top/en/about/</link>
+      <pubDate>Thu, 29 Dec 2022 15:57:49 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/about/</guid>
+      <description>📫 If you wish to contact me, you can send an email to xieydd@gmail.com, or add my WeChat echo -n &#39;eGlleWRkX2hhaGEK&#39; | base64 -d.
+💻
+As of 2025, I have over 7 years of experience in AI Infrastructure:
+2018-2021.2 (including internship) Unisound  At the AI algorithm company Unisound, I was responsible for the development and operation of the Atlas supercomputing platform, supporting NLP and CV model training. Key responsibilities included:   Developing a large-scale intelligent scheduling system to optimize multi-tenant resource allocation Enhancing the performance of the high-performance distributed file system Lustre Building a multi-layer cache cloud-native architecture to accelerate AI model training  Worked on 8 Bit training and inference optimization at Unisound, optimizing models for NPU and NVIDIA Edge Devices.</description>
+    </item>
+    
+  </channel>
 </rss>

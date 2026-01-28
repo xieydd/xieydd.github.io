@@ -1,144 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>All You Need to Know About Topology Awareness in Kubernetes - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="All You Need to Know About Topology Awareness in Kubernetes" />
-<meta property="og:description" content="Recently, I&#39;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
-Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" />
-<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
-<meta property="article:published_time" content="2022-12-29T16:27:06+08:00" />
-<meta property="article:modified_time" content="2025-09-08T12:10:15+08:00" /><meta property="og:site_name" content="小猪窝" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
-
-<meta name="twitter:title" content="All You Need to Know About Topology Awareness in Kubernetes"/>
-<meta name="twitter:description" content="Recently, I&#39;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
-Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks."/>
-<meta name="application-name" content="Xieydd">
-<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" /><link rel="prev" href="https://blog.xieydd.top/en/vector-search/" /><link rel="next" href="https://blog.xieydd.top/en/postgres-ha/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "All You Need to Know About Topology Awareness in Kubernetes",
-        "inLanguage": "en",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/blog.xieydd.top\/en\/kubernetes-topo-aware-all-you-need-know\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "kubernetes, topo aware","wordcount":  2275 ,
-        "url": "https:\/\/blog.xieydd.top\/en\/kubernetes-topo-aware-all-you-need-know\/","datePublished": "2022-12-29T16:27:06+08:00","dateModified": "2025-09-08T12:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
-            "@type": "Organization",
-            "name": "xxxx","logo": {
-                    "@type": "ImageObject",
-                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
-                    "width":  400 ,
-                    "height":  400 
-                }},"author": {
-                "@type": "Person",
-                "name": "xieydd"
-            },"description": ""
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All You Need to Know About Topology Awareness in Kubernetes | Xieydd&#39;s Blog</title>
+  <meta name="description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <meta property="og:title" content="All You Need to Know About Topology Awareness in Kubernetes">
+  <meta property="og:description" content="AI Infra Engineer&#39;s Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="All You Need to Know About Topology Awareness in Kubernetes">
+  <meta name="twitter:description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
     }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="site-header">
+      <div class="language-switcher">
+  
+  
+    
+      
+      
+        
+          <a href="https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/" class="lang-link">中文</a>
+          
+        
+      
+      
+    
+  
+    
+      <span class="lang-current">EN</span>
+    
+  
+</div>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/en/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/categories/documentation/"> Docs </a><a class="menu-item" href="/en/about/"> About </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
-                    <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/kubernetes-topo-aware-all-you-need-know/" selected>English</option><option value="/kubernetes-topo-aware-all-you-need-know/">简体中文</option></select>
-                </a></div>
-        </div>
+    </header>
+    <main class="content">
+      
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">All You Need to Know About Topology Awareness in Kubernetes</h1>
+    <div class="post-meta">
+      <time datetime="2022-12-29">2022-12-29</time>
+      
+      <span class="post-author">by xieydd</span>
+      
+      
+      <span class="reading-time">11 min read</span>
+      
     </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/en/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        Cancel
-                    </a>
-                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/categories/documentation/" title="">Docs</a><a class="menu-item" href="/en/about/" title="">About</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
-                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/en/kubernetes-topo-aware-all-you-need-know/" selected>English</option><option value="/kubernetes-topo-aware-all-you-need-know/">简体中文</option></select>
-                </a></div>
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/en/tags/kubernetes" class="tag">#kubernetes</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/topo-aware" class="tag">#topo aware</a>
+      
     </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">Contents</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">All You Need to Know About Topology Awareness in Kubernetes</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">included in <a href="/en/categories/2022/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2022</a>&nbsp;<a href="/en/categories/kubernetes/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>kubernetes</a>&nbsp;<a href="/en/categories/documentation/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Documentation</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-12-29">2022-12-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;2275 words&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;11 minutes&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>Contents</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+    
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
   <ul>
     <li><a href="#why-topology-awareness-is-needed">Why Topology Awareness is Needed</a></li>
     <li><a href="#types-of-topology">Types of Topology</a>
@@ -165,10 +114,14 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
     </li>
     <li><a href="#references">References</a></li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>Recently, I've been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.</p>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>Recently, I've been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.</p>
 <h2 id="why-topology-awareness-is-needed">Why Topology Awareness is Needed</h2>
-<p>According to the <a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/" target="_blank" rel="noopener noreffer ">official Kubernetes documentation</a>, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.</p>
+<p>According to the <a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/">official Kubernetes documentation</a>, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.</p>
 <p>However, the explanation seems a bit unclear. The fundamental reason lies in the issues brought by the Von Neumann architecture. As the saying goes, there is no silver bullet. The Von Neumann architecture separates memory and processors, with both instructions and data stored in memory, laying the foundation for the universality of modern computing. However, it also poses a hidden risk: as memory capacity increases exponentially, data transfer between the CPU and memory becomes a bottleneck. Currently, most devices in servers are connected via high-speed PCIe buses, and the bus layout may vary depending on the server's purpose. As shown in the figure below (found online, not drawn by me), in the left diagram, GPUs reside in different PCIe domains, making direct P2P copying between GPU memories impossible. To copy memory from GPU 0 to GPU 2, it must first be copied via PCIe to the memory connected to CPU 0, then transferred to CPU 1 via QPI link, and finally transferred to GPU 2 via PCIe again. This process adds significant overhead in terms of latency and bandwidth, whereas the right diagram can achieve ultra-high-speed communication through GPU P2P connections. In summary, topology affects communication between devices, impacting business stability and efficiency, necessitating some technical means to make businesses topology-aware.</p>
 <figure>
     <img src="gpu-cpu-pcie-topo.jpg"/> <figcaption>
@@ -185,8 +138,8 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
 <h3 id="gpu-topology-manager">GPU Topology Manager</h3>
 <p>There are several implementation solutions in the industry:</p>
 <ul>
-<li><a href="https://github.com/volcano-sh/volcano/issues/1472" target="_blank" rel="noopener noreffer ">Volcano GPU Topology Awareness</a></li>
-<li><a href="https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ" target="_blank" rel="noopener noreffer ">Baidu Intelligent Cloud GPU Topology-Aware Scheduling</a></li>
+<li><a href="https://github.com/volcano-sh/volcano/issues/1472">Volcano GPU Topology Awareness</a></li>
+<li><a href="https://mp.weixin.qq.com/s/uje27_MHBh8fMzWATusVwQ">Baidu Intelligent Cloud GPU Topology-Aware Scheduling</a></li>
 </ul>
 <p>Volcano is not fully implemented yet, and Baidu's solution is closed-source, so we can only get a glimpse through shared information.</p>
 <h4 id="why">Why</h4>
@@ -248,9 +201,9 @@ Legend:
 <li>GPU-device-plugin or other daemon processes construct the GPU topology information CRD for the node;</li>
 <li>The Pod defines a topology strategy, such as Strategy 1 or Strategy 2;</li>
 <li>The newly defined scheduler filters nodes that do not meet the strategy during the filter and priority phases and scores nodes that meet the strategy highly;</li>
-<li>The discovery and update of GPU devices on the node are handled by the device-plugin and kubelet, as referenced in <a href="https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s" target="_blank" rel="noopener noreffer ">this article</a>.</li>
+<li>The discovery and update of GPU devices on the node are handled by the device-plugin and kubelet, as referenced in <a href="https://www.infoq.cn/article/tdfgiikxh9bcgknywl6s">this article</a>.</li>
 </ol>
-<p>Currently, GPU topology information can be queried through the official <a href="https://github.com/NVIDIA/go-nvml" target="_blank" rel="noopener noreffer ">nvml (NVIDIA Management Library)</a> interface.</p>
+<p>Currently, GPU topology information can be queried through the official <a href="https://github.com/NVIDIA/go-nvml">nvml (NVIDIA Management Library)</a> interface.</p>
 <h3 id="numa-topology-awareness">NUMA Topology Awareness</h3>
 <h4 id="why-1">Why</h4>
 <p>When discussing NUMA topology awareness, it's essential to first explain what NUMA is and why it needs to be aware of it.</p>
@@ -278,13 +231,13 @@ Legend:
 <h4 id="how-1">How</h4>
 <p>The previous section explained why NUMA-aware scheduling is needed. So how can NUMA topology be sensed, and what existing solutions are available? Here, I briefly list some projects in the Kubernetes ecosystem. If you have any additions, feel free to comment:</p>
 <ul>
-<li><a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/" target="_blank" rel="noopener noreffer ">Kubernetes Topology Manager</a> Official</li>
-<li><a href="https://gocrane.io/docs/tutorials/node-resource-tpolology-scheduler-plugins/" target="_blank" rel="noopener noreffer ">Crane NUMA Topology Awareness</a></li>
-<li><a href="https://koordinator.sh/docs/user-manuals/fine-grained-cpu-orchestration" target="_blank" rel="noopener noreffer ">Koordinator Fine-grained CPU Orchestration</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/">Kubernetes Topology Manager</a> Official</li>
+<li><a href="https://gocrane.io/docs/tutorials/node-resource-tpolology-scheduler-plugins/">Crane NUMA Topology Awareness</a></li>
+<li><a href="https://koordinator.sh/docs/user-manuals/fine-grained-cpu-orchestration">Koordinator Fine-grained CPU Orchestration</a></li>
 </ul>
 <h5 id="kubernetes-topology-manager">Kubernetes Topology Manager</h5>
 <p>The Topology Manager is a kubelet component designed to coordinate a set of components responsible for these optimizations. The Topology Manager addresses a historical issue where the CPU Manager and Device Manager worked independently and were unaware of each other.
-Let's first look at the implementation of the Kubernetes Topology Manager. I don't want to reinvent the wheel here, so you can refer to a <a href="https://developer.aliyun.com/article/784148" target="_blank" rel="noopener noreffer ">great article</a> summarized by a colleague from Alibaba. Here's a summary:</p>
+Let's first look at the implementation of the Kubernetes Topology Manager. I don't want to reinvent the wheel here, so you can refer to a <a href="https://developer.aliyun.com/article/784148">great article</a> summarized by a colleague from Alibaba. Here's a summary:</p>
 <ol>
 <li>Find the topology hints for different resources, i.e., topology information. The CPU selection criteria prioritize the smallest number of NUMA nodes involved, with the smallest number of sockets involved as a secondary priority. The device manager prioritizes the smallest number of NUMA nodes involved while meeting resource requests.</li>
 <li>Merge hints from different topology types, i.e., union, to select the optimal strategy.</li>
@@ -298,7 +251,7 @@ Let's first look at the implementation of the Kubernetes Topology Manager. I don
 <p>Therefore, we see that the Kubernetes Topology Manager is still centered around NUMA, performing complete fair shortest path selection for different resources (NIC, GPU, CPU). Moreover, this process occurs after the Pod is scheduled to a specific node, which brings several issues:</p>
 <ol>
 <li>There is a high probability that the Pod will be Terminated, making it unusable in production.</li>
-<li>Configuring the topology-manager-policy on nodes is inconvenient, as kubelet needs to be restarted every time parameters are configured. In some special versions, this may restart all node Pods, as detailed in <a href="https://www.likakuli.com/posts/kubernetes-kubelet-restart/" target="_blank" rel="noopener noreffer ">this article</a>.</li>
+<li>Configuring the topology-manager-policy on nodes is inconvenient, as kubelet needs to be restarted every time parameters are configured. In some special versions, this may restart all node Pods, as detailed in <a href="https://www.likakuli.com/posts/kubernetes-kubelet-restart/">this article</a>.</li>
 </ol>
 <p>So, we think of several optimization solutions:</p>
 <ol>
@@ -333,7 +286,7 @@ The general process is as follows:</p>
 </li>
 <li>Node side
 <ol>
-<li>The default <a href="https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/" target="_blank" rel="noopener noreffer ">cpu manager policy</a> is static, allowing Pods with certain resource characteristics on the node to have enhanced CPU affinity and exclusivity; the topology manager policy is SingleNUMANodePodLevel.</li>
+<li>The default <a href="https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/">cpu manager policy</a> is static, allowing Pods with certain resource characteristics on the node to have enhanced CPU affinity and exclusivity; the topology manager policy is SingleNUMANodePodLevel.</li>
 <li>If the node does not have the <code>topology.crane.io/topology-awareness</code> label, the topology manager policy is none.</li>
 </ol>
 </li>
@@ -411,7 +364,7 @@ $ cat /sys/fs/cgroup/cpuset/kubepods.slice/kubepods-burstable.slice/kubepods-bur
 2-9
 </code></pre></td></tr></table>
 </div>
-</div><p>As expected, for those unfamiliar with cpuset, you can refer to <a href="https://zhuanlan.zhihu.com/p/121588317" target="_blank" rel="noopener noreffer ">Linux Cgroup Introduction: cpuset</a>.</p>
+</div><p>As expected, for those unfamiliar with cpuset, you can refer to <a href="https://zhuanlan.zhihu.com/p/121588317">Linux Cgroup Introduction: cpuset</a>.</p>
 <h5 id="koordinator-fine-grained-cpu-orchestration">Koordinator Fine-grained CPU Orchestration</h5>
 <p>Koordinator and Crane have similar architectures in NUMA awareness, with koordlet replacing crane-agent and koord-scheduler replacing crane-scheduler. Even the CRD describing node topology is named the same, NRT. Here are a few different points:</p>
 <ol>
@@ -432,49 +385,24 @@ $ cat /sys/fs/cgroup/cpuset/kubepods.slice/kubepods-burstable.slice/kubepods-bur
 <li><a href="https://www.likakuli.com/posts/kubernetes-kubelet-restart/">https://www.likakuli.com/posts/kubernetes-kubelet-restart/</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/121588317">https://zhuanlan.zhihu.com/p/121588317</a></li>
 </ul>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>Updated on 2025-09-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/15b6eabf1a4dc01fb93dc13d98f27ca3063304a4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 15b6eabf1a4dc01fb93dc13d98f27ca3063304a4: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>15b6eab</a></span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/en/kubernetes-topo-aware-all-you-need-know/index.md" target="_blank">Read Markdown</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes" data-via="xxxx" data-hashtags="kubernetes,topo aware"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-hashtag="kubernetes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" data-title="All You Need to Know About Topology Awareness in Kubernetes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
-            </div>
-        </div>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/vector-search/" class="prev-post">&larr; The internals of Vector Databases</a>
+      
+      
+      <a href="https://blog.xieydd.top/en/postgres-ha/" class="next-post">PostgreSQL High Availability &rarr;</a>
+      
     </div>
+    
+    <a href="https://blog.xieydd.top/en/" class="back-home">&larr; Back to Home</a>
+  </footer>
+</article>
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/kubernetes/">kubernetes</a>,&nbsp;<a href="/en/tags/topo-aware/">topo aware</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/en/vector-search/" class="prev" rel="prev" title="The internals of Vector Databases"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>The internals of Vector Databases</a>
-            <a href="/en/postgres-ha/" class="next" rel="next" title="PostgreSQL High Availability">PostgreSQL High Availability<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
-</div>
-<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
-                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
-            </noscript></div></article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.en","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
-            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
-            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
-        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+    </main>
+  </div>
+</body>
 </html>

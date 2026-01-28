@@ -1,74 +1,98 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/</link>
-        <description>远东的小猪窝</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 09 Jan 2025 10:20:28 &#43;0800</lastBuildDate>
-            <atom:link href="https://blog.xieydd.top/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-    <title>LLM Infra 你需要知道的一切</title>
-    <link>https://blog.xieydd.top/llm-infra/</link>
-    <pubDate>Thu, 09 Jan 2025 10:20:28 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/llm-infra/</guid>
-    <description><![CDATA[LLM Infra 你需要知道的一切 GPT 3 GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给]]></description>
-</item>
-<item>
-    <title>优化模型推理的冷启动</title>
-    <link>https://blog.xieydd.top/improve-model-serving-cold-start/</link>
-    <pubDate>Wed, 08 Jan 2025 16:37:10 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/improve-model-serving-cold-start/</guid>
-    <description><![CDATA[之前在做 Serverless 模型推理 Modelz，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉]]></description>
-</item>
-<item>
-    <title>S3</title>
-    <link>https://blog.xieydd.top/s3/</link>
-    <pubDate>Fri, 13 Sep 2024 21:40:10 &#43;0000</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/s3/</guid>
-    <description><![CDATA[All you need know about S3 AP 场景下 S3 的最佳实践 来源论文 Key Points: price and durability tradeoff: Cloud object storage provides the best durability guarantees while being the cheapest storage option latency: first byte latency 与 total latency 看取舍，1MB 以下对象，两者基本一致，对象越大]]></description>
-</item>
-<item>
-    <title>Serverless Database</title>
-    <link>https://blog.xieydd.top/serverless/</link>
-    <pubDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/serverless/</guid>
-    <description><![CDATA[DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2]]></description>
-</item>
-<item>
-    <title>Postgres 高可用</title>
-    <link>https://blog.xieydd.top/postgres-ha/</link>
-    <pubDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/postgres-ha/</guid>
-    <description><![CDATA[最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点]]></description>
-</item>
-<item>
-    <title>调度系统</title>
-    <link>https://blog.xieydd.top/scheduler/</link>
-    <pubDate>Thu, 02 Feb 2023 16:27:06 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/scheduler/</guid>
-    <description><![CDATA[最近在进行晋级答辩(已失败 :&lt;)，主题还是去年做了一些调度方面的工作，借此机会对调度系统进行一些高维度的思考，在此记录下，如有不足之处]]></description>
-</item>
-<item>
-    <title>关于 Kubernetes 中，拓扑感知你需要知道的一切</title>
-    <link>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</link>
-    <pubDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</guid>
-    <description><![CDATA[最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始]]></description>
-</item>
-<item>
-    <title>向量数据库中的门门道道</title>
-    <link>https://blog.xieydd.top/vector-search/</link>
-    <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/vector-search/</guid>
-    <description><![CDATA[加入 Tensorchord 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 Modelz pivot 到向量搜索领域 VectorChord 的]]></description>
-</item>
-</channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/</link>
+    <description>Recent content on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Thu, 09 Jan 2025 10:20:28 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>LLM Infra 你需要知道的一切</title>
+      <link>https://blog.xieydd.top/llm-infra/</link>
+      <pubDate>Thu, 09 Jan 2025 10:20:28 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/llm-infra/</guid>
+      <description>LLM Infra 你需要知道的一切 GPT 3 GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给</description>
+    </item>
+    
+    <item>
+      <title>优化模型推理的冷启动</title>
+      <link>https://blog.xieydd.top/improve-model-serving-cold-start/</link>
+      <pubDate>Wed, 08 Jan 2025 16:37:10 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/improve-model-serving-cold-start/</guid>
+      <description>之前在做 Serverless 模型推理 Modelz，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉</description>
+    </item>
+    
+    <item>
+      <title>S3</title>
+      <link>https://blog.xieydd.top/s3/</link>
+      <pubDate>Fri, 13 Sep 2024 21:40:10 +0000</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/s3/</guid>
+      <description>All you need know about S3 AP 场景下 S3 的最佳实践 来源论文 Key Points: price and durability tradeoff: Cloud object storage provides the best durability guarantees while being the cheapest storage option latency: first byte latency 与 total latency 看取舍，1MB 以下对象，两者基本一致，对象越大</description>
+    </item>
+    
+    <item>
+      <title>Serverless Database</title>
+      <link>https://blog.xieydd.top/serverless/</link>
+      <pubDate>Mon, 12 Aug 2024 16:02:16 +0000</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/serverless/</guid>
+      <description>DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2</description>
+    </item>
+    
+    <item>
+      <title>Postgres 高可用</title>
+      <link>https://blog.xieydd.top/postgres-ha/</link>
+      <pubDate>Fri, 26 Jul 2024 12:40:32 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/postgres-ha/</guid>
+      <description>最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点</description>
+    </item>
+    
+    <item>
+      <title>调度系统</title>
+      <link>https://blog.xieydd.top/scheduler/</link>
+      <pubDate>Thu, 02 Feb 2023 16:27:06 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/scheduler/</guid>
+      <description>最近在进行晋级答辩(已失败 :&amp;lt;)，主题还是去年做了一些调度方面的工作，借此机会对调度系统进行一些高维度的思考，在此记录下，如有不足之处</description>
+    </item>
+    
+    <item>
+      <title>关于 Kubernetes 中，拓扑感知你需要知道的一切</title>
+      <link>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</link>
+      <pubDate>Thu, 29 Dec 2022 16:27:06 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</guid>
+      <description>最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始</description>
+    </item>
+    
+    <item>
+      <title>向量数据库中的门门道道</title>
+      <link>https://blog.xieydd.top/vector-search/</link>
+      <pubDate>Sat, 13 Jul 2024 14:52:44 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/vector-search/</guid>
+      <description>加入 Tensorchord 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 Modelz pivot 到向量搜索领域 VectorChord 的</description>
+    </item>
+    
+    <item>
+      <title>关于远东</title>
+      <link>https://blog.xieydd.top/about/</link>
+      <pubDate>Thu, 29 Dec 2022 15:57:49 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/about/</guid>
+      <description>📫 您如果想联系我，可以直接发送邮件，邮箱地址 xieydd@gmail.com,或者您可以加我的微信 echo -n &#39;eGlleWRkX2hhaGEK&#39; | base64 -d. 💻 截止到 2025 年，有着超过 7 年的 AI</description>
+    </item>
+    
+  </channel>
 </rss>

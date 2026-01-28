@@ -1,16 +1,26 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>serverless - 标签 - Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/tags/serverless/</link>
-        <description>serverless - 标签 - Xieydd&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/serverless/" rel="self" type="application/rss+xml" /><item>
-    <title>Serverless Database</title>
-    <link>https://blog.xieydd.top/serverless/</link>
-    <pubDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/serverless/</guid>
-    <description><![CDATA[DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2]]></description>
-</item>
-</channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>serverless on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/tags/serverless/</link>
+    <description>Recent content in serverless on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Mon, 12 Aug 2024 16:02:16 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/tags/serverless/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Serverless Database</title>
+      <link>https://blog.xieydd.top/serverless/</link>
+      <pubDate>Mon, 12 Aug 2024 16:02:16 +0000</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/serverless/</guid>
+      <description>DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2</description>
+    </item>
+    
+  </channel>
 </rss>

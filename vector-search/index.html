@@ -1,142 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>向量数据库中的门门道道 - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="向量数据库中的门门道道" />
-<meta property="og:description" content="加入 Tensorchord 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 Modelz pivot 到向量搜索领域 VectorChord 的" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.xieydd.top/vector-search/" />
-<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
-<meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
-<meta property="article:modified_time" content="2025-09-08T12:10:15+08:00" /><meta property="og:site_name" content="小猪窝" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
-
-<meta name="twitter:title" content="向量数据库中的门门道道"/>
-<meta name="twitter:description" content="加入 Tensorchord 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 Modelz pivot 到向量搜索领域 VectorChord 的"/>
-<meta name="application-name" content="Xieydd">
-<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/vector-search/" /><link rel="next" href="https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "向量数据库中的门门道道",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/blog.xieydd.top\/vector-search\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  17267 ,
-        "url": "https:\/\/blog.xieydd.top\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-09-08T12:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
-            "@type": "Organization",
-            "name": "xxxx","logo": {
-                    "@type": "ImageObject",
-                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
-                    "width":  400 ,
-                    "height":  400 
-                }},"author": {
-                "@type": "Person",
-                "name": "xieydd"
-            },"description": ""
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>向量数据库中的门门道道 | Xieydd&#39;s Blog</title>
+  <meta name="description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <meta property="og:title" content="向量数据库中的门门道道">
+  <meta property="og:description" content="AI Infra Engineer&#39;s Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/vector-search/">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="向量数据库中的门门道道">
+  <meta name="twitter:description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
     }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="site-header">
+      <div class="language-switcher">
+  
+  
+    
+      <span class="lang-current">中文</span>
+    
+  
+    
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/vector-search/" class="lang-link">EN</a>
+          
+        
+      
+      
+    
+  
+</div>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/categories/documentation/"> 文档 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
-                    <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/vector-search/">English</option><option value="/vector-search/" selected>简体中文</option></select>
-                </a></div>
-        </div>
+    </header>
+    <main class="content">
+      
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">向量数据库中的门门道道</h1>
+    <div class="post-meta">
+      <time datetime="2024-07-13">2024-07-13</time>
+      
+      <span class="post-author">by xieydd</span>
+      
+      
+      <span class="reading-time">35 min read</span>
+      
     </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/categories/documentation/" title="">文档</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
-                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/en/vector-search/">English</option><option value="/vector-search/" selected>简体中文</option></select>
-                </a></div>
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/tags/vector-search" class="tag">#vector search</a>
+      
+      <a href="https://blog.xieydd.top/tags/postgres" class="tag">#Postgres</a>
+      
     </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">向量数据库中的门门道道</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/vector-search/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>vector search</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 17267 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 35 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+    
+  </header>
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
   <ul>
     <li><a href="#1-什么是向量">1. 什么是向量</a></li>
     <li><a href="#2-什么是向量数据库">2. 什么是向量数据库</a></li>
@@ -191,8 +142,12 @@
     <li><a href="#7-总结">7. 总结</a></li>
     <li><a href="#8-引用">8. 引用</a></li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>加入 <a href="https://tensorchord.ai" target="_blank" rel="noopener noreffer ">Tensorchord</a> 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 <a href="https://modelz.ai/" target="_blank" rel="noopener noreffer ">Modelz</a> pivot 到向量搜索领域 <a href="https://vectorchord.ai/" target="_blank" rel="noopener noreffer ">VectorChord</a> 的过程。Pivot 的经历或许可以在之后的文章中和大家分享，感兴趣的也可以直接<a href="../../about/index.zh-cn.md" rel="">联系</a>我。最近半年一直在开发 <a href="https://cloud.vectorchord.ai/" target="_blank" rel="noopener noreffer ">VectorChord Cloud</a>, 所以在这里边学边总结向量数据库中的门门道道。</p>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>加入 <a href="https://tensorchord.ai">Tensorchord</a> 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 <a href="https://modelz.ai/">Modelz</a> pivot 到向量搜索领域 <a href="https://vectorchord.ai/">VectorChord</a> 的过程。Pivot 的经历或许可以在之后的文章中和大家分享，感兴趣的也可以直接<a href="../../about/index.zh-cn.md">联系</a>我。最近半年一直在开发 <a href="https://cloud.vectorchord.ai/">VectorChord Cloud</a>, 所以在这里边学边总结向量数据库中的门门道道。</p>
 <h2 id="1-什么是向量">1. 什么是向量</h2>
 <p>向量在物理，数学，以及计算机科学等领域的含义都有所不同。这里的向量主要指的是计算机科学中的向量，也就是一组有序的数值。在计算机科学中，向量通常用来表示数据，比如在机器学习中，我们通常会将一张图片转换成一个向量，或者将一段文字 tokenizer 之后转换成一个向量，然后再进行训练。在向量数据库中，我们通常会将一张图片，一段文本，或者一段音频通过 embedding 模型转换成一个向量，然后再进行存储和检索。下面是一个简单的例子，我们通过 <code>all-MiniLM-L6-v2</code> 模型将一段文本转换成一个向量。<code>all-MiniLM-L6-v2</code> 将句子和段落映射到 384 维 dense vector，并可用于聚类或语义搜索等任务。</p>
 <div class="highlight"><div class="chroma">
@@ -246,9 +201,9 @@
 <p>向量搜索也叫向量检索，是一种 Information Retrieval 的技术，用于在高维向量空间中查找与给定查询向量最相似的向量。为了衡量两个向量之间的相似性，我们通常会使用余弦相似度，欧氏距离，曼哈顿距离等。为了加速向量搜索，我们通常会使用索引结构，比如 KD-Tree，IVF(Inverted File Index)，HNSW(Hierarchical Navigable Small World)等。向量搜索在很多领域都有应用，比如在推荐系统中，我们可以使用向量搜索来查找与用户历史行为最相似的商品，然后推荐给用户；在图像检索中，我们可以使用向量搜索来查找与给定图片最相似的图片；在 RAG（Retrieval Augmented Generation）中，我们可以使用向量搜索来查找与给定问题最相似的文本，增强大模型的 Context 从而提高生成答案的质量。</p>
 <h3 id="31-向量搜索应用场景">3.1 向量搜索应用场景</h3>
 <h4 id="311-推荐系统">3.1.1 推荐系统</h4>
-<p>如 Qdrant 关于 <a href="https://qdrant.tech/blog/vector-search-vector-recommendation/" target="_blank" rel="noopener noreffer ">Video Content-based Recommendation</a> 的 On-premise 案例，通过 multilingual universal sentence encoder 来对上传视频时候的脚本进行嵌入。这里不是简单的对视频进行抽帧，更多的信息来自于上传时候的视频标题，描述，自动检测标签以及通过 whisper 语音识别的内容。所以目前遇到的问题是如果视频是无音频，被迫使用标题以及描述进行推荐，这样对于审核团队来说是一个很大的挑战。这里提到了推荐领域的 call start issues, 也就是用户在刚开始使用的时候，推荐系统的推荐质量不高，这个时候用户体验会很差。在非即时更新的协作推荐器以及元数据推荐器的基础上，增加基于内容的推荐器，可以大大优化 call start issues。</p>
+<p>如 Qdrant 关于 <a href="https://qdrant.tech/blog/vector-search-vector-recommendation/">Video Content-based Recommendation</a> 的 On-premise 案例，通过 multilingual universal sentence encoder 来对上传视频时候的脚本进行嵌入。这里不是简单的对视频进行抽帧，更多的信息来自于上传时候的视频标题，描述，自动检测标签以及通过 whisper 语音识别的内容。所以目前遇到的问题是如果视频是无音频，被迫使用标题以及描述进行推荐，这样对于审核团队来说是一个很大的挑战。这里提到了推荐领域的 call start issues, 也就是用户在刚开始使用的时候，推荐系统的推荐质量不高，这个时候用户体验会很差。在非即时更新的协作推荐器以及元数据推荐器的基础上，增加基于内容的推荐器，可以大大优化 call start issues。</p>
 <h4 id="312-图像检索">3.1.2 图像检索</h4>
-<p><a href="https://github.com/immich-app/immich" target="_blank" rel="noopener noreffer ">immich</a> 是一个高性能的开源 self-hosted 图像以及视频管理解决方案。试想当你把你所有的视频和图片都上传到 immich 之后，你很难在很短的时间内找到你想要的图片或者视频。这个时候就需要一个高效的图像检索系统 <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">smart search</a>，通过向量搜索技术，你可以通过文本描述以及额外的过滤器（标签，日期等）来快速精准的找到你想要的图片或者视频。</p>
+<p><a href="https://github.com/immich-app/immich">immich</a> 是一个高性能的开源 self-hosted 图像以及视频管理解决方案。试想当你把你所有的视频和图片都上传到 immich 之后，你很难在很短的时间内找到你想要的图片或者视频。这个时候就需要一个高效的图像检索系统 <a href="https://immich.app/docs/features/smart-search">smart search</a>，通过向量搜索技术，你可以通过文本描述以及额外的过滤器（标签，日期等）来快速精准的找到你想要的图片或者视频。</p>
 <div align="center">
   <img src="https://immich.app/assets/images/advanced-search-filters-1d755f0d492deb304a7bb924e5f4f046.webp" alt="image tag filter search" />
 </div>
@@ -256,7 +211,7 @@
   <img src="https://immich.app/assets/images/search-ex-1-3d2c72e3921cb56afcfdbf25369107fb.png" alt="image search" />
 </div>
 <blockquote>
-<p>图片来自于 <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">immich</a></p>
+<p>图片来自于 <a href="https://immich.app/docs/features/smart-search">immich</a></p>
 </blockquote>
 <h4 id="313-rag">3.1.3 RAG</h4>
 <p>RAG（Retrieval Augmented Generation）主要解决在 LLM 应用中的几个问题：</p>
@@ -266,14 +221,7 @@
 <li>LLM 的黑匣子问题，我们无法知道 LLM 是如何生成答案的，其答案的来源来自何处。</li>
 </ol>
 <p>这里借用 Paul lusztin 和 Aurimas Griciunas 的两张图来解释 RAG 的工作原理：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./rag-1.png"
-        data-srcset="./rag-1.png, ./rag-1.png 1.5x, ./rag-1.png 2x"
-        data-sizes="auto"
-        alt="./rag-1.png"
-        title="alt text" /></p>
+<p><img src="./rag-1.png" alt="alt text"></p>
 <ol>
 <li>获取金融新闻的流式即时数据，以及历史数据</li>
 <li>将数据进行 chunking 转换成 embedding 模型的输入，然后将 embedding 存储到向量数据库中</li>
@@ -283,14 +231,7 @@
 <li>将答案返回给用户</li>
 <li>将新的 chat 信息存储到用户历史数据中</li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./rag-2.png"
-        data-srcset="./rag-2.png, ./rag-2.png 1.5x, ./rag-2.png 2x"
-        data-sizes="auto"
-        alt="./rag-2.png"
-        title="alt text" /></p>
+<p><img src="./rag-2.png" alt="alt text"></p>
 <ol>
 <li>私域中的数据，例如 Notion, Jira,本地 pdf 文件等等进场 chunking 转换成 embedding 模型的输入</li>
 <li>将 chunk 输入到 embedding 模型中，然后将 embedding 存储到向量数据库中</li>
@@ -341,28 +282,14 @@
 </ul>
 </li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75" /></p>
+<p><img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75" alt=""></p>
 <ol start="2">
 <li>后使用 MinHash 创建“签名”
 <ul>
 <li>创建 [1&hellip;len(voc)+1] 的随机排列</li>
 <li>随机排列中从上到下的值作为 index ，如果原始稀疏 vector 的 index-1 位置为1则取随机排列的 index-1 位置数为签名值</li>
 <li>重复 n 次得到 n 维度稠密向量
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75" /></li>
+<img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75" alt=""></li>
 </ul>
 </li>
 <li>Band and Hash
@@ -411,14 +338,7 @@
 <li>将插入点与 m 个点相连</li>
 </ol>
 <p>这里的随机性会让前期的图中长连接线增多，加速搜索，可以理解成“高速公路”，下图中的红色线就是长连接线：
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./nsw_graph.png"
-        data-srcset="./nsw_graph.png, ./nsw_graph.png 1.5x, ./nsw_graph.png 2x"
-        data-sizes="auto"
-        alt="./nsw_graph.png"
-        title="./nsw_graph.png" /></p>
+<img src="./nsw_graph.png" alt=""></p>
 <p>NSW 的搜索过程如下，这里借用知乎网友“工牌厂程序猿”的一张图：</p>
 <div align="center">
   <img src="https://pic4.zhimg.com/80/v2-b8f847192cdd6fd0e0fe45158910dce7_720w.webp" alt="nsw" />
@@ -449,7 +369,7 @@
 <p>构建参数：</p>
 <ul>
 <li>efConstruction: 图构建过程中的一个参数，用来控制在为每个节点建立连接时，考虑的最近邻候选节点的数量。该参数具体影响的是图在构建过程中节点之间连接的质量。较高的 efConstruction 值意味着在为一个节点选择邻居时会考虑更多的候选节点，从而生成更优质的图结构。但是，较高的 efConstruction 值会增加构建图的时间和空间复杂度，而且在搜索时也会增加搜索时间。</li>
-<li>m: 每个顶点添加的最大邻居数，分为 m_0=2m 以及 m_max=m, 参看<a href="https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp#L76" target="_blank" rel="noopener noreffer ">代码</a>.</li>
+<li>m: 每个顶点添加的最大邻居数，分为 m_0=2m 以及 m_max=m, 参看<a href="https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp#L76">代码</a>.</li>
 </ul>
 <p>搜索参数：</p>
 <ul>
@@ -668,14 +588,7 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
 <p>通过减少 Vector 大小，或者通过降维让搜索更快，这里列举了一些常见的向量搜索算法优化方法。</p>
 <h4 id="341-pqproduct-quantization">3.4.1 PQ（Product Quantization）</h4>
 <p>这里借用知乎网友的一张图，没办法，网友的图画的太好了：
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
-        data-srcset="/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg, /vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 1.5x, /vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 2x"
-        data-sizes="auto"
-        alt="/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
-        title="/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" width="600" height="196" /></p>
+<img src="v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" alt=""></p>
 <p>构建阶段：</p>
 <ol>
 <li>首先将N个原始向量，各自切分为多个子向量。比如256维向量，切分为8个32维子向量</li>
@@ -694,7 +607,7 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
 编码： scalar = (max-min)/255, floor(value-min/scaler) 如果小于0 则取 0，大于 255 则取 255，这样就将向量压缩到 0-255 之间，这样可以减少向量的大小，但是会损失一些信息。
 解码：value = min + (code + 0.5)*(max-min)/255</p>
 <h4 id="343-rabitq">3.4.3 RabitQ</h4>
-<p>RabitQ 来源于论文 <a href="https://arxiv.org/abs/2405.12497" target="_blank" rel="noopener noreffer ">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>, 具体理论细节可以参考 RabitQ 的作者 Jianyang Gao 的 <a href="https://dev.to/gaoj0017/quantization-in-the-counterintuitive-high-dimensional-space-4feg" target="_blank" rel="noopener noreffer ">blog</a>。</p>
+<p>RabitQ 来源于论文 <a href="https://arxiv.org/abs/2405.12497">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>, 具体理论细节可以参考 RabitQ 的作者 Jianyang Gao 的 <a href="https://dev.to/gaoj0017/quantization-in-the-counterintuitive-high-dimensional-space-4feg">blog</a>。</p>
 <p>RabitQ 指出现阶段 PQ 算法的两个问题：</p>
 <ol>
 <li>用 kmeans 的质心作为 codebook， 构建时启发式的近似估计，没有理论保证</li>
@@ -820,7 +733,7 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
 <p>最终，一个原本需要在数十亿数据上进行慢速、精确计算的“不可能完成的任务”，被巧妙地分解为<strong>离线编码</strong>和<strong>在线闪搜</strong>两部分，实现了在保证高精度的前提下的数量级加速。</p>
 <h2 id="4-常见的向量数据库极其优劣">4. 常见的向量数据库极其优劣</h2>
 <p>以下列举了一些常见的向量数据库，以及他们的优劣势, 有些是专用向量数据库，有些是对现有关系型数据库的扩展。</p>
-<h3 id="41-milvushttpsmilvusio">4.1 <a href="https://milvus.io/" target="_blank" rel="noopener noreffer ">Milvus</a></h3>
+<h3 id="41-milvushttpsmilvusio">4.1 <a href="https://milvus.io/">Milvus</a></h3>
 <p>Milvus 是一款非常优秀的开源向量数据库，支持多种向量搜索算法，包括 HNSW，DiskANN，IVF 等。 除了向量检索的基本功能，还提供 sharding, streaming data ingestion 以及 hybrid search 等功能。</p>
 <p>Milvus 采用的是云原生的存算分离，shared-everthing 的架构，且控制面和数据面分离。各个组件都是独立且可横向拓展的，分别为：</p>
 <ul>
@@ -853,12 +766,12 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
 </li>
 </ul>
 <p>Milvus 的云原生架构是其优点，同时也给开发者带来了不小的挑战，例如新概念的学习，以及相关组件 Pulsar 或者 etcd 带来的运维管理上的挑战。</p>
-<h3 id="44-pineconehttpswwwpineconeio">4.4 <a href="https://www.pinecone.io/" target="_blank" rel="noopener noreffer ">Pinecone</a></h3>
-<h3 id="45-qdranthttpsqdranttech">4.5 <a href="https://qdrant.tech/" target="_blank" rel="noopener noreffer ">Qdrant</a></h3>
-<h3 id="46-pgvectorhttpsgithubcompgvectorpgvector">4.6 <a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener noreffer ">Pgvector</a></h3>
-<h3 id="47-pgvectorshttpsgithubcomtensorchordpgvectors">4.7 <a href="https://github.com/tensorchord/pgvecto.rs" target="_blank" rel="noopener noreffer ">Pgvecto.rs</a></h3>
-<h3 id="48-vectorchordhttpsgithubcomtensorchordvectorchord">4.8 <a href="https://github.com/tensorchord/VectorChord" target="_blank" rel="noopener noreffer ">VectorChord</a></h3>
-<p>如何选型参考 <a href="https://mp.weixin.qq.com/s/LtMCoSgGLSSWJU4IceRwiA" target="_blank" rel="noopener noreffer ">大模型时代如何选向量数据库？Milvus（Zilliz）、LanceDB、Chroma、Pinecone四大热门技术全解析！</a>。</p>
+<h3 id="44-pineconehttpswwwpineconeio">4.4 <a href="https://www.pinecone.io/">Pinecone</a></h3>
+<h3 id="45-qdranthttpsqdranttech">4.5 <a href="https://qdrant.tech/">Qdrant</a></h3>
+<h3 id="46-pgvectorhttpsgithubcompgvectorpgvector">4.6 <a href="https://github.com/pgvector/pgvector">Pgvector</a></h3>
+<h3 id="47-pgvectorshttpsgithubcomtensorchordpgvectors">4.7 <a href="https://github.com/tensorchord/pgvecto.rs">Pgvecto.rs</a></h3>
+<h3 id="48-vectorchordhttpsgithubcomtensorchordvectorchord">4.8 <a href="https://github.com/tensorchord/VectorChord">VectorChord</a></h3>
+<p>如何选型参考 <a href="https://mp.weixin.qq.com/s/LtMCoSgGLSSWJU4IceRwiA">大模型时代如何选向量数据库？Milvus（Zilliz）、LanceDB、Chroma、Pinecone四大热门技术全解析！</a>。</p>
 <h2 id="5-优秀的向量搜索库以及向量数据库开源项目">5. 优秀的向量搜索库以及向量数据库开源项目</h2>
 <h2 id="6-向量数据库商业化你需要知道什么">6. 向量数据库商业化你需要知道什么</h2>
 <h2 id="7-总结">7. 总结</h2>
@@ -876,49 +789,22 @@ NSG 的创新可以总结为“一个理论，一个枢纽，一个技巧”。<
 <li><a href="https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw">https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw</a></li>
 <li><a href="https://blog.wilsonl.in/graph-vector-search/">https://blog.wilsonl.in/graph-vector-search/</a></li>
 </ul>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2025-09-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/15b6eabf1a4dc01fb93dc13d98f27ca3063304a4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 15b6eabf1a4dc01fb93dc13d98f27ca3063304a4: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>15b6eab</a></span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/vector-search/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/vector-search/" data-title="向量数据库中的门门道道" data-hashtags="vector search,Postgres"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/vector-search/" data-hashtag="vector search"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/vector-search/" data-title="向量数据库中的门门道道"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://blog.xieydd.top/vector-search/" data-title="向量数据库中的门门道道"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/vector-search/" data-title="向量数据库中的门门道道"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
-            </div>
-        </div>
-    </div>
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/vector-search/">vector search</a>,&nbsp;<a href="/tags/postgres/">Postgres</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
+  </div>
 
+  <footer class="post-footer">
     <div class="post-nav">
-            <a href="/kubernetes-topo-aware-all-you-need-know/" class="next" rel="next" title="关于 Kubernetes 中，拓扑感知你需要知道的一切">关于 Kubernetes 中，拓扑感知你需要知道的一切<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
-</div>
-<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
-                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
-            </noscript></div></article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
+      
+      
+      <a href="https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/" class="next-post">关于 Kubernetes 中，拓扑感知你需要知道的一切 &rarr;</a>
+      
+    </div>
+    
+    <a href="https://blog.xieydd.top/" class="back-home">&larr; 返回首页</a>
+  </footer>
+</article>
 
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.zh-cn","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
-            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
-            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
-        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+    </main>
+  </div>
+</body>
 </html>

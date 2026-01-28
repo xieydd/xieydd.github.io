@@ -1,142 +1,95 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>优化模型推理的冷启动 - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="优化模型推理的冷启动" />
-<meta property="og:description" content="之前在做 Serverless 模型推理 Modelz，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.xieydd.top/improve-model-serving-cold-start/" />
-<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
-<meta property="article:published_time" content="2025-01-08T16:37:10+08:00" />
-<meta property="article:modified_time" content="2025-09-08T12:10:15+08:00" /><meta property="og:site_name" content="小猪窝" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
-
-<meta name="twitter:title" content="优化模型推理的冷启动"/>
-<meta name="twitter:description" content="之前在做 Serverless 模型推理 Modelz，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉"/>
-<meta name="application-name" content="Xieydd">
-<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/improve-model-serving-cold-start/" /><link rel="prev" href="https://blog.xieydd.top/s3/" /><link rel="next" href="https://blog.xieydd.top/llm-infra/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "优化模型推理的冷启动",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/blog.xieydd.top\/improve-model-serving-cold-start\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "serving, cold start, inference","wordcount":  1444 ,
-        "url": "https:\/\/blog.xieydd.top\/improve-model-serving-cold-start\/","datePublished": "2025-01-08T16:37:10+08:00","dateModified": "2025-09-08T12:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
-            "@type": "Organization",
-            "name": "xxxx","logo": {
-                    "@type": "ImageObject",
-                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
-                    "width":  400 ,
-                    "height":  400 
-                }},"author": {
-                "@type": "Person",
-                "name": "xieydd"
-            },"description": ""
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>优化模型推理的冷启动 | Xieydd&#39;s Blog</title>
+  <meta name="description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <meta property="og:title" content="优化模型推理的冷启动">
+  <meta property="og:description" content="AI Infra Engineer&#39;s Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/improve-model-serving-cold-start/">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="优化模型推理的冷启动">
+  <meta name="twitter:description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
     }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="site-header">
+      <div class="language-switcher">
+  
+  
+    
+      <span class="lang-current">中文</span>
+    
+  
+    
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/improve-model-serving-cold-start/" class="lang-link">EN</a>
+          
+        
+      
+      
+    
+  
+</div>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/categories/documentation/"> 文档 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
-                    <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/improve-model-serving-cold-start/">English</option><option value="/improve-model-serving-cold-start/" selected>简体中文</option></select>
-                </a></div>
-        </div>
+    </header>
+    <main class="content">
+      
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">优化模型推理的冷启动</h1>
+    <div class="post-meta">
+      <time datetime="2025-01-08">2025-01-08</time>
+      
+      <span class="post-author">by xieydd</span>
+      
+      
+      <span class="reading-time">3 min read</span>
+      
     </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/categories/documentation/" title="">文档</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
-                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/en/improve-model-serving-cold-start/">English</option><option value="/improve-model-serving-cold-start/" selected>简体中文</option></select>
-                </a></div>
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/tags/serving" class="tag">#serving</a>
+      
+      <a href="https://blog.xieydd.top/tags/cold-start" class="tag">#cold start</a>
+      
+      <a href="https://blog.xieydd.top/tags/inference" class="tag">#inference</a>
+      
     </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">优化模型推理的冷启动</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/serverless/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serverless</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-08">2025-01-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1444 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+    
+  </header>
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
   <ul>
     <li><a href="#问题">问题</a></li>
     <li><a href="#deep-dive">Deep Dive</a>
@@ -156,8 +109,12 @@
     <li><a href="#后续可能的优化">后续可能的优化</a></li>
     <li><a href="#引用">引用</a></li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>之前在做 Serverless 模型推理 <a href="https://modelz.ai/" target="_blank" rel="noopener noreffer ">Modelz</a>，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉及到了容器的冷启动问题。</p>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>之前在做 Serverless 模型推理 <a href="https://modelz.ai/">Modelz</a>，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉及到了容器的冷启动问题。</p>
 <h1 id="优化模型推理的冷启动">优化模型推理的冷启动</h1>
 <h2 id="问题">问题</h2>
 <p>首先我们看下 Serverless 模型推理，从用户请求到模型推理的过程：</p>
@@ -251,36 +208,36 @@
 </ol>
 <h2 id="我们尝试过的解决方案">我们尝试过的解决方案</h2>
 <h3 id="1-预热">1. 预热</h3>
-<p>首先我们会使用 <a href="https://github.com/kubernetes-sigs/cluster-proportional-autoscaler" target="_blank" rel="noopener noreffer ">cluster-proportional-autoscaler</a> 根据既定规则，比如总节点为 8 的时候该类型 GPU 资源扩容到 2 个节点即使没有请求，也有预留 bubble. 然后根据 image 使用频率，使用 <a href="https://github.com/senthilrch/kube-fledged" target="_blank" rel="noopener noreffer ">kube-fledged</a> 在这些节点上创建 ImageCache，这样在真正请求的时候，镜像已经在节点上了。</p>
+<p>首先我们会使用 <a href="https://github.com/kubernetes-sigs/cluster-proportional-autoscaler">cluster-proportional-autoscaler</a> 根据既定规则，比如总节点为 8 的时候该类型 GPU 资源扩容到 2 个节点即使没有请求，也有预留 bubble. 然后根据 image 使用频率，使用 <a href="https://github.com/senthilrch/kube-fledged">kube-fledged</a> 在这些节点上创建 ImageCache，这样在真正请求的时候，镜像已经在节点上了。</p>
 <h3 id="2-cache-模型">2. Cache 模型</h3>
 <p>我们开发了一个 HuggingFace 的模型缓存服务，这个服务会在模型被调用的时候，通过比对模型的 hash 值，如果模型已经存在缓存服务中，那么直接返回缓存的模型，否则下载模型到缓存服务中。</p>
 <h3 id="3-gcp-image-streaming">3. GCP Image Streaming</h3>
-<p>利用 <a href="https://cloud.google.com/blog/products/containers-kubernetes/introducing-container-image-streaming-in-gke" target="_blank" rel="noopener noreffer ">GCP Image Streaming</a> 将自己管理的镜像或者用户自定义的镜像转换到 GCP 的 Artifact Registry 中，在节点拉取镜像时，通过网络 mount container layers 到节点上，让 containerd 误以为镜像已经在节点上。但是这个方案有几个缺点：</p>
+<p>利用 <a href="https://cloud.google.com/blog/products/containers-kubernetes/introducing-container-image-streaming-in-gke">GCP Image Streaming</a> 将自己管理的镜像或者用户自定义的镜像转换到 GCP 的 Artifact Registry 中，在节点拉取镜像时，通过网络 mount container layers 到节点上，让 containerd 误以为镜像已经在节点上。但是这个方案有几个缺点：</p>
 <ol>
 <li>需要 GCP 的支持, vendor lock-in</li>
 <li>用户镜像需要 proxy 转换到 GCP，这个过程会有一定的延迟</li>
 <li>虽然 pod running 但是不是真正的完全可运行，可能会导致运行时缓慢</li>
 </ol>
 <h3 id="4-更换镜像格式">4. 更换镜像格式</h3>
-<p>将 OCI 镜像格式转换成 <a href="https://github.com/dragonflyoss/nydus" target="_blank" rel="noopener noreffer ">nydus</a> 格式，并结合 lazy pulling 技术 <a href="https://github.com/dragonflyoss/nydus/blob/master/docs/nydus-zran.md" target="_blank" rel="noopener noreffer ">zran</a>, 测试下来有着数倍的提升。就是需要修改 containerd 配置，支持 nydus。 配合 <a href="https://github.com/dragonflyoss/dragonfly" target="_blank" rel="noopener noreffer ">Dragonfly</a> 的 P2P 技术，可以进一步提升镜像拉取速度。</p>
+<p>将 OCI 镜像格式转换成 <a href="https://github.com/dragonflyoss/nydus">nydus</a> 格式，并结合 lazy pulling 技术 <a href="https://github.com/dragonflyoss/nydus/blob/master/docs/nydus-zran.md">zran</a>, 测试下来有着数倍的提升。就是需要修改 containerd 配置，支持 nydus。 配合 <a href="https://github.com/dragonflyoss/dragonfly">Dragonfly</a> 的 P2P 技术，可以进一步提升镜像拉取速度。</p>
 <h3 id="5-使用-juicefs-构建模型缓存集群">5. 使用 JuiceFS 构建模型缓存集群</h3>
 <p>通过构建独立缓存池，将模型缓存到 JuiceFS 中。通过 JuiceFS CSI 将缓存目录挂载到容器中，如果模型已经存在 JuiceFS 中，那么直接使用，不存在则下载并直接缓存到 JuiceFS 中。这套架构主要是利用 JuiceFS Posix 以及使用对象存储的优势，无需关注缓存大小。这里需要对 JuiceFS 的参数进行调优，比如 prefetch block, buffer size 等。</p>
 <h2 id="后续可能的优化">后续可能的优化</h2>
 <ul>
 <li>
-<p>使用 GCP 的 <a href="data-container-image-preloading" rel="">image preloading</a> 功能，通过secondary boot disks preload 镜像到 node 上。</p>
+<p>使用 GCP 的 <a href="data-container-image-preloading">image preloading</a> 功能，通过secondary boot disks preload 镜像到 node 上。</p>
 </li>
 <li>
-<p>In-class registry cache <a href="https://github.com/spegel-org/spegel" target="_blank" rel="noopener noreffer ">spegel</a>。</p>
+<p>In-class registry cache <a href="https://github.com/spegel-org/spegel">spegel</a>。</p>
 </li>
 <li>
-<p>Parallel Downloading in Kubelet <a href="https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/-kubelet-parallel-image-pull-limit/README.md" target="_blank" rel="noopener noreffer ">KEP 3673</a>。</p>
+<p>Parallel Downloading in Kubelet <a href="https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/-kubelet-parallel-image-pull-limit/README.md">KEP 3673</a>。</p>
 </li>
 <li>
-<p><a href="https://github.com/containerd/containerd/issues/8881" target="_blank" rel="noopener noreffer ">Parallel Container Layer Unpacking</a>, 这里在引用1中提到 containerd 需要实现 high IO queue depth 才能充分利用 EBS 的 throughput。</p>
+<p><a href="https://github.com/containerd/containerd/issues/8881">Parallel Container Layer Unpacking</a>, 这里在引用1中提到 containerd 需要实现 high IO queue depth 才能充分利用 EBS 的 throughput。</p>
 </li>
 <li>
-<p><a href="https://x.com/yetone/status/1858034646585368891" target="_blank" rel="noopener noreffer ">yetone 的方案</a>:</p>
+<p><a href="https://x.com/yetone/status/1858034646585368891">yetone 的方案</a>:</p>
 <blockquote>
 <p>parse 了 Dockerfile，然后获得了 base image 和一系列 args、env 和 commands，并将其顺序合并起来 hash 了一下作为 s3 object key，然后在我们的 image builder job 的 pod 的 container 里起了 dind，然后在里面用 base image 起了新的 container 然后在里面执行上一步 parse 出来的 commands，执行完毕后把这个 container 的 rootfs 打成 tar 包并用 zstd 压缩然后上传到 s3</p>
 </blockquote>
@@ -291,18 +248,11 @@
 <li>
 <p>Modal lazying container loading</p>
 <blockquote>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/improve-model-serving-cold-start/image.png"
-        data-srcset="/improve-model-serving-cold-start/image.png, /improve-model-serving-cold-start/image.png 1.5x, /improve-model-serving-cold-start/image.png 2x"
-        data-sizes="auto"
-        alt="/improve-model-serving-cold-start/image.png"
-        title="alt text" width="709" height="317" /></p>
+<p><img src="image.png" alt="alt text"></p>
 </blockquote>
 </li>
 <li>
-<p>Do some research on <a href="https://www.usenix.org/system/files/osdi24-fu.pdf" target="_blank" rel="noopener noreffer ">ServerlessLLM OSDI24</a></p>
+<p>Do some research on <a href="https://www.usenix.org/system/files/osdi24-fu.pdf">ServerlessLLM OSDI24</a></p>
 </li>
 </ul>
 <h2 id="引用">引用</h2>
@@ -310,49 +260,24 @@
 <li><a href="https://www.youtube.com/watch?v=e6Oo2aoZPnA">https://www.youtube.com/watch?v=e6Oo2aoZPnA</a></li>
 <li><a href="https://www.youtube.com/watch?v=SlkEW4C2kd4">https://www.youtube.com/watch?v=SlkEW4C2kd4</a></li>
 </ol>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2025-09-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/15b6eabf1a4dc01fb93dc13d98f27ca3063304a4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 15b6eabf1a4dc01fb93dc13d98f27ca3063304a4: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>15b6eab</a></span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/improve-model-serving-cold-start/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/improve-model-serving-cold-start/" data-title="优化模型推理的冷启动" data-hashtags="serving,cold start,inference"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/improve-model-serving-cold-start/" data-hashtag="serving"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/improve-model-serving-cold-start/" data-title="优化模型推理的冷启动"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://blog.xieydd.top/improve-model-serving-cold-start/" data-title="优化模型推理的冷启动"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/improve-model-serving-cold-start/" data-title="优化模型推理的冷启动"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
-            </div>
-        </div>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/s3/" class="prev-post">&larr; S3</a>
+      
+      
+      <a href="https://blog.xieydd.top/llm-infra/" class="next-post">LLM Infra 你需要知道的一切 &rarr;</a>
+      
     </div>
+    
+    <a href="https://blog.xieydd.top/" class="back-home">&larr; 返回首页</a>
+  </footer>
+</article>
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/serving/">serving</a>,&nbsp;<a href="/tags/cold-start/">cold start</a>,&nbsp;<a href="/tags/inference/">inference</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/s3/" class="prev" rel="prev" title="S3"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>S3</a>
-            <a href="/llm-infra/" class="next" rel="next" title="LLM Infra 你需要知道的一切">LLM Infra 你需要知道的一切<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
-</div>
-<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
-                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
-            </noscript></div></article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.zh-cn","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
-            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
-            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
-        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+    </main>
+  </div>
+</body>
 </html>

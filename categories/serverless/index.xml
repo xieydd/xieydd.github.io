@@ -1,24 +1,35 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>serverless - 分类 - Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/categories/serverless/</link>
-        <description>serverless - 分类 - Xieydd&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 08 Jan 2025 16:37:10 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/categories/serverless/" rel="self" type="application/rss+xml" /><item>
-    <title>优化模型推理的冷启动</title>
-    <link>https://blog.xieydd.top/improve-model-serving-cold-start/</link>
-    <pubDate>Wed, 08 Jan 2025 16:37:10 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/improve-model-serving-cold-start/</guid>
-    <description><![CDATA[之前在做 Serverless 模型推理 Modelz，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉]]></description>
-</item>
-<item>
-    <title>Serverless Database</title>
-    <link>https://blog.xieydd.top/serverless/</link>
-    <pubDate>Mon, 12 Aug 2024 16:02:16 &#43;0000</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/serverless/</guid>
-    <description><![CDATA[DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2]]></description>
-</item>
-</channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>serverless on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/categories/serverless/</link>
+    <description>Recent content in serverless on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Wed, 08 Jan 2025 16:37:10 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/categories/serverless/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>优化模型推理的冷启动</title>
+      <link>https://blog.xieydd.top/improve-model-serving-cold-start/</link>
+      <pubDate>Wed, 08 Jan 2025 16:37:10 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/improve-model-serving-cold-start/</guid>
+      <description>之前在做 Serverless 模型推理 Modelz，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉</description>
+    </item>
+    
+    <item>
+      <title>Serverless Database</title>
+      <link>https://blog.xieydd.top/serverless/</link>
+      <pubDate>Mon, 12 Aug 2024 16:02:16 +0000</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/serverless/</guid>
+      <description>DuckDB (In-Process OLAP) MotherDuck simple data lakerhouse: DuckDB + Dagster + S3 Modern Data Stack: Meltano + DuckDB + dbt + Superset kafka streaming pipeline from Postgres to DuckDB Iceberg API + S3 + DuckDB (Parquet) Postgres Neon EDB StarRocks (MPP OLAP) ClickHouse (MPP OLAP) ClickHouse-Local 引用 https://supabase.com/blog/supabase-acquires-oriole https://neon.tech/blog/architecture-decisions-in-neon#fn-2</description>
+    </item>
+    
+  </channel>
 </rss>

@@ -1,146 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>PostgreSQL High Availability - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="PostgreSQL High Availability" />
-<meta property="og:description" content="I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
-PostgreSQL High Availability High Availability Goals PostgreSQL high availability typically has two main objectives:
- RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.xieydd.top/en/postgres-ha/" />
-<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
-<meta property="article:published_time" content="2024-07-26T12:40:32+08:00" />
-<meta property="article:modified_time" content="2025-09-08T12:10:15+08:00" /><meta property="og:site_name" content="小猪窝" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
-
-<meta name="twitter:title" content="PostgreSQL High Availability"/>
-<meta name="twitter:description" content="I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
-PostgreSQL High Availability High Availability Goals PostgreSQL high availability typically has two main objectives:
- RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again."/>
-<meta name="application-name" content="Xieydd">
-<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/en/postgres-ha/" /><link rel="prev" href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" /><link rel="next" href="https://blog.xieydd.top/en/improve-model-serving-cold-start/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "PostgreSQL High Availability",
-        "inLanguage": "en",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/blog.xieydd.top\/en\/postgres-ha\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "High Availability, Postgres","wordcount":  1635 ,
-        "url": "https:\/\/blog.xieydd.top\/en\/postgres-ha\/","datePublished": "2024-07-26T12:40:32+08:00","dateModified": "2025-09-08T12:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
-            "@type": "Organization",
-            "name": "xxxx","logo": {
-                    "@type": "ImageObject",
-                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
-                    "width":  400 ,
-                    "height":  400 
-                }},"author": {
-                "@type": "Person",
-                "name": "xieydd"
-            },"description": ""
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PostgreSQL High Availability | Xieydd&#39;s Blog</title>
+  <meta name="description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <meta property="og:title" content="PostgreSQL High Availability">
+  <meta property="og:description" content="AI Infra Engineer&#39;s Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/postgres-ha/">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PostgreSQL High Availability">
+  <meta name="twitter:description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
     }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="site-header">
+      <div class="language-switcher">
+  
+  
+    
+      
+      
+        
+          <a href="https://blog.xieydd.top/postgres-ha/" class="lang-link">中文</a>
+          
+        
+      
+      
+    
+  
+    
+      <span class="lang-current">EN</span>
+    
+  
+</div>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/en/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/categories/documentation/"> Docs </a><a class="menu-item" href="/en/about/"> About </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
-                    <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/postgres-ha/" selected>English</option><option value="/postgres-ha/">简体中文</option></select>
-                </a></div>
-        </div>
+    </header>
+    <main class="content">
+      
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">PostgreSQL High Availability</h1>
+    <div class="post-meta">
+      <time datetime="2024-07-26">2024-07-26</time>
+      
+      <span class="post-author">by xieydd</span>
+      
+      
+      <span class="reading-time">8 min read</span>
+      
     </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/en/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        Cancel
-                    </a>
-                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/categories/documentation/" title="">Docs</a><a class="menu-item" href="/en/about/" title="">About</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
-                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/en/postgres-ha/" selected>English</option><option value="/postgres-ha/">简体中文</option></select>
-                </a></div>
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/en/tags/high-availability" class="tag">#High Availability</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/postgres" class="tag">#Postgres</a>
+      
     </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">Contents</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">PostgreSQL High Availability</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">included in <a href="/en/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/en/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-26">2024-07-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1635 words&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;8 minutes&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>Contents</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+    
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
   <ul>
     <li><a href="#high-availability-goals">High Availability Goals</a></li>
     <li><a href="#scenarios">Scenarios</a></li>
@@ -167,8 +114,12 @@ PostgreSQL High Availability High Availability Goals PostgreSQL high availabilit
     </li>
     <li><a href="#references">References</a></li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>I've been researching PostgreSQL high availability solutions recently, and here's what I've learned.</p>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>I've been researching PostgreSQL high availability solutions recently, and here's what I've learned.</p>
 <h1 id="postgresql-high-availability">PostgreSQL High Availability</h1>
 <h2 id="high-availability-goals">High Availability Goals</h2>
 <p>PostgreSQL high availability typically has two main objectives:</p>
@@ -190,7 +141,7 @@ In simple terms, this means determining how quickly to restore the database and 
 <li>Point-in-Time Recovery (PITR): For hardware failures, high availability failover based on physical replication might be the best choice. For data corruption (whether machine or human error), Point-in-Time Recovery (PITR) is more appropriate as it provides a safety net for worst-case scenarios.</li>
 <li>Physical Replication: Complete replication of data files and transaction log files (PGData, pg_wals)</li>
 <li>Logical Replication: Replication between publisher and subscriber based on replication identifiers (e.g., primary keys), typically used for Foreign Data Wrapper (FDW) scenarios rather than disaster recovery.</li>
-<li><a href="https://wiki.postgresql.org/wiki/Streaming_Replication" target="_blank" rel="noopener noreffer ">Streaming Replication</a>: WAL log-based streaming replication, primarily used for disaster recovery. WAL XLOG records are continuously transmitted from primary to standby, available in both synchronous and asynchronous modes.</li>
+<li><a href="https://wiki.postgresql.org/wiki/Streaming_Replication">Streaming Replication</a>: WAL log-based streaming replication, primarily used for disaster recovery. WAL XLOG records are continuously transmitted from primary to standby, available in both synchronous and asynchronous modes.</li>
 </ol>
 <h2 id="tools">Tools</h2>
 <h3 id="backup-and-restore">Backup and Restore</h3>
@@ -234,10 +185,10 @@ Disadvantages:</p>
 </ol>
 <p>Several considerations go into backup planning, including frequency, storage location, recovery time, and retention policies. Here are some popular open-source tools to assist with backups:</p>
 <ul>
-<li><a href="https://pgbackrest.org/" target="_blank" rel="noopener noreffer ">pgbackrest</a></li>
-<li><a href="https://github.com/EnterpriseDB/barman" target="_blank" rel="noopener noreffer ">EDB barman</a></li>
-<li><a href="https://github.com/wal-g/wal-g" target="_blank" rel="noopener noreffer ">WAL-G</a>
-From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145#discussioncomment-7394174" target="_blank" rel="noopener noreffer ">discussion</a>, barman lacks some features compared to pgbackrest:</li>
+<li><a href="https://pgbackrest.org/">pgbackrest</a></li>
+<li><a href="https://github.com/EnterpriseDB/barman">EDB barman</a></li>
+<li><a href="https://github.com/wal-g/wal-g">WAL-G</a>
+From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145#discussioncomment-7394174">discussion</a>, barman lacks some features compared to pgbackrest:</li>
 </ul>
 <ol>
 <li>Zstd compression</li>
@@ -248,7 +199,7 @@ From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/
 </ol>
 <h3 id="high-availability">High Availability</h3>
 <ul>
-<li><a href="https://github.com/patroni/patroni" target="_blank" rel="noopener noreffer ">Patroni</a></li>
+<li><a href="https://github.com/patroni/patroni">Patroni</a></li>
 </ul>
 <p>Patroni uses asynchronous Streaming Replication by default, meaning transactions committed on the primary node may take some time to replicate to standby nodes. During this time, if the primary node fails, data from this period could be lost. Synchronous replication can be used to reduce data loss, but this affects primary node performance as it must wait for all standby nodes to receive and write WAL logs before committing transactions. A balance between availability and performance must be struck.</p>
 <p>Patroni's maximum_lag_on_failover and PostgreSQL's wal_segsize need to be balanced between availability and durability:</p>
@@ -259,25 +210,18 @@ From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/
 <h2 id="architecture">Architecture</h2>
 <p>There are many PostgreSQL high availability architectures available. Here are two common architectures, corresponding to self-hosted PostgreSQL and cloud-hosted PostgreSQL typical architectures:</p>
 <ul>
-<li><a href="https://pigsty.io/zh/docs/concept/ha/" target="_blank" rel="noopener noreffer ">Pigsty</a></li>
-<li><a href="https://cloudnative-pg.io/documentation/1.23/architecture/" target="_blank" rel="noopener noreffer ">Cloudnative-PG HA</a></li>
+<li><a href="https://pigsty.io/zh/docs/concept/ha/">Pigsty</a></li>
+<li><a href="https://cloudnative-pg.io/documentation/1.23/architecture/">Cloudnative-PG HA</a></li>
 </ul>
 <h3 id="pigsty-ha-architecture">Pigsty HA Architecture</h3>
 <p>The following diagram is from pigsty:
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://pigsty.io/img/pigsty/ha.png"
-        data-srcset="https://pigsty.io/img/pigsty/ha.png, https://pigsty.io/img/pigsty/ha.png 1.5x, https://pigsty.io/img/pigsty/ha.png 2x"
-        data-sizes="auto"
-        alt="https://pigsty.io/img/pigsty/ha.png"
-        title="https://pigsty.io/img/pigsty/ha.png" /></p>
+<img src="https://pigsty.io/img/pigsty/ha.png" alt=""></p>
 <p>From top to bottom:</p>
 <ol>
 <li>Application layer resolves DNS to vip-manager's VIP, vip-manager gets the current primary's IP address through etcd, then binds the L2 VIP to the primary node; HAProxy handles L5 layer port forwarding.
 <ul>
 <li>Patroni: Synchronizes primary node information to etcd.</li>
-<li><a href="https://github.com/cybertec-postgresql/vip-manager" target="_blank" rel="noopener noreffer ">vip-manager</a>: Virtual IP and state managed synchronously by etcd.</li>
+<li><a href="https://github.com/cybertec-postgresql/vip-manager">vip-manager</a>: Virtual IP and state managed synchronously by etcd.</li>
 <li>HAProxy: Routes based on ports
 <ul>
 <li>5433: Connects to PGBouncer pool for primary read/write</li>
@@ -289,7 +233,7 @@ From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/
 </ul>
 </li>
 <li>Primary and replica synchronize WAL logs through Streaming Replication, primary sends WAL logs to replica via pg_receivexlog, replica replays WAL logs via pg_replay.</li>
-<li>Patroni performs backups through pgBackRest, backup data can be stored locally, in remote s3 or minio storage, refer to the <a href="https://pgstef.github.io/2022/07/12/patroni_and_pgbackrest_combined.html" target="_blank" rel="noopener noreffer ">documentation</a>.</li>
+<li>Patroni performs backups through pgBackRest, backup data can be stored locally, in remote s3 or minio storage, refer to the <a href="https://pgstef.github.io/2022/07/12/patroni_and_pgbackrest_combined.html">documentation</a>.</li>
 </ol>
 <blockquote>
 <ul>
@@ -303,14 +247,7 @@ With primary-replica architecture + automatic failover + synchronous streaming r
 </ul>
 </blockquote>
 <h3 id="cloudnative-pg-ha-architecture">Cloudnative-PG HA Architecture</h3>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs"
-        data-srcset="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs, https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs 1.5x, https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs 2x"
-        data-sizes="auto"
-        alt="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs"
-        title="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs" /></p>
+<p><img src="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs" alt=""></p>
 <p>Based on Kubernetes container orchestration characteristics, Cloudnative-PG HA architecture adopts a more modern approach:</p>
 <ul>
 <li>Multi-region Kubernetes deployment</li>
@@ -427,49 +364,24 @@ D--&gt;E(delete cluster will delete all wal and physical backups);
 <li><a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145">https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145</a></li>
 <li><a href="https://supabase.com/blog/postgresql-physical-logical-backups">https://supabase.com/blog/postgresql-physical-logical-backups</a></li>
 </ul>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>Updated on 2025-09-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/15b6eabf1a4dc01fb93dc13d98f27ca3063304a4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 15b6eabf1a4dc01fb93dc13d98f27ca3063304a4: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>15b6eab</a></span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/en/postgres-ha/index.md" target="_blank">Read Markdown</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/en/postgres-ha/" data-title="PostgreSQL High Availability" data-via="xxxx" data-hashtags="High Availability,Postgres"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/en/postgres-ha/" data-hashtag="High Availability"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/en/postgres-ha/" data-title="PostgreSQL High Availability"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://blog.xieydd.top/en/postgres-ha/" data-title="PostgreSQL High Availability"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/en/postgres-ha/" data-title="PostgreSQL High Availability"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
-            </div>
-        </div>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" class="prev-post">&larr; All You Need to Know About Topology Awareness in Kubernetes</a>
+      
+      
+      <a href="https://blog.xieydd.top/en/improve-model-serving-cold-start/" class="next-post">Optimizing Model Inference Cold Start &rarr;</a>
+      
     </div>
+    
+    <a href="https://blog.xieydd.top/en/" class="back-home">&larr; Back to Home</a>
+  </footer>
+</article>
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/high-availability/">High Availability</a>,&nbsp;<a href="/en/tags/postgres/">Postgres</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/en/kubernetes-topo-aware-all-you-need-know/" class="prev" rel="prev" title="All You Need to Know About Topology Awareness in Kubernetes"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>All You Need to Know About Topology Awareness in Kubernetes</a>
-            <a href="/en/improve-model-serving-cold-start/" class="next" rel="next" title="Optimizing Model Inference Cold Start">Optimizing Model Inference Cold Start<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
-</div>
-<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
-                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
-            </noscript></div></article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.en","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
-            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
-            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
-        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+    </main>
+  </div>
+</body>
 </html>

@@ -1,17 +1,27 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>topo aware - Tag - Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/en/tags/topo-aware/</link>
-        <description>topo aware - Tag - Xieydd&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/tags/topo-aware/" rel="self" type="application/rss+xml" /><item>
-    <title>All You Need to Know About Topology Awareness in Kubernetes</title>
-    <link>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</link>
-    <pubDate>Thu, 29 Dec 2022 16:27:06 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</guid>
-    <description><![CDATA[Recently, I've been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
-Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.]]></description>
-</item>
-</channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>topo aware on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/en/tags/topo-aware/</link>
+    <description>Recent content in topo aware on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Thu, 29 Dec 2022 16:27:06 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/en/tags/topo-aware/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>All You Need to Know About Topology Awareness in Kubernetes</title>
+      <link>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</link>
+      <pubDate>Thu, 29 Dec 2022 16:27:06 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</guid>
+      <description>Recently, I&#39;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
+Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.</description>
+    </item>
+    
+  </channel>
 </rss>

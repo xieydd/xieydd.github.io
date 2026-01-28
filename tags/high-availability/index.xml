@@ -1,16 +1,26 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>High Availability - 标签 - Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/tags/high-availability/</link>
-        <description>High Availability - 标签 - Xieydd&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/high-availability/" rel="self" type="application/rss+xml" /><item>
-    <title>Postgres 高可用</title>
-    <link>https://blog.xieydd.top/postgres-ha/</link>
-    <pubDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/postgres-ha/</guid>
-    <description><![CDATA[最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点]]></description>
-</item>
-</channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>High Availability on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/tags/high-availability/</link>
+    <description>Recent content in High Availability on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Fri, 26 Jul 2024 12:40:32 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/tags/high-availability/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Postgres 高可用</title>
+      <link>https://blog.xieydd.top/postgres-ha/</link>
+      <pubDate>Fri, 26 Jul 2024 12:40:32 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/postgres-ha/</guid>
+      <description>最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点</description>
+    </item>
+    
+  </channel>
 </rss>

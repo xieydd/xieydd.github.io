@@ -1,142 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>The internals of Vector Databases - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="The internals of Vector Databases" />
-<meta property="og:description" content="It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.xieydd.top/en/vector-search/" />
-<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
-<meta property="article:published_time" content="2024-07-13T14:52:44+08:00" />
-<meta property="article:modified_time" content="2025-09-08T12:10:15+08:00" /><meta property="og:site_name" content="小猪窝" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
-
-<meta name="twitter:title" content="The internals of Vector Databases"/>
-<meta name="twitter:description" content="It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me."/>
-<meta name="application-name" content="Xieydd">
-<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/en/vector-search/" /><link rel="next" href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "The internals of Vector Databases",
-        "inLanguage": "en",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/blog.xieydd.top\/en\/vector-search\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "vector search, Postgres","wordcount":  5149 ,
-        "url": "https:\/\/blog.xieydd.top\/en\/vector-search\/","datePublished": "2024-07-13T14:52:44+08:00","dateModified": "2025-09-08T12:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
-            "@type": "Organization",
-            "name": "xxxx","logo": {
-                    "@type": "ImageObject",
-                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
-                    "width":  400 ,
-                    "height":  400 
-                }},"author": {
-                "@type": "Person",
-                "name": "xieydd"
-            },"description": ""
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The internals of Vector Databases | Xieydd&#39;s Blog</title>
+  <meta name="description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <meta property="og:title" content="The internals of Vector Databases">
+  <meta property="og:description" content="AI Infra Engineer&#39;s Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/vector-search/">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="The internals of Vector Databases">
+  <meta name="twitter:description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
     }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="site-header">
+      <div class="language-switcher">
+  
+  
+    
+      
+      
+        
+          <a href="https://blog.xieydd.top/vector-search/" class="lang-link">中文</a>
+          
+        
+      
+      
+    
+  
+    
+      <span class="lang-current">EN</span>
+    
+  
+</div>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/en/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/categories/documentation/"> Docs </a><a class="menu-item" href="/en/about/"> About </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
-                    <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/vector-search/" selected>English</option><option value="/vector-search/">简体中文</option></select>
-                </a></div>
-        </div>
+    </header>
+    <main class="content">
+      
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">The internals of Vector Databases</h1>
+    <div class="post-meta">
+      <time datetime="2024-07-13">2024-07-13</time>
+      
+      <span class="post-author">by xieydd</span>
+      
+      
+      <span class="reading-time">25 min read</span>
+      
     </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/en/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        Cancel
-                    </a>
-                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/categories/documentation/" title="">Docs</a><a class="menu-item" href="/en/about/" title="">About</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
-                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/en/vector-search/" selected>English</option><option value="/vector-search/">简体中文</option></select>
-                </a></div>
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/en/tags/vector-search" class="tag">#vector search</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/postgres" class="tag">#Postgres</a>
+      
     </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">Contents</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">The internals of Vector Databases</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">included in <a href="/en/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/en/categories/vector-search/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>vector search</a>&nbsp;<a href="/en/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;5149 words&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;25 minutes&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>Contents</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+    
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
   <ul>
     <li><a href="#1-what-is-a-vector">1. What is a Vector</a></li>
     <li><a href="#2-what-is-a-vector-database">2. What is a Vector Database</a></li>
@@ -182,8 +133,12 @@
     <li><a href="#7-summary">7. Summary</a></li>
     <li><a href="#8-references">8. References</a></li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>It has been over a year since I joined <a href="https://tensorchord.ai" target="_blank" rel="noopener noreffer ">Tensorchord</a>, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference <a href="https://modelz.ai/" target="_blank" rel="noopener noreffer ">Modelz</a> to the vector search field <a href="https://vectorchord.ai/" target="_blank" rel="noopener noreffer ">VectorChord</a>. The experience of this pivot might be shared in future articles, and those interested can also directly <a href="../../about/index.zh-cn.md" rel="">contact</a> me. Recently, I have been developing <a href="https://cloud.vectorchord.ai/" target="_blank" rel="noopener noreffer ">VectorChord Cloud</a>, so I am summarizing the ins and outs of vector databases while learning.</p>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>It has been over a year since I joined <a href="https://tensorchord.ai">Tensorchord</a>, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference <a href="https://modelz.ai/">Modelz</a> to the vector search field <a href="https://vectorchord.ai/">VectorChord</a>. The experience of this pivot might be shared in future articles, and those interested can also directly <a href="../../about/index.zh-cn.md">contact</a> me. Recently, I have been developing <a href="https://cloud.vectorchord.ai/">VectorChord Cloud</a>, so I am summarizing the ins and outs of vector databases while learning.</p>
 <h2 id="1-what-is-a-vector">1. What is a Vector</h2>
 <p>The meaning of vectors in physics, mathematics, and computer science is different. Here, vectors mainly refer to vectors in computer science, which are an ordered set of numerical values. In computer science, vectors are usually used to represent data. For example, in machine learning, we usually convert an image into a vector or tokenize a piece of text and then convert it into a vector for training. In vector databases, we usually convert an image, a piece of text, or an audio segment into a vector through an embedding model and then store and retrieve it. Below is a simple example where we convert a piece of text into a vector using the <code>all-MiniLM-L6-v2</code> model. <code>all-MiniLM-L6-v2</code> maps sentences and paragraphs to a 384-dimensional dense vector and can be used for tasks such as clustering or semantic search.</p>
 <div class="highlight"><div class="chroma">
@@ -233,9 +188,9 @@
 <p>Vector search, also known as vector retrieval, is a technique in Information Retrieval used to find the most similar vectors to a given query vector in a high-dimensional vector space. To measure the similarity between two vectors, we usually use cosine similarity, Euclidean distance, Manhattan distance, etc. To speed up vector search, we usually use index structures such as KD-Tree, IVF (Inverted File Index), HNSW (Hierarchical Navigable Small World), etc. Vector search has applications in many fields, such as in recommendation systems, where we can use vector search to find products most similar to a user's historical behavior and then recommend them to the user; in image retrieval, we can use vector search to find images most similar to a given image; in RAG (Retrieval Augmented Generation), we can use vector search to find text most similar to a given question, enhancing the Context of large models to improve the quality of generated answers.</p>
 <h3 id="31-vector-search-application-scenarios">3.1 Vector Search Application Scenarios</h3>
 <h4 id="311-recommendation-system">3.1.1 Recommendation System</h4>
-<p>As in the On-premise case of Qdrant about <a href="https://qdrant.tech/blog/vector-search-vector-recommendation/" target="_blank" rel="noopener noreffer ">Video Content-based Recommendation</a>, the multilingual universal sentence encoder is used to embed the script when uploading a video. Here, it is not simply extracting frames from the video, but more information comes from the video title, description, automatically detected tags, and content recognized by Whisper speech recognition. So the current problem is that if the video has no audio, the title and description are forced to be used for recommendation, which is a big challenge for the review team. Here, the call start issues in the recommendation field are mentioned, that is, when users first start using the system, the recommendation quality of the recommendation system is not high, and the user experience is poor at this time. On the basis of non-real-time updated collaborative recommenders and metadata recommenders, adding a content-based recommender can greatly optimize call start issues.</p>
+<p>As in the On-premise case of Qdrant about <a href="https://qdrant.tech/blog/vector-search-vector-recommendation/">Video Content-based Recommendation</a>, the multilingual universal sentence encoder is used to embed the script when uploading a video. Here, it is not simply extracting frames from the video, but more information comes from the video title, description, automatically detected tags, and content recognized by Whisper speech recognition. So the current problem is that if the video has no audio, the title and description are forced to be used for recommendation, which is a big challenge for the review team. Here, the call start issues in the recommendation field are mentioned, that is, when users first start using the system, the recommendation quality of the recommendation system is not high, and the user experience is poor at this time. On the basis of non-real-time updated collaborative recommenders and metadata recommenders, adding a content-based recommender can greatly optimize call start issues.</p>
 <h4 id="312--image-retrieval">3.1.2  Image Retrieval</h4>
-<p><a href="https://github.com/immich-app/immich" target="_blank" rel="noopener noreffer ">immich</a> is a high-performance open-source self-hosted image and video management solution. Imagine when you upload all your videos and images to immich, it is difficult to find the image or video you want in a short time. At this time, an efficient image retrieval system <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">smart search</a> is needed. Through vector search technology, you can quickly and accurately find the image or video you want through text descriptions and additional filters (tags, dates, etc.).</p>
+<p><a href="https://github.com/immich-app/immich">immich</a> is a high-performance open-source self-hosted image and video management solution. Imagine when you upload all your videos and images to immich, it is difficult to find the image or video you want in a short time. At this time, an efficient image retrieval system <a href="https://immich.app/docs/features/smart-search">smart search</a> is needed. Through vector search technology, you can quickly and accurately find the image or video you want through text descriptions and additional filters (tags, dates, etc.).</p>
 <div align="center">
   <img src="https://immich.app/assets/images/advanced-search-filters-1d755f0d492deb304a7bb924e5f4f046.webp" alt="image tag filter search" />
 </div>
@@ -243,7 +198,7 @@
   <img src="https://immich.app/assets/images/search-ex-1-3d2c72e3921cb56afcfdbf25369107fb.png" alt="image search" />
 </div>
 <blockquote>
-<p>Images from <a href="https://immich.app/docs/features/smart-search" target="_blank" rel="noopener noreffer ">immich</a></p>
+<p>Images from <a href="https://immich.app/docs/features/smart-search">immich</a></p>
 </blockquote>
 <h4 id="313-rag">3.1.3 RAG</h4>
 <p>RAG (Retrieval Augmented Generation) mainly solves several problems in LLM applications:</p>
@@ -253,14 +208,7 @@
 <li>The black box problem of LLM, we cannot know how LLM generates answers, and where the source of the answers comes from.</li>
 </ol>
 <p>Here, I borrow two diagrams from Paul lusztin and Aurimas Griciunas to explain how RAG works:</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./rag-1.png"
-        data-srcset="./rag-1.png, ./rag-1.png 1.5x, ./rag-1.png 2x"
-        data-sizes="auto"
-        alt="./rag-1.png"
-        title="alt text" /></p>
+<p><img src="./rag-1.png" alt="alt text"></p>
 <ol>
 <li>Obtain streaming real-time data of financial news and historical data.</li>
 <li>Chunk the data into inputs for the embedding model, and then store the embeddings in the vector database.</li>
@@ -270,14 +218,7 @@
 <li>Return the answer to the user.</li>
 <li>Store the new chat information in the user's historical data.</li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./rag-2.png"
-        data-srcset="./rag-2.png, ./rag-2.png 1.5x, ./rag-2.png 2x"
-        data-sizes="auto"
-        alt="./rag-2.png"
-        title="alt text" /></p>
+<p><img src="./rag-2.png" alt="alt text"></p>
 <ol>
 <li>Private data, such as Notion, Jira, local PDF files, etc., are chunked into inputs for the embedding model.</li>
 <li>Input the chunks into the embedding model, and then store the embeddings in the vector database.</li>
@@ -313,23 +254,9 @@
 <p>3.3.1 #### LSH (Locality Sensitive Hashing)</p>
 <p>Locality Sensitive Hashing (LSH) works by processing each vector with a hash function, grouping vectors into buckets, thereby maximizing hash collisions, rather than minimizing collisions as usual hash functions do.</p>
 <p>Here is a diagram from Pinecone:
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75" /></p>
+<img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F4c72c87199038e6875710893c81eb0291019756e-700x393.png&amp;w=750&amp;q=75" alt=""></p>
 <p>The specific details of LSH are as follows:</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75" /></p>
+<p><img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F89413953597fbfdd36c4fa77ca0eeafaf6cf944a-1280x980.png&amp;w=1920&amp;q=75" alt=""></p>
 <ol>
 <li>Shingling: Use k-shingling and one-hot encoding to convert text into sparse vectors.
 <ul>
@@ -338,28 +265,14 @@
 </ul>
 </li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75" /></p>
+<p><img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fc259242606006f5c5505a6e677f3d05be75a26da-1280x720.png&amp;w=1920&amp;q=75" alt=""></p>
 <ol start="2">
 <li>Then use MinHash to create a &ldquo;signature&rdquo;.
 <ul>
 <li>Create a random permutation of [1&hellip;len(voc)+1].</li>
 <li>Use the value from top to bottom in the random permutation as the index. If the index-1 position of the original sparse vector is 1, take the index-1 position number of the random permutation as the signature value.</li>
 <li>Repeat n times to get an n-dimensional dense vector.
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75"
-        data-srcset="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75 1.5x, https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75 2x"
-        data-sizes="auto"
-        alt="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75"
-        title="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75" /></li>
+<img src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F866cea917043cfd7eb8221fc1a3b715a61e9d14f-1280x720.png&amp;w=1920&amp;q=75" alt=""></li>
 </ul>
 </li>
 <li>Band and Hash
@@ -408,14 +321,7 @@
 <li>Connect the insertion point with the m points.</li>
 </ol>
 <p>The randomness here will increase the number of long connections in the early graph, speeding up the search, which can be understood as &ldquo;highways&rdquo;. The red lines in the figure below are long connections:
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./nsw_graph.png"
-        data-srcset="./nsw_graph.png, ./nsw_graph.png 1.5x, ./nsw_graph.png 2x"
-        data-sizes="auto"
-        alt="./nsw_graph.png"
-        title="./nsw_graph.png" /></p>
+<img src="./nsw_graph.png" alt=""></p>
 <p>The search process of NSW is as follows, here I borrow a diagram from Zhihu user &ldquo;工牌厂程序猿&rdquo;:</p>
 <div align="center">
   <img src="https://pic4.zhimg.com/80/v2-b8f847192cdd6fd0e0fe45158910dce7_720w.webp" alt="nsw" />
@@ -443,7 +349,7 @@
 <p>Construction parameters:</p>
 <ul>
 <li>efConstruction: A parameter in the graph construction process, used to control the number of nearest neighbor candidate nodes considered when establishing connections for each node. This parameter specifically affects the quality of the connections between nodes during the graph construction process. A higher efConstruction value means that more candidate nodes are considered when selecting neighbors for a node, resulting in a higher quality graph structure. However, a higher efConstruction value will increase the time and space complexity of building the graph, and it will also increase the search time.</li>
-<li>m: The maximum number of neighbors added per vertex, divided into m_0=2m and m_max=m, see <a href="https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp#L76" target="_blank" rel="noopener noreffer ">code</a>.</li>
+<li>m: The maximum number of neighbors added per vertex, divided into m_0=2m and m_max=m, see <a href="https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp#L76">code</a>.</li>
 </ul>
 <p>Search parameters:</p>
 <ul>
@@ -460,14 +366,7 @@
 <li>Each search starts from the Navigation Point and can point to specific subgraphs, reducing invalid searches and achieving better search performance.</li>
 </ul>
 <p>NSG's edge selection is different from HNSW's minimum edge selection strategy. Taking point r as an example, when r is connected to p, circles are drawn with r and p as the center and the distance between r and p as the radius. If there are no other points connected to p within the intersection of the two circles, then r is connected to p. When connecting point s, since there is already point r connected to p within the intersection circle of s and p, s is not connected to p. Point t is retained because point s has been excluded. In the figure below, only points r, t, and q are connected to point p, reducing redundant edges and average out-degree.
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp"
-        data-srcset="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp, https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp 1.5x, https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp 2x"
-        data-sizes="auto"
-        alt="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp"
-        title="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" /></p>
+<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" alt=""></p>
 <h4 id="334-diskann">3.3.4 DiskANN</h4>
 <p>The DiskANN series consists of three articles: DiskANN, FreshDiskANN, and FilterDiskANN, which are essentially optimizations of the HNSW or NSG algorithm.</p>
 <p>DiskANN introduces an SSD-friendly graph algorithm called Vamana, minimizing disk operations. The Vamana graph is similar to HNSW and NSG graphs, with the difference being the initial graph selection and the introduction of a loose parameter alpha during graph pruning to balance graph diameter and node connectivity, improving graph quality. Additionally, to avoid multiple random disk reads and writes, DiskANN combines two types of algorithms: clustering compression algorithms and graph structure algorithms. First, by compressing the original data, only the compressed codebook information and centroid mapping information are kept in memory, while the original data and the constructed graph structure data are stored on disk, only reading from disk when specific nodes are matched during queries. Second, by modifying the arrangement of vector data and graph structures, data points and their neighbor nodes are stored together, allowing a single disk operation to read the vector data and neighbor node information of a node.</p>
@@ -479,14 +378,7 @@
 <li>Repeat step 3 with alpha &gt; 1 (recommended 1.2 in the paper). Since step 3 is based on a random neighbor graph, the graph quality is not high after the first iteration, so another iteration is needed to improve graph quality, which is important for recall. Taking the above figure as an example, if alpha is 1.2, the ps edge is pruned only when the distance of ps is greater than 1.2 * the distance of pr.</li>
 </ol>
 <p>The figure below intuitively shows the difference between alpha=1 and alpha=1.2 graphs. The first row is alpha=1, and the second row is alpha=1.2. The alpha=1.2 graph is denser, with more long edges, reducing the search radius.
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp"
-        data-srcset="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp, https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp 1.5x, https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp 2x"
-        data-sizes="auto"
-        alt="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp"
-        title="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp" /></p>
+<img src="https://pic3.zhimg.com/80/v2-2d4c5810d8074f4faac3ed9f4ae7ad1e_720w.webp" alt=""></p>
 <p>At this point, you may have a question: if the graph is built this way, it is impossible to store more than 1B data on a 64GB machine. Here are some optimization techniques:</p>
 <ol>
 <li>First, perform global k-means to divide the data into k clusters, and then assign each point to the nearest I clusters, usually I=2 is enough. Build an in-memory Vamana index for each cluster, and finally merge the k Vamana indexes into one index.</li>
@@ -504,14 +396,7 @@
 <p>By reducing the size of vectors or reducing dimensions to make searches faster, here are some common vector search algorithm optimization methods.</p>
 <h4 id="341-pqproduct-quantization">3.4.1 PQ（Product Quantization）</h4>
 <p>Here I borrow a diagram from a Zhihu user, as the user's diagram is very well-drawn:
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
-        data-srcset="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg, /en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 1.5x, /en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg 2x"
-        data-sizes="auto"
-        alt="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg"
-        title="/en/vector-search/v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" width="600" height="196" />
+<img src="v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" alt="">
 Construction phase:</p>
 <ol>
 <li>First, split N original vectors into multiple sub-vectors. For example, a 256-dimensional vector is split into 8 32-dimensional sub-vectors.</li>
@@ -530,7 +415,7 @@ Construction phase:</p>
 Encoding: scalar = (max-min)/255, floor(value-min/scaler). If less than 0, take 0; if greater than 255, take 255. This compresses the vector to between 0-255, reducing the size of the vector but losing some information.
 Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
 <h4 id="343-rabitq">3.4.3 RabitQ</h4>
-<p>RabitQ comes from the paper <a href="https://arxiv.org/abs/2405.12497" target="_blank" rel="noopener noreffer ">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>.</p>
+<p>RabitQ comes from the paper <a href="https://arxiv.org/abs/2405.12497">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>.</p>
 <p>RabitQ points out two problems with the current PQ algorithm:</p>
 <ol>
 <li>Using the centroid of kmeans as the codebook is a heuristic approximation during construction, with no theoretical guarantee.</li>
@@ -561,7 +446,7 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
 <p>Using a random codebook avoids the poor performance of bivalued codebooks on specific vectors, such as ($1/\sqrt{D}$&hellip; $−1/\sqrt{D}$) and (1, 0, 0, 0). We multiply this codebook by a random orthogonal matrix, allowing the unit vectors of the codebook to have the same probability of rotating to any position on the unit hypersphere.</p>
 <h2 id="4-common-vector-databases-and-their-pros-and-cons">4. Common Vector Databases and Their Pros and Cons</h2>
 <p>The following lists some common vector databases and their pros and cons. Some are dedicated vector databases, while others are extensions of existing relational databases.</p>
-<h3 id="41-milvushttpsmilvusio">4.1 <a href="https://milvus.io/" target="_blank" rel="noopener noreffer ">Milvus</a></h3>
+<h3 id="41-milvushttpsmilvusio">4.1 <a href="https://milvus.io/">Milvus</a></h3>
 <p>Milvus is an excellent open-source vector database that supports multiple vector search algorithms, including HNSW, DiskANN, IVF, etc. In addition to basic vector retrieval functions, it also provides sharding, streaming data ingestion, and hybrid search.</p>
 <p>Milvus adopts a cloud-native, shared-everything architecture with separate control and data planes. Each component is independent and horizontally scalable, including:</p>
 <ul>
@@ -594,11 +479,11 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
 </li>
 </ul>
 <p>Milvus's cloud-native architecture is its advantage, but it also brings significant challenges to developers, such as learning new concepts and the operational management challenges brought by related components like Pulsar or etcd.</p>
-<h3 id="44-pineconehttpswwwpineconeio">4.4 <a href="https://www.pinecone.io/" target="_blank" rel="noopener noreffer ">Pinecone</a></h3>
-<h3 id="45-qdranthttpsqdranttech">4.5 <a href="https://qdrant.tech/" target="_blank" rel="noopener noreffer ">Qdrant</a></h3>
-<h3 id="46-pgvectorhttpsgithubcompgvectorpgvector">4.6 <a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener noreffer ">Pgvector</a></h3>
-<h3 id="47-pgvectorshttpsgithubcomtensorchordpgvectors">4.7 <a href="https://github.com/tensorchord/pgvecto.rs" target="_blank" rel="noopener noreffer ">Pgvecto.rs</a></h3>
-<h3 id="48-vectorchordhttpsgithubcomtensorchordvectorchord">4.8 <a href="https://github.com/tensorchord/VectorChord" target="_blank" rel="noopener noreffer ">VectorChord</a></h3>
+<h3 id="44-pineconehttpswwwpineconeio">4.4 <a href="https://www.pinecone.io/">Pinecone</a></h3>
+<h3 id="45-qdranthttpsqdranttech">4.5 <a href="https://qdrant.tech/">Qdrant</a></h3>
+<h3 id="46-pgvectorhttpsgithubcompgvectorpgvector">4.6 <a href="https://github.com/pgvector/pgvector">Pgvector</a></h3>
+<h3 id="47-pgvectorshttpsgithubcomtensorchordpgvectors">4.7 <a href="https://github.com/tensorchord/pgvecto.rs">Pgvecto.rs</a></h3>
+<h3 id="48-vectorchordhttpsgithubcomtensorchordvectorchord">4.8 <a href="https://github.com/tensorchord/VectorChord">VectorChord</a></h3>
 <h2 id="5-excellent-vector-search-libraries-and-open-source-vector-database-projects">5. Excellent Vector Search Libraries and Open-Source Vector Database Projects</h2>
 <h2 id="6-what-you-need-to-know-about-vector-database-commercialization">6. What You Need to Know About Vector Database Commercialization</h2>
 <h2 id="7-summary">7. Summary</h2>
@@ -615,49 +500,22 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
 <li>Search Engine For AI：高维数据检索工业级解决方案 <a href="https://zhuanlan.zhihu.com/p/50143204">https://zhuanlan.zhihu.com/p/50143204</a></li>
 <li><a href="https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw">https://mp.weixin.qq.com/s/AelU5O52Ed0Zx7f9867UNw</a></li>
 </ul>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>Updated on 2025-09-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/15b6eabf1a4dc01fb93dc13d98f27ca3063304a4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 15b6eabf1a4dc01fb93dc13d98f27ca3063304a4: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>15b6eab</a></span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/en/vector-search/index.md" target="_blank">Read Markdown</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The internals of Vector Databases" data-via="xxxx" data-hashtags="vector search,Postgres"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/en/vector-search/" data-hashtag="vector search"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The internals of Vector Databases"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The internals of Vector Databases"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/en/vector-search/" data-title="The internals of Vector Databases"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
-            </div>
-        </div>
-    </div>
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/vector-search/">vector search</a>,&nbsp;<a href="/en/tags/postgres/">Postgres</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
-        </section>
-    </div>
+  </div>
 
+  <footer class="post-footer">
     <div class="post-nav">
-            <a href="/en/kubernetes-topo-aware-all-you-need-know/" class="next" rel="next" title="All You Need to Know About Topology Awareness in Kubernetes">All You Need to Know About Topology Awareness in Kubernetes<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
-</div>
-<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
-                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
-            </noscript></div></article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
+      
+      
+      <a href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" class="next-post">All You Need to Know About Topology Awareness in Kubernetes &rarr;</a>
+      
+    </div>
+    
+    <a href="https://blog.xieydd.top/en/" class="back-home">&larr; Back to Home</a>
+  </footer>
+</article>
 
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.en","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
-            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
-            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
-        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+    </main>
+  </div>
+</body>
 </html>

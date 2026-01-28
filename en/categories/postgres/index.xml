@@ -1,26 +1,37 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Postgres - Category - Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/en/categories/postgres/</link>
-        <description>Postgres - Category - Xieydd&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/categories/postgres/" rel="self" type="application/rss+xml" /><item>
-    <title>PostgreSQL High Availability</title>
-    <link>https://blog.xieydd.top/en/postgres-ha/</link>
-    <pubDate>Fri, 26 Jul 2024 12:40:32 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/postgres-ha/</guid>
-    <description><![CDATA[I've been researching PostgreSQL high availability solutions recently, and here's what I've learned.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Postgres on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/en/categories/postgres/</link>
+    <description>Recent content in Postgres on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Fri, 26 Jul 2024 12:40:32 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/en/categories/postgres/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>PostgreSQL High Availability</title>
+      <link>https://blog.xieydd.top/en/postgres-ha/</link>
+      <pubDate>Fri, 26 Jul 2024 12:40:32 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/postgres-ha/</guid>
+      <description>I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
 PostgreSQL High Availability High Availability Goals PostgreSQL high availability typically has two main objectives:
- RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again.]]></description>
-</item>
-<item>
-    <title>The internals of Vector Databases</title>
-    <link>https://blog.xieydd.top/en/vector-search/</link>
-    <pubDate>Sat, 13 Jul 2024 14:52:44 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/vector-search/</guid>
-    <description><![CDATA[It has been over a year since I joined Tensorchord, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.]]></description>
-</item>
-</channel>
+ RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again.</description>
+    </item>
+    
+    <item>
+      <title>The internals of Vector Databases</title>
+      <link>https://blog.xieydd.top/en/vector-search/</link>
+      <pubDate>Sat, 13 Jul 2024 14:52:44 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/vector-search/</guid>
+      <description>It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+    </item>
+    
+  </channel>
 </rss>

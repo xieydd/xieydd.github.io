@@ -1,142 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>Postgres 高可用 - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="Postgres 高可用" />
-<meta property="og:description" content="最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.xieydd.top/postgres-ha/" />
-<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
-<meta property="article:published_time" content="2024-07-26T12:40:32+08:00" />
-<meta property="article:modified_time" content="2025-09-08T12:10:15+08:00" /><meta property="og:site_name" content="小猪窝" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
-
-<meta name="twitter:title" content="Postgres 高可用"/>
-<meta name="twitter:description" content="最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点"/>
-<meta name="application-name" content="Xieydd">
-<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/postgres-ha/" /><link rel="prev" href="https://blog.xieydd.top/scheduler/" /><link rel="next" href="https://blog.xieydd.top/serverless/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Postgres 高可用",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/blog.xieydd.top\/postgres-ha\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "High Availability, Postgres","wordcount":  3082 ,
-        "url": "https:\/\/blog.xieydd.top\/postgres-ha\/","datePublished": "2024-07-26T12:40:32+08:00","dateModified": "2025-09-08T12:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
-            "@type": "Organization",
-            "name": "xxxx","logo": {
-                    "@type": "ImageObject",
-                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
-                    "width":  400 ,
-                    "height":  400 
-                }},"author": {
-                "@type": "Person",
-                "name": "xieydd"
-            },"description": ""
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Postgres 高可用 | Xieydd&#39;s Blog</title>
+  <meta name="description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <meta property="og:title" content="Postgres 高可用">
+  <meta property="og:description" content="AI Infra Engineer&#39;s Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/postgres-ha/">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Postgres 高可用">
+  <meta name="twitter:description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
     }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="site-header">
+      <div class="language-switcher">
+  
+  
+    
+      <span class="lang-current">中文</span>
+    
+  
+    
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/postgres-ha/" class="lang-link">EN</a>
+          
+        
+      
+      
+    
+  
+</div>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/categories/documentation/"> 文档 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
-                    <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/postgres-ha/">English</option><option value="/postgres-ha/" selected>简体中文</option></select>
-                </a></div>
-        </div>
+    </header>
+    <main class="content">
+      
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">Postgres 高可用</h1>
+    <div class="post-meta">
+      <time datetime="2024-07-26">2024-07-26</time>
+      
+      <span class="post-author">by xieydd</span>
+      
+      
+      <span class="reading-time">7 min read</span>
+      
     </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/categories/documentation/" title="">文档</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
-                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/en/postgres-ha/">English</option><option value="/postgres-ha/" selected>简体中文</option></select>
-                </a></div>
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/tags/high-availability" class="tag">#High Availability</a>
+      
+      <a href="https://blog.xieydd.top/tags/postgres" class="tag">#Postgres</a>
+      
     </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Postgres 高可用</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2024/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2024</a>&nbsp;<a href="/categories/postgres/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Postgres</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-26">2024-07-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3082 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+    
+  </header>
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
   <ul>
     <li><a href="#高可用目标">高可用目标</a></li>
     <li><a href="#场景">场景</a></li>
@@ -166,8 +117,12 @@
     </li>
     <li><a href="#引用">引用</a></li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>最近在研究 Postgres 高可用的方案，这里记录一下。</p>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>最近在研究 Postgres 高可用的方案，这里记录一下。</p>
 <h1 id="postgres-高可用">Postgres 高可用</h1>
 <h2 id="高可用目标">高可用目标</h2>
 <p>Postgres 高可用一般有两个目标：</p>
@@ -189,7 +144,7 @@
 <li>Point-in-Time Recovery (PITR) ：对于硬件故障来说，基于物理复制的高可用故障切换可能会是最佳选择。而对于数据损坏（无论是机器还是人为错误），时间点恢复（PITR）则更为合适：它提供了对最坏情况的兜底。</li>
 <li>Physical Replication：数据文件和事务日志文件全部复制 （PGData, pg_wals）</li>
 <li>Logical Replication：根据复制的标记（例如主键）在发布和订阅之间进行复制，一般不用于容灾，FDW 场景居多。</li>
-<li><a href="https://wiki.postgresql.org/wiki/Streaming_Replication" target="_blank" rel="noopener noreffer ">Streaming Replication</a> ：基于 WAL 日志的流复制，主要用于容灾场景。将 WAL XLOG 记录连续从 primary 传送到 standby， 有同步以及异步两种方式。</li>
+<li><a href="https://wiki.postgresql.org/wiki/Streaming_Replication">Streaming Replication</a> ：基于 WAL 日志的流复制，主要用于容灾场景。将 WAL XLOG 记录连续从 primary 传送到 standby， 有同步以及异步两种方式。</li>
 </ol>
 <h2 id="工具">工具</h2>
 <h3 id="backup-and-restore">Backup and Restore</h3>
@@ -233,10 +188,10 @@
 </ol>
 <p>备份需要考虑很多情况，比如备份的频率、备份的存储位置、备份的恢复时间、备份保留策略等等，所以需要一些工具辅助我们来进行备份，下面列举一些常用的开源工具如下：</p>
 <ul>
-<li><a href="https://pgbackrest.org/" target="_blank" rel="noopener noreffer ">pgbackrest</a></li>
-<li><a href="https://github.com/EnterpriseDB/barman" target="_blank" rel="noopener noreffer ">EDB barman</a></li>
-<li><a href="https://github.com/wal-g/wal-g" target="_blank" rel="noopener noreffer ">WAL-G</a>
-从这个<a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145#discussioncomment-7394174" target="_blank" rel="noopener noreffer ">讨论</a>中，可以看到 barman 相对于 pgbackrest 还是有些功能的缺失：</li>
+<li><a href="https://pgbackrest.org/">pgbackrest</a></li>
+<li><a href="https://github.com/EnterpriseDB/barman">EDB barman</a></li>
+<li><a href="https://github.com/wal-g/wal-g">WAL-G</a>
+从这个<a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145#discussioncomment-7394174">讨论</a>中，可以看到 barman 相对于 pgbackrest 还是有些功能的缺失：</li>
 </ul>
 <ol>
 <li>Zstd 压缩</li>
@@ -247,7 +202,7 @@
 </ol>
 <h3 id="high-availability">High Availability</h3>
 <ul>
-<li><a href="https://github.com/patroni/patroni" target="_blank" rel="noopener noreffer ">Patroni</a></li>
+<li><a href="https://github.com/patroni/patroni">Patroni</a></li>
 </ul>
 <p>Patroni 默认使用的是异步的 Streaming Replication，这意味着主节点上的事务提交后，可能会有一段时间才会被复制到备节点上。这段时间内，如果主节点发生故障，可能会丢失这段时间内的数据。为了减少这种数据丢失，可以使用同步复制，但是同步复制会影响主节点的性能，因为主节点必须等待所有备节点都已经接收到并写入 WAL 日志后才能提交事务。所以需要在可用性和性能之间做平衡。</p>
 <p>Patroni 的 maximum_lag_on_failover 和 pg 的 wal_segsize 的大小，需在可用性和持久性之间做平衡。</p>
@@ -258,25 +213,18 @@
 <h2 id="架构">架构</h2>
 <p>目前 Postgres 高可用架构繁多，这里列举两种常见的架构，分别对应自建 Postgres 以及云上托管 Postgres 的典型架构：</p>
 <ul>
-<li><a href="https://pigsty.io/zh/docs/concept/ha/" target="_blank" rel="noopener noreffer ">Pigsty</a></li>
-<li><a href="https://cloudnative-pg.io/documentation/1.23/architecture/" target="_blank" rel="noopener noreffer ">Cloudnative-PG HA</a></li>
+<li><a href="https://pigsty.io/zh/docs/concept/ha/">Pigsty</a></li>
+<li><a href="https://cloudnative-pg.io/documentation/1.23/architecture/">Cloudnative-PG HA</a></li>
 </ul>
 <h3 id="pigsty-ha-架构">Pigsty HA 架构</h3>
 <p>下图来自于 pigsty:
-<img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://pigsty.io/img/pigsty/ha.png"
-        data-srcset="https://pigsty.io/img/pigsty/ha.png, https://pigsty.io/img/pigsty/ha.png 1.5x, https://pigsty.io/img/pigsty/ha.png 2x"
-        data-sizes="auto"
-        alt="https://pigsty.io/img/pigsty/ha.png"
-        title="https://pigsty.io/img/pigsty/ha.png" /></p>
+<img src="https://pigsty.io/img/pigsty/ha.png" alt=""></p>
 <p>自上而下：</p>
 <ol>
 <li>应用层通过 DNS 解析到 vip-manager 的 VIP，vip-manager 通过 etcd 获取当前主库的 IP 地址，然后将 L2 VIP 绑定到主库所在节点；通过 HAProxy 进行 L5 层端口转发。
 <ul>
 <li>Patroni：同步主节点信息给到 etcd。</li>
-<li><a href="https://github.com/cybertec-postgresql/vip-manager" target="_blank" rel="noopener noreffer ">vip-manager</a>：虚拟 ip 和状态由 etcd 进行同步管理。</li>
+<li><a href="https://github.com/cybertec-postgresql/vip-manager">vip-manager</a>：虚拟 ip 和状态由 etcd 进行同步管理。</li>
 <li>HAProxy：根据端口分别进行路由
 <ul>
 <li>5433：连接 PGBouncer 连接池，连接 primary 进行 read/write</li>
@@ -288,7 +236,7 @@
 </ul>
 </li>
 <li>primary 和 replica 通过 Streaming Replication 进行 WAL 日志的同步，primary 通过 pg_receivexlog 将 WAL 日志发送到 replica，replica 通过 pg_replay 进行 WAL 日志的重放。</li>
-<li>Patroni 通过 pgBackRest 进行备份，备份数据可存储在本地，远程 s3 或者 minio 存储中, 可参考<a href="https://pgstef.github.io/2022/07/12/patroni_and_pgbackrest_combined.html" target="_blank" rel="noopener noreffer ">文档</a>。</li>
+<li>Patroni 通过 pgBackRest 进行备份，备份数据可存储在本地，远程 s3 或者 minio 存储中, 可参考<a href="https://pgstef.github.io/2022/07/12/patroni_and_pgbackrest_combined.html">文档</a>。</li>
 </ol>
 <blockquote>
 <ul>
@@ -302,14 +250,7 @@
 </ul>
 </blockquote>
 <h3 id="cloudnative-pg-ha-架构">Cloudnative-PG HA 架构</h3>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs"
-        data-srcset="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs, https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs 1.5x, https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs 2x"
-        data-sizes="auto"
-        alt="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs"
-        title="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs" /></p>
+<p><img src="https://lh5.googleusercontent.com/eezgxauiot27SGtznHg0Cw2pGtX7EaD7cEdbLKFAFW5rKx3YMFxGNwJeHsYj4mZCI5VutdjjOCS_eSFICpwq4Hao4WK6hi9h4bW0bu7s_XBOdXMj-bBb_spMQNGe3aLXYooIn-FxHfWUHnpfrszdnMs" alt=""></p>
 <p>根据 Kubernetes 容器编排的特点，Cloudnative-PG HA 架构采用了更加现代化的架构：</p>
 <ul>
 <li>多 region 部署 Kubernetes</li>
@@ -426,49 +367,24 @@ D--&gt;E(delete cluster will delete all wal and physical backups);
 <li><a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145">https://github.com/cloudnative-pg/cloudnative-pg/discussions/3145</a></li>
 <li><a href="https://supabase.com/blog/postgresql-physical-logical-backups">https://supabase.com/blog/postgresql-physical-logical-backups</a></li>
 </ul>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2025-09-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/15b6eabf1a4dc01fb93dc13d98f27ca3063304a4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 15b6eabf1a4dc01fb93dc13d98f27ca3063304a4: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>15b6eab</a></span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/postgres-ha/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/postgres-ha/" data-title="Postgres 高可用" data-hashtags="High Availability,Postgres"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/postgres-ha/" data-hashtag="High Availability"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/postgres-ha/" data-title="Postgres 高可用"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://blog.xieydd.top/postgres-ha/" data-title="Postgres 高可用"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/postgres-ha/" data-title="Postgres 高可用"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
-            </div>
-        </div>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/scheduler/" class="prev-post">&larr; 调度系统</a>
+      
+      
+      <a href="https://blog.xieydd.top/serverless/" class="next-post">Serverless Database &rarr;</a>
+      
     </div>
+    
+    <a href="https://blog.xieydd.top/" class="back-home">&larr; 返回首页</a>
+  </footer>
+</article>
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/high-availability/">High Availability</a>,&nbsp;<a href="/tags/postgres/">Postgres</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/scheduler/" class="prev" rel="prev" title="调度系统"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>调度系统</a>
-            <a href="/serverless/" class="next" rel="next" title="Serverless Database">Serverless Database<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
-</div>
-<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
-                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
-            </noscript></div></article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.zh-cn","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
-            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
-            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
-        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+    </main>
+  </div>
+</body>
 </html>

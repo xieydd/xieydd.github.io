@@ -1,142 +1,97 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>LLM Infra 你需要知道的一切 - Xieydd&#39;s Blog</title><meta name="Description" content="远东的小猪窝"><meta property="og:title" content="LLM Infra 你需要知道的一切" />
-<meta property="og:description" content="LLM Infra 你需要知道的一切 GPT 3 GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.xieydd.top/llm-infra/" />
-<meta property="og:image" content="https://blog.xieydd.top/logo.png"/>
-<meta property="article:published_time" content="2025-01-09T10:20:28+08:00" />
-<meta property="article:modified_time" content="2025-09-08T12:10:15+08:00" /><meta property="og:site_name" content="小猪窝" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.xieydd.top/logo.png"/>
-
-<meta name="twitter:title" content="LLM Infra 你需要知道的一切"/>
-<meta name="twitter:description" content="LLM Infra 你需要知道的一切 GPT 3 GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给"/>
-<meta name="application-name" content="Xieydd">
-<meta name="apple-mobile-web-app-title" content="Xieydd"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://blog.xieydd.top/llm-infra/" /><link rel="prev" href="https://blog.xieydd.top/improve-model-serving-cold-start/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="msvalidate.01" content="166AB4EE5B2A22286AACF2A9E0CF14E8" /><meta name="baidu-site-verification" content="codeva-TuWhmJgIa4" /><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "LLM Infra 你需要知道的一切",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/blog.xieydd.top\/llm-infra\/"
-        },"image": ["https:\/\/blog.xieydd.top\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "llm, infra, model training, vllm","wordcount":  18986 ,
-        "url": "https:\/\/blog.xieydd.top\/llm-infra\/","datePublished": "2025-01-09T10:20:28+08:00","dateModified": "2025-09-08T12:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
-            "@type": "Organization",
-            "name": "xxxx","logo": {
-                    "@type": "ImageObject",
-                    "url": "https:\/\/blog.xieydd.top\/images\/xieydd_github.jpeg",
-                    "width":  400 ,
-                    "height":  400 
-                }},"author": {
-                "@type": "Person",
-                "name": "xieydd"
-            },"description": ""
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLM Infra 你需要知道的一切 | Xieydd&#39;s Blog</title>
+  <meta name="description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <meta property="og:title" content="LLM Infra 你需要知道的一切">
+  <meta property="og:description" content="AI Infra Engineer&#39;s Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/llm-infra/">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="LLM Infra 你需要知道的一切">
+  <meta name="twitter:description" content="AI Infra Engineer&#39;s Blog">
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
     }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="site-header">
+      <div class="language-switcher">
+  
+  
+    
+      <span class="lang-current">中文</span>
+    
+  
+    
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/llm-infra/" class="lang-link">EN</a>
+          
+        
+      
+      
+    
+  
+</div>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/categories/documentation/"> 文档 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
-                    <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/llm-infra/" selected>简体中文</option></select>
-                </a></div>
-        </div>
+    </header>
+    <main class="content">
+      
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">LLM Infra 你需要知道的一切</h1>
+    <div class="post-meta">
+      <time datetime="2025-01-09">2025-01-09</time>
+      
+      <span class="post-author">by xieydd</span>
+      
+      
+      <span class="reading-time">38 min read</span>
+      
     </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Xieydd&#39;s Blog"><img
-        class="lazyload logo"
-        src="/svg/loading.min.svg"
-        data-src="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        data-srcset="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 1.5x, https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4 2x"
-        data-sizes="auto"
-        alt="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4"
-        title="https://avatars.githubusercontent.com/u/20329697?u=cf81f45b2077d7041876bc26382e8f59ee185aae&amp;v=4" /><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>远东的小猪窝</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/categories/documentation/" title="">文档</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/xieydd/xieydd.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
-                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/llm-infra/" selected>简体中文</option></select>
-                </a></div>
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/tags/llm" class="tag">#llm</a>
+      
+      <a href="https://blog.xieydd.top/tags/infra" class="tag">#infra</a>
+      
+      <a href="https://blog.xieydd.top/tags/model-training" class="tag">#model training</a>
+      
+      <a href="https://blog.xieydd.top/tags/vllm" class="tag">#vllm</a>
+      
     </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">LLM Infra 你需要知道的一切</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="https://github.com/xieydd" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>xieydd</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/2025/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>2025</a>&nbsp;<a href="/categories/training/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>training</a>&nbsp;<a href="/categories/serving/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>serving</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-09">2025-01-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 18986 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 38 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+    
+  </header>
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
   <ul>
     <li><a href="#gpt-3">GPT 3</a>
       <ul>
@@ -272,10 +227,14 @@
     </li>
     <li><a href="#引用">引用</a></li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><h1 id="llm-infra-你需要知道的一切">LLM Infra 你需要知道的一切</h1>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <h1 id="llm-infra-你需要知道的一切">LLM Infra 你需要知道的一切</h1>
 <h2 id="gpt-3">GPT 3</h2>
-<p>GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给谁服务的。如果不了解模型架构，你对于后面介绍的 Infra 设计，比如推理阶段的 Prefill-Decode Disaggregation，Context Cache Migration，Traffic-Adaptive Request Routing 等，就会感到困惑。知其然，知其所以然。我们从 GPT3 开始，因为 GPT1 以及 GPT2 的参数量都太小了，GPT2 参数只有 1.5B, 而 GPT3 参数有 175B。如果对 Transformer 架构不熟悉，推荐这篇文章 <a href="https://www.datacamp.com/tutorial/how-transformers-work" target="_blank" rel="noopener noreffer ">How Transformers Work</a>;中文用户推荐知乎文章 <a href="https://zhuanlan.zhihu.com/p/338817680" target="_blank" rel="noopener noreffer ">Transformer模型详解（图解最完整版）</a>。</p>
+<p>GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给谁服务的。如果不了解模型架构，你对于后面介绍的 Infra 设计，比如推理阶段的 Prefill-Decode Disaggregation，Context Cache Migration，Traffic-Adaptive Request Routing 等，就会感到困惑。知其然，知其所以然。我们从 GPT3 开始，因为 GPT1 以及 GPT2 的参数量都太小了，GPT2 参数只有 1.5B, 而 GPT3 参数有 175B。如果对 Transformer 架构不熟悉，推荐这篇文章 <a href="https://www.datacamp.com/tutorial/how-transformers-work">How Transformers Work</a>;中文用户推荐知乎文章 <a href="https://zhuanlan.zhihu.com/p/338817680">Transformer模型详解（图解最完整版）</a>。</p>
 <div align="center">
   <img src="in_out_2.png" alt="gpt3 in and out" />
 </div>
@@ -284,7 +243,7 @@
 <li>输入：一段文本，长度为 2048 个 token</li>
 <li>输出：输入 2048个 token 下一个 token 的概率分布</li>
 </ul>
-<p>这里的 token 是使用 Byte Pair Encoding (BPE) tokenizer 进行标记的。比如我使用 <a href="https://platform.openai.com/tokenizer" target="_blank" rel="noopener noreffer ">OpenAI Tokenizer</a> 对 <code>I am xieydd, I love GPT3.</code> 进行标记后的结果如下, token ids 为 [40, 716, 2124, 494, 88, 1860, 11, 314, 1842, 402, 11571, 18, 13]：</p>
+<p>这里的 token 是使用 Byte Pair Encoding (BPE) tokenizer 进行标记的。比如我使用 <a href="https://platform.openai.com/tokenizer">OpenAI Tokenizer</a> 对 <code>I am xieydd, I love GPT3.</code> 进行标记后的结果如下, token ids 为 [40, 716, 2124, 494, 88, 1860, 11, 314, 1842, 402, 11571, 18, 13]：</p>
 <div align="center">
   <img src="tokenizer.png" alt="tokenizer" />
 </div>
@@ -359,10 +318,10 @@
 <div align="center">
   <img src="unembedding2.png" alt="decoding2" />
 </div>
-<p>了解了 GPT3 的架构，我们就可以更好的理解 LLM Infra 的设计。下面我们进入如何训练大模型的话题。这里我们使用目前 SOTA 的开源模型 <a href="https://github.com/deepseek-ai/DeepSeek-V3" target="_blank" rel="noopener noreffer ">DeepSeek-V3</a> 来进行讲解。</p>
+<p>了解了 GPT3 的架构，我们就可以更好的理解 LLM Infra 的设计。下面我们进入如何训练大模型的话题。这里我们使用目前 SOTA 的开源模型 <a href="https://github.com/deepseek-ai/DeepSeek-V3">DeepSeek-V3</a> 来进行讲解。</p>
 <h2 id="infra">Infra</h2>
 <h3 id="gpu">GPU</h3>
-<p>集大成者 <a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/" target="_blank" rel="noopener noreffer ">GB200 NVL72</a>:</p>
+<p>集大成者 <a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">GB200 NVL72</a>:</p>
 <ol>
 <li>Blackwell Architecture</li>
 <li>NVIDIA Grace CPU</li>
@@ -383,7 +342,7 @@
 <li>内存</li>
 <li>NVLink</li>
 </ol>
-<p>简单来说就是目前的 PCIe 5.0 的带宽无法满足 AI 分布式训练中参数同步的时间需求，需要带宽更大的机器内 device 通信的方式。<a href="https://www.nvidia.com/en-us/design-visualization/nvlink-bridges/" target="_blank" rel="noopener noreffer ">NVLink</a> 是给单机多 GPU 之间提供高速互联的技术，替换 <a href="https://en.wikipedia.org/wiki/PCI_Express" target="_blank" rel="noopener noreffer ">PCIe</a>。</p>
+<p>简单来说就是目前的 PCIe 5.0 的带宽无法满足 AI 分布式训练中参数同步的时间需求，需要带宽更大的机器内 device 通信的方式。<a href="https://www.nvidia.com/en-us/design-visualization/nvlink-bridges/">NVLink</a> 是给单机多 GPU 之间提供高速互联的技术，替换 <a href="https://en.wikipedia.org/wiki/PCI_Express">PCIe</a>。</p>
 <div align="center">
   <img src="nvlink.png" alt="nvlink" />
 </div>
@@ -392,7 +351,7 @@
   <img src="v2-bb13207ca0cdc8e8893cfc98eee9faee_1440w.jpg" alt="sxm" />
 </div>
 注意只有 SXM 口才能真正的使用 NVLink P2P 通信，而不是 NVLink Bridge 连接。
-<p>NVLink 最新的技术 <a href="https://www.nvidia.com/en-us/data-center/nvlink-c2c/?ncid=no-ncid" target="_blank" rel="noopener noreffer ">NVLink C2C interconnect</a> 技术：将两个高性能 NVIDIA Blackwell Tensor Core GPU 和一个 NVIDIA Grace CPU 连接到两个 Blackwell GPU，最终的目的是使 NVIDIA GPU、DPU 和 CPU 能够与定制芯片实现一致互连, 速度达到 900 GB/s，下图是 NVIDIA GH200 Grace Hopper Superchip 的架构图：</p>
+<p>NVLink 最新的技术 <a href="https://www.nvidia.com/en-us/data-center/nvlink-c2c/?ncid=no-ncid">NVLink C2C interconnect</a> 技术：将两个高性能 NVIDIA Blackwell Tensor Core GPU 和一个 NVIDIA Grace CPU 连接到两个 Blackwell GPU，最终的目的是使 NVIDIA GPU、DPU 和 CPU 能够与定制芯片实现一致互连, 速度达到 900 GB/s，下图是 NVIDIA GH200 Grace Hopper Superchip 的架构图：</p>
 <div align="center">
   <img src="nvidia-gh200-grace-hopper-superchip.png" alt="nvidia-gh200-grace-hopper-superchip" />
 </div>
@@ -402,7 +361,7 @@
 </div>
 <p>当 GPU 通过 NVLink 进行 P2P 连接时，最高总带宽可以达到 1.8TB/s, 但是每个 GPU 必须将相同的 1.8TB/s 连接分成七个专用的 256 GB/s 点对点连接，也就是 GPU 和 GPU之间的通信最大只能达到 1.8TB/s。如果想突破这个限制就需要 NVLink Switch, NVSwitch 其实是个 ASIC 芯片。 NVLink Switch 可以保证 GPU 之间的通信带宽达到 1.8TB/s 的完整带宽，大幅压缩通信时间，在推理过程中实时响应  tok/s/user 相对于没有 NVSwitch 的情况提升 1.4倍，而且batch 越大，提升越明显。</p>
 <h4 id="infiniband">InfiniBand</h4>
-<p>参考 <a href="https://zhuanlan.zhihu.com/p/673903240" target="_blank" rel="noopener noreffer ">知乎-AI 集群基础设施 InfiniBand 详解</a>。</p>
+<p>参考 <a href="https://zhuanlan.zhihu.com/p/673903240">知乎-AI 集群基础设施 InfiniBand 详解</a>。</p>
 <p>机器间通信可以通过：</p>
 <ol>
 <li>TCP/IP 协议</li>
@@ -555,14 +514,14 @@ GPU Direct 技术包括 GPUDirect Storage、GPUDirect RDMA、GPUDirect P2P 和 G
 <h3 id="hardware">Hardware</h3>
 <h4 id="gpu-1">GPU</h4>
 <p>一提到 GPU （Graphics Processing Unit）我们自然而然将其和 NVIDIA 挂钩，这个是有一定的道理的，因为 NVIDIA 的 GPU 在深度学习领域占有很大的市场份额。不过这个市场巨大，有 AMD 以及 Brodcom 的 Application-specific Integrated Circuits (ASICs) 芯片也在不断地吞噬市场份额。</p>
-<p>虽然 GPU 带了个 Graph，但是在 AI 中我们更多的是使用 GPGPU (General-purpose computing on graphics processing units)。如果你不了解 GPU 的术语，推荐你看看 Modal 维护的 <a href="https://modal.com/gpu-glossary" target="_blank" rel="noopener noreffer ">GPU 术语表</a>。GPU 相对于  CPU</p>
+<p>虽然 GPU 带了个 Graph，但是在 AI 中我们更多的是使用 GPGPU (General-purpose computing on graphics processing units)。如果你不了解 GPU 的术语，推荐你看看 Modal 维护的 <a href="https://modal.com/gpu-glossary">GPU 术语表</a>。GPU 相对于  CPU</p>
 <h4 id="network-1">Network</h4>
 <h4 id="storage-system">Storage System</h4>
 <h3 id="pre-training">Pre-training</h3>
 <p>Pretaining model 是大模型训练最消耗算力和数据的阶段，这个阶段的目标是让模型学习到语言的基本规律，比如语法，语义等。这个阶段的数据量很大，通常是 TB 级别的数据，通常是几周到数月。这个阶段的训练通常是无监督的，也就是说我们不需要标注数据。这个阶段的训练通常是在大规模的 GPU 集群上进行的，比如 OpenAI 的 GPT3 数千张 V100 上训练一个月天。</p>
 <p>作为最消耗计算资源的预训练，我们在这个章节来分享 LLM 训练的一些技术，比如说分布式训练并行技术，训练优化技术。</p>
 <h4 id="distributed-training">Distributed Training</h4>
-<p>参考 OpenAI 的文章 <a href="https://openai.com/index/techniques-for-training-large-neural-networks/" target="_blank" rel="noopener noreffer ">Techniques for training large neural networks
+<p>参考 OpenAI 的文章 <a href="https://openai.com/index/techniques-for-training-large-neural-networks/">Techniques for training large neural networks
 </a>, 主要分为以下四个部分：</p>
 <ol>
 <li>Data Parallelism</li>
@@ -608,7 +567,7 @@ GPU Direct 技术包括 GPUDirect Storage、GPUDirect RDMA、GPUDirect P2P 和 G
 </div>
 <p>重复接受，reduce，发送的过程，重复 N-1 次，这样每个 worker 获得结果的一部分。最后再进行一轮的 Send 操作而不做 reduce 操作，这样每个 worker 就获得了最终的结果。</p>
 <h5 id="pipeline-parallelism-model-parallelism">Pipeline Parallelism (Model Parallelism)</h5>
-<p>Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GPU 上。对于大模型来说，比如 LLaMA 65B, 如果参数是 FP32 那么总显存需要 260GB 但是一般训练都采用半精度也就是 FP16，那么也需要 130GB 显存，目前最前进的 H200 显存也就是 80GB。目前来自 DeepSeek 团队训练的 <a href="https://huggingface.co/deepseek-ai/DeepSeek-V3" target="_blank" rel="noopener noreffer ">DeepSeek V3</a> 已经首次在超大规模模型上验证了FP8训练的可行性和有效性。但是 DeepSeek V3 是 MOE (Mixtures of Experts) 模型，参数达到 671B, 这个我们后面再聊。PP 的通信量相对比较小，因此常常会放在不同的机器上。</p>
+<p>Pipeline Parallelism 将模型分成不同的 stage, 然后分发到不同的 GPU 上。对于大模型来说，比如 LLaMA 65B, 如果参数是 FP32 那么总显存需要 260GB 但是一般训练都采用半精度也就是 FP16，那么也需要 130GB 显存，目前最前进的 H200 显存也就是 80GB。目前来自 DeepSeek 团队训练的 <a href="https://huggingface.co/deepseek-ai/DeepSeek-V3">DeepSeek V3</a> 已经首次在超大规模模型上验证了FP8训练的可行性和有效性。但是 DeepSeek V3 是 MOE (Mixtures of Experts) 模型，参数达到 671B, 这个我们后面再聊。PP 的通信量相对比较小，因此常常会放在不同的机器上。</p>
 <div align="center">
   <img src="model-parallelism.svg" alt="model-parallelism" />
 </div>
@@ -627,7 +586,7 @@ GPU Direct 技术包括 GPUDirect Storage、GPUDirect RDMA、GPUDirect P2P 和 G
 </div>
 <p>而 PipeDream 则让 worker 交替处理向前和向后传递。相对 GPiPe，PipeDream 有更好的资源利用率，但是需要更多的通信开销。</p>
 <h5 id="tensor-parallelism">Tensor Parallelism</h5>
-<p>Tensor Parallelism 将模型的 operator 分成不同的 subset, 然后分发到不同的 GPU 上, 比如说矩阵乘法。Pipeline parallelism 是将模型的层分到不同的 GPU, 而 Tensor Parallelism 是将模型层内的 operator 分到不同的 GPU。对于现代模型比如 Transformer, 将激活值和大的权重进行点积计算是计算的瓶颈。比如 <a href="https://nv-adlr.github.io/MegatronLM" target="_blank" rel="noopener noreffer ">MegatronLM</a> 在 Transformer 的Self-Attention 和 MLP 层进行了并行化矩阵乘法。<a href="https://arxiv.org/abs/2104.04473" target="_blank" rel="noopener noreffer ">PTD-P</a> 使用tensor，pipeline，以及data parallelism， pipeline scheduler 为每个设备分配多个非连续层，以网络通信为代价减少气泡开销。其通信量更大，因此往往会将 TP 放在单个机器内部，可以充分利用机内的 NVLink 高速带宽。</p>
+<p>Tensor Parallelism 将模型的 operator 分成不同的 subset, 然后分发到不同的 GPU 上, 比如说矩阵乘法。Pipeline parallelism 是将模型的层分到不同的 GPU, 而 Tensor Parallelism 是将模型层内的 operator 分到不同的 GPU。对于现代模型比如 Transformer, 将激活值和大的权重进行点积计算是计算的瓶颈。比如 <a href="https://nv-adlr.github.io/MegatronLM">MegatronLM</a> 在 Transformer 的Self-Attention 和 MLP 层进行了并行化矩阵乘法。<a href="https://arxiv.org/abs/2104.04473">PTD-P</a> 使用tensor，pipeline，以及data parallelism， pipeline scheduler 为每个设备分配多个非连续层，以网络通信为代价减少气泡开销。其通信量更大，因此往往会将 TP 放在单个机器内部，可以充分利用机内的 NVLink 高速带宽。</p>
 <p>下图是采用的是 8DP 12PP 4TP 方案，因此需要的 GPU 为 8x12x4=384：</p>
 <div align="center">
   <img src="3d-parallelism.png" alt="3d-parallelism" />
@@ -780,11 +739,11 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <div align="center">
   <img src="why-rlhf.png" alt="why-rlhf" />
 </div>
-<p>参考知乎姜富春​博士总结的 <a href="https://zhuanlan.zhihu.com/p/20356958978" target="_blank" rel="noopener noreffer ">聊聊Reasoning Model的精巧实现（ReFT, Kimi K1.5, DeepSeek R1）</a> 介绍了 ReFT, Kimi K1.5, DeepSeek R1 这三个 Reasoning Model 的实现,其中 RL 是关键。</p>
-<p>RLHF 可以参考 <a href="https://github.com/OpenRLHF/OpenRLHF/blob/main/README_zh.md" target="_blank" rel="noopener noreffer ">OpenRLHF</a>.</p>
+<p>参考知乎姜富春​博士总结的 <a href="https://zhuanlan.zhihu.com/p/20356958978">聊聊Reasoning Model的精巧实现（ReFT, Kimi K1.5, DeepSeek R1）</a> 介绍了 ReFT, Kimi K1.5, DeepSeek R1 这三个 Reasoning Model 的实现,其中 RL 是关键。</p>
+<p>RLHF 可以参考 <a href="https://github.com/OpenRLHF/OpenRLHF/blob/main/README_zh.md">OpenRLHF</a>.</p>
 <h2 id="serving">Serving</h2>
 <h3 id="model-optimization">Model Optimization</h3>
-<p>模型这块本来想放在 <a href="#model" rel="">Model</a> 里面，但是这里的模型优化主要是让推理更快，所以放在 Serving 里面。</p>
+<p>模型这块本来想放在 <a href="#model">Model</a> 里面，但是这里的模型优化主要是让推理更快，所以放在 Serving 里面。</p>
 <h4 id="mha-vs-mqa-vs-gqa-vs-mla">MHA vs MQA vs GQA vs MLA</h4>
 <p>这里首先解释下这几个名词：</p>
 <ul>
@@ -793,7 +752,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <li>GQA: Global Query Attention</li>
 <li>MLA: Multi-Latent Attention</li>
 </ul>
-<p>参看苏大的博客 <a href="https://kexue.fm/archives/10091" target="_blank" rel="noopener noreffer ">缓存与效果的极限拉扯：从MHA、MQA、GQA到MLA</a>。</p>
+<p>参看苏大的博客 <a href="https://kexue.fm/archives/10091">缓存与效果的极限拉扯：从MHA、MQA、GQA到MLA</a>。</p>
 <h5 id="mha">MHA</h5>
 <p>在 Transformer 解码器中，由于 token 的注意力依赖于前面的 token，因此不会重新计算前面的上下文，而是缓存其 Key 和 Value, 为什么没有缓存 Query 呢？</p>
 <div align="center">
@@ -814,7 +773,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <h3 id="serving-pattern">Serving Pattern</h3>
 <p>随着 Chat，Code Assistant 等 LLM 应用的蓬勃发展，LLM Serving 由单卡逐步拓展到多卡，甚至是多个实例。由此衍生出 Orchestration Pattern, 例如 prefill-decode disaggregation, context cache migration, traffic-adaptive request routing 等。</p>
 <h4 id="prefill-decode-disaggregation">Prefill-Decode Disaggregation</h4>
-<p>为什么要将 P(Prefill) 以及 D(Decode) 分开呢？参考<a href="https://zhuanlan.zhihu.com/p/1280567902" target="_blank" rel="noopener noreffer ">prefill 和 decode 该分离到不同的卡上么？ - Chayenne Zhao的文章 - 知乎</a></p>
+<p>为什么要将 P(Prefill) 以及 D(Decode) 分开呢？参考<a href="https://zhuanlan.zhihu.com/p/1280567902">prefill 和 decode 该分离到不同的卡上么？ - Chayenne Zhao的文章 - 知乎</a></p>
 <p>P 和 D 分离的本质还是 P 和 D 阶段的计算模型不同，P 阶段是 Compute bound，D 阶段是 Memory bound。</p>
 <ul>
 <li>Compute bound: 输入所有 tokens Attention 的计算，增大 batch 会被这个所限制，没有更多算力可算。</li>
@@ -835,7 +794,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
   <img src="mooncake-arch.png" alt="mooncake" />
 </div>
 <ol>
-<li><a href="https://github.com/kvcache-ai/Mooncake" target="_blank" rel="noopener noreffer ">MoonCake</a></li>
+<li><a href="https://github.com/kvcache-ai/Mooncake">MoonCake</a></li>
 </ol>
 <ul>
 <li>在满足 SLO(TTFT（time to first token），TBT(token between token)) 情况下最大化 KV Cache 的缓存命中以及最大化 MFU（Model FLOPs Utilization）。因为复用 KV Cache 涉及到远程通信，例如从其他介质（CPU,DRAM,SSD）中读取到显存，所以会增大 TTFT；而更大的batch 增加 MFU 的同时也会增加 TBT 的时间。</li>
@@ -845,8 +804,8 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <li>如果某个请求中未被 cache 的 tokens 数目超过了一个特定的 threshold（prefill_chunk）。这个请求将会被拆为多个 chunks，然后流水执行。通常而言，prefill_chunk 的大小大于 1k。</li>
 <li>在 prefill 阶段进行预估而没有被拒绝的请求可能在 decode 阶段出于 SLO 的缘故而被拒绝，这也是一个显著的 staleness 问题。</li>
 </ul>
-<p>chunked prefill 可以参考 <a href="https://zhuanlan.zhihu.com/p/718715866" target="_blank" rel="noopener noreffer ">基于 chunked prefill 理解 prefill 和 decode 的计算特性 - Chayenne Zhao的文章 - 知乎</a>.</p>
-<p>MLC 的 MicroServing API 通过<a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines" target="_blank" rel="noopener noreffer ">细粒度的 API</a>编排推理引擎实现：</p>
+<p>chunked prefill 可以参考 <a href="https://zhuanlan.zhihu.com/p/718715866">基于 chunked prefill 理解 prefill 和 decode 的计算特性 - Chayenne Zhao的文章 - 知乎</a>.</p>
+<p>MLC 的 MicroServing API 通过<a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines">细粒度的 API</a>编排推理引擎实现：</p>
 <ul>
 <li>Data Parallel</li>
 <li>Prefill-Decode Disaggregation</li>
@@ -862,24 +821,24 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 </ul>
 <h3 id="serving-optimization">Serving Optimization</h3>
 <ul>
-<li><a href="#kv-cache" rel="">KV Cache</a></li>
-<li><a href="#paged-attention" rel="">Paged Attention</a></li>
-<li><a href="#quantization" rel="">Quantization</a></li>
-<li><a href="#speculate-decode" rel="">Speculate Decode</a></li>
-<li><a href="#constrainted-decoding" rel="">Constrainted Decoding</a></li>
-<li><a href="#chunked-prefill" rel="">Chunked prefill</a></li>
-<li><a href="#prompt-cache" rel="">Prompt Cache</a></li>
-<li><a href="#kv-compression" rel="">KV Compression</a></li>
+<li><a href="#kv-cache">KV Cache</a></li>
+<li><a href="#paged-attention">Paged Attention</a></li>
+<li><a href="#quantization">Quantization</a></li>
+<li><a href="#speculate-decode">Speculate Decode</a></li>
+<li><a href="#constrainted-decoding">Constrainted Decoding</a></li>
+<li><a href="#chunked-prefill">Chunked prefill</a></li>
+<li><a href="#prompt-cache">Prompt Cache</a></li>
+<li><a href="#kv-compression">KV Compression</a></li>
 </ul>
 <h4 id="kv-cache">KV Cache</h4>
-<p>参看<a href="https://zhuanlan.zhihu.com/p/662498827" target="_blank" rel="noopener noreffer ">大模型推理加速：看图学KV Cache - 看图学的文章 - 知乎</a>。</p>
+<p>参看<a href="https://zhuanlan.zhihu.com/p/662498827">大模型推理加速：看图学KV Cache - 看图学的文章 - 知乎</a>。</p>
 <p>大模型推理性能优化的一个常用技术是KV Cache，该技术可以在不影响任何计算精度的前提下，通过空间换时间思想，提高推理性能。具体可以参考👆的参考，总结下：</p>
 <ul>
 <li>Transformer Encode 阶段是自回归的</li>
 <li>自回归下 Attention 的第 k 次计算只依赖于第 k 个 Q,其他部分是重复计算，可以通过 KV Cache 来缓存</li>
 </ul>
 <h4 id="paged-attention">Paged Attention</h4>
-<p>参看 <a href="https://zhuanlan.zhihu.com/p/691038809" target="_blank" rel="noopener noreffer ">图解大模型计算加速系列之：vLLM核心技术PagedAttention原理 - 猛猿的文章 - 知乎</a>。</p>
+<p>参看 <a href="https://zhuanlan.zhihu.com/p/691038809">图解大模型计算加速系列之：vLLM核心技术PagedAttention原理 - 猛猿的文章 - 知乎</a>。</p>
 <p>Paged Attention 主要解决直接给输入请求预分配显存导致的显存利用率低的问题；通过借鉴现代操作系统的内存分页技术，提高推理的显存利用率。</p>
 <div align="center">
   <img src="v2-e0209cc4bb1fb2b7bd5b3b88dae70476_1440w.jpg" alt="paged-attention" />
@@ -907,7 +866,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 </li>
 </ul>
 <h4 id="speculate-decoding">Speculate Decoding</h4>
-<p>参看佳瑞大佬的这篇文章 <a href="https://zhuanlan.zhihu.com/p/651359908" target="_blank" rel="noopener noreffer ">大模型推理妙招—投机采样（Speculative Decoding） - 方佳瑞的文章 - 知乎</a>。</p>
+<p>参看佳瑞大佬的这篇文章 <a href="https://zhuanlan.zhihu.com/p/651359908">大模型推理妙招—投机采样（Speculative Decoding） - 方佳瑞的文章 - 知乎</a>。</p>
 <p>投机采样这个专业名称比较拗口，应该叫推理采样；这个技术的核心是解码过程中，某些token的解码相对容易，某些token的解码则很困难。因此，简单的token生成可以交给小型模型处理，而困难的token则交给大型模型处理。这里的小型模型可以采用与原始模型相同的结构，但参数更少，或者干脆使用n-gram模型。小型模型不仅计算量较小，更重要的是小模型生成，大模型校正可以减少了内存访问的需求。</p>
 <h4 id="constrainted-decoding">Constrainted Decoding</h4>
 <h4 id="chunked-prefill">Chunked prefill</h4>
@@ -916,7 +875,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <h4 id="quantization">Quantization</h4>
 <h2 id="deepseek-v3">DeepSeek V3</h2>
 <p>在最后，我们来分析下国产的 LLM 模型 DeepSeek V3，这个模型是由 DeepSeek 团队开发的，通过分析和我们上面的技术做对应。
-目前 DeepSeek-V3 是在 14.8T token 上进行训练的 <a href="#expert-parallelism" rel="">MoE</a> 架构，总参数为 671B，每个 token 激活 38B。 完整训练在 H800 上用时 2.788M hours。</p>
+目前 DeepSeek-V3 是在 14.8T token 上进行训练的 <a href="#expert-parallelism">MoE</a> 架构，总参数为 671B，每个 token 激活 38B。 完整训练在 H800 上用时 2.788M hours。</p>
 <h3 id="architecture">Architecture</h3>
 <div align="center">
   <img src="ds-v3-arch.png" alt="ds-v3-arch" />
@@ -927,7 +886,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <li>原始 Transformer 架构中的 Multi-Head Attention 层被替换成了 Multi-Latent Attention 层。</li>
 </ul>
 <h4 id="deepseekmoe">DeepSeekMoE</h4>
-<p>参看 <a href="https://zhuanlan.zhihu.com/p/17791774183" target="_blank" rel="noopener noreffer ">DeepSeekMoE论文阅读</a>，这个架构主要是让专家是真正的专家（具有非重叠且集中的知识），避免专家间的知识杂交和知识冗余,在更少的资源占用情况下获得更好的性能。</p>
+<p>参看 <a href="https://zhuanlan.zhihu.com/p/17791774183">DeepSeekMoE论文阅读</a>，这个架构主要是让专家是真正的专家（具有非重叠且集中的知识），避免专家间的知识杂交和知识冗余,在更少的资源占用情况下获得更好的性能。</p>
 <div align="center">
   <img src="ds-moe-arch.png" alt="ds-moe-arch" />
 </div>
@@ -948,7 +907,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 </li>
 </ul>
 <h4 id="multi-latent-attention">Multi-Latent Attention</h4>
-<p>该方法来自于 <a href="https://arxiv.org/pdf/2405.04434v5" target="_blank" rel="noopener noreffer ">DeepSeek-V2</a>，参见 <a href="#mha-vs-mqa-vs-gqa-vs-mla" rel="">MHA vs MQA vs GQA vs MLA</a>。</p>
+<p>该方法来自于 <a href="https://arxiv.org/pdf/2405.04434v5">DeepSeek-V2</a>，参见 <a href="#mha-vs-mqa-vs-gqa-vs-mla">MHA vs MQA vs GQA vs MLA</a>。</p>
 <h4 id="auxiliary-loss-free-strategy-for-load-balancing">Auxiliary-loss-free strategy for load balancing</h4>
 <p>辅助损失通过引入随机噪声让专家避免在训练过程中出现强者恒强的问题，但是也会损害模型的性能。而 <code>Auxiliary-loss-free strategy</code> 就是为了在负载平衡和模型性能之间实现更好的权衡。
 具体做法：</p>
@@ -965,29 +924,29 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <div align="center">
   <img src="mtp.png" alt="multi-token-prediction" />
 </div>
-<p>参考 <a href="https://zhuanlan.zhihu.com/p/16540775238" target="_blank" rel="noopener noreffer ">知乎</a>。</p>
+<p>参考 <a href="https://zhuanlan.zhihu.com/p/16540775238">知乎</a>。</p>
 <h3 id="infrastructure">Infrastructure</h3>
 <h4 id="集群状态">集群状态</h4>
 <ol>
 <li>256节点，一个节点8张卡，一共 2048 个 NVIDIA H800 GPU</li>
-<li>卡和卡之间通过 <a href="#nvlink" rel="">NVLink</a> 和 <a href="#nvswitch" rel="">NVSwitch</a> 进行连接，不同的节点间通过 <a href="#infiniband" rel="">InfiniBand</a> 进行连接</li>
+<li>卡和卡之间通过 <a href="#nvlink">NVLink</a> 和 <a href="#nvswitch">NVSwitch</a> 进行连接，不同的节点间通过 <a href="#infiniband">InfiniBand</a> 进行连接</li>
 </ol>
 <h4 id="训练框架">训练框架</h4>
 <p>HAI-LLM：</p>
 <ol>
-<li>8 个节点的 16 路 <a href="#pipeline-parallelism-model-parallelism" rel="">Pipeline Parallelism</a></li>
+<li>8 个节点的 16 路 <a href="#pipeline-parallelism-model-parallelism">Pipeline Parallelism</a></li>
 </ol>
 <ul>
 <li>DualPipe 重叠了前向和后向过程的计算和通信阶段，从而解决了跨节点专家并行带来的繁重通信开销的挑战</li>
 </ul>
 <ol start="2">
-<li>64 路 <a href="#expert-parallelism" rel="">Expert Parallelism</a></li>
+<li>64 路 <a href="#expert-parallelism">Expert Parallelism</a></li>
 </ol>
 <ul>
 <li>cross-node all-to-all communication kernels to fully utilize InfiniBand (IB) and NVLink bandwidths.</li>
 </ul>
 <ol start="3">
-<li>ZeRO-1 <a href="#data-parallelism" rel="">Data Parallelism</a></li>
+<li>ZeRO-1 <a href="#data-parallelism">Data Parallelism</a></li>
 </ol>
 <ul>
 <li>精心优化了内存占用，从而使我们能够在不使用昂贵的张量并行（TP）的情况下训练</li>
@@ -999,7 +958,7 @@ Switch Transformer 还探索了混合精度，也就是专家使用原始精度�
 <ol>
 <li>DualPipe 显著减小了气泡</li>
 <li>DualPipe 将峰值激活内存增加了数倍，PP &lt; 1</li>
-<li>尽管 DualPipe 需要保留模型参数的两个副本，但这并不会显着增加内存消耗，因为在训练期间使用了较大的 <a href="#expert-parallelism" rel="">EP</a> 大小</li>
+<li>尽管 DualPipe 需要保留模型参数的两个副本，但这并不会显着增加内存消耗，因为在训练期间使用了较大的 <a href="#expert-parallelism">EP</a> 大小</li>
 <li>气泡和激活内存都不会因为 mini-batch 增加而增加</li>
 </ol>
 <h4 id="通信">通信</h4>
@@ -1100,55 +1059,29 @@ GPUs (Blackwell series)</li>
 <h3 id="pre-training-1">Pre-Training</h3>
 <h2 id="引用">引用</h2>
 <ol>
-<li><a href="https://dugas.ch/artificial_curiosity/GPT_architecture.html" target="_blank" rel="noopener noreffer ">GPT3 Architecture</a></li>
-<li><a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines" target="_blank" rel="noopener noreffer ">Microserving LLM engines</a></li>
-<li><a href="https://www.youtube.com/watch?v=bZQun8Y4L2A" target="_blank" rel="noopener noreffer ">State of GPT Andrej Karpathy</a></li>
-<li><a href="https://github.com/liguodongiot/llm-action" target="_blank" rel="noopener noreffer ">LLM Action</a></li>
-<li><a href="https://huggingface.co/blog/moe" target="_blank" rel="noopener noreffer ">MOE Architecture</a></li>
-<li><a href="https://mp.weixin.qq.com/s/rLJlaqI2RL7TGUEQyx-QaA" target="_blank" rel="noopener noreffer ">万卡 GPU 集群实战：探索 LLM 预训练的挑战</a></li>
+<li><a href="https://dugas.ch/artificial_curiosity/GPT_architecture.html">GPT3 Architecture</a></li>
+<li><a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines">Microserving LLM engines</a></li>
+<li><a href="https://www.youtube.com/watch?v=bZQun8Y4L2A">State of GPT Andrej Karpathy</a></li>
+<li><a href="https://github.com/liguodongiot/llm-action">LLM Action</a></li>
+<li><a href="https://huggingface.co/blog/moe">MOE Architecture</a></li>
+<li><a href="https://mp.weixin.qq.com/s/rLJlaqI2RL7TGUEQyx-QaA">万卡 GPU 集群实战：探索 LLM 预训练的挑战</a></li>
 </ol>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2025-09-08&nbsp;<a class="git-hash" href="https://github.com/xieydd/xieydd.github.io/commit/15b6eabf1a4dc01fb93dc13d98f27ca3063304a4" target="_blank" title="commit by xieydd(xieydd@gmail.com) 15b6eabf1a4dc01fb93dc13d98f27ca3063304a4: update">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>15b6eab</a></span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/llm-infra/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://blog.xieydd.top/llm-infra/" data-title="LLM Infra 你需要知道的一切" data-hashtags="llm,infra,model training,vllm"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://blog.xieydd.top/llm-infra/" data-hashtag="llm"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://blog.xieydd.top/llm-infra/" data-title="LLM Infra 你需要知道的一切"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://blog.xieydd.top/llm-infra/" data-title="LLM Infra 你需要知道的一切"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://blog.xieydd.top/llm-infra/" data-title="LLM Infra 你需要知道的一切"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
-            </div>
-        </div>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/improve-model-serving-cold-start/" class="prev-post">&larr; 优化模型推理的冷启动</a>
+      
+      
     </div>
+    
+    <a href="https://blog.xieydd.top/" class="back-home">&larr; 返回首页</a>
+  </footer>
+</article>
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/llm/">llm</a>,&nbsp;<a href="/tags/infra/">infra</a>,&nbsp;<a href="/tags/model-training/">model training</a>,&nbsp;<a href="/tags/vllm/">vllm</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/improve-model-serving-cold-start/" class="prev" rel="prev" title="优化模型推理的冷启动"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>优化模型推理的冷启动</a></div>
-</div>
-<div id="comments"><div id="disqus_thread" class="comment"></div><noscript>
-                Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript">Disqus</a>.
-            </noscript></div></article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.62.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://blog.xieydd.top/" target="_blank">xieydd</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><script type="text/javascript" src="https://xieydd.disqus.com/embed.js" defer></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.zh-cn","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
-            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
-            gtag('config', 'G-T4DQ9F4S5V', { 'anonymize_ip': true });
-        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-T4DQ9F4S5V" async></script></body>
+    </main>
+  </div>
+</body>
 </html>

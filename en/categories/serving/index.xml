@@ -1,18 +1,37 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>serving - Category - Xieydd&#39;s Blog</title>
-        <link>https://blog.xieydd.top/en/categories/serving/</link>
-        <description>serving - Category - Xieydd&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-            <webMaster>xieydd@gmail.com (xieydd)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 08 Jan 2025 16:37:10 &#43;0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/categories/serving/" rel="self" type="application/rss+xml" /><item>
-    <title>Optimizing Model Inference Cold Start</title>
-    <link>https://blog.xieydd.top/en/improve-model-serving-cold-start/</link>
-    <pubDate>Wed, 08 Jan 2025 16:37:10 &#43;0800</pubDate>
-    <author>xieydd</author>
-    <guid>https://blog.xieydd.top/en/improve-model-serving-cold-start/</guid>
-    <description><![CDATA[Previously, while working on Serverless model inference Modelz, although we have pivoted now, I still want to share how to optimize the cold start problem of model inference. Since our service is based on container orchestration, it also involves the cold start problem of containers.
-Optimizing Model Inference Cold Start Problem First, let's look at the process of Serverless model inference, from user request to model inference:
- Click me 1 2 3 4 5 6 7 8 9 10 11 12 13  sequenceDiagram participant User participant Cloudflare participant Ingress participant AutoScaler participant Node participant containerd User-&gt;&gt;Cloudflare: Model Call Cloudflare-&gt;&gt;Ingress: Request Ingress-&gt;&gt;AutoScaler: Request AutoScaler-&gt;&gt;Node: Scale Up Node-&gt;&gt;containerd: Container Note right of containerd: 1.]]></description>
-</item>
-</channel>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>serving on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/en/categories/serving/</link>
+    <description>Recent content in serving on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Thu, 09 Jan 2025 10:20:28 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/en/categories/serving/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Everything You Need to Know About LLM Infra</title>
+      <link>https://blog.xieydd.top/en/llm-infra/</link>
+      <pubDate>Thu, 09 Jan 2025 10:20:28 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/llm-infra/</guid>
+      <description>Everything You Need to Know About LLM Infra GPT 3 The GPT model is the starting point of LLM models. If you say Transformer is the starting point, that&#39;s also correct. Since we&#39;re going to discuss LLM Infra, we need to know who our system architecture and design are serving. Without understanding the model architecture, you&#39;ll feel confused about the Infra designs introduced later, such as Prefill-Decode Disaggregation during inference, Context Cache Migration, Traffic-Adaptive Request Routing, etc.</description>
+    </item>
+    
+    <item>
+      <title>Optimizing Model Inference Cold Start</title>
+      <link>https://blog.xieydd.top/en/improve-model-serving-cold-start/</link>
+      <pubDate>Wed, 08 Jan 2025 16:37:10 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/improve-model-serving-cold-start/</guid>
+      <description>Previously, while working on Serverless model inference Modelz, although we have pivoted now, I still want to share how to optimize the cold start problem of model inference. Since our service is based on container orchestration, it also involves the cold start problem of containers.
+Optimizing Model Inference Cold Start Problem First, let&#39;s look at the process of Serverless model inference, from user request to model inference:
+ Click me 1 2 3 4 5 6 7 8 9 10 11 12 13  sequenceDiagram participant User participant Cloudflare participant Ingress participant AutoScaler participant Node participant containerd User-&amp;gt;&amp;gt;Cloudflare: Model Call Cloudflare-&amp;gt;&amp;gt;Ingress: Request Ingress-&amp;gt;&amp;gt;AutoScaler: Request AutoScaler-&amp;gt;&amp;gt;Node: Scale Up Node-&amp;gt;&amp;gt;containerd: Container Note right of containerd: 1.</description>
+    </item>
+    
+  </channel>
 </rss>

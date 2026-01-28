@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>llm on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/en/tags/llm/</link>
+    <description>Recent content in llm on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Thu, 09 Jan 2025 10:20:28 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/en/tags/llm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Everything You Need to Know About LLM Infra</title>
+      <link>https://blog.xieydd.top/en/llm-infra/</link>
+      <pubDate>Thu, 09 Jan 2025 10:20:28 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/llm-infra/</guid>
+      <description>Everything You Need to Know About LLM Infra GPT 3 The GPT model is the starting point of LLM models. If you say Transformer is the starting point, that&#39;s also correct. Since we&#39;re going to discuss LLM Infra, we need to know who our system architecture and design are serving. Without understanding the model architecture, you&#39;ll feel confused about the Infra designs introduced later, such as Prefill-Decode Disaggregation during inference, Context Cache Migration, Traffic-Adaptive Request Routing, etc.</description>
+    </item>
+    
+  </channel>
+</rss>
