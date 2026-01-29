@@ -71,7 +71,7 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
       <guid>https://blog.xieydd.top/en/about/</guid>
       <description>📫 If you wish to contact me, you can send an email to xieydd@gmail.com, or add my WeChat echo -n &#39;eGlleWRkX2hhaGEK&#39; | base64 -d.
 💻
-As of 2025, I have over 7 years of experience in AI Infrastructure:
+As of 2026, I have over 8 years of experience in AI Infrastructure:
 2018-2021.2 (including internship) Unisound  At the AI algorithm company Unisound, I was responsible for the development and operation of the Atlas supercomputing platform, supporting NLP and CV model training. Key responsibilities included:   Developing a large-scale intelligent scheduling system to optimize multi-tenant resource allocation Enhancing the performance of the high-performance distributed file system Lustre Building a multi-layer cache cloud-native architecture to accelerate AI model training  Worked on 8 Bit training and inference optimization at Unisound, optimizing models for NPU and NVIDIA Edge Devices.</description>
     </item>
     
