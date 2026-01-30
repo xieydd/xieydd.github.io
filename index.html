@@ -26,6 +26,9 @@
   <link rel="stylesheet" href="/css/style.css">
   
   
+  <meta name="view-transition" content="same-origin">
+  
+  
   <style>
     @font-face {
       font-family: 'Monaco';
@@ -38,15 +41,37 @@
 </head>
 <body class="antialiased">
   <div class="container">
-    <header class="site-header">
-      <div class="language-switcher">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/posts/">文章</a>
+        <a href="https://blog.xieydd.top/about/">关于</a>
+        
+        <div class="nav-icons">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
   
   
     
-      <span class="lang-current">中文</span>
-    
   
     
+      
       
       
         
@@ -55,107 +80,211 @@
         
       
       
+      
     
   
 </div>
-
+        </div>
+      </nav>
     </header>
-    <main class="content">
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
       
 <div class="home">
-  
-   <header class="home-header">
-    <h1 class="site-title">xieydd</h1>
-    <p class="site-subtitle"></p>
-  </header>
+  <section class="hero">
+    <a href="https://blog.xieydd.top/about/" class="avatar-link">
+      <img src="/IMG_0595.JPG" alt="xieydd" class="avatar">
+    </a>
+    <div class="hero-content">
+      <h1 class="hero-title">你好，我是 xieydd</h1>
+      <p class="hero-desc">AI Infra Engineer&#39;s Blog</p>
+      <div class="social-icons">
+        
+        <a href="https://github.com/xieydd" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+          </svg>
+        </a>
+        
+        
+        <a href="https://twitter.com/xieydd_" target="_blank" rel="noopener noreferrer" class="social-icon" title="X">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        
+        
+        <a href="https://www.linkedin.com/in/yuandong-xie-63106b2a6/" target="_blank" rel="noopener noreferrer" class="social-icon" title="LinkedIn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        
+        
+        <a href="https://www.zhihu.com/people/xie-yuan-dong-49" target="_blank" rel="noopener noreferrer" class="social-icon" title="Zhihu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3h8v18h-2l-2 -3h-4z" />
+            <path d="M13 6h7l-3 9h3l-1 3" />
+            <path d="M13 11h5" />
+          </svg>
+        </a>
+        
+        
+        <a href="mailto:xieydd@gmail.com" class="social-icon" title="Email">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+        
+      </div>
+    </div>
+  </section>
 
-  
-  <ul class="about-list">
-    <li><strong>Currently:</strong> <a href='https://tensorchord.ai' target='_blank'>TensorChord</a> AI Infra 工程师
-      
-      <ul class="nested-list">
-        
-        <li>Managed Postgres Cloud (<a href='https://vectorchord.ai' target='_blank'>VectorChord</a>)</li>
-        
-        <li>LLM Inference Cloud (<a href='https://modelz.ai' target='_blank'>ModelZ</a>)</li>
-        
-      </ul>
-      
-    </li>
-    <li><strong>Previously:</strong>
-      <ul class="nested-list">
-        
-        <li><a href='https://cloud.tencent.com' target='_blank'>Tencent Cloud</a> - FinOps & AI Platform</li>
-        
-        <li><a href='https://www.unisound.com' target='_blank'>Unisound</a> - Atlas AI Platform</li>
-        
-      </ul>
-    </li>
-    <li>中国/上海</li>
-  </ul>
+  <div class="hero-divider"></div>
 
-  <div class="divider"></div>
-
-  
-  <ul class="nav-list">
+  <section class="posts-section">
     
-    <li><a href="https://blog.xieydd.top/posts/" class="nav-link">博客文章</a></li>
-    <li><a href="https://blog.xieydd.top/about/" class="nav-link">关于</a></li>
-    <li><a href="https://blog.xieydd.top/categories/" class="nav-link">分类</a></li>
     
-  </ul>
+      
+    
+    
+      
+    
+    
+      
+    
 
-  <div class="divider"></div>
+    
+    <article class="post-card">
+      <a href="https://blog.xieydd.top/llm-infra/" class="post-title" style="view-transition-name: post-llm-infra-%E4%BD%A0%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%E4%B8%80%E5%88%87">LLM Infra 你需要知道的一切</a>
+      <div class="post-meta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+          <path d="M16 3v4" />
+          <path d="M8 3v4" />
+          <path d="M4 11h16" />
+        </svg>
+        <time datetime="2025-01-09">9 Jan, 2025</time>
+        <span class="post-reading-time">• 95 min read</span>
+      </div>
+      
+      <p class="post-summary">LLM Infra 你需要知道的一切 GPT 3 GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给</p>
+      
+    </article>
+    
+    <article class="post-card">
+      <a href="https://blog.xieydd.top/vector-search/" class="post-title" style="view-transition-name: post-%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E7%9A%84%E9%97%A8%E9%97%A8%E9%81%93%E9%81%93">向量数据库中的门门道道</a>
+      <div class="post-meta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+          <path d="M16 3v4" />
+          <path d="M8 3v4" />
+          <path d="M4 11h16" />
+        </svg>
+        <time datetime="2024-07-13">13 Jul, 2024</time>
+        <span class="post-reading-time">• 86 min read</span>
+      </div>
+      
+      <p class="post-summary">加入 Tensorchord 已经一年有余，一直也没有时间静下心来写一些文章。主要是有了彤彤女儿后，事情多了很多。中间也经历过业务从 Serverless 模型推理 Modelz pivot 到向量搜索领域 VectorChord 的</p>
+      
+    </article>
+    
+    <article class="post-card">
+      <a href="https://blog.xieydd.top/improve-model-serving-cold-start/" class="post-title" style="view-transition-name: post-%E4%BC%98%E5%8C%96%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E7%9A%84%E5%86%B7%E5%90%AF%E5%8A%A8">优化模型推理的冷启动</a>
+      <div class="post-meta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+          <path d="M16 3v4" />
+          <path d="M8 3v4" />
+          <path d="M4 11h16" />
+        </svg>
+        <time datetime="2025-01-08">8 Jan, 2025</time>
+        <span class="post-reading-time">• 7 min read</span>
+      </div>
+      
+      <p class="post-summary">之前在做 Serverless 模型推理 Modelz，虽然现在已经 pivot 了，但是还是想分享一下如何优化模型推理的冷启动问题。由于我们的服务是基于容器调度，所以这里也涉</p>
+      
+    </article>
+    
 
-  
-  <ul class="social-list">
-    <li>
-      Social: 
-      <a href="https://github.com/xieydd" target="_blank" rel="noopener noreferrer" class="social-link">GitHub</a>
-      <a href="https://twitter.com/xieydd_" target="_blank" rel="noopener noreferrer" class="social-link">X</a>
-      <a href="https://www.linkedin.com/in/yuandong-xie-63106b2a6/" target="_blank" rel="noopener noreferrer" class="social-link">LinkedIn</a>
-      <a href="https://www.zhihu.com/people/xie-yuan-dong-49" target="_blank" rel="noopener noreferrer" class="social-link">Zhihu</a>
-      <a href="mailto:xieydd@gmail.com" class="social-link">Email</a>
-    </li>
-  </ul>
-
-  
-  <div class="posts-grid">
-    <section class="posts-section">
-      <h2 class="section-title">📚 精选文章</h2>
-      <ul class="post-list">
-        
-        
-        
-        
-        
-        <li class="post-item">
-          <span class="post-date">2025-01-09</span>
-          <a href="https://blog.xieydd.top/llm-infra/" class="post-link">LLM Infra 你需要知道的一切</a>
-        </li>
-        
-        
-        
-        <li class="post-item">
-          <span class="post-date">2024-07-13</span>
-          <a href="https://blog.xieydd.top/vector-search/" class="post-link">向量数据库中的门门道道</a>
-        </li>
-        
-        
-        
-        <li class="post-item">
-          <span class="post-date">2025-01-08</span>
-          <a href="https://blog.xieydd.top/improve-model-serving-cold-start/" class="post-link">优化模型推理的冷启动</a>
-        </li>
-        
-        
-      </ul>
-      <a href="https://blog.xieydd.top/posts/" class="view-all">全部文章 &rarr;</a>
-    </section>
-  </div>
+    <a href="https://blog.xieydd.top/posts/" class="view-all-link">
+      全部文章
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12l14 0" />
+        <path d="M13 18l6 -6" />
+        <path d="M13 6l6 6" />
+      </svg>
+    </a>
+  </section>
 </div>
 
     </main>
   </div>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
 </body>
 </html>
