@@ -8,7 +8,7 @@
     <language>en</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Thu, 09 Jan 2025 10:20:28 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 02 Feb 2026 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/en/index.xml" rel="self" type="application/rss+xml" />
     
@@ -61,6 +61,15 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/vector-search/</guid>
       <description>It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+    </item>
+    
+    <item>
+      <title>Coding at Agent-Speed</title>
+      <link>https://blog.xieydd.top/en/code-agent-2026-02-02/</link>
+      <pubDate>Mon, 02 Feb 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/code-agent-2026-02-02/</guid>
+      <description>Recently, I&#39;ve been using Code Agents intensively to build a security suite—an enterprise-grade LLM Security Insight platform based on eBPF and PostgreSQL. The tech stack involves eBPF, React, Go, Docker, Kubernetes, PostgreSQL, and DuckDB. While I had experience with some of these technologies, others like React, eBPF, and DuckDB were completely new to me, having not touched them in my previous AI Infra work. In this first post about my Code Agent experience, I&#39;ll share more about my feelings and extended thoughts.</description>
     </item>
     
     <item>

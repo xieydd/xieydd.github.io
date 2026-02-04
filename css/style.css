@@ -367,17 +367,134 @@ ul {
   margin-bottom: var(--spacing-xs);
 }
 
-.post-content pre {
+/* ==========================================================================
+   Code Block & Syntax Highlighting - Consolidated Fix
+   ========================================================================== */
+
+/* 1. Wrapper: Mac-style window container */
+.code-block-wrapper {
   background-color: var(--color-code-bg);
-  padding: var(--spacing-md);
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  overflow-x: auto;
+  border-radius: 8px;
   margin-bottom: var(--spacing-md);
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  /* Layout: Stack Header + Content vertically */
+  display: flex;
+  flex-direction: column;
+  /* Size constraints */
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Clip header/content corners */
 }
 
+/* 2. Header: Fixed at top */
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--color-border);
+  width: 100%;
+  flex-shrink: 0;
+  z-index: 10;
+}
+html.dark .code-header {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Window Controls (Red/Yellow/Green dots) */
+.window-controls { display: flex; gap: 6px; }
+.window-dot { width: 12px; height: 12px; border-radius: 50%; }
+.window-dot.red { background-color: #ff5f56; }
+.window-dot.yellow { background-color: #ffbd2e; }
+.window-dot.green { background-color: #27c93f; }
+
+/* Language Label & Copy Button */
+.lang-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: none;
+  color: var(--color-text-light); cursor: pointer;
+  font-size: 0.75rem; padding: 4px 8px;
+  border-radius: 4px; transition: all 0.2s;
+}
+.copy-btn:hover { background-color: rgba(0, 0, 0, 0.05); color: var(--color-text); }
+html.dark .copy-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+/* 3. Highlight Area: The Scrollable Container */
+.highlight {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: var(--spacing-md) !important;
+  overflow-x: auto !important; /* Horizontal scroll happens here */
+  width: 100%;
+}
+
+/* 4. Table Layout: Force Content Expansion */
+/* Override ANY generic table styles from post-content */
+.post-content .highlight table,
+.highlight table {
+  margin: 0 !important;
+  border: none !important;
+  border-collapse: collapse !important;
+  width: auto !important; /* Allow growing beyond container */
+  min-width: 100% !important;
+  display: table !important;
+  table-layout: auto !important;
+}
+
+/* Reset cell styles */
+.post-content .highlight td,
+.post-content .highlight th,
+.highlight td,
+.highlight th {
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  vertical-align: top !important; /* Fix vertical misalignment */
+}
+
+/* 5. Line Numbers (Left Column) */
+.highlight td:first-child {
+  width: 1%; /* Shrink to fit */
+  white-space: nowrap;
+  padding-right: var(--spacing-md) !important;
+  text-align: right;
+  user-select: none;
+  color: var(--color-text-light) !important;
+  opacity: 0.6;
+}
+
+/* 6. Typography & Alignment enforcement */
+/* Ensure Line Numbers and Code match perfectly */
+.highlight .lnt,
+.highlight pre,
+.highlight code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block;
+  
+  /* CRITICAL: Disable all wrapping to enforce horizontal scroll */
+  white-space: pre !important;
+  word-wrap: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+/* Inline code style (for non-block code) */
 .post-content code {
   font-family: var(--font-mono);
   font-size: 0.875em;
@@ -385,7 +502,6 @@ ul {
   padding: 0.125rem 0.375rem;
   border-radius: 3px;
 }
-
 .post-content pre code {
   background: none;
   padding: 0;
@@ -400,9 +516,10 @@ ul {
 }
 
 .post-content img {
+  display: block;
   max-width: 100%;
   height: auto;
-  margin: var(--spacing-md) 0;
+  margin: var(--spacing-md) auto;
   border-radius: 4px;
 }
 
@@ -598,14 +715,6 @@ ul {
 
 .separator {
   color: var(--color-border);
-}
-
-.highlight {
-  margin-bottom: var(--spacing-md);
-}
-
-.highlight pre {
-  margin: 0;
 }
 
 @media (max-width: 639px) {

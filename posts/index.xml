@@ -8,7 +8,7 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Thu, 09 Jan 2025 10:20:28 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 02 Feb 2026 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/posts/index.xml" rel="self" type="application/rss+xml" />
     
@@ -74,6 +74,15 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</guid>
       <description>最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始</description>
+    </item>
+    
+    <item>
+      <title>Coding at Agent-Speed</title>
+      <link>https://blog.xieydd.top/code-agent-2026-02-02/</link>
+      <pubDate>Mon, 02 Feb 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/code-agent-2026-02-02/</guid>
+      <description>最近我在使用 Code Agent 高强度地构建一款安全领域的套件——基于 eBPF 以及 PostgreSQL 构建的企业级 LLM Security Insight 平台。其中涉及到的技术栈有 eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB。我可能只</description>
     </item>
     
     <item>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Workflow on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/en/tags/workflow/</link>
+    <description>Recent content in Workflow on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Mon, 02 Feb 2026 10:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/en/tags/workflow/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Coding at Agent-Speed</title>
+      <link>https://blog.xieydd.top/en/code-agent-2026-02-02/</link>
+      <pubDate>Mon, 02 Feb 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/code-agent-2026-02-02/</guid>
+      <description>Recently, I&#39;ve been using Code Agents intensively to build a security suite—an enterprise-grade LLM Security Insight platform based on eBPF and PostgreSQL. The tech stack involves eBPF, React, Go, Docker, Kubernetes, PostgreSQL, and DuckDB. While I had experience with some of these technologies, others like React, eBPF, and DuckDB were completely new to me, having not touched them in my previous AI Infra work. In this first post about my Code Agent experience, I&#39;ll share more about my feelings and extended thoughts.</description>
+    </item>
+    
+  </channel>
+</rss>

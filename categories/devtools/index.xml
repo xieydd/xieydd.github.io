@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DevTools on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/categories/devtools/</link>
+    <description>Recent content in DevTools on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Mon, 02 Feb 2026 10:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.xieydd.top/categories/devtools/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Coding at Agent-Speed</title>
+      <link>https://blog.xieydd.top/code-agent-2026-02-02/</link>
+      <pubDate>Mon, 02 Feb 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/code-agent-2026-02-02/</guid>
+      <description>最近我在使用 Code Agent 高强度地构建一款安全领域的套件——基于 eBPF 以及 PostgreSQL 构建的企业级 LLM Security Insight 平台。其中涉及到的技术栈有 eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB。我可能只</description>
+    </item>
+    
+  </channel>
+</rss>
