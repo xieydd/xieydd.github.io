@@ -110,7 +110,7 @@
     <h2>目录</h2>
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#my-agent-journey">My Agent Journey</a></li>
+    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> GLM -> VS Code</a></li>
     <li><a href="#how-i-work">How I Work</a></li>
     <li><a href="#tool-selection">Tool Selection</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
@@ -121,18 +121,19 @@
   
 
   <div class="post-content">
-    <p>最近我用 Code Agent 高强度地构建了一款安全产品——基于 eBPF + PostgreSQL 的 LLM Security Insight 平台。技术栈很杂：eBPF、React、Go、Docker、Kubernetes、PostgreSQL、DuckDB。React 和 eBPF 我完全是新手，但一个月后项目竟然跑通了。这篇聊聊我的使用感受。</p>
-<h2 id="my-agent-journey">My Agent Journey</h2>
-<p>从 VS Code Copilot 到 Cursor，再到 Gemini CLI、VS Code Agent、Claude Code、OpenCode、OhMyOpenCode —— 我基本把主流工具挨个试了个遍。</p>
-<p>最早接触的是 VS Code Copilot。指定文件，说明改动，生成 Patch。叫 Code Assistant 更准确，就是个结对编程工具。在熟悉的领域用起来确实舒服，代码提示 + 结对编程，编程就应该是这样。</p>
-<p>后来切换到 Cursor，它的 Agent 模式和多文件编辑让我眼前一亮。当时很多人吐槽 —— 习惯了结对编程，多文件编辑让 Review 时间变长，模型生成的代码也不敢直接 Approve。但 Cursor 敢做第一个吃螃蟹的人。随着 Claude Sonnet 模型的能力提升，Cursor 彻底癫狂。哦对，2025 年初 Cursor 联合创始人还给我们团队发邮件，聊可复现开发环境 infra（envd）。那时候他们就预见 Agent 大规模落地会遇到一致性的问题。Cursor 用向量数据库 + Turbopuffer 解决多租户场景的代码检索，这思路和我们做 VectorChord 如出一辙。不过 Cursor 免费额度锐减后，我没信用卡续费，就换赛道了。</p>
+    <p>最近我用 Code Agent 高强度地构建了一款安全产品——基于 eBPF + PostgreSQL 的 LLM Security Insight 平台。技术栈很杂：eBPF、React、Go、Docker、Kubernetes、PostgreSQL、DuckDB。React 和 eBPF 我完全是新手，但一个月后项目竟然跑通了。</p>
+<h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; GLM -&gt; VS Code</h2>
+<p>我是个 VS Code 老用户。最早接触的是 VS Code Copilot —— 指定文件、说明改动、生成 Patch。叫 Code Assistant 更准确，就是结对编程。在熟悉的领域用起来确实舒服，代码提示 + 结对编程，编程就应该是这样。</p>
+<p>2025 年 3、4 月份接触 Cursor。它的 Agent 模式和多文件编辑让我眼前一亮。当时很多人吐槽：习惯了结对编程，多文件编辑让 Review 时间变长，模型生成的代码也不敢直接 Approve。但 Cursor 敢做第一个吃螃蟹的人。随着 Claude Sonnet 模型的能力提升，Cursor 彻底癫狂。</p>
+<p>有意思的是，2025 年初 Cursor 联合创始人 <a href="https://www.sualehasif.me/">Sualeh Asif</a> 给我们团队工程师 <a href="https://blog.mapotofu.org/">keming</a> 发邮件，聊可复现开发环境 infra（<a href="https://github.com/tensorchord/envd">envd</a>）。可见当时 Cursor 已经预见 Agent 大规模落地会遇到一致性问题。他们用向量数据库 + <a href="https://turbopuffer.com/">Turbopuffer</a> 解决多租户场景的代码检索，这思路和我们做 VectorChord 如出一辙。不过 Cursor 免费额度锐减后，我没信用卡续费，就换赛道了。</p>
 <p><img src="Xnip2026-02-02_19-57-32.jpg" alt="cursor-email" /></p>
-<p>Gemini CLI 来了。Google 的资源和 Infra 确实给力，慷慨的免费 Quota 吸引了大量用户。当时我还在负责 VectorChord Cloud，只能用它修修小 Bug、寫寫 Test。人肉上下文（Context）工作得很好，但依然没有 Agent 的感觉 —— 还是结对编程。</p>
-<p>VS Code 的 Agent 模式让我惊喜。支持多厂商模型（OpenAI、Claude、Google），Enterprise 订阅的 Quota 足够我用。但我更习惯多文件编辑，每一行代码还是心里有数。</p>
+<p>Gemini CLI 来了。Google 的资源和 Infra 确实给力，慷慨的免费 Quota 吸引了大量用户。当时我还在负责 VectorChord Cloud，只能用它修修小 Bug、写写 Test。人肉上下文（Context）工作得很好，但依然没有 Agent 的感觉 —— 还是结对编程。</p>
+<p>Quota 用完后我又回到 VS Code。GitHub Copilot 免费订阅 + VS Code Agent 模式 + 支持多厂商模型（OpenAI、Claude、Google），Enterprise Quota 足够我用。但我更习惯多文件编辑，每一行代码还是心里有数。</p>
 <p>直到 Claude Code 出现，我才真正体会到 Agent 的感觉。模型能力飞跃带来的代码质量提升 + Plan/Auto/Edit 模式的丝滑切换，让我可以规划、有节奏地实现目标。</p>
+<p>不过 Claude 对 Region 限制太厉害，我只有通过特殊途径搞到 Token。后来 GLM 出来后，大家反映代码能力和工具调用能力很强，用上后确实丝滑。</p>
 <h2 id="how-i-work">How I Work</h2>
-<p>我的工作流：</p>
-<p><strong>1. Project Context</strong></p>
+<p>对于文章开头的项目，我基本上是用 Agent 方式完成的：</p>
+<p><strong>1. 维护 Project Context</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -145,6 +146,7 @@
 </span><span class="lnt"> 8
 </span><span class="lnt"> 9
 </span><span class="lnt">10
+</span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-fallback" data-lang="fallback">~/llm-observability/context/
@@ -156,27 +158,29 @@
 └── designs/
     ├── architecture.md
     ├── frontend.md
-    └── mcp.md
+    ├── mcp.md
+    └── ...
 </code></pre></td></tr></table>
 </div>
-</div><p>项目相关的调研、设计、工具代码都丢进这个文件夹。Agent 能直接读取，效率很高。</p>
+</div><p>所有调研、设计、工具代码都丢进这个文件夹。Agent 能直接读取，效率很高。</p>
 <p><strong>2. Global Context</strong>
 参考 <a href="https://gist.github.com/Xuanwo/fa5162ed3548ae4f962dcc8b8e256bed">Xuanwo 的实践</a>，我的 Global Context 是 <code>agents.md</code> —— 定义了 Agent 的工作方式、约束条件、Best Practices。所有项目共享这份配置。</p>
 <p><strong>3. Design First</strong>
 和 Agent 一起打磨设计文档，确定技术选型和架构。设计文档就是 Agent 的说明书，写得越清楚，产出越靠谱。</p>
 <p><strong>4. Validate Before Build</strong>
-先让 Agent 写验证性代码，确认方案可行。之前有个 PostgreSQL Schema 设计，Agent 生成的 DDL 我不确认能否工作，于是先跑了个 Demo 验证。</p>
+先让 Agent 写验证性代码，确认方案可行。之前有个 PostgreSQL Schema 设计，Agent 生成的 DDL 我不确认能否工作，于是先跑 Demo 验证。</p>
 <p><strong>5. Full Implementation</strong>
-方案确认后，Agent 完整实现。中间会遇到 Agent 自己搞不定的 Case，比如 eBPF 的某些内核兼容性问题和 Go Runtime 的并发 Bug。这种 Case 我会切换到 Claude Sonnet 4.5，让它带着上下文直接 Debug，效率很高。</p>
+方案确认后，Agent 完整实现。中间会遇到 Agent 自己搞不定的 Case，比如 eBPF 的某些内核兼容性问题。这种 Case 我会切换到 Claude Sonnet 4.5，让它带着上下文直接 Debug，效率很高。</p>
 <p>Git Worktree 是我的救星。Agent 在独立分支折腾，出了篓子不影响主分支。但数据库 Schema 变更是个痛点 —— Docker 跑的单机 PG 无法并发修改 Schema，只能串行。</p>
+<p>另外，我对 Git 曾经有点不放心，害怕 Agent 误操作删除调教很久的代码。但随着 Agent 代码质量越来越高，这个心智负担越来越小。</p>
 <h2 id="tool-selection">Tool Selection</h2>
-<p>为什么我最终回到了 VS Code？因为我一直用 VS Code Remote 连接开发机。Claude Code 和 Codex 都在 VS Code 上有官方 Extension，还能输入图片（这个场景我经常遇到）。VS Code Remote + Claude Code Extension + Codex Extension 是目前我用着最顺手的组合。</p>
-<p>至于模型选择，我的经验是：</p>
+<p>为什么最终回到 VS Code？因为我一直用 VS Code Remote 连接开发机。Claude Code 和 Codex 都在 VS Code 上有官方 Extension，还能输入图片（这个场景我经常遇到）。类似 Conductor 这类 Agent Orchestration 工具我就没怎么用上。</p>
+<p>至于模型选择，我的经验：</p>
 <table>
 <thead>
 <tr>
 <th>维度</th>
-<th>推荐模型</th>
+<th>推荐</th>
 </tr>
 </thead>
 <tbody>
@@ -198,14 +202,14 @@
 </tr>
 </tbody>
 </table>
-<p>多模型协同是趋势。不同模型擅长不同领域，组合使用效果最好。但订阅多个模型、跟踪每个模型的更新迭代、记住每个插件的用法 —— 这也是真够累的。</p>
+<p>多模型协同是趋势。不同模型擅长不同领域，组合使用效果最好。但订阅多个模型、跟踪每个模型的更新迭代、记住每个插件的用法 —— 也是真够累的。</p>
 <p><img src="Xnip2026-02-04_15-32-13.jpg" alt="vscode" /></p>
 <h2 id="thoughts">Thoughts</h2>
 <p><strong>Fork 是刚需</strong></p>
 <ul>
 <li><strong>代码/文件级别</strong>：Git 解决了。</li>
-<li><strong>运行环境级别</strong>：Docker/envd 解决了个人用户需求，但大规模 Agent 运行时的调度还没有完美方案。但 Firecracker 这类技术还不够成熟,不够快，Unikernel 可能是个方向。</li>
-<li><strong>数据库级别</strong>：ACID 特性让 Fork 很困难，分布式数据库一旦 Fork 必然有数据冗余和一致性问题。PostgreSQL 这种单体数据库反而有优势。通过 PITR + JuiceFS Snapshot 可以实现 PG 的 Fork，工具如 piglet。</li>
+<li><strong>运行环境级别</strong>：Docker/envd 解决了个人用户需求，但大规模 Agent 运行时的调度还没有完美方案。Unikernel 可能是个方向，但 Firecracker 这类技术还不够成熟。</li>
+<li><strong>数据库级别</strong>：ACID 特性让 Fork 很困难，分布式数据库一旦 Fork 必然有数据冗余和一致性问题。PostgreSQL 这种单体数据库反而有优势。通过 PITR + JuiceFS Snapshot 可以实现 PG 的 Fork，工具如 <a href="https://piglet.run/docs/concept/snapshot/">piglet</a>。</li>
 </ul>
 <p><strong>多模型协同是未来</strong></p>
 <p><strong>Skill Best Practice + MCP 是生产力放大器</strong></p>
