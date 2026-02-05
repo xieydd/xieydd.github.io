@@ -19,7 +19,7 @@
       <pubDate>Mon, 02 Feb 2026 10:00:00 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/code-agent-2026-02-02/</guid>
-      <description>最近我在使用 Code Agent 高强度地构建一款安全领域的套件——基于 eBPF 以及 PostgreSQL 构建的企业级 LLM Security Insight 平台。其中涉及到的技术栈有 eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB。我可能只</description>
+      <description>最近我用 Code Agent 高强度地构建了一款安全产品——基于 eBPF + PostgreSQL 的 LLM Security Insight 平台。技术栈很杂：eBPF、React、Go、Docker、Kubernetes</description>
     </item>
     
   </channel>
