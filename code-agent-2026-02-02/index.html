@@ -110,7 +110,7 @@
     <h2>目录</h2>
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> GLM -> VS Code</a></li>
+    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> OpenCode -> OhMyOpenCode -> VS Code</a></li>
     <li><a href="#how-i-work">How I Work</a></li>
     <li><a href="#tool-selection">Tool Selection</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
@@ -122,7 +122,7 @@
 
   <div class="post-content">
     <p>最近我用 Code Agent 高强度地构建了一款安全产品——基于 eBPF + PostgreSQL 的 LLM Security Insight 平台。技术栈很杂：eBPF、React、Go、Docker、Kubernetes、PostgreSQL、DuckDB。React 和 eBPF 我完全是新手，但一个月后项目竟然跑通了。</p>
-<h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; GLM -&gt; VS Code</h2>
+<h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; OpenCode -&gt; OhMyOpenCode -&gt; VS Code</h2>
 <p>我是个 VS Code 老用户。最早接触的是 VS Code Copilot —— 指定文件、说明改动、生成 Patch。叫 Code Assistant 更准确，就是结对编程。在熟悉的领域用起来确实舒服，代码提示 + 结对编程，编程就应该是这样。</p>
 <p>2025 年 3、4 月份接触 Cursor。它的 Agent 模式和多文件编辑让我眼前一亮。当时很多人吐槽：习惯了结对编程，多文件编辑让 Review 时间变长，模型生成的代码也不敢直接 Approve。但 Cursor 敢做第一个吃螃蟹的人。随着 Claude Sonnet 模型的能力提升，Cursor 彻底癫狂。</p>
 <p>有意思的是，2025 年初 Cursor 联合创始人 <a href="https://www.sualehasif.me/">Sualeh Asif</a> 给我们团队工程师 <a href="https://blog.mapotofu.org/">keming</a> 发邮件，聊可复现开发环境 infra（<a href="https://github.com/tensorchord/envd">envd</a>）。可见当时 Cursor 已经预见 Agent 大规模落地会遇到一致性问题。他们用向量数据库 + <a href="https://turbopuffer.com/">Turbopuffer</a> 解决多租户场景的代码检索，这思路和我们做 VectorChord 如出一辙。不过 Cursor 免费额度锐减后，我没信用卡续费，就换赛道了。</p>
@@ -131,6 +131,7 @@
 <p>Quota 用完后我又回到 VS Code。GitHub Copilot 免费订阅 + VS Code Agent 模式 + 支持多厂商模型（OpenAI、Claude、Google），Enterprise Quota 足够我用。但我更习惯多文件编辑，每一行代码还是心里有数。</p>
 <p>直到 Claude Code 出现，我才真正体会到 Agent 的感觉。模型能力飞跃带来的代码质量提升 + Plan/Auto/Edit 模式的丝滑切换，让我可以规划、有节奏地实现目标。</p>
 <p>不过 Claude 对 Region 限制太厉害，我只有通过特殊途径搞到 Token。后来 GLM 出来后，大家反映代码能力和工具调用能力很强，用上后确实丝滑。</p>
+<p>后来在推特上看到大家对 OpenCode 的口碑不错，简单试用后感觉还可以。紧接着 OhMyOpenCode 插件在 X 上火了起来，它对于拥有多厂商模型的用户来说确实是个好东西——可以无缝切换不同模型，统一工作流。不过模型迭代快，插件更新也频繁，订阅多个模型、跟踪每个模型的更新、记住每个插件的用法 —— 也是真够累的。</p>
 <h2 id="how-i-work">How I Work</h2>
 <p>对于文章开头的项目，我基本上是用 Agent 方式完成的：</p>
 <p><strong>1. 维护 Project Context</strong></p>

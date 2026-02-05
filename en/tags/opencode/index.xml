@@ -20,7 +20,7 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/code-agent-2026-02-02/</guid>
       <description>I recently built a security product using Code Agents—an LLM Security Insight platform based on eBPF + PostgreSQL. The tech stack was eclectic: eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB. I was a complete beginner at React and eBPF, but the project shipped in a month.
-VS Code -&amp;gt; Cursor -&amp;gt; Gemini -&amp;gt; VS Code -&amp;gt; Codex -&amp;gt; VS Code -&amp;gt; Claude Code -&amp;gt; GLM -&amp;gt; VS Code I&#39;m a long-time VS Code user.</description>
+VS Code -&amp;gt; Cursor -&amp;gt; Gemini -&amp;gt; VS Code -&amp;gt; Codex -&amp;gt; VS Code -&amp;gt; Claude Code -&amp;gt; OpenCode -&amp;gt; OhMyOpenCode -&amp;gt; VS Code I&#39;m a long-time VS Code user.</description>
     </item>
     
   </channel>

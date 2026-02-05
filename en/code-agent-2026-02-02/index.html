@@ -101,7 +101,7 @@
     <h1 class="post-title" style="view-transition-name: index.en">Coding at Agent-Speed</h1>
     <div class="post-meta">
       <span>Published: 2 Feb, 2026</span>
-      <span>• 4 min read</span>
+      <span>• 5 min read</span>
     </div>
   </header>
 
@@ -110,7 +110,7 @@
     <h2>Table of Contents</h2>
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> GLM -> VS Code</a></li>
+    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> OpenCode -> OhMyOpenCode -> VS Code</a></li>
     <li><a href="#how-i-work">How I Work</a></li>
     <li><a href="#tool-selection">Tool Selection</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
@@ -122,7 +122,7 @@
 
   <div class="post-content">
     <p>I recently built a security product using Code Agents—an LLM Security Insight platform based on eBPF + PostgreSQL. The tech stack was eclectic: eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB. I was a complete beginner at React and eBPF, but the project shipped in a month.</p>
-<h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; GLM -&gt; VS Code</h2>
+<h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; OpenCode -&gt; OhMyOpenCode -&gt; VS Code</h2>
 <p>I'm a long-time VS Code user. First came VS Code Copilot—specify the file, describe the change, generate a patch. Code Assistant is the more accurate term; it's pair programming. In familiar domains, it's genuinely comfortable. Code completion + pair programming is how programming should be.</p>
 <p>Around March-April 2025, I tried Cursor. It's forked from VS Code, but details made it feel different. Multi-file editing and Agent mode. Many people scoffed at first—used to pair programming, multi-file editing extended review time, and model-generated code wasn't reliable enough to approve without review. But Cursor dared to be first. With Claude Sonnet's capabilities, Cursor went wild.</p>
 <p>Here's the fun part: in early 2025, Cursor co-founder <a href="https://www.sualehasif.me/">Sualeh Asif</a> emailed our team engineer <a href="https://blog.mapotofu.org/">keming</a> about our reproducible dev infra tool (<a href="https://github.com/tensorchord/envd">envd</a>). Cursor had already foreseen consistency issues in large-scale Agent deployments. They used vector databases + <a href="https://turbopuffer.com/">Turbopuffer</a> for code search in multi-tenant scenarios—the same approach we took with VectorChord. But after their user base exploded and free quotas got slashed, I couldn't renew without a credit card, so I moved on.</p>
@@ -131,6 +131,7 @@
 <p>After hitting Gemini's quota limit, I went back to VS Code. GitHub's free Copilot + VS Code Agent mode + multi-vendor support (OpenAI, Claude, Google) with Enterprise quota was enough. But I preferred multi-file editing, keeping every line of code in check.</p>
 <p>Claude Code finally gave me the real Agent experience. Leap in model capability meant better code and design docs. Smooth Plan/Auto/Edit mode switching let me build with planning and rhythm.</p>
 <p>Claude's region restrictions were brutal though—I had to get tokens through special channels. Then GLM came out, people said its coding and tool-calling were solid. They were right.</p>
+<p>Later, I saw good buzz about OpenCode on Twitter, tried it briefly—not bad. Then OhMyOpenCode plugin went viral on X. For users with multiple vendor models, it's genuinely useful—seamless model switching, unified workflow. But models iterate fast, plugins update constantly, managing subscriptions and tracking changes—it's exhausting.</p>
 <h2 id="how-i-work">How I Work</h2>
 <p>For the project mentioned above, I did it the Agent way:</p>
 <p><strong>1. Maintain Project Context</strong></p>
