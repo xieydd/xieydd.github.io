@@ -4,7 +4,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/llm-infra/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -21,7 +21,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/improve-model-serving-cold-start/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -38,21 +38,21 @@
   
   <url>
     <loc>https://blog.xieydd.top/s3/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/serverless/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/postgres-ha/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -69,14 +69,14 @@
   
   <url>
     <loc>https://blog.xieydd.top/scheduler/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -93,7 +93,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/ai/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -110,7 +110,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -127,7 +127,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/claude-code/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -144,7 +144,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/code-agent/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -161,7 +161,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/code-agent-2026-02-02/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -178,7 +178,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/devtools/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -195,7 +195,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/opencode/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -212,7 +212,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/posts/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -229,7 +229,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -246,7 +246,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/vs-code/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -263,7 +263,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/workflow/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -280,7 +280,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -297,7 +297,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/opinion/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -314,7 +314,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/2025/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -331,7 +331,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/infra/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -348,7 +348,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/llm/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -365,7 +365,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/model-training/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -382,7 +382,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/serving/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -399,7 +399,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/training/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -416,7 +416,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/vllm/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -433,7 +433,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/tech/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -450,7 +450,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/cold-start/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -467,7 +467,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/inference/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -484,7 +484,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/serverless/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -501,7 +501,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/serving/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -518,7 +518,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/2024/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -535,84 +535,84 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/aws/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/cloud/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/categories/cloud/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/s3/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/storage/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/categories/storage/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/system-design/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/categories/system-design/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/database/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/categories/database/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/serverless/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/high-availability/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -629,7 +629,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/postgres/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -646,7 +646,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/postgres/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -663,7 +663,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/vector-search/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -680,7 +680,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/vector-search/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -697,7 +697,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/vector-search/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -714,14 +714,14 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/2023/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/kubernetes/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -738,7 +738,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/kubernetes/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -755,14 +755,14 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/scheduler/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/categories/documentation/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -779,7 +779,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/categories/2022/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -796,7 +796,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/topo-aware/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -813,7 +813,7 @@
   
   <url>
     <loc>https://blog.xieydd.top/about/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -830,21 +830,21 @@
   
   <url>
     <loc>https://blog.xieydd.top/tags/content/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/installation/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://blog.xieydd.top/tags/configuration/</loc>
-    <lastmod>2026-02-05T09:51:38+08:00</lastmod>
+    <lastmod>2026-02-05T09:58:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

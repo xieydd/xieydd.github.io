@@ -131,8 +131,8 @@
 <p>VS Code 的 Agent 模式让我惊喜。支持多厂商模型（OpenAI、Claude、Google），Enterprise 订阅的 Quota 足够我用。但我更习惯多文件编辑，每一行代码还是心里有数。</p>
 <p>直到 Claude Code 出现，我才真正体会到 Agent 的感觉。模型能力飞跃带来的代码质量提升 + Plan/Auto/Edit 模式的丝滑切换，让我可以规划、有节奏地实现目标。</p>
 <h2 id="how-i-work">How I Work</h2>
-<p>我的工作流大概是这样：</p>
-<p><strong>1. Global Context</strong></p>
+<p>我的工作流：</p>
+<p><strong>1. Project Context</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -159,16 +159,18 @@
     └── mcp.md
 </code></pre></td></tr></table>
 </div>
-</div><p>所有调研、设计、工具代码都丢进这个文件夹。Agent 能读取，Xuanwo 的实践很有道理。</p>
-<p><strong>2. Design First</strong>
+</div><p>项目相关的调研、设计、工具代码都丢进这个文件夹。Agent 能直接读取，效率很高。</p>
+<p><strong>2. Global Context</strong>
+参考 <a href="https://gist.github.com/Xuanwo/fa5162ed3548ae4f962dcc8b8e256bed">Xuanwo 的实践</a>，我的 Global Context 是 <code>agents.md</code> —— 定义了 Agent 的工作方式、约束条件、Best Practices。所有项目共享这份配置。</p>
+<p><strong>3. Design First</strong>
 和 Agent 一起打磨设计文档，确定技术选型和架构。设计文档就是 Agent 的说明书，写得越清楚，产出越靠谱。</p>
-<p><strong>3. Validate Before Build</strong>
+<p><strong>4. Validate Before Build</strong>
 先让 Agent 写验证性代码，确认方案可行。之前有个 PostgreSQL Schema 设计，Agent 生成的 DDL 我不确认能否工作，于是先跑了个 Demo 验证。</p>
-<p><strong>4. Full Implementation</strong>
+<p><strong>5. Full Implementation</strong>
 方案确认后，Agent 完整实现。中间会遇到 Agent 自己搞不定的 Case，比如 eBPF 的某些内核兼容性问题和 Go Runtime 的并发 Bug。这种 Case 我会切换到 Claude Sonnet 4.5，让它带着上下文直接 Debug，效率很高。</p>
 <p>Git Worktree 是我的救星。Agent 在独立分支折腾，出了篓子不影响主分支。但数据库 Schema 变更是个痛点 —— Docker 跑的单机 PG 无法并发修改 Schema，只能串行。</p>
 <h2 id="tool-selection">Tool Selection</h2>
-<p>为什么我最终回到了 VS Code？因为我一直用 VS Code Remote 连接开发机。Claude Code 和 Codex 都在 VS Code 上有官方 Extension，还能输入图片（这个场景我经常遇到）。VS Code Remote + Claude Code Extension 是目前我用着最顺手的组合。</p>
+<p>为什么我最终回到了 VS Code？因为我一直用 VS Code Remote 连接开发机。Claude Code 和 Codex 都在 VS Code 上有官方 Extension，还能输入图片（这个场景我经常遇到）。VS Code Remote + Claude Code Extension + Codex Extension 是目前我用着最顺手的组合。</p>
 <p>至于模型选择，我的经验是：</p>
 <table>
 <thead>
@@ -202,8 +204,8 @@
 <p><strong>Fork 是刚需</strong></p>
 <ul>
 <li><strong>代码/文件级别</strong>：Git 解决了。</li>
-<li><strong>运行环境级别</strong>：Docker/envd 解决了个人用户需求，但大规模 Agent 运行时的调度还没有完美方案。Unikernel 可能是个方向，但 Firecracker 这类技术还不够成熟。</li>
-<li><strong>数据库级别</strong>：ACID 特性让 Fork 很难。分布式数据库一旦 Fork 必然有数据冗余和一致性问题。PostgreSQL 这种单体数据库反而有优势。通过 PITR + JuiceFS Snapshot 可以实现 PG 的 Fork，工具如 piglet。</li>
+<li><strong>运行环境级别</strong>：Docker/envd 解决了个人用户需求，但大规模 Agent 运行时的调度还没有完美方案。但 Firecracker 这类技术还不够成熟,不够快，Unikernel 可能是个方向。</li>
+<li><strong>数据库级别</strong>：ACID 特性让 Fork 很困难，分布式数据库一旦 Fork 必然有数据冗余和一致性问题。PostgreSQL 这种单体数据库反而有优势。通过 PITR + JuiceFS Snapshot 可以实现 PG 的 Fork，工具如 piglet。</li>
 </ul>
 <p><strong>多模型协同是未来</strong></p>
 <p><strong>Skill Best Practice + MCP 是生产力放大器</strong></p>
