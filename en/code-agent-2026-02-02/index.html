@@ -111,8 +111,8 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> OpenCode -> OhMyOpenCode -> VS Code</a></li>
+    <li><a href="#my-choices">My Choices</a></li>
     <li><a href="#how-i-work">How I Work</a></li>
-    <li><a href="#tool-selection">Tool Selection</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
     <li><a href="#next-step">Next Step</a></li>
   </ul>
@@ -132,6 +132,56 @@
 <p>Claude Code finally gave me the real Agent experience. Leap in model capability meant better code and design docs. Smooth Plan/Auto/Edit mode switching let me build with planning and rhythm.</p>
 <p>Claude's region restrictions were brutal though—I had to get tokens through special channels. Then GLM came out, people said its coding and tool-calling were solid. They were right.</p>
 <p>Later, I saw good buzz about OpenCode on Twitter, tried it briefly—not bad. Then OhMyOpenCode plugin went viral on X. For users with multiple vendor models, it's genuinely useful—seamless model switching, unified workflow. But models iterate fast, plugins update constantly, managing subscriptions and tracking changes—it's exhausting.</p>
+<p>So why back to VS Code? I've always used VS Code Remote to connect to my dev machine. Claude Code and Codex have official VS Code extensions, and I often need to feed images to the Agent. Conductor and similar Orchestration tools? Didn't use them much.</p>
+<h2 id="my-choices">My Choices</h2>
+<p><strong>Tool Choices</strong></p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multi-vendor model switching</td>
+<td>OhMyOpenCode</td>
+</tr>
+<tr>
+<td>Single-model deep work</td>
+<td>VS Code + Claude Code / Codex Extension</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Model Choices</strong></p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aesthetics</td>
+<td>GPT-5.2-Codex &gt; Gemini-3 Pro &gt; Claude Opus 4.5 &raquo; GLM 4.7</td>
+</tr>
+<tr>
+<td>Planning</td>
+<td>Claude Opus 4.5, leagues ahead</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td>Claude Sonnet 4.5, GLM 4.7</td>
+</tr>
+<tr>
+<td>Debugging</td>
+<td>Claude Opus/Sonnet 4.5, GLM 4.7</td>
+</tr>
+</tbody>
+</table>
+<p>Multi-model collaboration is the future. Different models excel in different areas, combining them works best.</p>
+<p><img src="Xnip2026-02-04_15-32-13.jpg" alt="vscode" /></p>
 <h2 id="how-i-work">How I Work</h2>
 <p>For the project mentioned above, I did it the Agent way:</p>
 <p><strong>1. Maintain Project Context</strong></p>
@@ -174,37 +224,6 @@ Have the Agent write verification code first. Before committing to a PostgreSQL 
 Once validated, Agent implements everything. There are cases the Agent can't handle—eBPF kernel compatibility, for example. For those, I switch to Claude Sonnet 4.5 with full context to Debug directly. Efficient.</p>
 <p>Git Worktree is my safety net. Agents mess around in branches, main stays clean. But database schema changes are painful—Docker PG can't do concurrent schema changes, so it's serial.</p>
 <p>I used to worry about Git—fear the Agent would delete fine-tuned code. But as Agent quality improved, that mental burden faded.</p>
-<h2 id="tool-selection">Tool Selection</h2>
-<p>Why back to VS Code? I've always used VS Code Remote to connect to my dev machine. Claude Code and Codex have official VS Code extensions, and I often need to feed images to the Agent. Conductor and similar Orchestration tools? Didn't use them much.</p>
-<p>My model picks:</p>
-<table>
-<thead>
-<tr>
-<th>Dimension</th>
-<th>Recommendation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Aesthetics</td>
-<td>GPT-5.2-Codex &gt; Gemini-3 Pro &gt; Claude Opus 4.5 &raquo; GLM 4.7</td>
-</tr>
-<tr>
-<td>Planning</td>
-<td>Claude Opus 4.5, leagues ahead</td>
-</tr>
-<tr>
-<td>Coding</td>
-<td>Claude Sonnet 4.5, GLM 4.7</td>
-</tr>
-<tr>
-<td>Debugging</td>
-<td>Claude Opus/Sonnet 4.5, GLM 4.7</td>
-</tr>
-</tbody>
-</table>
-<p>Multi-model collaboration is the future. Different models excel in different areas, combining them works best. But tracking model updates, plugin changes, managing subscriptions—it's exhausting.</p>
-<p><img src="Xnip2026-02-04_15-32-13.jpg" alt="vscode" /></p>
 <h2 id="thoughts">Thoughts</h2>
 <p><strong>Fork is a Must-Have</strong></p>
 <ul>

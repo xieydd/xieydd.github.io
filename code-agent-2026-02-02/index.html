@@ -111,8 +111,8 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> OpenCode -> OhMyOpenCode -> VS Code</a></li>
-    <li><a href="#how-i-work">How I Work</a></li>
-    <li><a href="#tool-selection">Tool Selection</a></li>
+    <li><a href="#我的选择">我的选择</a></li>
+    <li><a href="#我的用法">我的用法</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
     <li><a href="#next-step">Next Step</a></li>
   </ul>
@@ -132,7 +132,57 @@
 <p>直到 Claude Code 出现，我才真正体会到 Agent 的感觉。模型能力飞跃带来的代码质量提升 + Plan/Auto/Edit 模式的丝滑切换，让我可以规划、有节奏地实现目标。</p>
 <p>不过 Claude 对 Region 限制太厉害，我只有通过特殊途径搞到 Token。后来 GLM 出来后，大家反映代码能力和工具调用能力很强，用上后确实丝滑。</p>
 <p>后来在推特上看到大家对 OpenCode 的口碑不错，简单试用后感觉还可以。紧接着 OhMyOpenCode 插件在 X 上火了起来，它对于拥有多厂商模型的用户来说确实是个好东西——可以无缝切换不同模型，统一工作流。不过模型迭代快，插件更新也频繁，订阅多个模型、跟踪每个模型的更新、记住每个插件的用法 —— 也是真够累的。</p>
-<h2 id="how-i-work">How I Work</h2>
+<p>最后我为什么又回到 VS Code？因为我一直用 VS Code Remote 连接开发机，Claude Code 和 Codex 都在 VS Code 上有官方 Extension，还能输入图片（这个场景我经常遇到）。类似 Conductor 这类 Agent Orchestration 工具我就没怎么用上。</p>
+<h2 id="我的选择">我的选择</h2>
+<p><strong>工具选择</strong></p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>多厂商模型切换</td>
+<td>OhMyOpenCode</td>
+</tr>
+<tr>
+<td>单模型深度使用</td>
+<td>VS Code + Claude Code / Codex Extension</td>
+</tr>
+</tbody>
+</table>
+<p><strong>模型选择</strong></p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>推荐</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>审美</td>
+<td>GPT-5.2-Codex &gt; Gemini-3 Pro &gt; Claude Opus 4.5 &raquo; GLM 4.7</td>
+</tr>
+<tr>
+<td>Plan</td>
+<td>Claude Opus 4.5 断档领先</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>Claude Sonnet 4.5、GLM 4.7</td>
+</tr>
+<tr>
+<td>Debug</td>
+<td>Claude Opus/Sonnet 4.5、GLM 4.7</td>
+</tr>
+</tbody>
+</table>
+<p>多模型协同是趋势。不同模型擅长不同领域，组合使用效果最好。</p>
+<p><img src="Xnip2026-02-04_15-32-13.jpg" alt="vscode" /></p>
+<h2 id="我的用法">我的用法</h2>
 <p>对于文章开头的项目，我基本上是用 Agent 方式完成的：</p>
 <p><strong>1. 维护 Project Context</strong></p>
 <div class="highlight"><div class="chroma">
@@ -174,37 +224,6 @@
 方案确认后，Agent 完整实现。中间会遇到 Agent 自己搞不定的 Case，比如 eBPF 的某些内核兼容性问题。这种 Case 我会切换到 Claude Sonnet 4.5，让它带着上下文直接 Debug，效率很高。</p>
 <p>Git Worktree 是我的救星。Agent 在独立分支折腾，出了篓子不影响主分支。但数据库 Schema 变更是个痛点 —— Docker 跑的单机 PG 无法并发修改 Schema，只能串行。</p>
 <p>另外，我对 Git 曾经有点不放心，害怕 Agent 误操作删除调教很久的代码。但随着 Agent 代码质量越来越高，这个心智负担越来越小。</p>
-<h2 id="tool-selection">Tool Selection</h2>
-<p>为什么最终回到 VS Code？因为我一直用 VS Code Remote 连接开发机。Claude Code 和 Codex 都在 VS Code 上有官方 Extension，还能输入图片（这个场景我经常遇到）。类似 Conductor 这类 Agent Orchestration 工具我就没怎么用上。</p>
-<p>至于模型选择，我的经验：</p>
-<table>
-<thead>
-<tr>
-<th>维度</th>
-<th>推荐</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>审美</td>
-<td>GPT-5.2-Codex &gt; Gemini-3 Pro &gt; Claude Opus 4.5 &raquo; GLM 4.7</td>
-</tr>
-<tr>
-<td>Plan</td>
-<td>Claude Opus 4.5 断档领先</td>
-</tr>
-<tr>
-<td>Code</td>
-<td>Claude Sonnet 4.5、GLM 4.7</td>
-</tr>
-<tr>
-<td>Debug</td>
-<td>Claude Opus/Sonnet 4.5、GLM 4.7</td>
-</tr>
-</tbody>
-</table>
-<p>多模型协同是趋势。不同模型擅长不同领域，组合使用效果最好。但订阅多个模型、跟踪每个模型的更新迭代、记住每个插件的用法 —— 也是真够累的。</p>
-<p><img src="Xnip2026-02-04_15-32-13.jpg" alt="vscode" /></p>
 <h2 id="thoughts">Thoughts</h2>
 <p><strong>Fork 是刚需</strong></p>
 <ul>
