@@ -19,7 +19,8 @@
       <pubDate>Mon, 02 Feb 2026 10:00:00 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/code-agent-2026-02-02/</guid>
-      <description>Recently, I&#39;ve been using Code Agents intensively to build a security suite—an enterprise-grade LLM Security Insight platform based on eBPF and PostgreSQL. The tech stack involves eBPF, React, Go, Docker, Kubernetes, PostgreSQL, and DuckDB. While I had experience with some of these technologies, others like React, eBPF, and DuckDB were completely new to me, having not touched them in my previous AI Infra work. In this first post about my Code Agent experience, I&#39;ll share more about my feelings and extended thoughts.</description>
+      <description>I recently built a security product using Code Agents—an LLM Security Insight platform based on eBPF + PostgreSQL. The tech stack was eclectic: eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB. I was a complete beginner at React and eBPF, but the project shipped in a month.
+VS Code -&amp;gt; Cursor -&amp;gt; Gemini -&amp;gt; VS Code -&amp;gt; Codex -&amp;gt; VS Code -&amp;gt; Claude Code -&amp;gt; GLM -&amp;gt; VS Code I&#39;m a long-time VS Code user.</description>
     </item>
     
   </channel>

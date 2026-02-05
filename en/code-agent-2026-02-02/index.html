@@ -101,7 +101,7 @@
     <h1 class="post-title" style="view-transition-name: index.en">Coding at Agent-Speed</h1>
     <div class="post-meta">
       <span>Published: 2 Feb, 2026</span>
-      <span>• 7 min read</span>
+      <span>• 4 min read</span>
     </div>
   </header>
 
@@ -110,7 +110,9 @@
     <h2>Table of Contents</h2>
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> OpenCode -> OhMyOpenCode -> VS Code</a></li>
+    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> GLM -> VS Code</a></li>
+    <li><a href="#how-i-work">How I Work</a></li>
+    <li><a href="#tool-selection">Tool Selection</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
     <li><a href="#next-step">Next Step</a></li>
   </ul>
@@ -119,71 +121,106 @@
   
 
   <div class="post-content">
-    <p>Recently, I've been using Code Agents intensively to build a security suite—an enterprise-grade LLM Security Insight platform based on eBPF and PostgreSQL. The tech stack involves eBPF, React, Go, Docker, Kubernetes, PostgreSQL, and DuckDB. While I had experience with some of these technologies, others like React, eBPF, and DuckDB were completely new to me, having not touched them in my previous AI Infra work. In this first post about my Code Agent experience, I'll share more about my feelings and extended thoughts. Future posts might just briefly mention changes.</p>
-<h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; OpenCode -&gt; OhMyOpenCode -&gt; VS Code</h2>
-<p>I'm a long-time VS Code user. Although I haven't researched IDEs deeply, I find it quite usable. The first Code Agent I used was VS Code Copilot, but its initial version was very simple: specify the file to change, describe how you want to change it, Copilot generates a code patch/diff, and VS Code applies the patch to your file. At this stage, the Code Agent couldn't really be called an Agent; it was at most a Code Assistant, a form of pair programming. Initially, it felt natural because I was used to code completion and pair programming. In familiar domains, it felt comfortable, like this is how programming should be.</p>
-<p>However, around March or April 2025, I suddenly encountered the Cursor IDE. Of course, Cursor is forked from a version of VS Code, but details made me feel it was different—a different product. For example, multi-file editing and Agent mode. Initially, many people scoffed at Agent mode and multi-file editing because users were accustomed to pair programming, and multi-file editing increased review time. Also, constrained by model capabilities, code generation wasn't reliable enough to approve without review. But Cursor dared to be the first (or at least the first I knew of). With improvements in LLM capabilities, especially Claude's Sonnet series optimized for code, Cursor went wild. I recall a small incident in January 2025 where Cursor co-founder <a href="https://www.sualehasif.me/">Sualeh Asif</a> emailed our team engineer <a href="https://blog.mapotofu.org/">keming</a> to discuss our reproducible dev environment infra tool <a href="https://github.com/tensorchord/envd">envd</a>. It shows Cursor had already foreseen consistency issues in large-scale agent runtimes. Later, we learned from Sualeh that they used vector databases and <a href="https://turbopuffer.com/">Turbopuffer</a> for code search to adapt to multi-tenant scenarios. However, I didn't use Cursor for long because after its user base exploded and free quotas were slashed, I didn't have a suitable credit card to subscribe, haha.</p>
+    <p>I recently built a security product using Code Agents—an LLM Security Insight platform based on eBPF + PostgreSQL. The tech stack was eclectic: eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB. I was a complete beginner at React and eBPF, but the project shipped in a month.</p>
+<h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---glm---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; GLM -&gt; VS Code</h2>
+<p>I'm a long-time VS Code user. First came VS Code Copilot—specify the file, describe the change, generate a patch. Code Assistant is the more accurate term; it's pair programming. In familiar domains, it's genuinely comfortable. Code completion + pair programming is how programming should be.</p>
+<p>Around March-April 2025, I tried Cursor. It's forked from VS Code, but details made it feel different. Multi-file editing and Agent mode. Many people scoffed at first—used to pair programming, multi-file editing extended review time, and model-generated code wasn't reliable enough to approve without review. But Cursor dared to be first. With Claude Sonnet's capabilities, Cursor went wild.</p>
+<p>Here's the fun part: in early 2025, Cursor co-founder <a href="https://www.sualehasif.me/">Sualeh Asif</a> emailed our team engineer <a href="https://blog.mapotofu.org/">keming</a> about our reproducible dev infra tool (<a href="https://github.com/tensorchord/envd">envd</a>). Cursor had already foreseen consistency issues in large-scale Agent deployments. They used vector databases + <a href="https://turbopuffer.com/">Turbopuffer</a> for code search in multi-tenant scenarios—the same approach we took with VectorChord. But after their user base exploded and free quotas got slashed, I couldn't renew without a credit card, so I moved on.</p>
 <p><img src="Xnip2026-02-02_19-57-32.jpg" alt="cursor-email" /></p>
-<p>Then came Gemini CLI. Thanks to Google's massive resources and powerful Infra, they offered free and powerful Gemini tokens, attracting many new users, myself included. But at the time, I was responsible for an existing business, <a href="https://cloud.vectorchord.ai">VectorChord Cloud</a>, so I mostly used Gemini to fix small issues like corner cases or writing test files. Since I knew the project code well, I—as the human context—worked well. But up to this point, I still didn't feel the &ldquo;Agent&rdquo; vibe; it was still pair programming.</p>
-<p>However, Gemini CLI's quota eventually made it hard to continue, so I moved back to VS Code. GitHub gave me a free Copilot subscription, and I was surprised to find VS Code also had an Agent mode supporting models from different vendors, like OpenAI's GPT series, Claude's Sonnet series, and Google's Gemini series. The Enterprise subscription quota was sufficient. But I mostly used multi-file editing rather than auto-approve, ensuring I understood every line of modified code.</p>
-<p>During this period, I mostly used agents to implement simple tools, scripts, or code fixes. It wasn't until around August, when we explored some security directions, that I tentatively dared to let an Agent implement complete project-level code.</p>
-<p>I forget which day it was, but Claude Code suddenly became the talk of the town among friends. I switched to Claude Code but found Claude's region restrictions too severe to use. I had to obtain Claude model tokens through special means. Later, after GLM came out, people reported strong coding and tool-calling capabilities, so I got a <a href="https://www.bigmodel.cn/glm-coding?ic=IXRWFAIDIR">GLM</a> subscription and smoothly started using Claude Code. On Claude Code, I truly felt the Agent experience: one factor was the leap in model capability leading to high-quality code and design docs; the other was the smooth transition between Plan, Auto, and Edit modes in Claude Code, allowing me to achieve goals with planning and rhythm. For the project mentioned at the beginning, I basically completed it using the Agent approach, roughly following these steps:</p>
-<ol>
-<li>Maintain a Context folder containing all relevant research docs, design docs, and tool code.</li>
-<li>Let the Agent fine-tune design docs with me, determining tech stack, architecture design, etc.</li>
-<li>Let the Agent write simple verification code to validate feasibility.</li>
-<li>Let the Agent implement the full code.</li>
-<li>After the initial code is done, use Git Worktree to let the Agent fix bugs and improve features, though there are limitations:
-<ul>
-<li>Database field changes can't be done this way because I run PostgreSQL in Docker locally and can't support concurrent schema changes.</li>
-<li>I'm actually a bit uneasy about Git, fearing accidental deletion of tuned code, but this mental burden is decreasing as Agent code generation quality improves and it retains memory of implemented code.</li>
-</ul>
-</li>
-</ol>
+<p>Then came Gemini CLI. Google's resources and Infra were impressive—free, powerful tokens attracted tons of users including me. But I was busy with VectorChord Cloud, so I only used it for small fixes and tests. Human context worked well, but still no Agent feeling—just pair programming.</p>
+<p>After hitting Gemini's quota limit, I went back to VS Code. GitHub's free Copilot + VS Code Agent mode + multi-vendor support (OpenAI, Claude, Google) with Enterprise quota was enough. But I preferred multi-file editing, keeping every line of code in check.</p>
+<p>Claude Code finally gave me the real Agent experience. Leap in model capability meant better code and design docs. Smooth Plan/Auto/Edit mode switching let me build with planning and rhythm.</p>
+<p>Claude's region restrictions were brutal though—I had to get tokens through special channels. Then GLM came out, people said its coding and tool-calling were solid. They were right.</p>
+<h2 id="how-i-work">How I Work</h2>
+<p>For the project mentioned above, I did it the Agent way:</p>
+<p><strong>1. Maintain Project Context</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$  ls ~/llm-observability/context
-agent-protocol-research.md  analyze.sql  llm_prompt_injection_analyzer_pg.py  llm_semantic_analyzer_pg.py  pencil-designs  security-product-research.md  why-infer-root-exec-id.md
-analyze-pg.sql              designs      llm_prompt_injection_analyzer.py     llm_semantic_analyzer.py     __pycache__     watchu-desktop
-$  ls ~/llm-observability/context/designs
-0.3.0.md          analyze.md       claude-code-json.md  frontend.md     mcp.md                skill-security-saas-mvp.md  streaming-ingestion-analytics-service.md
-analyze-0.2.0.md  architecture.md  codex-json.md        gemini-json.md  openai-compatible.md  skills-security-design.md
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">~/llm-observability/context/
+├── agent-protocol-research.md
+├── analyze.sql
+├── llm_prompt_injection_analyzer_pg.py
+├── pencil-designs/
+├── security-product-research.md
+└── designs/
+    ├── architecture.md
+    ├── frontend.md
+    ├── mcp.md
+    └── ...
 </code></pre></td></tr></table>
 </div>
-</div><p>Later, I saw good reputation for OpenCode on Twitter, so I tried it briefly—it was not bad. Then the OhMyOpenCode plugin went viral on X, and I tried it too. I found OhMyOpenCode is great if you have models from many vendors. This is also a feeling I have after using Agents: distinctly, in terms of aesthetics, GPT-5.2-Codex &gt; Gemini-3 Pro &gt; Claude Opus 4.5 &raquo; GLM 4.7; in Planning capability, Claude Opus 4.5 is leagues ahead; for Coding, Claude Sonnet 4.5 and GLM 4.7 are good choices; for Debugging, Claude Opus/Sonnet 4.5 and GLM 4.7 are both fine. Complementary strengths of different models in different areas help complete work better. But the problem is models iterate, meaning I have to pay attention to both model updates and plugin updates, plus manage multiple subscriptions, which makes me feel a bit overwhelmed.</p>
-<p>Finally, since I always work via VS Code Remote to my dev machine, I haven't used Agent Orchestration tools like <a href="https://www.conductor.build/">Conductor</a> much. Also, I often need to feed images to the Agent, and my favorite tools like Claude Code and Codex now have official VS Code extensions, so I eventually returned to VS Code for work.</p>
+</div><p>All research, design, and utility code go here. Agents read directly—huge efficiency win.</p>
+<p><strong>2. Global Context</strong>
+Following <a href="https://gist.github.com/Xuanwo/fa5162ed3548ae4f962dcc8b8e256bed">Xuanwo's approach</a>, my Global Context is <code>agents.md</code>—defining Agent behavior, constraints, and Best Practices. Shared across all projects.</p>
+<p><strong>3. Design First</strong>
+Polish design docs with the Agent, lock in tech stack and architecture. The design doc is the Agent's manual—clearer is better.</p>
+<p><strong>4. Validate Before Build</strong>
+Have the Agent write verification code first. Before committing to a PostgreSQL Schema, I had the Agent generate DDL, then ran a Demo to validate.</p>
+<p><strong>5. Full Implementation</strong>
+Once validated, Agent implements everything. There are cases the Agent can't handle—eBPF kernel compatibility, for example. For those, I switch to Claude Sonnet 4.5 with full context to Debug directly. Efficient.</p>
+<p>Git Worktree is my safety net. Agents mess around in branches, main stays clean. But database schema changes are painful—Docker PG can't do concurrent schema changes, so it's serial.</p>
+<p>I used to worry about Git—fear the Agent would delete fine-tuned code. But as Agent quality improved, that mental burden faded.</p>
+<h2 id="tool-selection">Tool Selection</h2>
+<p>Why back to VS Code? I've always used VS Code Remote to connect to my dev machine. Claude Code and Codex have official VS Code extensions, and I often need to feed images to the Agent. Conductor and similar Orchestration tools? Didn't use them much.</p>
+<p>My model picks:</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aesthetics</td>
+<td>GPT-5.2-Codex &gt; Gemini-3 Pro &gt; Claude Opus 4.5 &raquo; GLM 4.7</td>
+</tr>
+<tr>
+<td>Planning</td>
+<td>Claude Opus 4.5, leagues ahead</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td>Claude Sonnet 4.5, GLM 4.7</td>
+</tr>
+<tr>
+<td>Debugging</td>
+<td>Claude Opus/Sonnet 4.5, GLM 4.7</td>
+</tr>
+</tbody>
+</table>
+<p>Multi-model collaboration is the future. Different models excel in different areas, combining them works best. But tracking model updates, plugin changes, managing subscriptions—it's exhausting.</p>
 <p><img src="Xnip2026-02-04_15-32-13.jpg" alt="vscode" /></p>
-<p>As for Global Context, I currently follow <a href="https://gist.github.com/Xuanwo/fa5162ed3548ae4f962dcc8b8e256bed">Xuanwo</a>&lsquo;s practice, adding tricks I discover in daily work. I'll share more on this later.</p>
 <h2 id="thoughts">Thoughts</h2>
-<p>I've briefly written about my Code Agent experience over the past year, leading to the following thoughts:</p>
+<p><strong>Fork is a Must-Have</strong></p>
 <ul>
-<li><strong>Fork capability is a must-have</strong>:
-<ul>
-<li><strong>Code and File Level</strong>: Solved by Git-like tools.</li>
-<li><strong>Runtime Environment Level</strong>: Solved for small-scale personal users by Docker/envd containers or virtualization tools, but there's no good solution yet for large-scale runtime scheduling. Unikernel might be a good direction, but current ones (like Firecracker) aren't sufficient for large-scale Agent runtime needs.</li>
-<li><strong>Database Level</strong>: Database ACID properties make forking inherently difficult, especially for large distributed databases. Forking inevitably involves redundant data and consistency issues. This is an advantage of monolithic databases like PostgreSQL. You can easily achieve database forks using tools like <a href="https://piglet.run/docs/concept/snapshot/">piglet</a> via PG's PITR (Point-in-Time Recovery) and JuiceFS Snapshot.</li>
+<li><strong>Code/File Level</strong>: Solved by Git.</li>
+<li><strong>Runtime Level</strong>: Docker/envd solved personal use cases, but large-scale Agent scheduling has no perfect solution yet. Unikernel might work, but Firecracker isn't fast or mature enough.</li>
+<li><strong>Database Level</strong>: ACID makes forking hard. Distributed databases mean data redundancy and consistency issues when forking. PostgreSQL's monolithic nature is an advantage. PITR + JuiceFS Snapshot enables PG forks—tools like <a href="https://piglet.run/docs/concept/snapshot/">piglet</a> help.</li>
 </ul>
-</li>
-<li><strong>Multi-model collaboration is the future trend</strong>: Different models have different strengths. Future Code Agent tools need to support seamless switching and collaboration between multiple models.</li>
-<li><strong>Leverage Skill Best Practices and MCP connectivity to boost overall productivity</strong>.</li>
-<li><strong>Context (or Memory) evolution and sharing is a key direction for future Code Agents</strong>.</li>
-<li><strong>The future is here, All in AI</strong>.</li>
-</ul>
+<p><strong>Multi-Model Collaboration is the Future</strong></p>
+<p><strong>Skill Best Practices + MCP Boost Productivity</strong></p>
+<p><strong>Context/Memory Evolution and Sharing is the Battlefield</strong></p>
+<p><strong>All in AI</strong></p>
 <h2 id="next-step">Next Step</h2>
-<p>I plan to further optimize my Code Agent experience, mainly focusing on:</p>
 <ul>
-<li>Configuring a higher-spec Mac as a dev machine.</li>
-<li>Automating everything: DNS config, domain registration, Agent notifications, etc.</li>
-<li>Exploring better Global Context and Memory management solutions.</li>
-<li>Researching Infra solutions for large-scale Agent runtimes.</li>
+<li>Upgrade dev machine Mac</li>
+<li>Full automation: DNS, domain registration, Agent Notification</li>
+<li>Better Global Context + Memory management</li>
+<li>Large-scale Agent Runtime Infra research</li>
 </ul>
 
   </div>
