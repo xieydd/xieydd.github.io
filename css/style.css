@@ -915,6 +915,10 @@ html.dark .theme-toggle .icon-moon {
   margin: var(--spacing-md) 0 var(--spacing-xl) 0;
 }
 
+.section-heading {
+  margin-bottom: var(--spacing-lg);
+}
+
 .post-card {
   margin-bottom: var(--spacing-xl);
 }
