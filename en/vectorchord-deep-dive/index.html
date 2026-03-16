@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Why I Only Bet on PostgreSQL for Agent Projects: Vector Search | Xieydd&#39;s Blog</title>
+  <meta name="description" content="PostgreSQL vector search comparison: How VectorChord achieves low-cost billion-scale vector retrieval. Deep dive into IVF&#43;RaBitQ architecture, HNSW comparison, RAG vector database selection, and pgvector extension practices.">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="Why I Only Bet on PostgreSQL for Agent Projects: Vector Search | Xieydd&#39;s Blog">
+  <meta property="og:description" content="PostgreSQL vector search comparison: How VectorChord achieves low-cost billion-scale vector retrieval. Deep dive into IVF&#43;RaBitQ architecture, HNSW comparison, RAG vector database selection, and pgvector extension practices.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/vectorchord-deep-dive/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Why I Only Bet on PostgreSQL for Agent Projects: Vector Search | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="PostgreSQL vector search comparison: How VectorChord achieves low-cost billion-scale vector retrieval. Deep dive into IVF&#43;RaBitQ architecture, HNSW comparison, RAG vector database selection, and pgvector extension practices.">
+  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-03-16T10:00:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-16T17:14:35&#43;08:00">
+  
+  <meta property="article:tag" content="VectorChord">
+  
+  <meta property="article:tag" content="Postgres">
+  
+  <meta property="article:tag" content="IVF">
+  
+  <meta property="article:tag" content="RaBitQ">
+  
+  <meta property="article:tag" content="Vector Search">
+  
+  <meta property="article:tag" content="Agent">
+  
+  <meta property="article:tag" content="pgvector">
+  
+  <meta property="article:tag" content="RAG">
+  
+  <meta property="article:tag" content="Vector Database Comparison">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/en/vectorchord-deep-dive/">
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/vectorchord-deep-dive/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/vectorchord-deep-dive/">
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/en/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/en/posts/">Posts</a>
+        <a href="https://blog.xieydd.top/en/about/">About</a>
+        
+        <div class="nav-icons">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/vectorchord-deep-dive/" class="lang-link">中文</a>
+          
+        
+      
+      
+      
+    
+  
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.en">Why I Only Bet on PostgreSQL for Agent Projects: Vector Search</h1>
+    <div class="post-meta">
+      <span>Published: 16 Mar, 2026</span>
+      <span>• 11 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-does-vector-storage-need-in-the-agent-era">What Does Vector Storage Need in the Agent Era?</a></li>
+    <li><a href="#problems-with-dedicated-vector-databases">Problems with Dedicated Vector Databases</a></li>
+    <li><a href="#vectorchord-postgresql-native-answer">VectorChord: PostgreSQL Native Answer</a></li>
+    <li><a href="#core-technology-why-so-fast-and-efficient">Core Technology: Why So Fast and Efficient?</a>
+      <ul>
+        <li><a href="#ivfvector-searchivfinverted-file-index--rabitqvector-searchrabitq-why-i-gave-up-hnsw">IVF + RaBitQ: Why I Gave Up HNSW</a></li>
+        <li><a href="#storage-layout-sequential-io--cache-friendly-two-layer-design">Storage Layout: Sequential IO + Cache-Friendly Two-Layer Design</a></li>
+        <li><a href="#rabitqvector-searchrabitq-low-bit-compression-with-theoretical-guarantees">RaBitQ: Low-Bit Compression with Theoretical Guarantees</a></li>
+        <li><a href="#streaming-build-build-10-billion-scale-index-with-128gb-memory">Streaming Build: Build 10 Billion-Scale Index with 128GB Memory</a></li>
+      </ul>
+    </li>
+    <li><a href="#why-postgresql-native-is-so-important">Why PostgreSQL Native is So Important?</a></li>
+    <li><a href="#query-performance-good-enough-is-enough">Query Performance: Good Enough is Enough</a>
+      <ul>
+        <li><a href="#pre-filtering-support-solving-the-empty-result-problem">Pre-filtering Support: Solving the Empty Result Problem</a></li>
+      </ul>
+    </li>
+    <li><a href="#my-selection-recommendations">My Selection Recommendations</a></li>
+    <li><a href="#technical-details-two-level-k-means-design">Technical Details: Two-Level K-Means Design</a></li>
+    <li><a href="#future-evolution-integrating-superkmeans--pdx">Future Evolution: Integrating SuperKMeans + PDX</a>
+      <ul>
+        <li><a href="#superkmeans-build-speed-another-30x-faster">SuperKMeans: Build Speed Another 30x Faster</a></li>
+        <li><a href="#pdx-layout-search-qps-another-200300-higher">PDX Layout: Search QPS Another 200%~300% Higher</a></li>
+      </ul>
+    </li>
+    <li><a href="#thoughts">Thoughts</a></li>
+    <li><a href="#next-step">Next Step</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>A friend recently asked me: What do you use for vector search in Agent projects? I answered without hesitation: PostgreSQL + <a href="https://github.com/tensorchord/vectorchord">VectorChord</a>.</p>
+<p>He was surprised: &ldquo;Not Milvus, Pinecone, or other dedicated vector databases?&rdquo;</p>
+<p>This made me realize many people misunderstand vector storage needs in the Agent era. Today I'll share why I only bet on PostgreSQL for Agent projects, how VectorChord achieves low-cost billion-scale vector retrieval, and its advantages over traditional HNSW approaches.</p>
+<h2 id="what-does-vector-storage-need-in-the-agent-era">What Does Vector Storage Need in the Agent Era?</h2>
+<p>Before diving into technology, let's think about Agent project characteristics:</p>
+<p><strong>1. Knowledge bases update frequently</strong></p>
+<p>Agent knowledge bases aren't static. Users constantly upload new documents, new conversation history, and vector indexes need frequent rebuilding. Traditional <a href="../vector-search/#hnsw-hierarchical-navigable-small-world">HNSW</a> index building for 100 million vectors takes hours - this can't keep up with update节奏.</p>
+<p><strong>2. Scale grows rapidly</strong></p>
+<p>Agent application vector scale often correlates with user activity and document count.</p>
+<p>Looking at real-world scenarios:</p>
+<ul>
+<li>
+<p><strong>Personal knowledge bases</strong>: Personal notes, documents, emails, and similar content typically generate vector scales in the <strong>100K ~ 1 million</strong> range. A single user's total document volume is limited, and even with incremental updates, million-level vectors can cover most personal scenarios.</p>
+</li>
+<li>
+<p><strong>Enterprise Agent applications</strong>: This is where vector scale really explodes. Customer service bots need to store all product documentation, conversation history, and FAQs; enterprise knowledge base Q&amp;A needs to cover internal wikis, ticket records, and meeting notes; employee assistants need access to emails, documents, and code repositories. As business grows, vector scale can easily reach <strong>tens of millions or even hundreds of millions</strong>. For example, a mid-sized company (1000-5000 employees) knowledge base might have millions of documents, which translates to tens of millions of vector chunks.</p>
+</li>
+<li>
+<p><strong>Agent long-term memory requirements</strong>: With the proliferation of Agent frameworks like OpenClaw and Codex, agents as &ldquo;digital employees&rdquo; need to remember far more than traditional RAG:</p>
+<ul>
+<li><strong>Complete conversation history</strong>: Every conversation needs to be vectorized for context retrieval and consistency maintenance</li>
+<li><strong>Task memory</strong>: Cron jobs, todos, long-term goals, and their execution states</li>
+<li><strong>User preference memory</strong>: Communication styles, decision patterns, and focus areas need to be remembered and reused</li>
+<li><strong>Knowledge updates</strong>: New information learned from each interaction needs to be incorporated into the knowledge base</li>
+</ul>
+<p>This type of memory content accumulates continuously over time. An agent actively used for six months can generate millions of vectors from conversation records alone.</p>
+</li>
+</ul>
+<p>This brings scalability challenges to vector storage solutions.</p>
+<p><strong>3. Cost-sensitive</strong></p>
+<p>Most Agent projects are still early stage without massive profitability. Maintaining a separate dedicated database for vector search is a burden on both cost and operations.</p>
+<p><strong>4. Data consistency</strong></p>
+<p>Agent vector data is often tightly coupled with business data (users, documents, conversation records). Separate storage brings consistency issues and data synchronization complexity.</p>
+<p>Based on these characteristics, my selection criteria are clear:</p>
+<ul>
+<li><strong>Fast build</strong>: Can handle frequent updates</li>
+<li><strong>Low cost</strong>: Small teams can afford it</li>
+<li><strong>Already in tech stack</strong>: No additional components</li>
+<li><strong>Good enough</strong>: Don't chase ultimate performance</li>
+</ul>
+<h2 id="problems-with-dedicated-vector-databases">Problems with Dedicated Vector Databases</h2>
+<p>Let me first explain why I don't choose dedicated vector databases.</p>
+<p>When evaluating vector database options, many immediately consider dedicated solutions like Milvus, Pinecone, or Weaviate. However, in Agent scenarios, these solutions expose significant issues:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Specific Manifestation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>High cost</td>
+<td>100M 768-dim vectors need &gt;$1000/month, memory &gt;100GB</td>
+</tr>
+<tr>
+<td>Slow build</td>
+<td><a href="../vector-search/#hnsw-hierarchical-navigable-small-world">HNSW</a> index building 100M vectors takes &gt;10 hours</td>
+</tr>
+<tr>
+<td>Complex ops</td>
+<td>Need separate deployment, monitoring, backup</td>
+</tr>
+<tr>
+<td>Data scattered</td>
+<td>Vector data separated from business data, consistency issues</td>
+</tr>
+</tbody>
+</table>
+<p>For most Agent projects, these problems are unacceptable. This is also why I prefer PostgreSQL-native solutions in RAG vector retrieval comparisons.</p>
+<h2 id="vectorchord-postgresql-native-answer">VectorChord: PostgreSQL Native Answer</h2>
+<p>VectorChord is a PostgreSQL native vector search extension from our team (<a href="https://github.com/tensorchord">TensorChord</a>), the successor to pgvecto.rs.</p>
+<p>First, a comparison:</p>
+<table>
+<thead>
+<tr>
+<th>Solution</th>
+<th>100M 768-dim Storage</th>
+<th>Build Time</th>
+<th>Memory</th>
+<th>Monthly Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dedicated vector DB (HNSW)</td>
+<td>~1000GB</td>
+<td>&gt;10 hours</td>
+<td>&gt;100GB</td>
+<td>~$1000+</td>
+</tr>
+<tr>
+<td>VectorChord (<a href="../vector-search/#ivfinverted-file-index">IVF</a>+<a href="../vector-search/#rabitq">RaBitQ8</a>)</td>
+<td>~100GB</td>
+<td>~20 minutes</td>
+<td>&lt;1GB</td>
+<td>~$247</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cost is only 1/5, build speed is 30x faster</strong>. This is what Agent projects need.</p>
+<h2 id="core-technology-why-so-fast-and-efficient">Core Technology: Why So Fast and Efficient?</h2>
+<h3 id="ivfvector-searchivfinverted-file-index--rabitqvector-searchrabitq-why-i-gave-up-hnsw"><a href="../vector-search/#ivfinverted-file-index">IVF</a> + <a href="../vector-search/#rabitq">RaBitQ</a>: Why I Gave Up HNSW</h3>
+<p><a href="../vector-search/#hnsw-hierarchical-navigable-small-world">HNSW</a>&lsquo;s multi-layer graph structure does have fast query speeds, but several fatal problems:</p>
+<ol>
+<li><strong>Huge memory footprint</strong>: Each node stores multi-layer neighbor information, memory usage is several times the vectors themselves</li>
+<li><strong>Slow construction</strong>: Need to insert nodes one by one and maintain multi-layer graph structure</li>
+<li><strong>Not disk-friendly</strong>: Frequent random access patterns perform poorly on disk</li>
+</ol>
+<p>VectorChord uses IVF (Inverted File) + RaBitQ (Randomized Bit Quantization) combination:</p>
+<ul>
+<li><strong>High storage compression</strong>: 1-bit quantization 32x compression, 8-bit 4x compression</li>
+<li><strong>Fast construction</strong>: Streaming build, doesn't need all data in memory</li>
+<li><strong>Disk-friendly</strong>: Clustered sequential storage, sequential IO optimization</li>
+</ul>
+<h3 id="storage-layout-sequential-io--cache-friendly-two-layer-design">Storage Layout: Sequential IO + Cache-Friendly Two-Layer Design</h3>
+<p>This is one of VectorChord's most core designs, directly borrowing design ideas from <a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS">column-oriented databases</a>.</p>
+<p><strong>Global: Clustered Sequential Storage</strong></p>
+<p>The entire index's quantized vectors are stored sequentially in PostgreSQL data pages by cluster, structured as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">┌───────────────────────────────────────────────────────────────────────┐
+│   Cluster 0 Continuous Storage Area                                          │
+│   ┌─────────────────────────────────────────────────────────────────────┐   │
+│   │ All quantized data for vectors in cluster 0 [stored contiguously]    │   │
+│   └─────────────────────────────────────────────────────────────────────┘   │
+├───────────────────────────────────────────────────────────────────────┤
+│   Cluster 1 Continuous Storage Area                                          │
+│   ┌─────────────────────────────────────────────────────────────────────┐   │
+│   │ All quantized data for vectors in cluster 1 [stored contiguously]    │   │
+│   └─────────────────────────────────────────────────────────────────────┘   │
+└───────────────────────────────────────────────────────────────────────┘
+</code></pre></td></tr></table>
+</div>
+</div><p>During queries, only continuous storage areas corresponding to candidate clusters need to be read - this is <strong>sequential IO</strong> rather than random IO. This design borrows from the sequential write approach of <a href="https://en.wikipedia.org/wiki/Log-structured_merge-tree">LSM-Trees</a>, increasing disk throughput by 5-10x.</p>
+<p><strong>Intra-Cluster: Columnar-like Layout</strong></p>
+<p>Traditional row storage (each vector stores all dimensions contiguously):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Memory order → | v0d0 v0d1 v0d2 v0d3 | v1d0 v1d1 ... v1d3 | ...
+</code></pre></td></tr></table>
+</div>
+</div><p>VectorChord intra-cluster columnar layout:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Memory order → | d0v0 d0v1 d0v2 d0v3 | d1v0 d1v1 ... | d3v0 ... d3v3
+</code></pre></td></tr></table>
+</div>
+</div><p>Quantized data for the same dimension across all vectors is stored contiguously. When computing distances, data for multiple vectors of the same dimension can be loaded continuously into <a href="https://en.wikipedia.org/wiki/SIMD">SIMD</a> registers.</p>
+<p>CPU cache hit rate increases from ~30% to ~95%.</p>
+<p><strong>Memory/Disk Tiering</strong></p>
+<p>Extremely compressed memory footprint: only thousands of cluster centroids are stored in full precision in memory. A few thousand 768-dimensional centroids require only ~12MB of memory.</p>
+<p>All quantized vectors are stored on disk, and only candidate cluster data is loaded during queries. For a 100 million vector index, total memory usage is under 1GB.</p>
+<h3 id="rabitqvector-searchrabitq-low-bit-compression-with-theoretical-guarantees"><a href="../vector-search/#rabitq">RaBitQ</a>: Low-Bit Compression with Theoretical Guarantees</h3>
+<p><a href="../vector-search/#rabitq">RaBitQ</a> comes from the paper <a href="https://arxiv.org/abs/2405.12497">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>. The core innovation is using random rotation to make dimensions independent, with strict theoretical bounds on quantization error. At the same compression rate, it achieves 5%-10% higher recall than traditional low-bit <a href="../vector-search/#pqproduct-quantization">quantization</a>.</p>
+<p>Let's walk through a complete 2-dimensional vector example:</p>
+<p><strong>Step 1: Training Set Centering</strong></p>
+<p>For all vectors in the training set, subtract the mean of each dimension. This is a common technique in <a href="https://en.wikipedia.org/wiki/Standard_score">Standardization</a>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Original vector x = [1.2, -0.5]
+Training set mean μ = [0.3, 0.1]
+
+After centering:
+x_centered = x - μ = [0.9, -0.6]
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Step 2: Random Orthogonal Rotation</strong></p>
+<p>Generate a random orthogonal matrix R (satisfying <a href="https://en.wikipedia.org/wiki/Orthogonal_matrix">R^T * R = I</a>), and rotate the centered vector. After rotation, the distribution of each dimension is closer to independent and identically distributed, facilitating subsequent quantization and error control.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">2D random orthogonal matrix R example:
+R = [[ 0.6,  0.8],
+     [-0.8,  0.6]]
+
+Rotated vector:
+x_rotated = R * x_centered = [0.06, -1.08]
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Step 3: Quantize to Low Bits</strong></p>
+<ul>
+<li><strong>1-bit quantization</strong>: Store only sign, ≥0 stores +1, &lt;0 stores -1</li>
+<li><strong>4-bit quantization</strong>: Divide into 16 intervals, store 4-bit interval index per dimension</li>
+<li><strong>8-bit quantization</strong>: Divide into 256 intervals, store 8-bit interval index per dimension</li>
+</ul>
+<p>Let's demonstrate 1-bit quantization:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">x_rotated = [0.06, -1.08]
+0.06 ≥ 0 → +1
+-1.08 &lt; 0 → -1
+
+Final q(x) = [+1, -1]
+Binary storage: `10` → Only 2 bits needed!
+Original float32 needs 8B → 32x compression ratio
+</code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th>Quantization</th>
+<th>Compression</th>
+<th>Recall Loss</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1bit RaBitQ</td>
+<td>32x</td>
+<td>~5%~8%</td>
+<td>Ultra-large scale, cost-sensitive</td>
+</tr>
+<tr>
+<td>RaBitQ4</td>
+<td>8x</td>
+<td>~2%~3%</td>
+<td>Large scale, balance cost/accuracy</td>
+</tr>
+<tr>
+<td>RaBitQ8</td>
+<td>4x</td>
+<td>&lt;1%</td>
+<td>Most production scenarios</td>
+</tr>
+</tbody>
+</table>
+<h3 id="streaming-build-build-10-billion-scale-index-with-128gb-memory">Streaming Build: Build 10 Billion-Scale Index with 128GB Memory</h3>
+<p>VectorChord's biggest highlight: streaming disk build.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">1. Sample Clustering → 2. Stream Assign Vectors → 3. Persist Index
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Sample 20%-30% vectors for two-level K-Means clustering</li>
+<li>Sequentially scan all data, read-write streaming, memory only holds current batch</li>
+<li>100 million 768-dimensional vector index construction takes only 20 minutes</li>
+</ul>
+<h2 id="why-postgresql-native-is-so-important">Why PostgreSQL Native is So Important?</h2>
+<p>Fully compatible with pgvector data types and query syntax, existing businesses can migrate with zero cost.</p>
+<p>More importantly, <strong>vector data and business data are in the same database</strong>:</p>
+<ul>
+<li>No data synchronization needed</li>
+<li>Transaction consistency guaranteed</li>
+<li>No increase in ops cost</li>
+<li>Already in tech stack, no need to learn new things</li>
+</ul>
+<p>For small teams, this means fast time-to-market, not spending time on infrastructure.</p>
+<p>This is also PostgreSQL's advantage as a Pinecone alternative—no need to introduce new tech stacks, directly extending vector retrieval capabilities on your existing database.</p>
+<h2 id="query-performance-good-enough-is-enough">Query Performance: Good Enough is Enough</h2>
+<p>Some might ask: How fast can PostgreSQL native be?</p>
+<p>VectorChord's query pipeline:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">1. Coarse Selection (in-memory): Compute distances between query vector and all centroids, select top-n clusters
+2. Load Candidates: Sequentially read quantized data for candidate clusters from disk
+3. Coarse Ranking: [SIMD](https://en.wikipedia.org/wiki/SIMD) batch compute distances for all candidate vectors
+4. Rerank: Select top-k candidates, recompute with higher precision
+5. Return Results
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="pre-filtering-support-solving-the-empty-result-problem">Pre-filtering Support: Solving the Empty Result Problem</h3>
+<p>VectorChord supports the commonly used &ldquo;filter conditions first, then vector search&rdquo; scenario, with two filtering modes:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Flow</th>
+<th>Advantage</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pre-filter</td>
+<td>Execute SQL condition filter first, then vector search on filtered results</td>
+<td>Only compute vectors satisfying conditions, significantly reduce distance calculations</td>
+<td>Strict filtering, filters out 90%+ of data</td>
+</tr>
+<tr>
+<td>Post-filter</td>
+<td>Do vector search first to get far more candidates than needed, then SQL filter</td>
+<td>Guarantee sufficient results, won't easily return empty</td>
+<td>Loose filtering, need to guarantee result count</td>
+</tr>
+</tbody>
+</table>
+<p>Through batch expansion + Fallback mechanism, VectorChord solves the &ldquo;no results after filtering&rdquo; anomaly: instead of taking only a fixed n candidate clusters once, it takes them in batches sorted by distance. If results after filtering the current batch are insufficient, it automatically takes the next batch of candidates.</p>
+<p>For most Agent applications, this performance is completely sufficient. And the cost is only 1/5 of dedicated solutions.</p>
+<h2 id="my-selection-recommendations">My Selection Recommendations</h2>
+<p>Based on practical experience, here are my vector search selection recommendations for Agent projects:</p>
+<p><strong>Scale &lt; 10 million</strong></p>
+<ul>
+<li>Use pgvector + HNSW directly</li>
+<li>Single-machine PostgreSQL is completely sufficient</li>
+</ul>
+<p><strong>Scale 10M ~ 100M</strong></p>
+<ul>
+<li>VectorChord + RaBitQ8</li>
+<li>Single machine or master-slave architecture</li>
+</ul>
+<p><strong>Scale &gt; 100M</strong></p>
+<ul>
+<li>VectorChord + RaBitQ4/RaBitQ1</li>
+<li>Consider sharding or read-write splitting</li>
+</ul>
+<h2 id="technical-details-two-level-k-means-design">Technical Details: Two-Level K-Means Design</h2>
+<p>VectorChord currently uses two-level <a href="https://en.wikipedia.org/wiki/K-means_clustering">K-Means</a> clustering to build IVF indexes:</p>
+<ol>
+<li>First level: cluster into <code>√k</code> mid-level clusters</li>
+<li>Within each mid-level cluster, cluster again to get final k clusters</li>
+</ol>
+<p>Overall computation reduces from <code>O(n * k * d)</code> to <code>O(n * d * √k)</code>. For k=4096, computation is reduced by 64x.</p>
+<p>This hierarchical structure itself comes from <a href="https://github.com/lkuffo/SuperKMeans">Hierarchical SuperKMeans</a>, which VectorChord has already implemented. Iterative intra-pruning is SuperKMeans&rsquo; biggest innovation and is the future evolution direction.</p>
+<h2 id="future-evolution-integrating-superkmeans--pdx">Future Evolution: Integrating SuperKMeans + PDX</h2>
+<p>VectorChord is still rapidly evolving, with several exciting directions:</p>
+<h3 id="superkmeans-build-speed-another-30x-faster">SuperKMeans: Build Speed Another 30x Faster</h3>
+<p><a href="https://github.com/lkuffo/SuperKMeans">SuperKMeans</a>&lsquo;s core innovation is progressive pruning within each K-Means iteration:</p>
+<ol>
+<li>Compute only first d&rsquo; (12%-25%) dimensions, use <a href="https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms">BLAS GEMM</a> batch computation</li>
+<li>Prune 97%+ of unlikely candidates based on partial dimension distances</li>
+<li>Compute full dimension distances only for remaining 3% of candidates</li>
+</ol>
+<p><strong>Performance Estimate</strong>: After integrating SuperKMeans, 100 million 768-dimensional vector build time can be reduced from 20 minutes to <strong>2-3 minutes</strong>.</p>
+<h3 id="pdx-layout-search-qps-another-200300-higher">PDX Layout: Search QPS Another 200%~300% Higher</h3>
+<p><a href="https://arxiv.org/abs/2105.08177">PDX</a> is a columnar layout optimization from the CWI team. VectorChord's current intra-cluster columnar layout already has similar ideas:</p>
+<ul>
+<li><strong>Vertical blocks</strong>: First 25% dimensions fully columnar, dedicated to fast pruning</li>
+<li><strong>Horizontal blocks</strong>: Remaining dimensions grouped by 64 dimensions in columnar storage</li>
+</ul>
+<p>Cache hit rate and pruning efficiency further improve, search QPS expected to increase by another <strong>200%-300%</strong>.</p>
+<h2 id="thoughts">Thoughts</h2>
+<p><strong>Good Enough vs Ultimate Performance</strong></p>
+<p>In early Agent projects, the most important thing is rapid validation and iteration, not chasing ultimate query performance.</p>
+<p>VectorChord's design philosophy is &ldquo;good enough&rdquo;: under acceptable precision and latency, minimize storage and cost.</p>
+<p>This pragmatic attitude is how small teams survive.</p>
+<p><strong>PostgreSQL is the Best Data Foundation for Agent Era</strong></p>
+<p>Vector search is just one of PostgreSQL's many capabilities.</p>
+<p>Later I'll also talk about:</p>
+<ul>
+<li>Full-text search: Why PostgreSQL's FTS is more suitable for Agent projects than ES</li>
+<li>ACID transactions: Why Agent state management can't live without transactions</li>
+<li>JSONB: Why I prefer JSONB over separate MongoDB</li>
+<li>OLAP scenarios: PostgreSQL exploration in analytical scenarios</li>
+<li>Supabase: Why I recommend developers start with Supabase</li>
+<li>And more</li>
+</ul>
+<h2 id="next-step">Next Step</h2>
+<p>VectorChord is still rapidly evolving:</p>
+<ul>
+<li>Integrate SuperKMeans iterative pruning, build speed another 30x faster</li>
+<li>Integrate PDX layout, search QPS improve another 200%-300%</li>
+</ul>
+<p>But the core philosophy won't change: <strong>PostgreSQL native + low cost + good enough</strong>.</p>
+<hr>
+<p><em>This is the first article in the &ldquo;Why I Only Bet on PostgreSQL for Agent Projects&rdquo; series. Next up: Full-text Search.</em></p>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <a href="https://blog.xieydd.top/en/tags/vectorchord" class="tag">#VectorChord</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/postgres" class="tag">#Postgres</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/ivf" class="tag">#IVF</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/rabitq" class="tag">#RaBitQ</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/vector-search" class="tag">#Vector Search</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/agent" class="tag">#Agent</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/pgvector" class="tag">#pgvector</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/rag" class="tag">#RAG</a>
+      
+      <a href="https://blog.xieydd.top/en/tags/vector-database-comparison" class="tag">#Vector Database Comparison</a>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">Share this post on:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fen%2fvectorchord-deep-dive%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fen%2fvectorchord-deep-dive%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=Why%20I%20Only%20Bet%20on%20PostgreSQL%20for%20Agent%20Projects%3a%20Vector%20Search&body=https%3a%2f%2fblog.xieydd.top%2fen%2fvectorchord-deep-dive%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">Back to Top</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/code-agent-2026-02-02/" class="prev-post">
+        <span class="nav-label">Previous Post</span>
+        <span class="nav-title">Coding at Agent-Speed</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/en/vector-search/" class="next-post">
+        <span class="nav-label">Next Post</span>
+        <span class="nav-title">The internals of Vector Databases</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+    </main>
+  </div>
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

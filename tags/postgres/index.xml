@@ -8,7 +8,7 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Fri, 26 Jul 2024 12:40:32 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2026 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/tags/postgres/index.xml" rel="self" type="application/rss+xml" />
     
@@ -20,6 +20,15 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/postgres-ha/</guid>
       <description>最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点</description>
+    </item>
+    
+    <item>
+      <title>为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇</title>
+      <link>https://blog.xieydd.top/vectorchord-deep-dive/</link>
+      <pubDate>Mon, 16 Mar 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/vectorchord-deep-dive/</guid>
+      <description>最近有个朋友问我：做 Agent 项目，向量搜索用什么方案？我毫不犹豫地说：PostgreSQL + VectorChord。 他有点意外：&amp;ldquo;不用</description>
     </item>
     
     <item>
