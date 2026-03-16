@@ -8,7 +8,7 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Mon, 16 Mar 2026 10:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2026 14:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/categories/tech/index.xml" rel="self" type="application/rss+xml" />
     
@@ -74,6 +74,15 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</guid>
       <description>最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始</description>
+    </item>
+    
+    <item>
+      <title>OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案</title>
+      <link>https://blog.xieydd.top/openclaw-memory-choice-guide/</link>
+      <pubDate>Mon, 16 Mar 2026 14:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/openclaw-memory-choice-guide/</guid>
+      <description>你是否有过这种经历？和 OpenClaw 聊了几个小时，上下文超限后旧消息被截断，下次重启会话 AI 直接忘了之前做过什么决定；散落各处的技术笔记想找找不到；多设备</description>
     </item>
     
     <item>

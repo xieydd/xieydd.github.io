@@ -8,7 +8,7 @@
     <language>en</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Mon, 16 Mar 2026 10:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2026 14:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/en/posts/index.xml" rel="self" type="application/rss+xml" />
     
@@ -61,6 +61,16 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/vector-search/</guid>
       <description>It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+    </item>
+    
+    <item>
+      <title>Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory</title>
+      <link>https://blog.xieydd.top/en/openclaw-memory-choice-guide/</link>
+      <pubDate>Mon, 16 Mar 2026 14:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/openclaw-memory-choice-guide/</guid>
+      <description>Ever had this experience? Chat with OpenClaw for hours, context exceeds limits and old messages get truncated. Next time you restart the session, the AI completely forgets previous decisions; scattered technical notes are impossible to find; memory disappears after switching devices.
+ OpenClaw, as a flexible Agent framework, has developed various memory solutions in its ecosystem, each solving different problems. This article helps you understand the landscape and find what suits you in just one minute.</description>
     </item>
     
     <item>

@@ -41,7 +41,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2022-12-29T16:27:06&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-16T17:14:35&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-16T20:45:02&#43;08:00">
   
   <meta property="article:tag" content="kubernetes">
   
@@ -147,28 +147,7 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#为啥需要感知拓扑">为啥需要感知拓扑</a></li>
-    <li><a href="#拓扑类型">拓扑类型</a>
-      <ul>
-        <li><a href="#gpu-topology-manager">GPU Topology Manager</a>
-          <ul>
-            <li><a href="#why">Why</a></li>
-            <li><a href="#how">How</a></li>
-          </ul>
-        </li>
-        <li><a href="#numa-topology-awareness">NUMA Topology Awareness</a>
-          <ul>
-            <li><a href="#why-1">Why</a></li>
-            <li><a href="#how-1">How</a>
-              <ul>
-                <li><a href="#kubernetes-topology-manager">Kubernetes Topology Manager</a></li>
-                <li><a href="#crane-numa-拓扑感知">Crane NUMA 拓扑感知</a></li>
-                <li><a href="#koordinator-fine-grained-cpu-orchestration">Koordinator Fine-grained cpu orchestration</a></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </li>
+    <li><a href="#拓扑类型">拓扑类型</a></li>
     <li><a href="#引用">引用</a></li>
   </ul>
 </nav>
@@ -491,9 +470,9 @@ $ cat /sys/fs/cgroup/cpuset/kubepods.slice/kubepods-burstable.slice/kubepods-bur
 
     <div class="post-nav">
       
-      <a href="https://blog.xieydd.top/vectorchord-deep-dive/" class="prev-post">
+      <a href="https://blog.xieydd.top/openclaw-memory-choice-guide/" class="prev-post">
         <span class="nav-label">上一篇</span>
-        <span class="nav-title">为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇</span>
+        <span class="nav-title">OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案</span>
       </a>
       
       

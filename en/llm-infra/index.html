@@ -45,7 +45,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2025-01-09T10:20:28&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-16T17:14:35&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-16T20:45:02&#43;08:00">
   
   <meta property="article:tag" content="llm">
   
@@ -154,138 +154,11 @@
     <h2>Table of Contents</h2>
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#gpt-3">GPT 3</a>
-      <ul>
-        <li><a href="#encoding">Encoding</a></li>
-        <li><a href="#embedding">Embedding</a></li>
-        <li><a href="#positional-encoding">Positional Encoding</a></li>
-        <li><a href="#attention">Attention</a></li>
-        <li><a href="#sparse-attention">Sparse Attention</a></li>
-        <li><a href="#multi-head-attention">Multi-Head Attention</a></li>
-        <li><a href="#feed-forward">Feed Forward</a></li>
-        <li><a href="#add--norm">Add & Norm</a></li>
-        <li><a href="#decoding">Decoding</a></li>
-      </ul>
-    </li>
-    <li><a href="#infra">Infra</a>
-      <ul>
-        <li><a href="#gpu">GPU</a>
-          <ul>
-            <li><a href="#cuda">CUDA</a></li>
-          </ul>
-        </li>
-        <li><a href="#network">Network</a>
-          <ul>
-            <li><a href="#nvlink">NVLink</a></li>
-            <li><a href="#nvswitch">NVSwitch</a></li>
-            <li><a href="#infiniband">InfiniBand</a></li>
-            <li><a href="#communication">Communication</a></li>
-          </ul>
-        </li>
-        <li><a href="#storage">Storage</a></li>
-        <li><a href="#operation-and-maintenance">Operation and Maintenance</a>
-          <ul>
-            <li><a href="#failure">Failure</a>
-              <ul>
-                <li><a href="#monitoring--fault-tolerance">Monitoring & Fault Tolerance</a></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-    <li><a href="#training">Training</a>
-      <ul>
-        <li><a href="#hardware">Hardware</a>
-          <ul>
-            <li><a href="#gpu-1">GPU</a></li>
-            <li><a href="#network-1">Network</a></li>
-            <li><a href="#storage-system">Storage System</a></li>
-          </ul>
-        </li>
-        <li><a href="#pre-training">Pre-training</a>
-          <ul>
-            <li><a href="#distributed-training">Distributed Training</a>
-              <ul>
-                <li><a href="#data-parallelism">Data Parallelism</a></li>
-                <li><a href="#pipeline-parallelism-model-parallelism">Pipeline Parallelism (Model Parallelism)</a></li>
-                <li><a href="#tensor-parallelism">Tensor Parallelism</a></li>
-                <li><a href="#expert-parallelism">Expert Parallelism</a></li>
-                <li><a href="#zero-dp">Zero-DP</a></li>
-                <li><a href="#sequence-parallel">Sequence Parallel</a></li>
-                <li><a href="#context-parallelism">Context Parallelism</a></li>
-              </ul>
-            </li>
-            <li><a href="#prepare-data">Prepare Data</a></li>
-            <li><a href="#model">Model</a></li>
-            <li><a href="#training-1">Training</a></li>
-          </ul>
-        </li>
-        <li><a href="#supervised-fine-tuning">Supervised Fine-Tuning</a></li>
-        <li><a href="#reward-modeling">Reward Modeling</a></li>
-        <li><a href="#reinforcement-learning">Reinforcement Learning</a></li>
-      </ul>
-    </li>
-    <li><a href="#serving">Serving</a>
-      <ul>
-        <li><a href="#model-optimization">Model Optimization</a>
-          <ul>
-            <li><a href="#mha-vs-mqa-vs-gqa-vs-mla">MHA vs MQA vs GQA vs MLA</a>
-              <ul>
-                <li><a href="#mha">MHA</a></li>
-                <li><a href="#mqa">MQA</a></li>
-                <li><a href="#gqa">GQA</a></li>
-                <li><a href="#mla">MLA</a></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li><a href="#serving-pattern">Serving Pattern</a>
-          <ul>
-            <li><a href="#prefill-decode-disaggregation">Prefill-Decode Disaggregation</a></li>
-            <li><a href="#context-cache-migration">Context Cache Migration</a></li>
-            <li><a href="#traffic-adaptive-request-routing">Traffic-Adaptive Request Routing</a></li>
-          </ul>
-        </li>
-        <li><a href="#serving-optimization">Serving Optimization</a>
-          <ul>
-            <li><a href="#kv-cache">KV Cache</a></li>
-            <li><a href="#paged-attention">Paged Attention</a></li>
-            <li><a href="#speculate-decoding">Speculate Decoding</a></li>
-            <li><a href="#constrainted-decoding">Constrainted Decoding</a></li>
-            <li><a href="#chunked-prefill">Chunked prefill</a></li>
-            <li><a href="#prompt-cache">Prompt Cache</a></li>
-            <li><a href="#kv-compression">KV Compression</a></li>
-            <li><a href="#quantization">Quantization</a></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-    <li><a href="#deepseek-v3">DeepSeek V3</a>
-      <ul>
-        <li><a href="#architecture">Architecture</a>
-          <ul>
-            <li><a href="#deepseekmoe">DeepSeekMoE</a></li>
-            <li><a href="#multi-latent-attention">Multi-Latent Attention</a></li>
-            <li><a href="#auxiliary-loss-free-strategy-for-load-balancing">Auxiliary-loss-free strategy for load balancing</a></li>
-            <li><a href="#node-limited-routing">Node-Limited Routing</a></li>
-            <li><a href="#no-token-dropping">No Token-Dropping</a></li>
-            <li><a href="#multi-token-prediction">Multi-Token Prediction</a></li>
-          </ul>
-        </li>
-        <li><a href="#infrastructure">Infrastructure</a>
-          <ul>
-            <li><a href="#cluster-status">Cluster Status</a></li>
-            <li><a href="#training-framework">Training Framework</a></li>
-            <li><a href="#communication-1">Communication</a></li>
-            <li><a href="#memory-optimization">Memory Optimization</a></li>
-            <li><a href="#inference-and-deployment">Inference and Deployment</a></li>
-            <li><a href="#hardware-recommendations">Hardware Recommendations</a></li>
-          </ul>
-        </li>
-        <li><a href="#pre-training-1">Pre-Training</a></li>
-      </ul>
-    </li>
+    <li><a href="#gpt-3">GPT 3</a></li>
+    <li><a href="#infra">Infra</a></li>
+    <li><a href="#training">Training</a></li>
+    <li><a href="#serving">Serving</a></li>
+    <li><a href="#deepseek-v3">DeepSeek V3</a></li>
     <li><a href="#references">References</a></li>
   </ul>
 </nav>

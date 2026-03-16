@@ -41,7 +41,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-16T17:14:35&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-16T20:45:02&#43;08:00">
   
   <meta property="article:tag" content="VectorChord">
   
@@ -163,28 +163,12 @@
     <li><a href="#what-does-vector-storage-need-in-the-agent-era">What Does Vector Storage Need in the Agent Era?</a></li>
     <li><a href="#problems-with-dedicated-vector-databases">Problems with Dedicated Vector Databases</a></li>
     <li><a href="#vectorchord-postgresql-native-answer">VectorChord: PostgreSQL Native Answer</a></li>
-    <li><a href="#core-technology-why-so-fast-and-efficient">Core Technology: Why So Fast and Efficient?</a>
-      <ul>
-        <li><a href="#ivfvector-searchivfinverted-file-index--rabitqvector-searchrabitq-why-i-gave-up-hnsw">IVF + RaBitQ: Why I Gave Up HNSW</a></li>
-        <li><a href="#storage-layout-sequential-io--cache-friendly-two-layer-design">Storage Layout: Sequential IO + Cache-Friendly Two-Layer Design</a></li>
-        <li><a href="#rabitqvector-searchrabitq-low-bit-compression-with-theoretical-guarantees">RaBitQ: Low-Bit Compression with Theoretical Guarantees</a></li>
-        <li><a href="#streaming-build-build-10-billion-scale-index-with-128gb-memory">Streaming Build: Build 10 Billion-Scale Index with 128GB Memory</a></li>
-      </ul>
-    </li>
+    <li><a href="#core-technology-why-so-fast-and-efficient">Core Technology: Why So Fast and Efficient?</a></li>
     <li><a href="#why-postgresql-native-is-so-important">Why PostgreSQL Native is So Important?</a></li>
-    <li><a href="#query-performance-good-enough-is-enough">Query Performance: Good Enough is Enough</a>
-      <ul>
-        <li><a href="#pre-filtering-support-solving-the-empty-result-problem">Pre-filtering Support: Solving the Empty Result Problem</a></li>
-      </ul>
-    </li>
+    <li><a href="#query-performance-good-enough-is-enough">Query Performance: Good Enough is Enough</a></li>
     <li><a href="#my-selection-recommendations">My Selection Recommendations</a></li>
     <li><a href="#technical-details-two-level-k-means-design">Technical Details: Two-Level K-Means Design</a></li>
-    <li><a href="#future-evolution-integrating-superkmeans--pdx">Future Evolution: Integrating SuperKMeans + PDX</a>
-      <ul>
-        <li><a href="#superkmeans-build-speed-another-30x-faster">SuperKMeans: Build Speed Another 30x Faster</a></li>
-        <li><a href="#pdx-layout-search-qps-another-200300-higher">PDX Layout: Search QPS Another 200%~300% Higher</a></li>
-      </ul>
-    </li>
+    <li><a href="#future-evolution-integrating-superkmeans--pdx">Future Evolution: Integrating SuperKMeans + PDX</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
     <li><a href="#next-step">Next Step</a></li>
   </ul>
@@ -672,9 +656,9 @@ Original float32 needs 8B → 32x compression ratio
       </a>
       
       
-      <a href="https://blog.xieydd.top/en/vector-search/" class="next-post">
+      <a href="https://blog.xieydd.top/en/openclaw-memory-choice-guide/" class="next-post">
         <span class="nav-label">Next Post</span>
-        <span class="nav-title">The internals of Vector Databases</span>
+        <span class="nav-title">Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory</span>
       </a>
       
     </div>
