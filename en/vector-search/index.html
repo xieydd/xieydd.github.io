@@ -41,7 +41,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2024-07-13T14:52:44&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-17T11:25:12&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-17T18:46:36&#43;08:00">
   
   <meta property="article:tag" content="vector search">
   
@@ -56,12 +56,29 @@
   
   
   
+    
+      
+        
+      
+    
+      
+    
+  
+  
   
   
   
   <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/vector-search/">
   
   <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/vector-search/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/vector-search/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-17T18:46:36+08:00","datePublished":"2024-07-13T14:52:44+08:00","description":"A practical introduction to vector databases, from embeddings and distance metrics to ANN indexes and production search systems.","headline":"The internals of Vector Databases","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/vector-search/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/vector-search/"}
+  </script>
   
 
   <link rel="stylesheet" href="/css/style.css">
@@ -160,7 +177,7 @@
   
 
   <div class="post-content">
-    <p>It has been over a year since I joined <a href="https://tensorchord.ai">Tensorchord</a>, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference <a href="https://modelz.ai/">Modelz</a> to the vector search field <a href="https://vectorchord.ai/">VectorChord</a>. The experience of this pivot might be shared in future articles, and those interested can also directly <a href="../../about/index.zh-cn.md">contact</a> me. Recently, I have been developing <a href="https://cloud.vectorchord.ai/">VectorChord Cloud</a>, so I am summarizing the ins and outs of vector databases while learning.</p>
+    <p>It has been over a year since I joined <a href="https://tensorchord.ai">Tensorchord</a>, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference <a href="https://modelz.ai/">Modelz</a> to the vector search field <a href="https://vectorchord.ai/">VectorChord</a>. The experience of this pivot might be shared in future articles, and those interested can also directly <a href="/en/about/">contact</a> me. Recently, I have been developing <a href="https://cloud.vectorchord.ai/">VectorChord Cloud</a>, so I am summarizing the ins and outs of vector databases while learning.</p>
 <h2 id="1-what-is-a-vector">1. What is a Vector</h2>
 <p>The meaning of vectors in physics, mathematics, and computer science is different. Here, vectors mainly refer to vectors in computer science, which are an ordered set of numerical values. In computer science, vectors are usually used to represent data. For example, in machine learning, we usually convert an image into a vector or tokenize a piece of text and then convert it into a vector for training. In vector databases, we usually convert an image, a piece of text, or an audio segment into a vector through an embedding model and then store and retrieve it. Below is a simple example where we convert a piece of text into a vector using the <code>all-MiniLM-L6-v2</code> model. <code>all-MiniLM-L6-v2</code> maps sentences and paragraphs to a 384-dimensional dense vector and can be used for tasks such as clustering or semantic search.</p>
 <div class="highlight"><div class="chroma">
@@ -531,9 +548,9 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
     
     <div class="post-tags">
       
-      <a href="https://blog.xieydd.top/en/tags/vector-search" class="tag">#vector search</a>
+      <span class="tag">#vector search</span>
       
-      <a href="https://blog.xieydd.top/en/tags/postgres" class="tag">#Postgres</a>
+      <span class="tag">#Postgres</span>
       
     </div>
     
@@ -585,6 +602,27 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
     </div>
   </footer>
 </article>
+
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
 
     </main>
   </div>

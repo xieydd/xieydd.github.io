@@ -2,11 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
+  
     
   <url>
     <loc>https://blog.xieydd.top/en/llm-infra/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -16,16 +17,25 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/llm-infra/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/llm-infra/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/llm-infra/" />
     
   </url>
     
@@ -34,7 +44,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/improve-model-serving-cold-start/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -44,16 +54,25 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/improve-model-serving-cold-start/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/improve-model-serving-cold-start/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/improve-model-serving-cold-start/" />
     
   </url>
     
@@ -62,7 +81,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/postgres-ha/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -72,16 +91,25 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/postgres-ha/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/postgres-ha/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/postgres-ha/" />
     
   </url>
     
@@ -90,7 +118,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -100,16 +128,25 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/" />
     
   </url>
     
@@ -118,7 +155,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/vector-search/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -128,16 +165,25 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/vector-search/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/vector-search/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/vector-search/" />
     
   </url>
     
@@ -156,36 +202,6 @@
   
     
   
-    
-  
-    
-  
-    
-  <url>
-    <loc>https://blog.xieydd.top/en/posts/</loc>
-    
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
-    
-    
-    <changefreq>weekly</changefreq>
-    
-    
-    <priority>0.5</priority>
-    
-    
-      
-    <xhtml:link
-      rel="alternate"
-      hreflang="zh-cn"
-      href="https://blog.xieydd.top/posts/" />
-      
-    <xhtml:link
-      rel="alternate"
-      hreflang="en"
-      href="https://blog.xieydd.top/en/posts/" />
-      
-    
-  </url>
     
   
     
@@ -202,7 +218,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/openclaw-memory-choice-guide/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -212,16 +228,25 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/openclaw-memory-choice-guide/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/openclaw-memory-choice-guide/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/openclaw-memory-choice-guide/" />
     
   </url>
     
@@ -230,7 +255,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -240,22 +265,27 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/" />
     
   </url>
-    
-  
-    
-  
     
   
     
@@ -274,7 +304,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/vectorchord-deep-dive/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -284,20 +314,27 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/vectorchord-deep-dive/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/vectorchord-deep-dive/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/vectorchord-deep-dive/" />
     
   </url>
-    
-  
     
   
     
@@ -308,7 +345,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/code-agent-2026-02-02/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -318,36 +355,27 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/code-agent-2026-02-02/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/code-agent-2026-02-02/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/code-agent-2026-02-02/" />
     
   </url>
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
     
   
     
@@ -382,7 +410,7 @@
   <url>
     <loc>https://blog.xieydd.top/en/about/</loc>
     
-    <lastmod>2026-03-17T11:25:12&#43;08:00</lastmod>
+    <lastmod>2026-03-17T18:46:36&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -392,18 +420,29 @@
     
     
       
+      
+        
+          
+        
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
       href="https://blog.xieydd.top/about/" />
       
+        
     <xhtml:link
       rel="alternate"
       hreflang="en"
       href="https://blog.xieydd.top/en/about/" />
       
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/about/" />
     
   </url>
+    
+  
     
   
 </urlset>

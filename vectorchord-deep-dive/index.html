@@ -41,7 +41,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-17T11:25:12&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-17T18:46:36&#43;08:00">
   
   <meta property="article:tag" content="VectorChord">
   
@@ -70,12 +70,29 @@
   
   
   
+    
+      
+        
+      
+    
+      
+    
+  
+  
   
   
   
   <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/vectorchord-deep-dive/">
   
   <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/vectorchord-deep-dive/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/vectorchord-deep-dive/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-17T18:46:36+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"PostgreSQL 向量搜索方案对比：VectorChord 如何实现低成本亿级向量检索。深度解析 IVF+RaBitQ 架构、HNSW 对比、RAG 向量数据库选型，以及 pgvector 扩展实践。","headline":"为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/vectorchord-deep-dive/"}
+  </script>
   
 
   <link rel="stylesheet" href="/css/style.css">
@@ -595,23 +612,23 @@ x_rotated = R * x_centered = [0.06, -1.08]
     
     <div class="post-tags">
       
-      <a href="https://blog.xieydd.top/tags/vectorchord" class="tag">#VectorChord</a>
+      <span class="tag">#VectorChord</span>
       
-      <a href="https://blog.xieydd.top/tags/postgres" class="tag">#Postgres</a>
+      <span class="tag">#Postgres</span>
       
-      <a href="https://blog.xieydd.top/tags/ivf" class="tag">#IVF</a>
+      <span class="tag">#IVF</span>
       
-      <a href="https://blog.xieydd.top/tags/rabitq" class="tag">#RaBitQ</a>
+      <span class="tag">#RaBitQ</span>
       
-      <a href="https://blog.xieydd.top/tags/%E5%90%91%E9%87%8F%E6%90%9C%E7%B4%A2" class="tag">#向量搜索</a>
+      <span class="tag">#向量搜索</span>
       
-      <a href="https://blog.xieydd.top/tags/agent" class="tag">#Agent</a>
+      <span class="tag">#Agent</span>
       
-      <a href="https://blog.xieydd.top/tags/pgvector" class="tag">#pgvector</a>
+      <span class="tag">#pgvector</span>
       
-      <a href="https://blog.xieydd.top/tags/rag" class="tag">#RAG</a>
+      <span class="tag">#RAG</span>
       
-      <a href="https://blog.xieydd.top/tags/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AF%B9%E6%AF%94" class="tag">#向量数据库对比</a>
+      <span class="tag">#向量数据库对比</span>
       
     </div>
     
@@ -663,6 +680,27 @@ x_rotated = R * x_centered = [0.06, -1.08]
     </div>
   </footer>
 </article>
+
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-cn"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
 
     </main>
   </div>
