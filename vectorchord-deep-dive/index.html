@@ -41,7 +41,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-17T19:54:06&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-18T11:44:26&#43;08:00">
   
   <meta property="article:tag" content="VectorChord">
   
@@ -91,7 +91,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-17T19:54:06+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"PostgreSQL 向量搜索方案对比：VectorChord 如何实现低成本亿级向量检索。深度解析 IVF+RaBitQ 架构、HNSW 对比、RAG 向量数据库选型，以及 pgvector 扩展实践。","headline":"为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/vectorchord-deep-dive/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-18T11:44:26+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"PostgreSQL 向量搜索方案对比：VectorChord 如何实现低成本亿级向量检索。深度解析 IVF+RaBitQ 架构、HNSW 对比、RAG 向量数据库选型，以及 pgvector 扩展实践。","headline":"为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/vectorchord-deep-dive/"}
   </script>
   
 
@@ -168,7 +168,7 @@
     <h1 class="post-title" style="view-transition-name: index.zh-cn">为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇</h1>
     <div class="post-meta">
       <span>发布于 16 Mar, 2026</span>
-      <span>• 10 min read</span>
+      <span>• 11 min read</span>
     </div>
   </header>
 
@@ -571,6 +571,19 @@ x_rotated = R * x_centered = [0.06, -1.08]
 <li>只对剩下 3% 的候选计算完整维度距离</li>
 </ol>
 <p><strong>性能预估</strong>：集成 SuperKMeans 后，1 亿 768 维向量构建时间可以从 20 分钟降到 <strong>2~3 分钟</strong>。</p>
+<h3 id="flash-kmeans三角不等式剪枝进一步加速聚类">Flash-KMeans：三角不等式剪枝进一步加速聚类</h3>
+<p><a href="https://github.com/svg-project/flash-kmeans">flash-kmeans</a> 提供了另一种正交的加速思路：<strong>三角不等式剪枝</strong>。它利用三角不等式 <code>distance(x, c1) + distance(x, c2) &gt;= distance(c1, c2)</code> 来提前剪掉不可能的分配：</p>
+<ul>
+<li>如果样本 x 到当前最近质心的距离，已经小于等于 &ldquo;x 到候选质心距离下界&rdquo;，就可以跳过这个候选的完整距离计算</li>
+<li>配合 k-means++ 初始化，收敛更快，迭代更少</li>
+<li>支持 GPU Triton 内核加速，也提供 PyTorch CPU/GPU 回退实现，通用平台都能用</li>
+</ul>
+<p>Flash-KMeans 和 SuperKMeans <strong>不冲突可以叠加</strong>：</p>
+<ul>
+<li>SuperKMeans：在质心更新阶段剪枝</li>
+<li>Flash-KMeans：在样本分配阶段剪枝</li>
+</ul>
+<p>两者叠加可以进一步减少聚类计算量，构建速度还有下降空间。</p>
 <h3 id="pdx-布局搜索-qps-再提升-200300">PDX 布局：搜索 QPS 再提升 200%~300%</h3>
 <p><a href="https://arxiv.org/abs/2105.08177">PDX</a> 是 CWI 团队提出的列存布局优化，VectorChord 当前簇内列存已经有了类似思路：</p>
 <ul>
@@ -598,6 +611,7 @@ x_rotated = R * x_centered = [0.06, -1.08]
 <p>VectorChord 还在快速演进中：</p>
 <ul>
 <li>集成 SuperKMeans 迭代内剪枝，构建速度再快 30x</li>
+<li>集成 Flash-KMeans 三角不等式剪枝，进一步加速聚类</li>
 <li>集成 PDX 布局，搜索 QPS 再提升 200%~300%</li>
 </ul>
 <p>但核心思路不会变：<strong>PostgreSQL 原生 + 低成本 + 够用就好</strong>。</p>
