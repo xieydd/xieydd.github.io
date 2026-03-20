@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T14:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-20T12:12:51&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T19:28:28&#43;08:00">
   
   <meta property="article:tag" content="OpenClaw">
   
@@ -96,7 +96,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T12:12:51+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"OpenClaw 记忆全解析：为什么 AI 总是忘事？从 lossless-claw 无损压缩、qmd 原生混合搜索、Nowledge Mem 跨会话记忆、LanceDB 嵌入式向量搜索到 mem9.ai 云存储，一套完整的 Memory 方案让 AI 过目不忘。","headline":"OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/openclaw-memory-choice-guide/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T19:28:28+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"OpenClaw 记忆全解析：为什么 AI 总是忘事？从 lossless-claw 无损压缩、qmd 原生混合搜索、Nowledge Mem 跨会话记忆、LanceDB 嵌入式向量搜索到 mem9.ai 云存储，一套完整的 Memory 方案让 AI 过目不忘。","headline":"OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/openclaw-memory-choice-guide/"}
   </script>
   
 
@@ -173,7 +173,7 @@
     <h1 class="post-title" style="view-transition-name: index.zh-cn">OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案</h1>
     <div class="post-meta">
       <span>发布于 16 Mar, 2026</span>
-      <span>• 11 min read</span>
+      <span>• 14 min read</span>
     </div>
   </header>
 
@@ -188,6 +188,7 @@
     <li><a href="#方案三nowledge-mem--本地优先结构化跨会话记忆">方案三：Nowledge Mem —— 本地优先结构化跨会话记忆</a></li>
     <li><a href="#方案四mem9ai--云端持久化记忆基础设施">方案四：mem9.ai —— 云端持久化记忆基础设施</a></li>
     <li><a href="#方案五memory-lancedb-pro--增强型-lancedb-混合检索记忆层">方案五：memory-lancedb-pro —— 增强型 LanceDB 混合检索记忆层</a></li>
+    <li><a href="#方案六openviking--火山引擎开源上下文数据库文件系统范式记忆管理">方案六：OpenViking —— 火山引擎开源上下文数据库，文件系统范式记忆管理</a></li>
     <li><a href="#一分钟选型对照表">一分钟选型对照表</a></li>
     <li><a href="#推荐组合方案">推荐组合方案</a></li>
     <li><a href="#验证配置正确">验证配置正确</a></li>
@@ -1019,6 +1020,267 @@ npm install
 <li>✅ 需要高级特性如自动捕获、多 scope 隔离、噪声过滤</li>
 </ul>
 <hr>
+<h2 id="方案六openviking--火山引擎开源上下文数据库文件系统范式记忆管理">方案六：OpenViking —— 火山引擎开源上下文数据库，文件系统范式记忆管理</h2>
+<p><strong>项目地址</strong>：https://github.com/volcengine/OpenViking</p>
+<p><strong>OpenClaw 插件</strong>：https://github.com/volcengine/OpenViking/tree/main/examples/openclaw-memory-plugin</p>
+<p><strong>一句话定位</strong>：专为 AI Agent 设计的开源<strong>上下文数据库</strong>，创新地采用<strong>文件系统范式</strong>统一组织记忆，官方提供 OpenClaw 记忆插件，实测任务完成率提升 49%，Token 成本降低 91%。</p>
+<h3 id="核心特点-5">核心特点</h3>
+<p>OpenViking 解决了传统 RAG/记忆方案的五大痛点：</p>
+<table>
+<thead>
+<tr>
+<th>痛点</th>
+<th>OpenViking 解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>上下文碎片化</td>
+<td><strong>文件系统管理范式</strong>：记忆、资源、技能统一按 <code>viking://</code> URI 组织，像操作本地文件一样管理记忆</td>
+</tr>
+<tr>
+<td>Token 消耗过高</td>
+<td><strong>分层上下文加载</strong>：L0 摘要/L1 概览/L2 详情，只在需要时加载详情，大幅降低 Token 消耗</td>
+</tr>
+<tr>
+<td>检索效果差</td>
+<td><strong>目录递归检索</strong>：先定位目录再深度探索，比单一扁平向量搜索更精准</td>
+</tr>
+<tr>
+<td>黑盒不可调试</td>
+<td><strong>可视化检索轨迹</strong>：完整保留目录浏览和检索路径，问题根源一目了然</td>
+</tr>
+<tr>
+<td>记忆无法迭代</td>
+<td><strong>自动会话管理</strong>：会话结束自动提取长期记忆，让 Agent 越用越聪明</td>
+</tr>
+</tbody>
+</table>
+<h3 id="官方-benchmark-结果">官方 Benchmark 结果</h3>
+<p>基于 LoCoMo10 长程对话测试集：</p>
+<table>
+<thead>
+<tr>
+<th>实验组</th>
+<th>任务完成率</th>
+<th>总输入 Token 成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenClaw 原生记忆</td>
+<td>35.65%</td>
+<td>24,611,530</td>
+</tr>
+<tr>
+<td>OpenClaw + LanceDB</td>
+<td>44.55%</td>
+<td>51,574,530</td>
+</tr>
+<tr>
+<td><strong>OpenClaw + OpenViking</strong></td>
+<td><strong>52.08%</strong></td>
+<td><strong>4,264,396</strong></td>
+</tr>
+</tbody>
+</table>
+<p>结论：相比原生 OpenClaw，OpenViking <strong>任务完成率提升 46%，Token 成本降低 83%</strong>；相比 LanceDB，<strong>效果提升 17%，Token 成本降低 92%</strong>。</p>
+<h3 id="安装配置步骤-3">安装配置步骤</h3>
+<p>OpenViking 提供一键安装脚本，自动检测环境并配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> /path/to/OpenViking
+npx ./examples/openclaw-memory-plugin/setup-helper
+</code></pre></td></tr></table>
+</div>
+</div><p>脚本会自动：</p>
+<ol>
+<li>检查环境依赖（OpenClaw、Python）</li>
+<li>创建 <code>~/.openviking/ov.conf</code> 配置文件</li>
+<li>部署插件到 OpenClaw 扩展目录</li>
+<li>自动配置 OpenClaw 启用 OpenViking 记忆</li>
+</ol>
+<p>支持<strong>本地模式</strong>（插件自启动 OpenViking 服务）和<strong>远程模式</strong>（连接已部署的独立 OpenViking 服务）。</p>
+<h3 id="手动配置本地模式">手动配置（本地模式）</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 1. 安装 OpenViking</span>
+pip install openviking --upgrade --force-reinstall
+
+<span class="c1"># 2. 安装 OpenClaw 插件</span>
+mkdir -p ~/.openclaw/extensions/memory-openviking
+cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/.openclaw/extensions/memory-openviking/
+<span class="nb">cd</span> ~/.openclaw/extensions/memory-openviking <span class="o">&amp;&amp;</span> npm install
+</code></pre></td></tr></table>
+</div>
+</div><p>配置 OpenClaw（编辑 <code>~/.openclaw/openclaw.json</code>）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&#34;config&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;local&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;configPath&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openviking/ov.conf&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;targetUri&#34;</span><span class="p">:</span> <span class="s2">&#34;viking://user/memories&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;autoRecall&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="nt">&#34;autoCapture&#34;</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>ov.conf</code> 配置示例（使用火山引擎豆包模型）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;vlm&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;volcengine&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;api_key&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;YOUR_API_KEY&gt;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;doubao-seed-2-0-pro-260215&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;api_base&#34;</span><span class="p">:</span> <span class="s2">&#34;https://ark.cn-beijing.volces.com/api/v3&#34;</span>
+  <span class="p">}</span><span class="p">,</span>
+  <span class="nt">&#34;embedding&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;dense&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;volcengine&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;api_key&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;YOUR_API_KEY&gt;&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;doubao-embedding-vision-251215&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;api_base&#34;</span><span class="p">:</span> <span class="s2">&#34;https://ark.cn-beijing.volces.com/api/v3&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;dimension&#34;</span><span class="p">:</span> <span class="mi">1024</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>启动验证：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">source</span> ~/.openclaw/openviking.env <span class="o">&amp;&amp;</span> openclaw gateway
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="手动配置远程模式">手动配置（远程模式）</h3>
+<p>如果已经独立部署了 OpenViking 服务，只需要配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&#34;config&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;remote&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;baseUrl&#34;</span><span class="p">:</span> <span class="s2">&#34;http://your-server:1933&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;apiKey&#34;</span><span class="p">:</span> <span class="s2">&#34;optional-api-key&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;targetUri&#34;</span><span class="p">:</span> <span class="s2">&#34;viking://user/memories&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;autoRecall&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="nt">&#34;autoCapture&#34;</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="适合你如果-5">适合你，如果：</h3>
+<ul>
+<li>✅ 你追求<strong>更高的任务完成率</strong>和<strong>更低的 Token 成本</strong>，官方测试效果显著优于原生方案</li>
+<li>✅ 你认同<strong>文件系统范式</strong>管理记忆的设计哲学，需要可调试、可观察的检索路径</li>
+<li>✅ 你需要<strong>分层记忆</strong>，自动摘要+按需加载，控制上下文大小</li>
+<li>✅ 支持本地/远程两种部署模式，个人开发者和团队都能用</li>
+</ul>
+<hr>
 <h2 id="一分钟选型对照表">一分钟选型对照表</h2>
 <table>
 <thead>
@@ -1040,6 +1302,11 @@ npm install
 <td>本地优先，结构化，推荐大多数个人用户</td>
 </tr>
 <tr>
+<td>追求最高检索效果 + 最低 Token 成本</td>
+<td><strong>OpenViking</strong></td>
+<td>火山引擎开源，官方测试效果提升 46%，成本降 83%</td>
+</tr>
+<tr>
 <td>多设备同步 + 零运维</td>
 <td><strong>mem9.ai</strong></td>
 <td>云端托管，方便</td>
@@ -1057,7 +1324,7 @@ npm install
 <tr>
 <td>全都想要</td>
 <td>全部装</td>
-<td>lossless (单会话压缩) + Nowledge/qmd/LanceDB (跨会话/文档) 不冲突，配合使用效果最佳</td>
+<td>lossless (单会话压缩) + OpenViking/Nowledge/qmd/LanceDB (跨会话/文档) 不冲突，配合使用效果最佳</td>
 </tr>
 </tbody>
 </table>
@@ -1088,6 +1355,27 @@ npm install
 <li><input disabled="" type="checkbox">根据后端配置对应参数（qmd.paths 或 lancedb.uri）</li>
 </ul>
 <h3 id="需要跨会话记忆的用户">需要跨会话记忆的用户：</h3>
+<p>根据你的基础设施偏好选择：</p>
+<p><strong>方案 A：OpenViking（推荐追求高性能）</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">lossless-claw  +  OpenViking
+│           └── 文件系统范式上下文数据库，任务完成率最高，Token成本最低
+└────────────── 单会话内无损压缩
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>配置检查清单</strong>：</p>
+<ul>
+<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"><code>plugins.slots.memory = memory-openviking</code></li>
+<li><input disabled="" type="checkbox"><code>~/.openviking/ov.conf</code> 配置正确的 API Key</li>
+</ul>
+<p><strong>方案 B：Nowledge Mem（本地优先结构化）</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1117,10 +1405,10 @@ npm install
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-text" data-lang="text">lossless-claw  +  mem9.ai  +  qmd / LanceDB
-│           │        └── OpenClaw 原生混合搜索
-│           └──────────── 云端跨设备同步记忆，零运维
-└──────────────────────── 单会话压缩
+<pre class="chroma"><code class="language-text" data-lang="text">lossless-claw  +  OpenViking (独立部署) / mem9.ai  +  qmd / LanceDB
+│           │                       └── 云端/独立部署服务，跨设备同步记忆
+│           └───────────────────────── 零运维开箱即用，OpenViking 效果更好但需要自己部署服务
+└────────────────────────────────────── 单会话压缩
 </code></pre></td></tr></table>
 </div>
 </div><p>方便，打开哪个设备都能接着聊。</p>

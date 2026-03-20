@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T14:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-20T12:12:51&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T19:28:28&#43;08:00">
   
   <meta property="article:tag" content="OpenClaw">
   
@@ -94,7 +94,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T12:12:51+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"A complete guide to OpenClaw memory, from lossless-claw compression and qmd hybrid search to persistent memory with Nowledge Mem and mem9.ai.","headline":"Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T19:28:28+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"A complete guide to OpenClaw memory, from lossless-claw compression and qmd hybrid search to persistent memory with Nowledge Mem and mem9.ai.","headline":"Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/"}
   </script>
   
 
@@ -171,7 +171,7 @@
     <h1 class="post-title" style="view-transition-name: index.en">Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory</h1>
     <div class="post-meta">
       <span>Published: 16 Mar, 2026</span>
-      <span>• 11 min read</span>
+      <span>• 14 min read</span>
     </div>
   </header>
 
@@ -185,6 +185,7 @@
     <li><a href="#solution-2-qmd--openclaw-native-hybrid-search-memory-backend">Solution 2: qmd — OpenClaw Native Hybrid Search Memory Backend</a></li>
     <li><a href="#solution-3-nowledge-mem--local-first-structured-cross-session-memory">Solution 3: Nowledge Mem — Local-First Structured Cross-Session Memory</a></li>
     <li><a href="#solution-4-mem9ai--cloud-persistent-memory-infrastructure">Solution 4: mem9.ai — Cloud Persistent Memory Infrastructure</a></li>
+    <li><a href="#solution-5-openviking--open-source-context-database-by-volcengine-filesystem-paradigm-memory-management">Solution 5: OpenViking — Open-source Context Database by Volcengine, Filesystem Paradigm Memory Management</a></li>
     <li><a href="#one-minute-selection-comparison-table">One-Minute Selection Comparison Table</a></li>
     <li><a href="#recommended-combination-solutions">Recommended Combination Solutions</a></li>
     <li><a href="#verify-correct-configuration">Verify Correct Configuration</a></li>
@@ -748,6 +749,267 @@ openclaw nowledge-mem status
 <li>✅ You accept cloud storage, trust service provider's security solution</li>
 </ul>
 <hr>
+<h2 id="solution-5-openviking--open-source-context-database-by-volcengine-filesystem-paradigm-memory-management">Solution 5: OpenViking — Open-source Context Database by Volcengine, Filesystem Paradigm Memory Management</h2>
+<p><strong>Project URL</strong>: <a href="https://github.com/volcengine/OpenViking">https://github.com/volcengine/OpenViking</a></p>
+<p><strong>OpenClaw Plugin</strong>: <a href="https://github.com/volcengine/OpenViking/tree/main/examples/openclaw-memory-plugin">https://github.com/volcengine/OpenViking/tree/main/examples/openclaw-memory-plugin</a></p>
+<p><strong>One-line positioning</strong>: Open-source <strong>context database</strong> designed specifically for AI Agents, innovatively adopts the <strong>filesystem paradigm</strong> to organize memory uniformly. Official OpenClaw memory plugin provided, measured <strong>task completion rate +46%, token cost -83%</strong>.</p>
+<h3 id="core-features-4">Core Features</h3>
+<p>OpenViking solves five major pain points of traditional RAG/memory solutions:</p>
+<table>
+<thead>
+<tr>
+<th>Pain Point</th>
+<th>OpenViking Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fragmented context</td>
+<td><strong>Filesystem management paradigm</strong>: Memory, resources, and skills are all organized under <code>viking://</code> URI, manage memory just like operating local files</td>
+</tr>
+<tr>
+<td>High token consumption</td>
+<td><strong>Hierarchical context loading</strong>: L0 summary / L1 overview / L2 full content, only load details when necessary, significantly reduces token cost</td>
+</tr>
+<tr>
+<td>Poor retrieval quality</td>
+<td><strong>Directory recursive retrieval</strong>: Locate directory first then explore in depth, more accurate than flat vector search</td>
+</tr>
+<tr>
+<td>Black box undebuggable</td>
+<td><strong>Visible retrieval trace</strong>: Complete preservation of directory browsing and retrieval paths, root cause is clear at a glance</td>
+</tr>
+<tr>
+<td>Memory can't iterate</td>
+<td><strong>Automatic session management</strong>: Automatically extracts long-term memory after session ends, lets Agent get smarter with usage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="official-benchmark-results">Official Benchmark Results</h3>
+<p>Based on LoCoMo10 long conversation test set:</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Task Completion</th>
+<th>Total Input Token Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenClaw native memory</td>
+<td>35.65%</td>
+<td>24,611,530</td>
+</tr>
+<tr>
+<td>OpenClaw + LanceDB</td>
+<td>44.55%</td>
+<td>51,574,530</td>
+</tr>
+<tr>
+<td><strong>OpenClaw + OpenViking</strong></td>
+<td><strong>52.08%</strong></td>
+<td><strong>4,264,396</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: Compared to native OpenClaw, OpenViking <strong>improves task completion by 46% and reduces token cost by 83%</strong>; compared to LanceDB, <strong>improves effectiveness by 17% and reduces token cost by 92%</strong>.</p>
+<h3 id="installation-and-configuration-steps-3">Installation and Configuration Steps</h3>
+<p>OpenViking provides a one-click installation script that automatically detects the environment and configures:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> /path/to/OpenViking
+npx ./examples/openclaw-memory-plugin/setup-helper
+</code></pre></td></tr></table>
+</div>
+</div><p>The script will automatically:</p>
+<ol>
+<li>Check environment dependencies (OpenClaw, Python)</li>
+<li>Create <code>~/.openviking/ov.conf</code> configuration file</li>
+<li>Deploy plugin to OpenClaw extensions directory</li>
+<li>Automatically configure OpenClaw to enable OpenViking memory</li>
+</ol>
+<p>Supports <strong>local mode</strong> (plugin auto-starts OpenViking service) and <strong>remote mode</strong> (connect to already deployed independent OpenViking service).</p>
+<h3 id="manual-configuration-local-mode">Manual Configuration (Local Mode)</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 1. Install OpenViking</span>
+pip install openviking --upgrade --force-reinstall
+
+<span class="c1"># 2. Install OpenClaw plugin</span>
+mkdir -p ~/.openclaw/extensions/memory-openviking
+cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/.openclaw/extensions/memory-openviking/
+<span class="nb">cd</span> ~/.openclaw/extensions/memory-openviking <span class="o">&amp;&amp;</span> npm install
+</code></pre></td></tr></table>
+</div>
+</div><p>Configure OpenClaw (edit <code>~/.openclaw/openclaw.json</code>):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&#34;config&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;local&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;configPath&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openviking/ov.conf&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;targetUri&#34;</span><span class="p">:</span> <span class="s2">&#34;viking://user/memories&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;autoRecall&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="nt">&#34;autoCapture&#34;</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>ov.conf</code> configuration example (using Volcengine Doubao model):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;vlm&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;volcengine&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;api_key&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;YOUR_API_KEY&gt;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;doubao-seed-2-0-pro-260215&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;api_base&#34;</span><span class="p">:</span> <span class="s2">&#34;https://ark.cn-beijing.volces.com/api/v3&#34;</span>
+  <span class="p">}</span><span class="p">,</span>
+  <span class="nt">&#34;embedding&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;dense&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;volcengine&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;api_key&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;YOUR_API_KEY&gt;&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;doubao-embedding-vision-251215&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;api_base&#34;</span><span class="p">:</span> <span class="s2">&#34;https://ark.cn-beijing.volces.com/api/v3&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;dimension&#34;</span><span class="p">:</span> <span class="mi">1024</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Start and verify:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">source</span> ~/.openclaw/openviking.env <span class="o">&amp;&amp;</span> openclaw gateway
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="manual-configuration-remote-mode">Manual Configuration (Remote Mode)</h3>
+<p>If you already have an independently deployed OpenViking service, just configure:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&#34;config&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;remote&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;baseUrl&#34;</span><span class="p">:</span> <span class="s2">&#34;http://your-server:1933&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;apiKey&#34;</span><span class="p">:</span> <span class="s2">&#34;optional-api-key&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;targetUri&#34;</span><span class="p">:</span> <span class="s2">&#34;viking://user/memories&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;autoRecall&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="nt">&#34;autoCapture&#34;</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="suitable-for-you-if-4">Suitable for you if:</h3>
+<ul>
+<li>✅ You pursue <strong>higher task completion rate</strong> and <strong>lower token cost</strong>, official tests show significant improvements over native solutions</li>
+<li>✅ You agree with the <strong>filesystem paradigm</strong> design philosophy for memory management, need debuggable and observable retrieval paths</li>
+<li>✅ You need <strong>hierarchical memory</strong>, automatic summarization + on-demand loading, control context size</li>
+<li>✅ Supports both local and remote deployment modes, works for individual developers and teams</li>
+</ul>
+<hr>
 <h2 id="one-minute-selection-comparison-table">One-Minute Selection Comparison Table</h2>
 <table>
 <thead>
@@ -769,6 +1031,11 @@ openclaw nowledge-mem status
 <td>Local-first, structured, recommended for most individual users</td>
 </tr>
 <tr>
+<td>Best retrieval quality + lowest token cost</td>
+<td><strong>OpenViking</strong></td>
+<td>Open-source by Volcengine, official test shows +46% effectiveness, -83% cost</td>
+</tr>
+<tr>
 <td>Multi-device sync + zero operations</td>
 <td><strong>mem9.ai</strong></td>
 <td>Cloud-hosted, convenient</td>
@@ -781,7 +1048,7 @@ openclaw nowledge-mem status
 <tr>
 <td>Want everything</td>
 <td>Install all</td>
-<td>lossless (single-session compression) + Nowledge/qmd (cross-session/documents) don't conflict, work best together</td>
+<td>lossless (single-session compression) + OpenViking/Nowledge/qmd (cross-session/documents) don't conflict, work best together</td>
 </tr>
 </tbody>
 </table>
@@ -808,6 +1075,27 @@ openclaw nowledge-mem status
 <li><input disabled="" type="checkbox"><code>agents.defaults.memory.qmd.paths</code> configured with your note directories</li>
 </ul>
 <h3 id="users-needing-cross-session-memory">Users needing cross-session memory:</h3>
+<p>Choose based on your infrastructure preference:</p>
+<p><strong>Option A: OpenViking (recommended for highest performance)</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">lossless-claw  +  OpenViking
+│           └── Filesystem paradigm context database, highest task completion, lowest token cost
+└────────────── Single-session lossless compression
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Configuration checklist</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"><code>plugins.slots.memory = memory-openviking</code></li>
+<li><input disabled="" type="checkbox"><code>~/.openviking/ov.conf</code> configured with valid API keys</li>
+</ul>
+<p><strong>Option B: Nowledge Mem (local-first structured)</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -837,10 +1125,10 @@ openclaw nowledge-mem status
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-text" data-lang="text">lossless-claw  +  mem9.ai  +  qmd
-│           │        └── OpenClaw native hybrid search
-│           └──────────── Cloud cross-device sync memory, zero operations
-└──────────────────────── Single-session compression
+<pre class="chroma"><code class="language-text" data-lang="text">lossless-claw  +  OpenViking (independent deployment) / mem9.ai  +  qmd
+│           │                                   └── Cloud/remote deployment, cross-device memory sync
+│           └──────────────────────────────────── Zero operations out of the box, OpenViking better performance but self-hosted
+└────────────────────────────────────────────────── Single-session compression
 </code></pre></td></tr></table>
 </div>
 </div><p>Convenient, can continue chatting on whichever device you open.</p>
