@@ -11,6 +11,9 @@
   
   
   
+  
+  
+  
     
       
     
@@ -41,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-18T11:44:26&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T11:10:24&#43;08:00">
   
   <meta property="article:tag" content="VectorChord">
   
@@ -91,7 +94,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-18T11:44:26+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"PostgreSQL 向量搜索方案对比：VectorChord 如何实现低成本亿级向量检索。深度解析 IVF+RaBitQ 架构、HNSW 对比、RAG 向量数据库选型，以及 pgvector 扩展实践。","headline":"为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/vectorchord-deep-dive/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T11:10:24+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"PostgreSQL 向量搜索方案对比：VectorChord 如何实现低成本亿级向量检索。深度解析 IVF+RaBitQ 架构、HNSW 对比、RAG 向量数据库选型，以及 pgvector 扩展实践。","headline":"为什么我在 Agent 项目里只认 PostgreSQL：向量搜索篇","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/vectorchord-deep-dive/"}
   </script>
   
 
@@ -194,7 +197,8 @@
   
 
   <div class="post-content">
-    <p>最近有个朋友问我：做 Agent 项目，向量搜索用什么方案？我毫不犹豫地说：PostgreSQL + <a href="https://github.com/tensorchord/vectorchord">VectorChord</a>。</p>
+    <p><img src="/infographic/vectorchord-deep-dive/infographic.png" alt="VectorChord: Vector Search Inside PostgreSQL"></p>
+<p>最近有个朋友问我：做 Agent 项目，向量搜索用什么方案？我毫不犹豫地说：PostgreSQL + <a href="https://github.com/tensorchord/vectorchord">VectorChord</a>。</p>
 <p>他有点意外：&ldquo;不用 Milvus、Pinecone 这些专用向量数据库？&rdquo;</p>
 <p>这让我意识到，很多人对 Agent 时代的向量存储需求有误解。今天我就聊聊为什么我在 Agent 项目里只认 PostgreSQL，以及 VectorChord 如何实现低成本亿级向量检索，对比传统 HNSW 方案的优势。</p>
 <h2 id="agent-时代向量存储需要什么">Agent 时代，向量存储需要什么？</h2>
@@ -694,7 +698,6 @@ x_rotated = R * x_centered = [0.06, -1.08]
     </div>
   </footer>
 </article>
-
 
 <div class="giscus-container" style="margin-top: 3rem;">
   <script src="https://giscus.app/client.js"

@@ -11,6 +11,9 @@
   
   
   
+  
+  
+  
     
       
     
@@ -18,12 +21,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Why I Only Bet on PostgreSQL for Agent Projects: Vector Search | Xieydd&#39;s Blog</title>
-  <meta name="description" content="PostgreSQL vector search comparison: How VectorChord achieves low-cost billion-scale vector retrieval. Deep dive into IVF&#43;RaBitQ architecture, HNSW comparison, RAG vector database selection, and pgvector extension practices.">
+  <meta name="description" content="How VectorChord brings low-cost billion-scale vector search to PostgreSQL, with IVF&#43;RaBitQ, HNSW tradeoffs, and practical RAG guidance.">
   <meta name="author" content="xieydd">
   
   
   <meta property="og:title" content="Why I Only Bet on PostgreSQL for Agent Projects: Vector Search | Xieydd&#39;s Blog">
-  <meta property="og:description" content="PostgreSQL vector search comparison: How VectorChord achieves low-cost billion-scale vector retrieval. Deep dive into IVF&#43;RaBitQ architecture, HNSW comparison, RAG vector database selection, and pgvector extension practices.">
+  <meta property="og:description" content="How VectorChord brings low-cost billion-scale vector search to PostgreSQL, with IVF&#43;RaBitQ, HNSW tradeoffs, and practical RAG guidance.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://blog.xieydd.top/en/vectorchord-deep-dive/">
   <meta property="og:site_name" content="Xieydd&#39;s Blog">
@@ -33,7 +36,7 @@
   
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Why I Only Bet on PostgreSQL for Agent Projects: Vector Search | Xieydd&#39;s Blog">
-  <meta name="twitter:description" content="PostgreSQL vector search comparison: How VectorChord achieves low-cost billion-scale vector retrieval. Deep dive into IVF&#43;RaBitQ architecture, HNSW comparison, RAG vector database selection, and pgvector extension practices.">
+  <meta name="twitter:description" content="How VectorChord brings low-cost billion-scale vector search to PostgreSQL, with IVF&#43;RaBitQ, HNSW tradeoffs, and practical RAG guidance.">
   <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
   
   <meta name="twitter:creator" content="@xieydd_">
@@ -41,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-18T11:44:26&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T11:10:24&#43;08:00">
   
   <meta property="article:tag" content="VectorChord">
   
@@ -91,7 +94,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-18T11:44:26+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"PostgreSQL vector search comparison: How VectorChord achieves low-cost billion-scale vector retrieval. Deep dive into IVF+RaBitQ architecture, HNSW comparison, RAG vector database selection, and pgvector extension practices.","headline":"Why I Only Bet on PostgreSQL for Agent Projects: Vector Search","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/vectorchord-deep-dive/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T11:10:24+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"How VectorChord brings low-cost billion-scale vector search to PostgreSQL, with IVF+RaBitQ, HNSW tradeoffs, and practical RAG guidance.","headline":"Why I Only Bet on PostgreSQL for Agent Projects: Vector Search","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/vectorchord-deep-dive/"}
   </script>
   
 
@@ -194,7 +197,8 @@
   
 
   <div class="post-content">
-    <p>A friend recently asked me: What do you use for vector search in Agent projects? I answered without hesitation: PostgreSQL + <a href="https://github.com/tensorchord/vectorchord">VectorChord</a>.</p>
+    <p><img src="/infographic/vectorchord-deep-dive/infographic.png" alt="VectorChord: Vector Search Inside PostgreSQL"></p>
+<p>A friend recently asked me: What do you use for vector search in Agent projects? I answered without hesitation: PostgreSQL + <a href="https://github.com/tensorchord/vectorchord">VectorChord</a>.</p>
 <p>He was surprised: &ldquo;Not Milvus, Pinecone, or other dedicated vector databases?&rdquo;</p>
 <p>This made me realize many people misunderstand vector storage needs in the Agent era. Today I'll share why I only bet on PostgreSQL for Agent projects, how VectorChord achieves low-cost billion-scale vector retrieval, and its advantages over traditional HNSW approaches.</p>
 <h2 id="what-does-vector-storage-need-in-the-agent-era">What Does Vector Storage Need in the Agent Era?</h2>
@@ -681,7 +685,6 @@ Original float32 needs 8B → 32x compression ratio
     </div>
   </footer>
 </article>
-
 
 <div class="giscus-container" style="margin-top: 3rem;">
   <script src="https://giscus.app/client.js"

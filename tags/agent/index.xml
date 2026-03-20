@@ -8,10 +8,19 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Mon, 16 Mar 2026 14:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 19 Mar 2026 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/tags/agent/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇</title>
+      <link>https://blog.xieydd.top/postgres-fts-agent/</link>
+      <pubDate>Thu, 19 Mar 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/postgres-fts-agent/</guid>
+      <description>上一篇我聊了向量搜索，有朋友接着问我：那全文检索呢？做 Agent 项目，关键词搜索是不是还是应该上 Elasticsearch？ 我的回答还是一样：大多数</description>
+    </item>
     
     <item>
       <title>OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案</title>

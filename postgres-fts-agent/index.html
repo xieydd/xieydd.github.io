@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇 | Xieydd&#39;s Blog</title>
+  <meta name="description" content="Agent 项目的全文检索为什么更适合 PostgreSQL 而不是 Elasticsearch。深入解析 PostgreSQL FTS、pg_tokenizer.rs、VectorChord-BM25、BM25 与 WeakAND，以及下一版本的优化方向与迁移路径。">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇 | Xieydd&#39;s Blog">
+  <meta property="og:description" content="Agent 项目的全文检索为什么更适合 PostgreSQL 而不是 Elasticsearch。深入解析 PostgreSQL FTS、pg_tokenizer.rs、VectorChord-BM25、BM25 与 WeakAND，以及下一版本的优化方向与迁移路径。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/postgres-fts-agent/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇 | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="Agent 项目的全文检索为什么更适合 PostgreSQL 而不是 Elasticsearch。深入解析 PostgreSQL FTS、pg_tokenizer.rs、VectorChord-BM25、BM25 与 WeakAND，以及下一版本的优化方向与迁移路径。">
+  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-03-19T10:00:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T11:10:24&#43;08:00">
+  
+  <meta property="article:tag" content="PostgreSQL">
+  
+  <meta property="article:tag" content="FTS">
+  
+  <meta property="article:tag" content="Elasticsearch">
+  
+  <meta property="article:tag" content="BM25">
+  
+  <meta property="article:tag" content="pg_tokenizer.rs">
+  
+  <meta property="article:tag" content="VectorChord-BM25">
+  
+  <meta property="article:tag" content="Agent">
+  
+  <meta property="article:tag" content="RAG">
+  
+  <meta property="article:tag" content="全文检索">
+  
+  <meta property="article:tag" content="Postgres">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/postgres-fts-agent/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/postgres-fts-agent/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/postgres-fts-agent/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/postgres-fts-agent/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T11:10:24+08:00","datePublished":"2026-03-19T10:00:00+08:00","description":"Agent 项目的全文检索为什么更适合 PostgreSQL 而不是 Elasticsearch。深入解析 PostgreSQL FTS、pg_tokenizer.rs、VectorChord-BM25、BM25 与 WeakAND，以及下一版本的优化方向与迁移路径。","headline":"为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/postgres-fts-agent/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/postgres-fts-agent/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/posts/">文章</a>
+        <a href="https://blog.xieydd.top/about/">关于</a>
+        
+        <div class="nav-icons">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/postgres-fts-agent/" class="lang-link">EN</a>
+          
+        
+      
+      
+      
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.zh-cn">为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇</h1>
+    <div class="post-meta">
+      <span>发布于 19 Mar, 2026</span>
+      <span>• 11 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#agent-时代全文检索真正要解决什么">Agent 时代，全文检索真正要解决什么？</a></li>
+    <li><a href="#为什么我不优先选-elasticsearch">为什么我不优先选 Elasticsearch</a></li>
+    <li><a href="#为什么-postgresql-fts-更适合-agent-项目">为什么 PostgreSQL FTS 更适合 Agent 项目</a></li>
+    <li><a href="#postgresql-全文检索的三层路线">PostgreSQL 全文检索的三层路线</a></li>
+    <li><a href="#端到端链路图">端到端链路图</a></li>
+    <li><a href="#pg_tokenizerrs-为什么重要">pg_tokenizer.rs 为什么重要</a></li>
+    <li><a href="#vectorchord-bm25-解决的不是能搜而是搜得更像搜索引擎">VectorChord-BM25 解决的不是“能搜”，而是“搜得更像搜索引擎”</a></li>
+    <li><a href="#为什么这比-es-更像-agent-项目要的东西">为什么这比 ES 更像 Agent 项目要的东西</a></li>
+    <li><a href="#版本演进为什么我看好这条路线">版本演进：为什么我看好这条路线</a></li>
+    <li><a href="#我的实践建议">我的实践建议</a></li>
+    <li><a href="#thoughts">Thoughts</a></li>
+    <li><a href="#next-step">Next Step</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p><img src="/infographic/postgres-fts-agent/infographic.png" alt="Why PostgreSQL FTS For Agent Projects"></p>
+<p>上一篇我聊了<a href="../vectorchord-deep-dive/">向量搜索</a>，有朋友接着问我：那全文检索呢？做 Agent 项目，关键词搜索是不是还是应该上 Elasticsearch？</p>
+<p>我的回答还是一样：<strong>大多数 Agent 项目里，我依然优先选 PostgreSQL。</strong></p>
+<p>这句话听起来有点反直觉。毕竟一提到全文检索，很多人的第一反应就是 ES，仿佛 PostgreSQL 的 <a href="https://www.postgresql.org/docs/current/textsearch-intro.html">FTS</a> 只是个“能用但不专业”的附属功能。</p>
+<p>但在我看来，这个判断放在传统搜索引擎场景里也许成立，放在 <strong>Agent 项目</strong>里，结论往往正好反过来。</p>
+<p>因为 Agent 项目里的全文检索，和“做一个站内搜索引擎”不是一回事。</p>
+<h2 id="agent-时代全文检索真正要解决什么">Agent 时代，全文检索真正要解决什么？</h2>
+<p>先别急着聊 BM25、倒排索引、分词器。先看 Agent 项目里的真实需求。</p>
+<h3 id="1-检索对象不是一份静态文档库">1. 检索对象不是一份静态文档库</h3>
+<p>Agent 要搜的东西通常不只是一批产品文档。</p>
+<p>它可能同时要搜：</p>
+<ul>
+<li>用户上传的 PDF、Markdown、网页快照</li>
+<li>历史对话</li>
+<li>长期记忆</li>
+<li>待办、任务状态、工具执行日志</li>
+<li>业务系统里的结构化字段和半结构化字段</li>
+</ul>
+<p>这些数据有几个特点：</p>
+<ul>
+<li>更新频繁</li>
+<li>权限边界复杂</li>
+<li>和业务主数据强相关</li>
+<li>需要和事务一致性保持同步</li>
+</ul>
+<p>这和“每天离线同步一份文档到 ES，然后做搜索页”是两种问题。</p>
+<h3 id="2-agent-的搜索几乎总是带过滤条件">2. Agent 的搜索几乎总是带过滤条件</h3>
+<p>传统搜索常常是：</p>
+<blockquote>
+<p>给我搜一下所有文档里和 query 最相关的 10 条。</p>
+</blockquote>
+<p>Agent 的搜索更像：</p>
+<blockquote>
+<p>在“这个用户有权限访问的知识库”里，限定最近 30 天、限定 workspace、限定文档类型、限定项目 ID，再找和 query 最相关的结果。</p>
+</blockquote>
+<p>也就是说，Agent 的全文检索几乎天然就是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">WHERE</span> <span class="err">权</span><span class="err">限</span><span class="err">条</span><span class="err">件</span>
+  <span class="k">AND</span> <span class="err">租</span><span class="err">户</span><span class="err">条</span><span class="err">件</span>
+  <span class="k">AND</span> <span class="err">时</span><span class="err">间</span><span class="err">条</span><span class="err">件</span>
+  <span class="k">AND</span> <span class="err">类</span><span class="err">型</span><span class="err">条</span><span class="err">件</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">relevance</span>
+<span class="k">LIMIT</span> <span class="n">k</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这时候，<strong>过滤和排序不是两个独立系统里的两段逻辑，而应该是同一条执行链路里的两部分</strong>。</p>
+<h3 id="3-agent-更怕一致性问题不怕没榨干最后一点-qps">3. Agent 更怕一致性问题，不怕“没榨干最后一点 QPS”</h3>
+<p>Agent 项目真正让人痛的，往往不是“查询再快 20%”，而是：</p>
+<ul>
+<li>用户刚上传文档，搜不到</li>
+<li>数据库删掉了记录，ES 里还有脏数据</li>
+<li>权限撤销了，搜索结果还在泄露</li>
+<li>业务表更新了标题/状态/归属，搜索索引没同步</li>
+</ul>
+<p>在这种系统里，<strong>一致性、简化架构、降低运维面</strong>，通常比“专用搜索系统的理论峰值性能”更重要。</p>
+<h2 id="为什么我不优先选-elasticsearch">为什么我不优先选 Elasticsearch</h2>
+<p>先说清楚：<strong>我不是说 ES 不好。</strong></p>
+<p>Elasticsearch 在这些场景里依然非常强：</p>
+<ul>
+<li>超大规模公开搜索站点</li>
+<li>日志检索和可观测性</li>
+<li>复杂聚合分析</li>
+<li>成熟的搜索团队已经围绕它有大量经验沉淀</li>
+</ul>
+<p>但对于大多数 Agent 项目，它有四个很现实的问题。</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>在 Agent 项目里的具体表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>双写与同步</td>
+<td>主数据在 PostgreSQL，搜索在 ES，天然要做 CDC、异步同步、补偿、重放</td>
+</tr>
+<tr>
+<td>一致性复杂</td>
+<td>新增、删除、权限变更、重建索引都要考虑延迟和脏读</td>
+</tr>
+<tr>
+<td>过滤逻辑分裂</td>
+<td>业务条件一部分在 DB，一部分在 ES，最终逻辑容易漂移</td>
+</tr>
+<tr>
+<td>运维成本高</td>
+<td>多一套集群、多一套备份、多一套监控、多一套性能调优</td>
+</tr>
+</tbody>
+</table>
+<p>尤其是第一条，经常被低估。</p>
+<p>很多团队上 ES 时，只想着“搜索更专业”，但没认真算过后面的工程账：</p>
+<ul>
+<li>需要同步链路</li>
+<li>需要 mapping 管理</li>
+<li>需要 analyzer 管理</li>
+<li>需要重建索引策略</li>
+<li>需要冷热分层和资源规划</li>
+<li>需要处理 schema 演进</li>
+</ul>
+<p>而 Agent 项目往往还在快速试错阶段。你最不需要的，就是在“记忆、检索、状态管理”这条主链路上再额外引入一套复杂系统。</p>
+<h2 id="为什么-postgresql-fts-更适合-agent-项目">为什么 PostgreSQL FTS 更适合 Agent 项目</h2>
+<p>在 Agent 场景里，PostgreSQL 的优势不只是“也能做全文检索”，而是它刚好踩中了 Agent 系统最看重的点。</p>
+<h3 id="1-业务数据和搜索数据在同一套事务里">1. 业务数据和搜索数据在同一套事务里</h3>
+<p>这是最大优势。</p>
+<p>如果你的文档表、对话表、记忆表本来就在 PostgreSQL 里，那么全文检索天然可以和主数据放在一起：</p>
+<ul>
+<li>插入文档时同时写入检索字段</li>
+<li>更新标题、状态、权限时同事务生效</li>
+<li>删除记录时不会留一份“平行宇宙里的索引残影”</li>
+</ul>
+<p>对 Agent 项目来说，这种“一个系统说了算”的感觉非常重要。</p>
+<h3 id="2-过滤排序join-可以在一个执行计划里完成">2. 过滤、排序、Join 可以在一个执行计划里完成</h3>
+<p>Agent 检索很少是裸搜。</p>
+<p>你经常需要把全文检索和这些操作混在一起：</p>
+<ul>
+<li><code>JOIN users / projects / permissions</code></li>
+<li><code>WHERE tenant_id = ?</code></li>
+<li><code>WHERE created_at &gt; now() - interval '30 days'</code></li>
+<li><code>WHERE source_type IN (...)</code></li>
+<li><code>ORDER BY rank</code></li>
+</ul>
+<p>PostgreSQL 的价值在这里很直接：<strong>这些不是“搜索后再二次处理”，而是 SQL 原生能力。</strong></p>
+<p>如果你已经接受了“Agent 的数据底座就是 PostgreSQL”，那全文检索继续放在 PostgreSQL 里，整体复杂度会明显更低。</p>
+<h3 id="3-内置-fts-已经比很多人想象的强得多">3. 内置 FTS 已经比很多人想象的强得多</h3>
+<p>很多人对 PostgreSQL FTS 的印象还停留在很多年前：</p>
+<ul>
+<li>分词简单</li>
+<li>排序一般</li>
+<li>性能一般</li>
+</ul>
+<p>但实际上，只要用法对，内置 FTS 解决大量 Agent 搜索需求已经绰绰有余：</p>
+<ul>
+<li><code>tsvector</code></li>
+<li><code>tsquery / websearch_to_tsquery / plainto_tsquery</code></li>
+<li>GIN 索引</li>
+<li>phrase / prefix / boolean query</li>
+<li>高亮</li>
+<li>字典和 stemmer</li>
+</ul>
+<p>对于“找出包含关键词、短语、语义上相近词形的文档，并且带业务过滤”的场景，它并不弱。</p>
+<h3 id="4-需要更现代的排序时可以继续留在-postgresql-里升级">4. 需要更现代的排序时，可以继续留在 PostgreSQL 里升级</h3>
+<p>这是我最看重的一点。</p>
+<p>很多团队的思路是：</p>
+<blockquote>
+<p>基础检索用 PostgreSQL，想要 BM25 或更强排序，就切 ES。</p>
+</blockquote>
+<p>但现在不一定要这么跳了。</p>
+<p>你完全可以走这条升级路径：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">PostgreSQL built-in FTS
+    -&gt; pg_tokenizer.rs
+    -&gt; VectorChord-BM25
+    -&gt; 混合检索（BM25 + 向量搜索）
+</code></pre></td></tr></table>
+</div>
+</div><p>也就是说，<strong>从基础全文检索到现代 sparse retrieval，你可以始终留在 PostgreSQL 体系里。</strong></p>
+<p>这对 Agent 项目非常关键，因为它意味着：</p>
+<ul>
+<li>架构不分裂</li>
+<li>数据不分裂</li>
+<li>运维不分裂</li>
+<li>认知负担也不分裂</li>
+</ul>
+<h2 id="postgresql-全文检索的三层路线">PostgreSQL 全文检索的三层路线</h2>
+<p>如果按能力演进来分，我会把 PostgreSQL 里的全文检索分成三层。</p>
+<h3 id="第一层内置-fts">第一层：内置 FTS</h3>
+<p>最经典的路线：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">documents</span>
+<span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">fts</span> <span class="n">tsvector</span><span class="p">;</span>
+
+<span class="k">UPDATE</span> <span class="n">documents</span>
+<span class="k">SET</span> <span class="n">fts</span> <span class="o">=</span> <span class="n">to_tsvector</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">|</span><span class="o">|</span> <span class="s1">&#39;</span><span class="s1"> </span><span class="s1">&#39;</span> <span class="o">|</span><span class="o">|</span> <span class="n">body</span><span class="p">)</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">documents_fts_gin</span>
+<span class="k">ON</span> <span class="n">documents</span> <span class="k">USING</span> <span class="n">gin</span> <span class="p">(</span><span class="n">fts</span><span class="p">)</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span>
+<span class="k">FROM</span> <span class="n">documents</span>
+<span class="k">WHERE</span> <span class="n">fts</span> <span class="o">@</span><span class="o">@</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s1">postgresql search</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ts_rank</span><span class="p">(</span><span class="n">fts</span><span class="p">,</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s1">postgresql search</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span> <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这一层的优点是：</p>
+<ul>
+<li>原生</li>
+<li>成熟</li>
+<li>性能很好</li>
+<li>和业务 SQL 深度集成</li>
+</ul>
+<p>如果你的 Agent 项目主要是英文、简单分词、基础排名，这一层已经足够。</p>
+<h3 id="第二层pg_tokenizerrs">第二层：<code>pg_tokenizer.rs</code></h3>
+<p>当你遇到这些问题时，内置 FTS 就开始不够了：</p>
+<ul>
+<li>中文、日文这类非空格语言</li>
+<li>需要更灵活的分词器和停用词</li>
+<li>需要自定义词表</li>
+<li>想把 token id 作为 sparse 检索输入</li>
+</ul>
+<p>这就是 <a href="https://github.com/tensorchord/pg_tokenizer.rs"><code>pg_tokenizer.rs</code></a> 的位置。</p>
+<p>它不是简单“给 Postgres 加个 tokenizer”，而是把文本处理管线拆成可配置模块：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">text
+  -&gt; character filters
+  -&gt; pre-tokenizer
+  -&gt; token filters
+  -&gt; model
+  -&gt; INT[]
+</code></pre></td></tr></table>
+</div>
+</div><p>支持的核心组件：</p>
+<ul>
+<li>character filter：<code>to_lowercase</code>、<code>unicode_normalization</code></li>
+<li>pre-tokenizer：<code>regex</code>、<code>unicode_segmentation</code>、<code>jieba</code></li>
+<li>token filter：<code>stopwords</code>、<code>stemmer</code>、<code>synonym</code>、<code>pg_dict</code>、<code>ngram</code></li>
+<li>model：builtin / Hugging Face / Lindera / custom model</li>
+</ul>
+<p>它的价值不是“替代 PostgreSQL FTS”，而是<strong>把文本清洗、切词、词表映射这层做成了数据库内可配置基础设施</strong>。</p>
+<h3 id="第三层vectorchord-bm25">第三层：<code>VectorChord-BM25</code></h3>
+<p>当你不只想“匹配到”，而是想要：</p>
+<ul>
+<li>更现代的 relevance ranking</li>
+<li>原生 BM25</li>
+<li>top-k sparse retrieval</li>
+<li>为混合检索做 sparse 分支</li>
+</ul>
+<p>就可以继续往上接 <a href="https://github.com/tensorchord/VectorChord-bm25"><code>VectorChord-BM25</code></a>。</p>
+<p>它的核心思路是：</p>
+<ul>
+<li>用 <code>pg_tokenizer.rs</code> 把文本变成 token id</li>
+<li>token id 聚合成 <code>bm25vector</code></li>
+<li>在 PostgreSQL 内部建立 BM25 倒排索引</li>
+<li>用 Block-WeakAnd 做 top-k 剪枝</li>
+</ul>
+<h2 id="端到端链路图">端到端链路图</h2>
+<p>这张图可以直接把 <code>pg_tokenizer.rs -&gt; bm25vector -&gt; VectorChord-BM25</code> 串起来看：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">写入侧
+──────
+
+原始文本
+  │
+  │ 1. pg_tokenizer.rs
+  ▼
+Text Analyzer
+  character_filters
+  -&gt; pre_tokenizer
+  -&gt; token_filters
+  │
+  ▼
+tokens: [&#34;postgresql&#34;, &#34;search&#34;, &#34;bm25&#34;, ...]
+  │
+  │ 2. model
+  ▼
+token ids: [1012, 3899, 4248, ...]   -- INT[]
+  │
+  │ 3. cast / 聚合词频
+  ▼
+bm25vector
+  例: {1012:2, 3899:1, 4248:1}
+  │
+  │ 4. 存表
+  ▼
+documents(id, passage, embedding bm25vector)
+  │
+  │ 5. CREATE INDEX ... USING bm25
+  ▼
+建索引
+  - 统计 doc_cnt
+  - 统计 sum_of_document_lengths / avgdl
+  - 统计每个 term 的 df
+  - 为每个 term 建 posting list
+  - 每 128 docs 切 block
+  - 为每个 block 预存 upper bound
+  ▼
+BM25 索引文件
+  meta
+  documents/payload
+  tokens
+  summaries
+  blocks
+
+
+查询侧
+──────
+
+查询文本 &#34;PostgreSQL search&#34;
+  │
+  │ 1. 同一个 tokenizer
+  ▼
+query token ids: [1012, 3899]
+  │
+  ▼
+query bm25vector
+  │
+  │ 2. to_bm25query(index, vector)
+  ▼
+bm25query
+  │
+  │ 3. SQL
+  │    ORDER BY embedding &lt;&amp;&gt; bm25query LIMIT k
+  ▼
+Index Scan
+  - 读 token posting
+  - 用 token upper bound 找 pivot
+  - 用 block upper bound 跳过无望 block
+  - 必要时精算真实 BM25
+  - 可选 prefilter 先过 WHERE
+  ▼
+Top-k rows
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="pg_tokenizerrs-为什么重要"><code>pg_tokenizer.rs</code> 为什么重要</h2>
+<p>很多人看到 BM25，会直接把注意力放在倒排索引和排序函数上。</p>
+<p>但在我看来，Agent 项目里真正决定检索质量下限的，常常不是 BM25 本身，而是 <strong>tokenization pipeline</strong>。</p>
+<p>原因很简单：</p>
+<ul>
+<li>你怎么切词，决定了词项空间长什么样</li>
+<li>你怎么做 normalize，决定了同义词和变体会不会被打散</li>
+<li>你怎么做 stopwords 和 stemmer，决定了噪音会不会淹没有效信号</li>
+<li>你怎么维护 custom model，决定了领域术语会不会被保留下来</li>
+</ul>
+<p><code>pg_tokenizer.rs</code> 的强点就在于，它把这些都拉回到了 PostgreSQL 体系里。</p>
+<h3 id="它最实用的三个能力">它最实用的三个能力</h3>
+<p><strong>1. 可组合 analyzer</strong></p>
+<p>你可以单独定义 <code>text_analyzer</code>，也可以在 <code>tokenizer</code> 里 inline 写。</p>
+<p>这意味着不同数据类型可以有不同的处理链：</p>
+<ul>
+<li>对话历史一套 analyzer</li>
+<li>技术文档一套 analyzer</li>
+<li>中文知识库一套 analyzer</li>
+<li>代码片段甚至可以单独配 regex + ngram</li>
+</ul>
+<p><strong>2. custom model</strong></p>
+<p>它支持基于你的语料表生成数据库内词表，并且增量维护。</p>
+<p>这对于 Agent 特别有价值，因为 Agent 的词项空间经常高度领域化：</p>
+<ul>
+<li>内部项目名</li>
+<li>代码仓库名</li>
+<li>用户自定义术语</li>
+<li>企业内部缩写</li>
+</ul>
+<p>你不一定总能指望通用 tokenizer 做得刚刚好。</p>
+<p><strong>3. preload model</strong></p>
+<p>模型可以在 PostgreSQL 启动时预加载，避免首次 query 卡顿。</p>
+<p>代价是会多占内存，但对交互式 Agent 来说，这种取舍非常合理。</p>
+<h2 id="vectorchord-bm25-解决的不是能搜而是搜得更像搜索引擎"><code>VectorChord-BM25</code> 解决的不是“能搜”，而是“搜得更像搜索引擎”</h2>
+<p>如果说 PostgreSQL 内置 FTS 已经解决了“能搜”，那 <code>VectorChord-BM25</code> 解决的是：</p>
+<blockquote>
+<p>我希望 PostgreSQL 里的 sparse retrieval，也能有现代搜索引擎级别的 BM25 排序和 top-k 性能。</p>
+</blockquote>
+<p>它的核心能力有三层：</p>
+<h3 id="1-bm25vector">1. <code>bm25vector</code></h3>
+<p>它不是普通文本，而是稀疏词袋表示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">{term_id: tf}
+</code></pre></td></tr></table>
+</div>
+</div><p>这让 PostgreSQL 可以直接把“文档向量”当成一种原生类型来处理。</p>
+<h3 id="2-原生-bm25-倒排索引">2. 原生 BM25 倒排索引</h3>
+<p>建索引时会统计：</p>
+<ul>
+<li>文档总数 <code>doc_cnt</code></li>
+<li>总词数与平均文档长度 <code>avgdl</code></li>
+<li>每个 term 的文档频率 <code>df</code></li>
+<li>每个 term 的 posting list</li>
+</ul>
+<p>也就是说，它不是“查询时临时算一下相关度”，而是把 BM25 真正落进了索引结构。</p>
+<h3 id="3-weakand--block-wand">3. WeakAND / Block-WAND</h3>
+<p>这是真正让 top-k 检索快起来的关键。</p>
+<p>BM25 决定“如何打分”，WeakAND 决定“哪些候选根本不用打分”。</p>
+<p>它的思想可以压缩成一句话：</p>
+<blockquote>
+<p>如果某个 posting block 的理论最高分，连当前 top-k 门槛都过不了，就整块跳过。</p>
+</blockquote>
+<p>所以性能的核心不是“算得更快”，而是“少算很多”。</p>
+<h2 id="为什么这比-es-更像-agent-项目要的东西">为什么这比 ES 更像 Agent 项目要的东西</h2>
+<p>把前面这些拼起来，你会发现这条链路非常符合 Agent 项目的真实需求。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>PostgreSQL FTS 路线</th>
+<th>Elasticsearch 路线</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主数据一致性</td>
+<td>同库同事务</td>
+<td>需要同步链路</td>
+</tr>
+<tr>
+<td>权限过滤</td>
+<td>SQL 原生</td>
+<td>需要额外建模或二次过滤</td>
+</tr>
+<tr>
+<td>文本处理</td>
+<td>内置 FTS + <code>pg_tokenizer.rs</code></td>
+<td>analyzer 强，但系统独立</td>
+</tr>
+<tr>
+<td>排序升级</td>
+<td><code>ts_rank</code> -&gt; BM25 扩展</td>
+<td>原生强</td>
+</tr>
+<tr>
+<td>混合检索</td>
+<td>可和向量检索同库共存</td>
+<td>往往再接一套向量系统</td>
+</tr>
+<tr>
+<td>运维复杂度</td>
+<td>一套 PostgreSQL</td>
+<td>额外一套 ES 集群</td>
+</tr>
+<tr>
+<td>适合 Agent 早期迭代</td>
+<td>非常适合</td>
+<td>成本偏高</td>
+</tr>
+</tbody>
+</table>
+<p>在 Agent 项目里，我更看重的是：</p>
+<ul>
+<li>架构简单</li>
+<li>一致性强</li>
+<li>数据不分裂</li>
+<li>可以渐进升级</li>
+</ul>
+<p>而 PostgreSQL 路线刚好满足这四点。</p>
+<h2 id="版本演进为什么我看好这条路线">版本演进：为什么我看好这条路线</h2>
+<p>这条路线不是静态的，它还在快速演进。</p>
+<h3 id="pg_tokenizerrs把文本处理层补齐"><code>pg_tokenizer.rs</code>：把文本处理层补齐</h3>
+<p>这是 PostgreSQL 内置 FTS 的一个重要补位。</p>
+<p>很多时候，问题不在于 Postgres 不会查，而在于它缺一个更灵活的 tokenizer/analyzer 体系。<code>pg_tokenizer.rs</code> 正好把这层补上了。</p>
+<h3 id="vectorchord-bm25-当前稳定版功能完整的一代实现"><code>VectorChord-BM25</code> 当前稳定版：功能完整的一代实现</h3>
+<p>当前主线版本的特点是：</p>
+<ul>
+<li>已经把 BM25 倒排、评分、Block-WeakAnd 跑通</li>
+<li>支持 build / insert / scan / vacuum</li>
+<li>有自己的 page / segment / posting / growing segment 结构</li>
+</ul>
+<p>也就是说，它是一版“能跑、能增量写入、能维护”的完整系统。</p>
+<h3 id="pr-100-rewritehttpsgithubcomtensorchordvectorchord-bm25pull100面向长期维护的二代重构"><a href="https://github.com/tensorchord/VectorChord-bm25/pull/100">PR #100 rewrite</a>：面向长期维护的二代重构</h3>
+<p>但我们也在重写第二代内核。</p>
+<p>这次 rewrite 的方向很清晰：</p>
+<ul>
+<li>把 BM25 核心抽成独立库</li>
+<li>用统一的 relation/page 抽象替代旧的自定义 page/segment 体系</li>
+<li>改成 tuple 化、显式版本化的磁盘格式</li>
+<li>把 build/search 主路径重构得更清晰</li>
+<li>引入可配置 <code>k1/b</code></li>
+<li>把部分配置从旧 GUC 迁到新 reloption / GUC 体系</li>
+</ul>
+<p>这一版更值得关注的，不是“换了一套写法”，而是它明确了我们下一版本的优化方向。</p>
+<p>我们会在下一版本重点推进这几件事：</p>
+<ul>
+<li><strong>把存储格式做得更清晰、更稳定</strong>：从原来偏工程内部实现的 page/segment 组织，走向 tuple 化、显式版本化的磁盘格式。这样后续做索引升级、兼容和迁移时，路径会更明确。</li>
+<li><strong>把 build/search 主路径继续标准化</strong>：把 BM25 的 build 和 search 核心抽出来，和 PostgreSQL 的适配层解耦。这样后面优化检索逻辑、调参数、扩展扫描策略时，改动面会更小。</li>
+<li><strong>把配置从“全局开关思维”改成“索引级配置思维”</strong>：像 <code>k1/b</code>、<code>limit</code>、索引参数这些，会更自然地收敛到 reloption 和新的 GUC 体系里。这样不同索引可以按业务场景做差异化配置。</li>
+<li><strong>把后续在线维护能力做得更统一</strong>：包括增量写入、删除维护、VACUUM 相关路径，最终都落在同一套 relation/page 抽象上，而不是继续沿用旧版里较重的自定义存储层。</li>
+<li><strong>把长期性能优化的落点提前铺好</strong>：比如更清晰的 block summary、token upper bound、scan 路径抽象，本质上都是在为后续 top-k 检索、prefilter 和混合检索优化留接口。</li>
+</ul>
+<p>换句话说，这一轮 rewrite 的价值，不只是“代码更整洁”，而是<strong>我们会在下一版本把 BM25 从一套能跑的实现，推进成一套更容易演进、更容易迁移、更适合长期维护的 PostgreSQL 检索内核</strong>。</p>
+<p>所以我对版本的建议会更务实一些：</p>
+<h3 id="生产如何选">生产如何选</h3>
+<p><strong>如果你现在就要上线：</strong></p>
+<ul>
+<li>优先用当前稳定 release / 主线版本</li>
+<li>特别是有在线写入、删除、VACUUM 诉求时</li>
+</ul>
+<p><strong>如果你在关注未来迁移：</strong></p>
+<ul>
+<li>下一版本会需要一次 <code>REINDEX</code></li>
+<li>一部分 GUC 和索引参数会更规范化</li>
+<li>磁盘格式版本化之后，迁移和升级路径会更清楚</li>
+</ul>
+<p>也就是说，这条路线不是“今天已经完美了”，而是“现在已经足够实用，而且未来方向是对的”。</p>
+<h2 id="我的实践建议">我的实践建议</h2>
+<p>如果你在做 Agent 项目，我会这样选：</p>
+<h3 id="规模小需求简单">规模小、需求简单</h3>
+<ul>
+<li>直接上 PostgreSQL 内置 FTS</li>
+<li><code>tsvector + GIN</code> 足够</li>
+</ul>
+<h3 id="需要更灵活的分词和多语言支持">需要更灵活的分词和多语言支持</h3>
+<ul>
+<li>接 <code>pg_tokenizer.rs</code></li>
+<li>尤其是中文、日文、领域术语场景</li>
+</ul>
+<h3 id="需要更强的-relevance-ranking">需要更强的 relevance ranking</h3>
+<ul>
+<li>上 <code>VectorChord-BM25</code></li>
+<li>用 BM25 替代单纯 <code>ts_rank</code></li>
+</ul>
+<h3 id="需要混合检索">需要混合检索</h3>
+<ul>
+<li>向量检索走 <a href="https://github.com/tensorchord/vectorchord">VectorChord</a></li>
+<li>关键词检索走 VectorChord-BM25</li>
+<li>都留在 PostgreSQL 里</li>
+</ul>
+<p>这条路线的最大优势，是你不需要一开始就把系统切成很多块。</p>
+<p>你可以从最简单的 SQL 原生能力开始，随着需求增长再逐层升级。</p>
+<h2 id="thoughts">Thoughts</h2>
+<p><strong>Agent 项目里的全文检索，本质上不是“做一个搜索引擎”，而是“给 Agent 做一个一致、可控、可扩展的检索底座”。</strong></p>
+<p>这个目标和 ES 最擅长的目标，并不是完全重合的。</p>
+<p>ES 很强，但它强在“搜索系统本身”。</p>
+<p>而 PostgreSQL 更强的地方是：</p>
+<ul>
+<li>它已经是你的主数据底座</li>
+<li>它已经是你的事务边界</li>
+<li>它已经是你的权限和业务逻辑中心</li>
+</ul>
+<p>当全文检索只是 Agent 数据底座的一部分时，把它继续留在 PostgreSQL 里，很多时候反而是更高级的工程判断。</p>
+<h2 id="next-step">Next Step</h2>
+<p>这条路线我还会继续往下写。</p>
+<p>后面我准备继续聊：</p>
+<ul>
+<li>ACID 事务：为什么 Agent 状态管理离不开事务</li>
+<li>JSONB：为什么我偏好 JSONB 而不是单独引入 MongoDB</li>
+<li>混合检索：向量 + BM25 在 PostgreSQL 里怎么拼</li>
+<li>长期记忆：为什么 Agent Memory 最终会回到数据库问题</li>
+</ul>
+<hr>
+<p><em>这是&quot;为什么我在 Agent 项目里只认 PostgreSQL&quot;系列的第二篇。上一篇聊<a href="../vectorchord-deep-dive/">向量搜索</a>，下一篇聊事务。</em></p>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#PostgreSQL</span>
+      
+      <span class="tag">#FTS</span>
+      
+      <span class="tag">#Elasticsearch</span>
+      
+      <span class="tag">#BM25</span>
+      
+      <span class="tag">#pg_tokenizer.rs</span>
+      
+      <span class="tag">#VectorChord-BM25</span>
+      
+      <span class="tag">#Agent</span>
+      
+      <span class="tag">#RAG</span>
+      
+      <span class="tag">#全文检索</span>
+      
+      <span class="tag">#Postgres</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">分享到:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fpostgres-fts-agent%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fpostgres-fts-agent%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=%e4%b8%ba%e4%bb%80%e4%b9%88%e6%88%91%e5%9c%a8%20Agent%20%e9%a1%b9%e7%9b%ae%e9%87%8c%e5%8f%aa%e8%ae%a4%20PostgreSQL%ef%bc%9a%e5%85%a8%e6%96%87%e6%a3%80%e7%b4%a2%e7%af%87&body=https%3a%2f%2fblog.xieydd.top%2fpostgres-fts-agent%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">返回顶部</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/openclaw-memory-choice-guide/" class="prev-post">
+        <span class="nav-label">上一篇</span>
+        <span class="nav-title">OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/" class="next-post">
+        <span class="nav-label">下一篇</span>
+        <span class="nav-title">关于 Kubernetes 中，拓扑感知你需要知道的一切</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-cn"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+    </main>
+  </div>
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

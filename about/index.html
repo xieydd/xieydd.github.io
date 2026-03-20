@@ -11,6 +11,9 @@
   
   
   
+  
+  
+  
     
       
     
@@ -18,12 +21,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>关于 xieydd | Xieydd&#39;s Blog</title>
-  <meta name="description" content="xieydd 的个人介绍页，包含 AI Infra、Kubernetes、PostgreSQL、向量数据库与云架构相关经历、项目与联系方式。">
+  <meta name="description" content="xieydd 的个人介绍页，包含 AI Infra、PostgreSQL、Agent、eBPF、向量数据库与云架构相关经历、项目与联系方式。">
   <meta name="author" content="xieydd">
   
   
   <meta property="og:title" content="关于 xieydd | Xieydd&#39;s Blog">
-  <meta property="og:description" content="xieydd 的个人介绍页，包含 AI Infra、Kubernetes、PostgreSQL、向量数据库与云架构相关经历、项目与联系方式。">
+  <meta property="og:description" content="xieydd 的个人介绍页，包含 AI Infra、PostgreSQL、Agent、eBPF、向量数据库与云架构相关经历、项目与联系方式。">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://blog.xieydd.top/about/">
   <meta property="og:site_name" content="Xieydd&#39;s Blog">
@@ -33,7 +36,7 @@
   
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="关于 xieydd | Xieydd&#39;s Blog">
-  <meta name="twitter:description" content="xieydd 的个人介绍页，包含 AI Infra、Kubernetes、PostgreSQL、向量数据库与云架构相关经历、项目与联系方式。">
+  <meta name="twitter:description" content="xieydd 的个人介绍页，包含 AI Infra、PostgreSQL、Agent、eBPF、向量数据库与云架构相关经历、项目与联系方式。">
   <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
   
   <meta name="twitter:creator" content="@xieydd_">
@@ -41,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2022-12-29T15:57:49&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-18T11:44:26&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T11:10:24&#43;08:00">
   
   
   
@@ -73,7 +76,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-18T11:44:26+08:00","datePublished":"2022-12-29T15:57:49+08:00","description":"xieydd 的个人介绍页，包含 AI Infra、Kubernetes、PostgreSQL、向量数据库与云架构相关经历、项目与联系方式。","headline":"关于 xieydd","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/about/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/about/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T11:10:24+08:00","datePublished":"2022-12-29T15:57:49+08:00","description":"xieydd 的个人介绍页，包含 AI Infra、PostgreSQL、Agent、eBPF、向量数据库与云架构相关经历、项目与联系方式。","headline":"关于 xieydd","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/about/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/about/"}
   </script>
   
 
@@ -150,25 +153,15 @@
     <h1 class="post-title" style="view-transition-name: index.zh-cn">关于 xieydd</h1>
     <div class="post-meta">
       <span>发布于 29 Dec, 2022</span>
-      <span>• 2 min read</span>
+      <span>• 3 min read</span>
     </div>
   </header>
 
   
-  <nav class="toc">
-    <h2>目录</h2>
-    <nav id="TableOfContents">
-  <ul>
-    <li></li>
-  </ul>
-</nav>
-  </nav>
-  
 
   <div class="post-content">
     <p>📫  您如果想联系我，可以直接发送邮件，邮箱地址 <a href="mailto:xieydd@gmail.com">xieydd@gmail.com</a>,或者您可以加我的微信 <code>echo -n 'eGlleWRkX2hhaGEK' | base64 -d</code>.</p>
-<p>💻</p>
-<p>截止到 2026 年，有着超过 8 年的 AI Infra 的经验：</p>
+<p>💻 截止到 2026 年，有着超过 8 年的 AI Infra、数据库与系统工程经验：</p>
 <h3 id="2018-20212含实习unisoundhttpswwwunisoundcom">2018-2021.2（含实习）<a href="https://www.unisound.com/">Unisound</a></h3>
 <ol>
 <li>在 AI 算法公司 <a href="https://www.unisound.com/">Unisound</a> 负责 Atlas 超算平台的研发和运维，支持 NLP 以及 CV 模型训练。主要工作如下：</li>
@@ -199,7 +192,7 @@
 </ul>
 <h3 id="20235-至今-tensorchordhttpstensorchordai">2023.5-至今 <a href="https://tensorchord.ai">Tensorchord</a></h3>
 <ol>
-<li>负责在 GCP 上构建 Serverless Inference 平台 <a href="https://modelz.ai/">ModelZ</a>， 提供极致的冷启动优化模型服务推理服务：</li>
+<li>负责在 GCP 上构建无服务器推理平台 <a href="https://modelz.ai/">ModelZ</a>， 提供极致的冷启动优化模型服务推理服务：</li>
 </ol>
 <ul>
 <li>通过构建缓存模型服务、镜像预热等手段优化模型服务的冷启动时间</li>
@@ -211,11 +204,17 @@
 <ul>
 <li>在 AWS 上构建基于 PostgreSQL 的向量数据库，实现控制面、数据面分离，BYOC(Bring Your Own Cloud)、BYOD(Bring Your Own Data) 等功能</li>
 <li>引入云原生架构，实现 PostgreSQL 存算分离、高可用、Backup、PITR(Point-In-Time Recovery)、In-Place Upgrade 等功能</li>
-<li>构建基于 PostgreSQL 企业级知识库 RAG 系统, 作为 agent 记忆模块</li>
 </ul>
-<p>技能栈：Kubernetes, GCP, AWS, Kubeflow, FinOps, RAG, Vector Database, Storage Accelerate, Tensorflow , Pytorch, Cloud Native, MLOps, AI Infra, PostgreSQL etc.</p>
+<ol start="3">
+<li>新业务探索：</li>
+</ol>
+<ul>
+<li>构建基于 PostgreSQL 的企业级知识库 RAG 系统，作为 Agent 记忆模块</li>
+<li>探索开发基于 eBPF 的 Agent 安全观测性项目，包含 Prompt Injection 防护、Skill Security SaaS 以及 eBPF 等多个方向的研究与开发，提升 Agent 运行过程中的安全可观测性与问题定位能力</li>
+</ul>
+<p>技能栈：Kubernetes, GCP, AWS, Kubeflow, FinOps, RAG, Vector Database, Storage Accelerate, Cloud Native, PostgreSQL, eBPF, Agent etc.</p>
 <h3 id="开源项目">开源项目</h3>
-<p>🌱 目前专注在 MLOps 以及 FinOps 领域,贡献了一些开源项目：</p>
+<p>🌱 目前专注在 PostgreSQL、Agent、eBPF 以及 FinOps 方向，贡献了一些开源项目：</p>
 <ol>
 <li><a href="https://github.com/fluid-cloudnative/fluid">fluid</a> Fluid, elastic data abstraction and acceleration for BigData/AI applications in cloud. (Project under CNCF)</li>
 <li><a href="https://github.com/gocrane/crane">crane</a> Crane is a FinOps Platform for Cloud Resource Analytics and Economics in Kubernetes clusters. The goal is not only to help users to manage cloud cost easier but also ensure the quality of applications.</li>
@@ -322,7 +321,6 @@
     </div>
   </footer>
 </article>
-
 
 <div class="giscus-container" style="margin-top: 3rem;">
   <script src="https://giscus.app/client.js"

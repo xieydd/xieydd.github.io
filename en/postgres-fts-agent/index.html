@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Why I Only Use PostgreSQL For Full-Text Search In Agent Projects | Xieydd&#39;s Blog</title>
+  <meta name="description" content="Why PostgreSQL FTS is a better fit than Elasticsearch for full-text search in AI Agent projects. A deep dive into PostgreSQL FTS, pg_tokenizer.rs, VectorChord-BM25, BM25 with WeakAND, and the future evolution roadmap.">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="Why I Only Use PostgreSQL For Full-Text Search In Agent Projects | Xieydd&#39;s Blog">
+  <meta property="og:description" content="Why PostgreSQL FTS is a better fit than Elasticsearch for full-text search in AI Agent projects. A deep dive into PostgreSQL FTS, pg_tokenizer.rs, VectorChord-BM25, BM25 with WeakAND, and the future evolution roadmap.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/postgres-fts-agent/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Why I Only Use PostgreSQL For Full-Text Search In Agent Projects | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="Why PostgreSQL FTS is a better fit than Elasticsearch for full-text search in AI Agent projects. A deep dive into PostgreSQL FTS, pg_tokenizer.rs, VectorChord-BM25, BM25 with WeakAND, and the future evolution roadmap.">
+  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-03-19T10:00:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T11:10:24&#43;08:00">
+  
+  <meta property="article:tag" content="PostgreSQL">
+  
+  <meta property="article:tag" content="FTS">
+  
+  <meta property="article:tag" content="Elasticsearch">
+  
+  <meta property="article:tag" content="BM25">
+  
+  <meta property="article:tag" content="pg_tokenizer.rs">
+  
+  <meta property="article:tag" content="VectorChord-BM25">
+  
+  <meta property="article:tag" content="Agent">
+  
+  <meta property="article:tag" content="RAG">
+  
+  <meta property="article:tag" content="Postgres">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/en/postgres-fts-agent/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/postgres-fts-agent/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/postgres-fts-agent/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/postgres-fts-agent/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T11:10:24+08:00","datePublished":"2026-03-19T10:00:00+08:00","description":"Why PostgreSQL FTS is a better fit than Elasticsearch for full-text search in AI Agent projects. A deep dive into PostgreSQL FTS, pg_tokenizer.rs, VectorChord-BM25, BM25 with WeakAND, and the future evolution roadmap.","headline":"Why I Only Use PostgreSQL For Full-Text Search In Agent Projects","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/postgres-fts-agent/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/postgres-fts-agent/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/en/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/en/posts/">Posts</a>
+        <a href="https://blog.xieydd.top/en/about/">About</a>
+        
+        <div class="nav-icons">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/postgres-fts-agent/" class="lang-link">中文</a>
+          
+        
+      
+      
+      
+    
+  
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.en">Why I Only Use PostgreSQL For Full-Text Search In Agent Projects</h1>
+    <div class="post-meta">
+      <span>Published: 19 Mar, 2026</span>
+      <span>• 15 min read</span>
+    </div>
+  </header>
+
+  
+
+  <div class="post-content">
+    <p><img src="/infographic/postgres-fts-agent/infographic.png" alt="Why PostgreSQL FTS For Agent Projects"></p>
+<p>In my <a href="../vectorchord-deep-dive/">previous post</a> about vector search, someone asked me: what about full-text search? Shouldn't we still use Elasticsearch for keyword search in Agent projects?</p>
+<p>My answer remains the same: <strong>for most Agent projects, I still prioritize PostgreSQL.</strong></p>
+<p>This might sound counter-intuitive. After all, when people talk about full-text search, the first thing that comes to mind is Elasticsearch, and PostgreSQL's <a href="https://www.postgresql.org/docs/current/textsearch-intro.html">FTS</a> is often seen as a &ldquo;good-enough but not professional&rdquo; secondary feature.</p>
+<p>But in my view, while this judgment might hold for traditional search engine scenarios, the conclusion is often reversed when it comes to <strong>Agent projects</strong>.</p>
+<p>Because full-text search in Agent projects is not the same problem as building a site search engine.</p>
+<h2 id="what-do-we-really-need-to-solve-in-the-agent-era">What Do We Really Need To Solve In The Agent Era?</h2>
+<p>Before jumping into BM25, inverted indexes, and tokenizers, let's step back and look at the real requirements in Agent projects.</p>
+<h3 id="1-the-search-target-isnt-a-static-document-collection">1. The search target isn't a static document collection</h3>
+<p>Agents typically need to search more than just product documentation.</p>
+<p>They might need to search across:</p>
+<ul>
+<li>User-uploaded PDFs, Markdown, web snapshots</li>
+<li>Conversation history</li>
+<li>Long-term memory</li>
+<li>Todos, task states, tool execution logs</li>
+<li>Structured and semi-structured fields from business systems</li>
+</ul>
+<p>These data have several characteristics:</p>
+<ul>
+<li>Frequently updated</li>
+<li>Complex permission boundaries</li>
+<li>Strongly coupled with business master data</li>
+<li>Need to stay synchronized with transaction consistency</li>
+</ul>
+<p>This is a completely different problem from &ldquo;offline sync documents to ES every day and serve search pages&rdquo;.</p>
+<h3 id="2-agent-search-almost-always-includes-filtering-conditions">2. Agent search almost always includes filtering conditions</h3>
+<p>Traditional search often looks like:</p>
+<blockquote>
+<p>Find the top 10 most relevant documents across all documents matching my query.</p>
+</blockquote>
+<p>Agent search looks more like:</p>
+<blockquote>
+<p>Within &ldquo;the knowledge base this user has access to&rdquo;, filter by last 30 days, filter by workspace, filter by document type, filter by project ID, then find the most relevant results matching the query.</p>
+</blockquote>
+<p>In other words, full-text search in Agent scenarios is naturally:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">WHERE</span> <span class="n">permission</span> <span class="n">conditions</span>
+  <span class="k">AND</span> <span class="n">tenant</span> <span class="n">conditions</span>
+  <span class="k">AND</span> <span class="n">time</span> <span class="n">conditions</span>
+  <span class="k">AND</span> <span class="k">type</span> <span class="n">conditions</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">relevance</span>
+<span class="k">LIMIT</span> <span class="n">k</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>In this case, <strong>filtering and sorting aren't two separate logic steps in two different systems — they should be two parts of the same execution path.</strong></p>
+<h3 id="3-agents-fear-consistency-problems-more-than-they-fear-not-squeezing-out-every-last-qps">3. Agents fear consistency problems more than they fear not squeezing out every last QPS</h3>
+<p>What really hurts in Agent projects isn't &ldquo;queries being 20% slower&rdquo;, it's:</p>
+<ul>
+<li>User just uploaded a document and can't find it</li>
+<li>Database deleted a record but ES still has stale dirty data</li>
+<li>Permissions were revoked but search results still leak</li>
+<li>Business table updated title/state/ownership but search index isn't in sync</li>
+</ul>
+<p>In these systems, <strong>consistency, simpler architecture, and lower operations overhead</strong> are usually more important than the theoretical peak performance of a dedicated search system.</p>
+<h2 id="why-i-dont-prioritize-elasticsearch">Why I Don't Prioritize Elasticsearch</h2>
+<p>Let me be clear: <strong>I'm not saying Elasticsearch is bad.</strong></p>
+<p>Elasticsearch is still excellent for these scenarios:</p>
+<ul>
+<li>Massive-scale public search sites</li>
+<li>Log search and observability</li>
+<li>Complex aggregations and analytics</li>
+<li>Mature search teams already have extensive experience with it</li>
+</ul>
+<p>But for most Agent projects, it has four practical problems.</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Specific Impact in Agent Projects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dual-write &amp; Synchronization</td>
+<td>Master data in PostgreSQL, search in ES — naturally requires CDC, async sync, retries, and replay</td>
+</tr>
+<tr>
+<td>Consistency Complexity</td>
+<td>You have to consider latency and stale reads for inserts, deletes, permission changes, and rebuilds</td>
+</tr>
+<tr>
+<td>Filtering Logic Split</td>
+<td>Business conditions split between DB and ES — final logic can drift</td>
+</tr>
+<tr>
+<td>High Operations Cost</td>
+<td>One extra cluster, one extra backup, one extra monitoring, one extra round of performance tuning</td>
+</tr>
+</tbody>
+</table>
+<p>The first point is often underestimated.</p>
+<p>When many teams adopt Elasticsearch, they only think &ldquo;it's better for search&rdquo; but don't properly calculate the engineering cost down the road:</p>
+<ul>
+<li>Needs synchronization pipeline</li>
+<li>Needs mapping management</li>
+<li>Needs analyzer management</li>
+<li>Needs reindexing strategy</li>
+<li>Needs hot-cold tiering and resource planning</li>
+<li>Needs handling schema evolution</li>
+</ul>
+<p>And Agent projects are typically still in the rapid experimentation phase. The last thing you need is to introduce another complex system along the critical path of &ldquo;memory, retrieval, state management&rdquo;.</p>
+<h2 id="why-postgresql-fts-is-better-for-agent-projects">Why PostgreSQL FTS Is Better For Agent Projects</h2>
+<p>In Agent scenarios, PostgreSQL's advantage isn't just that it &ldquo;can also do full-text search&rdquo; — it happens to hit exactly the points that Agent systems value most.</p>
+<h3 id="1-business-data-and-search-data-live-in-the-same-transaction">1. Business data and search data live in the same transaction</h3>
+<p>This is the biggest advantage.</p>
+<p>If your documents table, conversation table, and memory table are already in PostgreSQL, then full-text search can naturally live together with your master data:</p>
+<ul>
+<li>When you insert a document, you write the search field at the same time</li>
+<li>When you update title, state, or permissions, it takes effect in the same transaction</li>
+<li>When you delete a record, it doesn't leave behind an &ldquo;index ghost in a parallel universe&rdquo;</li>
+</ul>
+<p>For Agent projects, this &ldquo;one system rules them all&rdquo; feeling is incredibly important.</p>
+<h3 id="2-filtering-sorting-and-joins-can-all-happen-in-a-single-execution-plan">2. Filtering, sorting, and joins can all happen in a single execution plan</h3>
+<p>Agent search is rarely bare search.</p>
+<p>You often need to mix full-text search with these operations:</p>
+<ul>
+<li><code>JOIN users / projects / permissions</code></li>
+<li><code>WHERE tenant_id = ?</code></li>
+<li><code>WHERE created_at &gt; now() - interval '30 days'</code></li>
+<li><code>WHERE source_type IN (...)</code></li>
+<li><code>ORDER BY rank</code></li>
+</ul>
+<p>PostgreSQL's value is clear here: <strong>these aren't &ldquo;post-search processing steps&rdquo; — they're native SQL capabilities.</strong></p>
+<p>If you've already accepted that &ldquo;PostgreSQL is the data foundation for Agents&rdquo;, then keeping full-text search in PostgreSQL significantly reduces overall complexity.</p>
+<h3 id="3-built-in-fts-is-already-much-more-capable-than-most-people-think">3. Built-in FTS is already much more capable than most people think</h3>
+<p>Many people still have an outdated impression of PostgreSQL FTS:</p>
+<ul>
+<li>Simple tokenization</li>
+<li>Average ranking</li>
+<li>Average performance</li>
+</ul>
+<p>But in reality, when used correctly, built-in FTS is already more than enough to handle most Agent search requirements:</p>
+<ul>
+<li><code>tsvector</code></li>
+<li><code>tsquery / websearch_to_tsquery / plainto_tsquery</code></li>
+<li>GIN indexes</li>
+<li>phrase / prefix / boolean query</li>
+<li>highlighting</li>
+<li>dictionaries and stemmers</li>
+</ul>
+<p>For the scenario of &ldquo;finding documents containing keywords, phrases, and semantically similar word forms with business filtering&rdquo;, it's not weak at all.</p>
+<h3 id="4-when-you-need-more-modern-ranking-you-can-still-upgrade-without-leaving-postgresql">4. When you need more modern ranking, you can still upgrade without leaving PostgreSQL</h3>
+<p>This is what I value most.</p>
+<p>Many teams think:</p>
+<blockquote>
+<p>Start with PostgreSQL for basic search, when you want BM25 or better ranking, switch to ES.</p>
+</blockquote>
+<p>But nowadays you don't have to make that jump.</p>
+<p>You can follow this upgrade path completely within the PostgreSQL ecosystem:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">PostgreSQL built-in FTS
+    -&gt; pg_tokenizer.rs
+    -&gt; VectorChord-BM25
+    -&gt; Hybrid search (BM25 + vector search)
+</code></pre></td></tr></table>
+</div>
+</div><p>In other words, <strong>from basic full-text search to modern sparse retrieval, you can stay entirely within the PostgreSQL ecosystem.</strong></p>
+<p>This is critical for Agent projects because it means:</p>
+<ul>
+<li>No architecture split</li>
+<li>No data split</li>
+<li>No operations split</li>
+<li>No cognitive split</li>
+</ul>
+<h2 id="the-three-layer-evolution-of-postgresql-full-text-search">The Three-Layer Evolution of PostgreSQL Full-Text Search</h2>
+<p>If we classify by capability evolution, I divide full-text search in PostgreSQL into three layers.</p>
+<h3 id="layer-1-built-in-fts">Layer 1: Built-in FTS</h3>
+<p>The classic approach:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">documents</span>
+<span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">fts</span> <span class="n">tsvector</span><span class="p">;</span>
+
+<span class="k">UPDATE</span> <span class="n">documents</span>
+<span class="k">SET</span> <span class="n">fts</span> <span class="o">=</span> <span class="n">to_tsvector</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">|</span><span class="o">|</span> <span class="s1">&#39;</span><span class="s1"> </span><span class="s1">&#39;</span> <span class="o">|</span><span class="o">|</span> <span class="n">body</span><span class="p">)</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">documents_fts_gin</span>
+<span class="k">ON</span> <span class="n">documents</span> <span class="k">USING</span> <span class="n">gin</span> <span class="p">(</span><span class="n">fts</span><span class="p">)</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span>
+<span class="k">FROM</span> <span class="n">documents</span>
+<span class="k">WHERE</span> <span class="n">fts</span> <span class="o">@</span><span class="o">@</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s1">postgresql search</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ts_rank</span><span class="p">(</span><span class="n">fts</span><span class="p">,</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s1">postgresql search</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span> <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The advantages of this layer are:</p>
+<ul>
+<li>Native</li>
+<li>Mature</li>
+<li>Good performance</li>
+<li>Deep integration with business SQL</li>
+</ul>
+<p>If your Agent project primarily deals with English, simple tokenization, and basic ranking, this layer is already sufficient.</p>
+<h3 id="layer-2-pg_tokenizerrs">Layer 2: <code>pg_tokenizer.rs</code></h3>
+<p>Built-in FTS starts to fall short when you encounter these problems:</p>
+<ul>
+<li>Non-space-separated languages like Chinese and Japanese</li>
+<li>Need more flexible tokenizers and stopwords</li>
+<li>Need custom vocabulary</li>
+<li>Want token ids as sparse retrieval input</li>
+</ul>
+<p>This is where <a href="https://github.com/tensorchord/pg_tokenizer.rs"><code>pg_tokenizer.rs</code></a> comes in.</p>
+<p>It doesn't just &ldquo;add a tokenizer to Postgres&rdquo; — it breaks the text processing pipeline into configurable modules:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">text
+  -&gt; character filters
+  -&gt; pre-tokenizer
+  -&gt; token filters
+  -&gt; model
+  -&gt; INT[]
+</code></pre></td></tr></table>
+</div>
+</div><p>Supported core components:</p>
+<ul>
+<li>character filter: <code>to_lowercase</code>, <code>unicode_normalization</code></li>
+<li>pre-tokenizer: <code>regex</code>, <code>unicode_segmentation</code>, <code>jieba</code></li>
+<li>token filter: <code>stopwords</code>, <code>stemmer</code>, <code>synonym</code>, <code>pg_dict</code>, <code>ngram</code></li>
+<li>model: builtin / Hugging Face / Lindera / custom model</li>
+</ul>
+<p>Its value isn't &ldquo;replacing PostgreSQL FTS&rdquo; — it's <strong>making text cleaning, tokenization, and vocabulary mapping a configurable infrastructure inside the database.</strong></p>
+<h3 id="layer-3-vectorchord-bm25">Layer 3: <code>VectorChord-BM25</code></h3>
+<p>When you want more than just &ldquo;matching&rdquo;, you can upgrade to:</p>
+<ul>
+<li>More modern relevance ranking</li>
+<li>Native BM25</li>
+<li>top-k sparse retrieval</li>
+<li>Sparse branching for hybrid search</li>
+</ul>
+<p>So you can add <a href="https://github.com/tensorchord/VectorChord-bm25"><code>VectorChord-BM25</code></a>.</p>
+<p>Its core idea is:</p>
+<ul>
+<li>Use <code>pg_tokenizer.rs</code> to convert text to token ids</li>
+<li>Aggregate token ids into <code>bm25vector</code></li>
+<li>Build BM25 inverted index inside PostgreSQL</li>
+<li>Use Block-WeakAnd for top-k pruning</li>
+</ul>
+<h2 id="end-to-end-pipeline-diagram">End-to-End Pipeline Diagram</h2>
+<p>This diagram shows how <code>pg_tokenizer.rs -&gt; bm25vector -&gt; VectorChord-BM25</code> connects together:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Write Path
+──────
+
+Raw text
+  │
+  │ 1. pg_tokenizer.rs
+  ▼
+Text Analyzer
+  character_filters
+  -&gt; pre_tokenizer
+  -&gt; token_filters
+  │
+  ▼
+tokens: [&#34;postgresql&#34;, &#34;search&#34;, &#34;bm25&#34;, ...]
+  │
+  │ 2. model
+  ▼
+token ids: [1012, 3899, 4248, ...]   -- INT[]
+  │
+  │ 3. cast / aggregate term frequencies
+  ▼
+bm25vector
+  example: {1012:2, 3899:1, 4248:1}
+  │
+  │ 4. store in table
+  ▼
+documents(id, passage, embedding, bm25vector)
+  │
+  │ 5. CREATE INDEX ... USING bm25
+  ▼
+Build Index
+  - Count doc_cnt
+  - Count sum_of_document_lengths / avgdl
+  - Count df for each term
+  - Build posting list for each term
+  - Split every 126 docs into blocks
+  - Precompute upper bound for each block
+  ▼
+BM25 Index File
+  meta
+  documents/payload
+  tokens
+  summaries
+  blocks
+  ▼
+
+
+Query Path
+──────
+
+Query text &#34;PostgreSQL search&#34;
+  │
+  │ 1. same tokenizer
+  ▼
+query token ids: [1012, 3899]
+  │
+  ▼
+query bm25vector
+  │
+  │ 2. to_bm25query(index, vector)
+  ▼
+bm25query
+  │
+  │ 3. SQL
+  │    ORDER BY embedding &lt;&amp;&gt; bm25query LIMIT k
+  ▼
+Index Scan
+  - Read token postings
+  - Use token upper bound to find pivot
+  - Skip hopeless blocks with block upper bound
+  - Compute exact BM25 score when needed
+  - Optional prefilter with WHERE clause
+  ▼
+Top-k rows
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="why-pg_tokenizerrs-matters">Why <code>pg_tokenizer.rs</code> Matters</h2>
+<p>Many people when they see BM25 immediately focus on the inverted index and ranking function.</p>
+<p>But in my opinion, for Agent projects, what really determines the lower bound of retrieval quality isn't BM25 itself — it's the <strong>tokenization pipeline</strong>.</p>
+<p>The reason is simple:</p>
+<ul>
+<li>How you tokenize defines what the term space looks like</li>
+<li>How you normalize determines whether synonyms and variants get grouped together</li>
+<li>How you handle stopwords and stemming determines whether noise drowns out your signal</li>
+<li>How you maintain custom models determines whether domain terms get preserved properly</li>
+</ul>
+<p><code>pg_tokenizer.rs</code> shines because it brings all of this back into the PostgreSQL ecosystem.</p>
+<h3 id="its-three-most-useful-capabilities">Its three most useful capabilities</h3>
+<p><strong>1. Composable analyzers</strong></p>
+<p>You can define a <code>text_analyzer</code> separately, or inline it inside a <code>tokenizer</code> definition.</p>
+<p>This means different data types can have different processing chains:</p>
+<ul>
+<li>One analyzer for conversation history</li>
+<li>One analyzer for technical documentation</li>
+<li>One analyzer for Chinese knowledge bases</li>
+<li>Code snippets can even have their own regex + ngram configuration</li>
+</ul>
+<p><strong>2. Custom models</strong></p>
+<p>It supports generating and incrementally maintaining vocabulary inside the database based on your corpus.</p>
+<p>This is especially valuable for Agents because the term space for Agents is often highly domain-specific:</p>
+<ul>
+<li>Internal project names</li>
+<li>Repository names</li>
+<li>User-defined terminology</li>
+<li>Internal company abbreviations</li>
+</ul>
+<p>You can't always count on a generic tokenizer to get it right.</p>
+<p><strong>3. Preloaded models</strong></p>
+<p>Models can be preloaded on PostgreSQL startup to avoid stalling the first query.</p>
+<p>This costs extra memory, but for interactive Agents, this tradeoff is completely reasonable.</p>
+<h2 id="what-vectorchord-bm25-solves">What <code>VectorChord-BM25</code> Solves</h2>
+<p>If PostgreSQL built-in FTS already solves &ldquo;can we search&rdquo;, then <code>VectorChord-BM25</code> solves:</p>
+<blockquote>
+<p>I want sparse retrieval with modern BM25 ranking and top-k performance in PostgreSQL, just like a modern search engine.</p>
+</blockquote>
+<p>It has three core layers of capability:</p>
+<h3 id="1-bm25vector">1. <code>bm25vector</code></h3>
+<p>It's not plain text — it's a sparse bag-of-words representation:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">{term_id: tf}
+</code></pre></td></tr></table>
+</div>
+</div><p>This allows PostgreSQL to treat &ldquo;document vectors&rdquo; as a native type directly.</p>
+<h3 id="2-native-bm25-inverted-index">2. Native BM25 inverted index</h3>
+<p>During indexing it collects statistics:</p>
+<ul>
+<li>Total document count <code>doc_cnt</code></li>
+<li>Total word count and average document length <code>avgdl</code></li>
+<li>Document frequency <code>df</code> for each term</li>
+<li>Posting list for each term</li>
+</ul>
+<p>In other words, it doesn't &ldquo;compute relevance on the fly at query time&rdquo; — it actually puts BM25 into the index structure.</p>
+<h3 id="3-weakand--block-wand">3. WeakAND / Block-WAND</h3>
+<p>This is what really makes top-k retrieval fast.</p>
+<p>BM25 determines &ldquo;how to score&rdquo;, WeakAND determines &ldquo;which candidates don't even need to be scored&rdquo;.</p>
+<p>The idea can be compressed into one sentence:</p>
+<blockquote>
+<p>If the theoretical maximum score of a posting block can't even pass the current top-k threshold, skip the entire block.</p>
+</blockquote>
+<p>So the core performance gain isn't &ldquo;computing faster&rdquo; — it's &ldquo;computing less&rdquo;.</p>
+<h2 id="why-this-is-a-better-fit-for-agent-projects-than-es">Why This Is A Better Fit For Agent Projects Than ES</h2>
+<p>Putting it all together, you'll find this path fits the real needs of Agent projects perfectly.</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>PostgreSQL FTS Path</th>
+<th>Elasticsearch Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Master Data Consistency</td>
+<td>Same database, same transaction</td>
+<td>Needs synchronization pipeline</td>
+</tr>
+<tr>
+<td>Permission Filtering</td>
+<td>Native SQL</td>
+<td>Needs extra modeling or secondary filtering</td>
+</tr>
+<tr>
+<td>Text Processing</td>
+<td>Built-in FTS + <code>pg_tokenizer.rs</code></td>
+<td>Strong analyzer, but separate system</td>
+</tr>
+<tr>
+<td>Ranking Upgrade</td>
+<td><code>ts_rank</code> → BM25 extension</td>
+<td>Native BM25</td>
+</tr>
+<tr>
+<td>Hybrid Search</td>
+<td>Vector + BM25 in same database</td>
+<td>Often requires another vector system</td>
+</tr>
+<tr>
+<td>Operations Complexity</td>
+<td>One PostgreSQL</td>
+<td>Extra ES cluster to maintain</td>
+</tr>
+<tr>
+<td>Good for Early Agent Iteration</td>
+<td>Excellent fit</td>
+<td>Higher cost</td>
+</tr>
+</tbody>
+</table>
+<p>In Agent projects, I value:</p>
+<ul>
+<li>Simple architecture</li>
+<li>Strong consistency</li>
+<li>No data splitting</li>
+<li>Incremental upgrade</li>
+</ul>
+<p>And the PostgreSQL path delivers exactly on these four points.</p>
+<h2 id="version-evolution-why-im-bullish-on-this-path">Version Evolution: Why I'm Bullish On This Path</h2>
+<p>This path isn't static — it's still evolving rapidly.</p>
+<h3 id="pg_tokenizerrs-filling-out-the-text-processing-layer"><code>pg_tokenizer.rs</code>: Filling out the text processing layer</h3>
+<p>This is an important complement to PostgreSQL's built-in FTS. Many times, the problem isn't that Postgres can't search — it's that it lacks a more flexible tokenizer/analyzer体系. <code>pg_tokenizer.rs</code> fills exactly this gap.</p>
+<h3 id="vectorchord-bm25-current-stable-a-complete-functional-generation"><code>VectorChord-BM25</code> current stable: A complete functional generation</h3>
+<p>The current mainline version has these characteristics:</p>
+<ul>
+<li>BM25 inverted indexing, scoring, and Block-WeakAnd are all working</li>
+<li>Supports build / insert / scan / vacuum</li>
+<li>Has its own page / segment / posting / growing segment structure</li>
+</ul>
+<p>In other words, it's a complete system that &ldquo;runs, supports incremental writes, and can be maintained&rdquo;.</p>
+<h3 id="pr-100-rewritehttpsgithubcomtensorchordvectorchord-bm25pull100-second-generation-refactoring-for-long-term-maintenance"><a href="https://github.com/tensorchord/VectorChord-bm25/pull/100">PR #100 rewrite</a>: Second-generation refactoring for long-term maintenance</h3>
+<p>But we're also rewriting the second-generation kernel.</p>
+<p>The direction of this rewrite is clear:</p>
+<ul>
+<li>Extract the BM25 core into an independent library</li>
+<li>Replace the old custom page/segment system with a unified relation/page abstraction</li>
+<li>Change to tuple-based, explicitly versioned disk format</li>
+<li>Refactor the build/search main path for clarity</li>
+<li>Introduce configurable <code>k1/b</code> parameters</li>
+<li>Move some configurations from old GUC to the new reloption / GUC system</li>
+</ul>
+<p>What's most interesting about this version isn't that &ldquo;it's a rewrite&rdquo; — it's that it clarifies our optimization direction for the next release.</p>
+<p>We'll focus on these areas in the next release:</p>
+<ul>
+<li><strong>Make storage format clearer and more stable</strong>: Moving from an engineering-internal page/segment organization to tuple-based, explicitly versioned disk format. This gives clearer paths for index upgrades, compatibility, and migration going forward.</li>
+<li><strong>Continue standardizing the build/search main path</strong>: Extract the BM25 build and search core and decouple it from the PostgreSQL adaptation layer. This reduces surface area for changes when we optimize retrieval logic, tune parameters, or extend scanning strategies.</li>
+<li><strong>Change configuration from &ldquo;global switch thinking&rdquo; to &ldquo;index-level configuration thinking&rdquo;</strong>: Parameters like <code>k1/b</code>, <code>limit</code>, and index settings will naturally converge to reloptions and the new GUC system. This allows different indexes to have differentiated configuration based on business scenarios.</li>
+<li><strong>Unify subsequent online maintenance capabilities</strong>: Including incremental writes, delete maintenance, and VACUUM-related paths will all eventually live on the same relation/page abstraction instead of continuing to use the heavier custom storage layer from the original version.</li>
+<li><strong>Lay the groundwork for long-term performance optimizations</strong>: Clearer block summaries, token upper bounds, and scan path abstractions essentially prepare the interface for future optimizations to top-k retrieval, prefiltering, and hybrid search.</li>
+</ul>
+<p>In other words, the value of this rewrite isn't just &ldquo;cleaner code&rdquo; — <strong>we're taking BM25 from a working implementation to an easier-to-evolve, easier-to-migrate, production-ready PostgreSQL search kernel</strong> for the long term.</p>
+<p>So my recommendation on versions is pragmatic:</p>
+<h3 id="production-selection">Production Selection</h3>
+<p><strong>If you're deploying to production now:</strong></p>
+<ul>
+<li>Prioritize the current stable release / mainline version</li>
+<li>Especially if you need online writes, deletes, and VACUUM</li>
+</ul>
+<p><strong>If you're watching for future migration:</strong></p>
+<ul>
+<li>The next version will require a <code>REINDEX</code></li>
+<li>Some GUC and index parameters will be normalized</li>
+<li>After disk format versioning, migration and upgrade paths will be clearer</li>
+</ul>
+<p>In other words, this path isn't &ldquo;perfect today&rdquo; — it's &ldquo;good enough to use today, and pointing in the right direction for the future&rdquo;.</p>
+<h2 id="practical-recommendations">Practical Recommendations</h2>
+<p>If you're working on an Agent project, here's how I'd choose:</p>
+<h3 id="small-scale-simple-requirements">Small scale, simple requirements</h3>
+<ul>
+<li>Start directly with PostgreSQL built-in FTS</li>
+<li><code>tsvector + GIN</code> is sufficient</li>
+</ul>
+<h3 id="need-more-flexible-tokenization-and-multi-language-support">Need more flexible tokenization and multi-language support</h3>
+<ul>
+<li>Add <code>pg_tokenizer.rs</code></li>
+<li>Especially for non-English languages and domain-specific vocabulary</li>
+</ul>
+<h3 id="need-stronger-relevance-ranking">Need stronger relevance ranking</h3>
+<ul>
+<li>Upgrade to <code>VectorChord-BM25</code></li>
+<li>Use BM25 instead of simple <code>ts_rank</code></li>
+</ul>
+<h3 id="need-hybrid-search">Need hybrid search</h3>
+<ul>
+<li>Vector search with <a href="https://github.com/tensorchord/vectorchord">VectorChord</a></li>
+<li>Keyword search with VectorChord-BM25</li>
+<li>Everything stays inside PostgreSQL</li>
+</ul>
+<p>The biggest advantage of this path is that you don't need to split your system into pieces from day one.</p>
+<p>You can start from the simplest native SQL capability and upgrade layer by layer as your requirements grow.</p>
+<h2 id="thoughts">Thoughts</h2>
+<p><strong>Full-text search in an Agent project isn't fundamentally about &ldquo;building a search engine&rdquo; — it's about &ldquo;giving Agent a consistent, controllable, and extensible retrieval foundation.&quot;</strong></p>
+<p>This goal doesn't completely overlap with what Elasticsearch is best at.</p>
+<p>Elasticsearch is great, but it excels at &ldquo;being the search system itself&rdquo;.</p>
+<p>Where PostgreSQL is stronger:</p>
+<ul>
+<li>It's already your master data foundation</li>
+<li>It's already your transaction boundary</li>
+<li>It's already the center of your permissions and business logic</li>
+</ul>
+<p>When full-text search is just one part of an Agent's data foundation, keeping it inside PostgreSQL is often the more advanced engineering decision.</p>
+<h2 id="next-step">Next Step</h2>
+<p>I'll continue writing this series:</p>
+<ul>
+<li>ACID Transactions: Why Agent state management离不开 transactions</li>
+<li>JSONB: Why I prefer JSONB over introducing a separate MongoDB</li>
+<li>Hybrid search: How to combine vector + BM25 in PostgreSQL</li>
+<li>Long-term memory: Why Agent Memory ultimately comes back to database problems</li>
+</ul>
+<hr>
+<p><em>This is the second post in the series &ldquo;Why I Only Use PostgreSQL For Agent Projects&rdquo;. Previous post: <a href="../vectorchord-deep-dive/">vector search</a>, next post: transactions.</em></p>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#PostgreSQL</span>
+      
+      <span class="tag">#FTS</span>
+      
+      <span class="tag">#Elasticsearch</span>
+      
+      <span class="tag">#BM25</span>
+      
+      <span class="tag">#pg_tokenizer.rs</span>
+      
+      <span class="tag">#VectorChord-BM25</span>
+      
+      <span class="tag">#Agent</span>
+      
+      <span class="tag">#RAG</span>
+      
+      <span class="tag">#Postgres</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">Share this post on:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fen%2fpostgres-fts-agent%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fen%2fpostgres-fts-agent%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=Why%20I%20Only%20Use%20PostgreSQL%20For%20Full-Text%20Search%20In%20Agent%20Projects&body=https%3a%2f%2fblog.xieydd.top%2fen%2fpostgres-fts-agent%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">Back to Top</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/openclaw-memory-choice-guide/" class="prev-post">
+        <span class="nav-label">Previous Post</span>
+        <span class="nav-title">Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/en/vector-search/" class="next-post">
+        <span class="nav-label">Next Post</span>
+        <span class="nav-title">The internals of Vector Databases</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+    </main>
+  </div>
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

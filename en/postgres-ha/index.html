@@ -7,9 +7,8 @@
   
   
   
-    
-      
-    
+  
+  
   
   
   
@@ -22,14 +21,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PostgreSQL High Availability | Xieydd&#39;s Blog</title>
-  <meta name="description" content="I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
-PostgreSQL High Availability High Availability Goals …">
+  <meta name="description" content="A practical overview of PostgreSQL high availability covering replication, failover, WAL archiving, and point-in-time recovery.">
   <meta name="author" content="xieydd">
   
   
   <meta property="og:title" content="PostgreSQL High Availability | Xieydd&#39;s Blog">
-  <meta property="og:description" content="I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
-PostgreSQL High Availability High Availability Goals …">
+  <meta property="og:description" content="A practical overview of PostgreSQL high availability covering replication, failover, WAL archiving, and point-in-time recovery.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://blog.xieydd.top/en/postgres-ha/">
   <meta property="og:site_name" content="Xieydd&#39;s Blog">
@@ -39,8 +36,7 @@ PostgreSQL High Availability High Availability Goals …">
   
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL High Availability | Xieydd&#39;s Blog">
-  <meta name="twitter:description" content="I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
-PostgreSQL High Availability High Availability Goals …">
+  <meta name="twitter:description" content="A practical overview of PostgreSQL high availability covering replication, failover, WAL archiving, and point-in-time recovery.">
   <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
   
   <meta name="twitter:creator" content="@xieydd_">
@@ -48,7 +44,7 @@ PostgreSQL High Availability High Availability Goals …">
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2024-07-26T12:40:32&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-18T11:44:26&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-20T11:10:24&#43;08:00">
   
   <meta property="article:tag" content="High Availability">
   
@@ -84,7 +80,7 @@ PostgreSQL High Availability High Availability Goals …">
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-18T11:44:26+08:00","datePublished":"2024-07-26T12:40:32+08:00","description":"I\u0026#39;ve been researching PostgreSQL high availability solutions recently, and here\u0026#39;s what I\u0026#39;ve learned.\nPostgreSQL High Availability High Availability Goals …","headline":"PostgreSQL High Availability","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/postgres-ha/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/postgres-ha/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-20T11:10:24+08:00","datePublished":"2024-07-26T12:40:32+08:00","description":"A practical overview of PostgreSQL high availability covering replication, failover, WAL archiving, and point-in-time recovery.","headline":"PostgreSQL High Availability","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/postgres-ha/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/postgres-ha/"}
   </script>
   
 
@@ -490,7 +486,6 @@ D--&gt;E(delete cluster will delete all wal and physical backups);
     </div>
   </footer>
 </article>
-
 
 <div class="giscus-container" style="margin-top: 3rem;">
   <script src="https://giscus.app/client.js"

@@ -8,7 +8,7 @@
     <language>en</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Mon, 16 Mar 2026 10:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 19 Mar 2026 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/en/tags/postgres/index.xml" rel="self" type="application/rss+xml" />
     
@@ -31,6 +31,17 @@ PostgreSQL High Availability High Availability Goals PostgreSQL high availabilit
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/vector-search/</guid>
       <description>It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+    </item>
+    
+    <item>
+      <title>Why I Only Use PostgreSQL For Full-Text Search In Agent Projects</title>
+      <link>https://blog.xieydd.top/en/postgres-fts-agent/</link>
+      <pubDate>Thu, 19 Mar 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/postgres-fts-agent/</guid>
+      <description>In my previous post about vector search, someone asked me: what about full-text search? Shouldn&#39;t we still use Elasticsearch for keyword search in Agent projects?
+My answer remains the same: for most Agent projects, I still prioritize PostgreSQL.
+This might sound counter-intuitive. After all, when people talk about full-text search, the first thing that comes to mind is Elasticsearch, and PostgreSQL&#39;s FTS is often seen as a &amp;ldquo;good-enough but not professional&amp;rdquo; secondary feature.</description>
     </item>
     
     <item>

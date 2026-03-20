@@ -8,7 +8,7 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Mon, 16 Mar 2026 10:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 19 Mar 2026 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/tags/postgres/index.xml" rel="self" type="application/rss+xml" />
     
@@ -20,6 +20,15 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/postgres-ha/</guid>
       <description>最近在研究 Postgres 高可用的方案，这里记录一下。 Postgres 高可用 高可用目标 Postgres 高可用一般有两个目标： RPO（Recovery Point Objective）即数据恢复点</description>
+    </item>
+    
+    <item>
+      <title>为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇</title>
+      <link>https://blog.xieydd.top/postgres-fts-agent/</link>
+      <pubDate>Thu, 19 Mar 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/postgres-fts-agent/</guid>
+      <description>上一篇我聊了向量搜索，有朋友接着问我：那全文检索呢？做 Agent 项目，关键词搜索是不是还是应该上 Elasticsearch？ 我的回答还是一样：大多数</description>
     </item>
     
     <item>
