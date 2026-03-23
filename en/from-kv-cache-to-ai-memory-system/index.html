@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture | Xieydd&#39;s Blog</title>
+  <meta name="description" content="Why has systems innovation around large language model inference increasingly looked less like optimizing a neural network and more like designing a memory system? This article strings together Mac/UMA, NVIDIA/NVLink, FlashAttention, vLLM, RL rollout, Mooncake, LMCache, CXL, and recent 2025-2026 research papers into a coherent narrative.">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture | Xieydd&#39;s Blog">
+  <meta property="og:description" content="Why has systems innovation around large language model inference increasingly looked less like optimizing a neural network and more like designing a memory system? This article strings together Mac/UMA, NVIDIA/NVLink, FlashAttention, vLLM, RL rollout, Mooncake, LMCache, CXL, and recent 2025-2026 research papers into a coherent narrative.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="Why has systems innovation around large language model inference increasingly looked less like optimizing a neural network and more like designing a memory system? This article strings together Mac/UMA, NVIDIA/NVLink, FlashAttention, vLLM, RL rollout, Mooncake, LMCache, CXL, and recent 2025-2026 research papers into a coherent narrative.">
+  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-03-22T10:00:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-23T10:12:56&#43;08:00">
+  
+  <meta property="article:tag" content="AI Infrastructure">
+  
+  <meta property="article:tag" content="LLM">
+  
+  <meta property="article:tag" content="KV Cache">
+  
+  <meta property="article:tag" content="Memory System">
+  
+  <meta property="article:tag" content="Inference Optimization">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/from-kv-cache-to-ai-memory-system/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/from-kv-cache-to-ai-memory-system/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-23T10:12:56+08:00","datePublished":"2026-03-22T10:00:00+08:00","description":"Why has systems innovation around large language model inference increasingly looked less like optimizing a neural network and more like designing a memory system? This article strings together Mac/UMA, NVIDIA/NVLink, FlashAttention, vLLM, RL rollout, Mooncake, LMCache, CXL, and recent 2025-2026 research papers into a coherent narrative.","headline":"From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/en/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/en/posts/">Posts</a>
+        <a href="https://blog.xieydd.top/en/about/">About</a>
+        
+        <div class="nav-icons">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/from-kv-cache-to-ai-memory-system/" class="lang-link">中文</a>
+          
+        
+      
+      
+      
+    
+  
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.en">From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture</h1>
+    <div class="post-meta">
+      <span>Published: 22 Mar, 2026</span>
+      <span>• 42 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-the-nature-of-llm-inference-prefill-vs-decoding">1. The Nature of LLM Inference: Prefill vs Decoding</a></li>
+    <li><a href="#2-kv-cache-the-true-state-variable-of-transformer-inference">2. KV Cache: The True State Variable of Transformer Inference</a></li>
+    <li><a href="#3-why-the-bottleneck-shifts-from-compute-to-memory">3. Why the Bottleneck Shifts from Compute to Memory</a></li>
+    <li><a href="#4-rl--agent-why-post-training-exacerbates-the-decoding-bottleneck">4. RL / Agent: Why Post-Training Exacerbates the Decoding Bottleneck</a></li>
+    <li><a href="#5-why-mac--uma-is-gaining-relevance-again">5. Why Mac / UMA Is Gaining Relevance Again</a></li>
+    <li><a href="#6-why-flashattention-cannot-solve-decoding">6. Why FlashAttention Cannot Solve Decoding</a></li>
+    <li><a href="#7-four-layers-of-inference-optimization-kernel-engine-model-hardware">7. Four Layers of Inference Optimization: Kernel, Engine, Model, Hardware</a></li>
+    <li><a href="#8-continuous-batching-from-request-level-to-token-level-scheduling">8. Continuous Batching: From Request-Level to Token-Level Scheduling</a></li>
+    <li><a href="#9-how-model-structure-directly-determines-system-limits-mqa--gqa">9. How Model Structure Directly Determines System Limits: MQA / GQA</a></li>
+    <li><a href="#10-kv-cache-is-actually-highly-redundant-external-memory">10. KV Cache Is Actually Highly Redundant External Memory</a></li>
+    <li><a href="#11-why-many-production-systems-still-recompute-history">11. Why Many Production Systems Still Recompute History</a></li>
+    <li><a href="#12-first-generation-kv-centric-architectures-distserve-mooncake-lmcache">12. First-Generation KV-Centric Architectures: DistServe, Mooncake, LMCache</a></li>
+    <li><a href="#13-why-mooncake--lmcache-are-not-the-end">13. Why Mooncake / LMCache Are Not the End</a></li>
+    <li><a href="#14-next-generation-memory-centric-architectures-strata-cake-r-kv-kvflow-fastswitch-cacheblend">14. Next-Generation Memory-Centric Architectures: Strata, CAKE, R-KV, KVFlow, FastSwitch, CacheBlend</a></li>
+    <li><a href="#15-cxl-why-it-looks-like-the-ultimate-answer-but-remains-challenging-in-practice">15. CXL: Why It Looks Like the Ultimate Answer But Remains Challenging in Practice</a></li>
+    <li><a href="#16-llm-serving-is-becoming-an-operating-system-problem">16. LLM Serving Is Becoming an &ldquo;Operating System Problem&rdquo;</a></li>
+    <li><a href="#17-what-comes-after-kv-cache-mamba-rwkv-and-online-compressed-memory">17. What Comes After KV Cache: Mamba, RWKV, and &ldquo;Online Compressed Memory&rdquo;</a></li>
+    <li><a href="#18-conclusion-three-fundamental-trends">18. Conclusion: Three Fundamental Trends</a></li>
+    <li><a href="#further-reading-grouped-by-topic">Further Reading (grouped by topic)</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <h1 id="from-kv-cache-to-ai-memory-system-the-evolution-of-large-language-model-inference-architecture">From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture</h1>
+<blockquote>
+<p><strong>Abstract</strong>
+This article addresses a seemingly dispersed but fundamentally unified question: Why has systems innovation around large language model inference over the past two years increasingly looked less like &ldquo;optimizing a neural network&rdquo; and more like &ldquo;designing a memory system&rdquo;?</p>
+<p>If we characterize pre-2023 LLM engineering as &ldquo;racing for FLOPS, Tensor Core utilization, and training throughput,&rdquo; then the 2024–2026 narrative of inference has clearly shifted to another主线: <code>KV cache</code>, <code>TTFT/TPOT</code>, <code>continuous batching</code>, <code>prefix reuse</code>, <code>prefill/decode disaggregation</code>, <code>hierarchical cache</code>, <code>CXL memory pool</code>.</p>
+<p>This is not a coincidence. Autoregressive inference in Transformers naturally turns &ldquo;history&rdquo; into a continuously growing state that must be accessed repeatedly; and RLHF/RLVR, reasoning, agent workflows, long contexts, and multi-turn interactions have pushed this KV cache state right into the center of system design. OpenRLHF even points out that in PPO-style RLHF/RLVR, <strong>the inference phase often accounts for over 90% of total runtime</strong>; meanwhile, systems like Mooncake, LMCache, Strata, KVFlow, Beluga, and TraCT have elevated KV cache to &ldquo;first-class citizen&rdquo; status from different perspectives. <a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">1</a></p>
+<p>Looking back today, the real change is not that &ldquo;one kernel got faster,&rdquo; but that <strong>the focus of inference systems has shifted from computation graphs to memory graphs</strong>. This article connects Mac/UMA, NVIDIA/NVLink, FlashAttention, vLLM, RL rollout, Mooncake, LMCache, CXL, and recent 2025–2026 research papers into a coherent narrative. <a href="https://www.apple.com/newsroom/2023/06/apple-introduces-m2-ultra/" title="https://www.apple.com/newsroom/2023/06/apple-introduces-m2-ultra/">2</a></p>
+</blockquote>
+<hr>
+<h2 id="1-the-nature-of-llm-inference-prefill-vs-decoding">1. The Nature of LLM Inference: Prefill vs Decoding</h2>
+<p>Modern mainstream LLMs mostly follow the <strong>causal decoder-only Transformer</strong> route pioneered by GPT: given the context up to the current point, they output a probability distribution over the next token. This fundamentally differs from <strong>bidirectional encoder</strong> routes like BERT: GPT-style models naturally support autoregressive generation token by token, while BERT's pre-training objective is masked language modeling, which inherently depends on both left and right context for representation calculation. In other words, <strong>KV cache is naturally a first-class mechanism only for causal decoders</strong>, not for bidirectional encoders like BERT. <a href="https://arxiv.org/abs/1810.04805" title="https://arxiv.org/abs/1810.04805">3</a></p>
+<p>When you decompose the inference process by execution phases, you'll find that LLM serving is not a uniform workload, but rather two phases with very different physical characteristics stacked together.</p>
+<p>The first phase is <strong>prefill</strong>. It reads the entire input prompt, performs a single forward pass over all input tokens, and generates K/V states for each layer to be reused in subsequent steps. This phase has high parallelism, a large fraction of matrix multiplications, and can fully utilize GPU Tensor Core, so it resembles the familiar &ldquo;training forward pass&rdquo; shape. Both Sarathi-Serve and DistServe explicitly characterize prefill as a high-latency phase that can fully saturate GPU compute resources. <a href="https://arxiv.org/abs/2403.02310" title="https://arxiv.org/abs/2403.02310">4</a></p>
+<p>The second phase is <strong>decoding</strong>. The model generates only one token at a time, appends it to the history, then generates the next token. Each step in this phase has relatively small operator size, so the GPU cannot easily be filled with pure compute; the real cost is that <strong>you must read the entire historical KV cache back to participate in attention calculation</strong>. Sarathi-Serve directly points out that although decode iterations have low single-iteration latency, they also have low compute utilization, so the system must rely on batching to achieve good throughput. <a href="https://arxiv.org/abs/2403.02310" title="https://arxiv.org/abs/2403.02310">4</a></p>
+<p>This is the first key to understanding all subsequent system design:
+<strong>prefill is more compute-bound, decode is more memory-bound.</strong>
+Of course, this is not absolute—it depends on the workload. In long-input scenarios like document summarization, RAG, and large code analysis, prefill can be extremely heavy; while in real-time chat, long-output reasoning, RL rollout, and multi-step agent execution, decode and KV cache problems become much more prominent. DistServe explicitly distinguishes different workloads such as chatbot, programming assistant, and document summary in its experiments, and emphasizes that TTFT and TPOT have different objectives. <a href="https://arxiv.org/abs/2401.09670" title="https://arxiv.org/abs/2401.09670">5</a></p>
+<p>Therefore, whenever someone claims &ldquo;LLM inference is a compute problem&rdquo; or &ldquo;LLM inference is a memory problem,&rdquo; you should first ask: <strong>are you talking about prefill or decode? what kind of workload is this?</strong></p>
+<hr>
+<h2 id="2-kv-cache-the-true-state-variable-of-transformer-inference">2. KV Cache: The True State Variable of Transformer Inference</h2>
+<p>Looking only at the algorithmic formula, self-attention seems to be just
+<code>Attention(Q, K, V) = softmax(QK^T)V</code>.
+But in an inference system, the most important byproduct of this formula isn't the output—it's <strong>how historical state is stored</strong>.</p>
+<p>In a causal decoder, every time a new token arrives, the model computes the corresponding <code>K</code> and <code>V</code> for this token at each layer and saves them; then when generating a new token, the current token's <code>Q</code> only needs to interact with <strong>all historical K/V</strong>. Thus, KV cache essentially stores: <strong>the Key and Value representations for every layer and every historical token</strong>. It doesn't store <code>Q</code> because <code>Q</code> only belongs to &ldquo;the current step&rdquo;; it also doesn't store the full attention matrix because that changes with the current <code>Q</code> and is even larger. This mechanism relies on the causal mask: history isn't rewritten by the future, so K/V of past tokens can be safely reused. <a href="https://arxiv.org/abs/1706.03762v7" title="https://arxiv.org/abs/1706.03762v7">6</a></p>
+<p>The significance of this at the system level is enormous.</p>
+<p>Without KV cache, when generating the <code>t</code>-th step you would need to recompute the forward pass for the previous <code>t-1</code> tokens, which means recomputing the entire history; with KV cache, you only need to do an incremental forward pass for the <strong>new token</strong>, but you still need to read the historical K/V for attention. Thus, the problem changes from &ldquo;repeatedly recomputing history&rdquo; to &ldquo;repeatedly reading history.&rdquo; Shazeer put it very directly in the Multi-Query Attention paper: <strong>the core reason incremental decoding is slow is the memory-bandwidth cost of repeatedly loading large key and value tensors</strong>. <a href="https://arxiv.org/abs/1911.02150" title="https://arxiv.org/abs/1911.02150">7</a></p>
+<p>Therefore, KV cache is not just an implementation detail—it's the <strong>true state variable</strong> of Transformer autoregressive inference. For a model with <code>L</code> layers, <code>H_kv</code> KV heads, dimension <code>d</code> per head, context length <code>T</code>, and batch size <code>B</code>, KV cache size grows roughly as
+<code>O(L * H_kv * d * T * B)</code>.
+Once you stretch <code>T</code>, increase <code>B</code>, or split a single request into multiple trajectories, this state quickly expands. Papers from 2025 like CAKE, R-KV, and FlexiCache essentially all start by acknowledging this fact: <strong>KV cache has already become so large that it must be compressed, layered, evicted, and predicted</strong>. <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></p>
+<p>There's also a frequently overlooked difference: model weights <code>weights</code> are <strong>shared and static</strong>, while KV cache <strong>grows per request and is not shared</strong>. The former is &ldquo;how knowledge is stored in the model&rdquo;; the latter is more like &ldquo;how each inference stores its thinking process.&rdquo; This directly creates a system-level watershed: for the same GPU memory footprint, <strong>weights cost primarily capacity, while KV costs capacity + bandwidth + latency</strong>. This is why I'll argue later that in many future scenarios, KV cache compression may have greater strategic value than parameter compression. <a href="https://arxiv.org/abs/2505.24133" title="https://arxiv.org/abs/2505.24133">9</a></p>
+<hr>
+<h2 id="3-why-the-bottleneck-shifts-from-compute-to-memory">3. Why the Bottleneck Shifts from Compute to Memory</h2>
+<p>Many debates about LLM inference fail because they conflate different workloads.
+A more precise statement than &ldquo;inference is increasingly偏向 decode&rdquo; is:</p>
+<blockquote>
+<p><strong>As workloads move toward multi-turn, long-history, long-output, long CoT, and reusable context, the system bottleneck gradually shifts from prefill computation to KV cache access during the decode phase.</strong></p>
+</blockquote>
+<p>This is not the same as &ldquo;prompts are getting longer.&rdquo;</p>
+<p>Consider the simplest chat scenario: if the user input is short, the system prompt is stable, but the output is long, then prefill happens once while decode repeats dozens or hundreds of times; in this case, the cumulative cost of decode can easily exceed prefill. Sarathi-Serve, DistServe, and OpenRLHF all base their system designs on this observation that prefill and decode have fundamentally different characteristics. <a href="https://arxiv.org/abs/2403.02310" title="https://arxiv.org/abs/2403.02310">4</a></p>
+<p>But this doesn't mean all workloads are this way.
+In tasks like RAG, long document summarization, and code repository analysis, the input may have thousands to hundreds of thousands of tokens but the output is short; the first major bottleneck for this workload is TTFT, because the model must fully prefill the long input first. The theoretical paper on prefix reuse scheduling from LinkedIn explicitly identifies &ldquo;long-prompt, short-output&rdquo; as a prefill-dominant regime, and points out that prefix reuse is critical for TTFT in this scenario. <a href="https://arxiv.org/pdf/2502.04677" title="https://arxiv.org/pdf/2502.04677">10</a></p>
+<p>The really interesting case is <strong>agent / reasoning / RL rollout</strong>.
+In these scenarios, the &ldquo;context&rdquo; logically grows longer: the model thinks, calls tools, reads back tool outputs, and continues thinking—history keeps getting appended. But if the system can effectively reuse KV cache, what grows isn't &ldquo;the prefill computation per round,&rdquo; but rather &ldquo;the amount of historical state that needs to be maintained and read.&rdquo; In other words, <strong>long history doesn't automatically mean heavier prefill; it can mean larger KV cache and higher decode memory pressure</strong>. OpenRLHF explicitly identifies long CoT as a key bottleneck for training efficiency, and integrates vLLM into the rollout engine to alleviate the inference burden from long reasoning chains. R-KV goes further, taking &ldquo;KV cache explosion from超长 outputs&rdquo; as its starting point. <a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">1</a></p>
+<p>This is why I say:
+<strong>&ldquo;Long prompt&rdquo; and &ldquo;long history&rdquo; are not the same thing.</strong></p>
+<ul>
+<li>A long prompt, if you have to feed it in again every time, is a prefill problem.</li>
+<li>A long history, if it's retained as KV cache, is a decode / memory problem.</li>
+</ul>
+<p>Most innovations in modern APIs and serving systems revolve precisely around this distinction: prompt caching, prefix reuse, PD disaggregation, and hierarchical cache all essentially try to convert &ldquo;recomputed long prompts&rdquo; into &ldquo;reusable long history.&rdquo; <a href="https://developers.openai.com/api/docs/guides/prompt-caching" title="https://developers.openai.com/api/docs/guides/prompt-caching">11</a></p>
+<hr>
+<h2 id="4-rl--agent-why-post-training-exacerbates-the-decoding-bottleneck">4. RL / Agent: Why Post-Training Exacerbates the Decoding Bottleneck</h2>
+<p>If you only think about the SFT era, training still centers on standard forward/backward: the dataset is given, the model consumes it, computes loss, and backpropagates gradients. That's the typical era where &ldquo;training is core, inference is just auxiliary.&rdquo;</p>
+<p>But post-training, especially RLHF, RLVR, reasoning-oriented RL, and agentic RL, is no longer like this. A typical PPO/GRPO-style cycle today looks more like:</p>
+<ol>
+<li>Given a prompt;</li>
+<li>The model rolls out one or more answer trajectories;</li>
+<li>Reward model, verifier, tool executor, or environment provides feedback;</li>
+<li>Update parameters based on these rollouts.</li>
+</ol>
+<p>In this pipeline, <strong>training doesn't directly optimize over fixed samples—it first generates samples, then trains</strong>. Thus, the system's center of gravity naturally tilts toward rollout. The OpenRLHF paper makes a strong statement: in PPO-style RLHF/RLVR, <strong>inference phase often accounts for over 90% of total runtime</strong>, because the model needs to generate thousands of tokens at each inference step. <a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">1</a></p>
+<p><strong>RLVR (Reinforcement Learning from Value Reflection)</strong>, as a next-generation agentic RL method, further amplifies this problem: it requires the model to constantly reflect on and revise its trajectory during rollout, which usually results in longer trajectories than traditional RLHF, and KV cache needs to retain even more state. Recent engineering experience shows that in complex agent scenarios like terminal environments, rollout trajectory lengths can easily reach thousands of tokens, and each policy update requires sampling multiple trajectories—so the memory pressure on KV cache is an order of magnitude higher than in traditional inference scenarios. <a href="https://faithful-almanac-add.notion.site/The-Bitter-Lesson-Behind-Building-Agentic-RL-in-Terminal-Environments-304ddd45837f80d4bafac4e020e1390b" title="https://faithful-almanac-add.notion.site/The-Bitter-Lesson-Behind-Building-Agentic-RL-in-Terminal-Environments-304ddd45837f80d4bafac4e020e1390b">40</a></p>
+<p>Once you accept this, many otherwise puzzling system designs become straightforward.
+ECHO-2 explicitly proposes separating centralized learning from distributed rollout inference, allowing rollout generation to spill out of data center GPU clusters; AgentRL proposes a fully-asynchronous generation-training pipeline to support multi-turn, multi-task agent RL; OpenRLHF explicitly separates the rollout engine from the actor/training engine, and emphasizes that asynchronous data flow is especially important in the era of long CoT. <a href="https://arxiv.org/pdf/2602.02192" title="https://arxiv.org/pdf/2602.02192">12</a></p>
+<p>Why is rollout particularly &ldquo;hard&rdquo;? Because it simultaneously has several bad characteristics:</p>
+<p>First, it's <strong>decode-heavy</strong>.
+It doesn't consume the entire input in one go—it moves forward token-by-token. <a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">1</a></p>
+<p>Second, its length is highly irregular.
+Within the same batch of prompts, some trajectories finish in a few steps while others unfold into very long chains-of-thought; in an agent setting, different tool calls further cause trajectory lengths to diverge. Both AgentRL and OpenRLHF treat asynchronous pipelines as a necessary design choice, not a nice-to-have. <a href="https://arxiv.org/abs/2510.04206" title="https://arxiv.org/abs/2510.04206">13</a></p>
+<p>Third, it naturally amplifies KV cache.
+If a prompt isn't just sampling one output trajectory but <code>k</code> trajectories, and each trajectory keeps growing, and you need to retain verifier, tool use, and multi-turn state in between, then the system doesn't just get <code>k</code> more computations—it gets <code>k</code> continuously expanding historical states. R-KV treats the verbosity of reasoning output as a core problem precisely because &ldquo;output length&rdquo; in reasoning models directly maps to KV cache cost. <a href="https://arxiv.org/abs/2505.24133" title="https://arxiv.org/abs/2505.24133">9</a></p>
+<p>My earlier conjecture—&ldquo;post-training needs Mac probably because rollout takes more time than training&rdquo;—was directionally correct, but a more accurate statement would be:</p>
+<blockquote>
+<p><strong>It's not simply that rollout takes longer—it's that rollout transforms the problem from backward-dominated to decode/KV-dominated.</strong></p>
+</blockquote>
+<p>This is why more and more post-training frameworks are embedding serving engines like vLLM and SGLang into the training framework: OpenRLHF explicitly identifies vLLM as key infrastructure for long CoT RLHF/RLVR; their argument isn't &ldquo;let's just use an inference engine for generation&rdquo;—it's that &ldquo;inference itself is already the core bottleneck for training efficiency.&rdquo; <a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">1</a></p>
+<hr>
+<h2 id="5-why-mac--uma-is-gaining-relevance-again">5. Why Mac / UMA Is Gaining Relevance Again</h2>
+<p>When people talk about running large models on Mac, it's often misunderstood as &ldquo;Apple GPU can compete with NVIDIA on training throughput.&rdquo; This is almost never the point.
+The core reason Mac is becoming important again isn't that it wins on raw compute—it's that it took a different path in <strong>memory system organization</strong>.</p>
+<p>Apple repeatedly emphasizes unified memory architecture in official materials: the M3 family describes it as &ldquo;a single memory pool where all technologies on the chip can access the same data without copying between multiple memory pools&rdquo;; the M2 Ultra explicitly provides <strong>800GB/s system memory bandwidth</strong> and supports <strong>192GB unified memory</strong>; by 2025, Apple M3 Ultra further offers <strong>up to 512GB unified memory</strong> and <strong>over 800GB/s memory bandwidth</strong>; and in March 2026, the M5 Max reaches <strong>614GB/s unified memory bandwidth</strong> in official specifications. Apple itself even markets &ldquo;running extremely large LLMs directly in device memory&rdquo; as one of the key AI selling points for Mac Studio. <a href="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/" title="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/">14</a></p>
+<p>What does this mean for LLM inference?
+It's not &ldquo;Mac's GPU is faster than H100&rdquo;—it's:</p>
+<ol>
+<li><strong>Model weights, KV cache, and CPU-side orchestration can all share the same large memory pool;</strong></li>
+<li><strong>Many CPU/GPU collaboration scenarios no longer require explicit copying;</strong></li>
+<li><strong>When you have enough capacity, a single machine can keep a larger working set in a unified address space.</strong></li>
+</ol>
+<p>Apple's description of MLX is also straightforward: MLX leverages the unified memory architecture of Apple silicon, so <strong>no data copying is needed</strong> when CPU and GPU operate on data. <a href="https://machinelearning.apple.com/research/exploring-llms-mlx-m5" title="https://machinelearning.apple.com/research/exploring-llms-mlx-m5">15</a></p>
+<p>This directly targets the weak spot of decode-heavy / rollout-heavy workloads.
+Because the real difficulty of decode isn't doing a huge GEMM—it's <strong>how to cheaply read and maintain a large block of historical state</strong>. If your model, KV cache, tool runtime, and CPU/GPU orchestration all share a large memory pool, the &ldquo;friction loss&rdquo; at the system level becomes significantly lower. Apple's messaging has consistently focused on high bandwidth, low latency, and single-pool sharing, rather than discrete VRAM + PCIe copying. <a href="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/" title="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/">14</a></p>
+<p>But this doesn't mean &ldquo;Mac is universally better than NVIDIA.&rdquo;
+NVIDIA still dominates with overwhelming ecosystem and compute advantage for prefill, training, and high-concurrency serving. An H100-class product already has HBM bandwidth in the <strong>3TB/s</strong> range, and the Grace Hopper GH200 further provides a CPU+GPU coherent memory model via <strong>NVLink-C2C's 900GB/s coherent interface</strong>. NVIDIA's official statement is that GH200 provides hardware-level memory coherency via NVLink-C2C. <a href="https://www.nvidia.com/en-us/data-center/h100/" title="https://www.nvidia.com/en-us/data-center/h100/">16</a></p>
+<p>In other words, NVIDIA hasn't missed this path—it's approaching it along another, more scalable route:
+from traditional &ldquo;discrete GPU + PCIe&rdquo; to &ldquo;NVLink interconnect&rdquo; to &ldquo;Grace Hopper coherent memory model&rdquo; to today's series of papers around CXL, shared memory pools, and PD disaggregation. Apple's contribution is more that <strong>it made many people experience for the first time that unified memory isn't just a mobile selling point—it's a structural advantage for LLM inference</strong>. <a href="https://www.nvidia.com/en-us/data-center/grace-hopper-superchip/" title="https://www.nvidia.com/en-us/data-center/grace-hopper-superchip/">17</a></p>
+<p>So if you ask &ldquo;why would someone use Mac for post-training,&rdquo; I'd offer a more cautious judgment:</p>
+<blockquote>
+<p><strong>At cluster-scale post-training, NVIDIA still dominates; but for local experiments, low-concurrency rollout, long-context inference, agent prototyping, and long CoT debugging—these memory-centric scenarios—Mac's UMA really does hit the key bottleneck.</strong></p>
+</blockquote>
+<p>This isn't &ldquo;Mac is stronger than NVIDIA&rdquo;—it's that <strong>when the workload shifts from FLOPS to working set, memory architecture determines the user experience</strong>. <a href="https://www.apple.com/newsroom/2025/03/apple-unveils-new-mac-studio-the-most-powerful-mac-ever/" title="https://www.apple.com/newsroom/2025/03/apple-unveils-new-mac-studio-the-most-powerful-mac-ever/">18</a></p>
+<hr>
+<h2 id="6-why-flashattention-cannot-solve-decoding">6. Why FlashAttention Cannot Solve Decoding</h2>
+<p>FlashAttention is one of the most important attention kernel innovations of recent years, but it's often misused as evidence that &ldquo;attention has been fully optimized.&rdquo; In reality, FlashAttention solves <strong>a core pain point of prefill</strong>, not the root problem of decode.</p>
+<p>The original FlashAttention paper states the problem very clearly: the key bottleneck for standard attention isn't theoretical FLOPs, it's <strong>IO between HBM and on-chip SRAM</strong>. It avoids materializing the large intermediate attention matrix through tiling, thereby significantly reducing HBM reads and writes. This optimization is extremely effective for long-sequence prefill, because prefill faces a large-scale <code>N x N</code> attention structure. <a href="https://arxiv.org/abs/2205.14135" title="https://arxiv.org/abs/2205.14135">19</a></p>
+<p>But decode is a completely different shape.
+In the <code>t</code>-th step of decoding, there's only one new token, so the sequence length of <code>Q</code> is almost 1, while the length of <code>K/V</code> is the historical length <code>t-1</code>. In this case, attention is more like a <code>1 x N</code> query process, rather than requiring explicit construction of an <code>N x N</code> intermediate matrix. In other words, the problem for decode isn't &ldquo;the intermediate attention matrix is too big&rdquo;—it's that <strong>the entire historical K/V must be read once</strong>. Shazeer's MQA paper directly attributes the bottleneck of incremental decoding to repeated loading of large keys and values tensors. <a href="https://arxiv.org/abs/2205.14135" title="https://arxiv.org/abs/2205.14135">19</a></p>
+<p>This is why you see this very counterintuitive conclusion:</p>
+<ul>
+<li>FlashAttention is often critical for prefill;</li>
+<li>But for decode, it mostly adds incremental improvements to <strong>local kernel efficiency</strong> without changing the fundamental bottleneck.</li>
+</ul>
+<p>Because decode truly can't avoid <code>O(N)</code> KV reads. You can reduce kernel overhead and better fuse some computations, but as long as the model still uses standard causal attention, historical state must be accessed. The reason Sarathi-Serve emphasizes batching, chunked-prefill, and stall-free scheduling instead of betting everything on attention kernel is this reality: <strong>the system bottleneck for decode is no longer the individual operator itself</strong>. <a href="https://arxiv.org/abs/2403.02310" title="https://arxiv.org/abs/2403.02310">4</a></p>
+<p>In March 2026, FlashAttention-4 further optimized heterogeneous computing and on-chip memory management, continuing to deliver significant improvements for long-sequence prefill, but the core observation still holds: for incremental decoding, the bottleneck is fundamentally the repeated reading of historical KV, not computation scheduling within the kernel. Even if kernel efficiency improves by an order of magnitude, as long as you need to read the full history every step, memory bandwidth will remain the core constraint.</p>
+<p>This is the second key to understanding all subsequent system design:
+<strong>When the bottleneck is &ldquo;must read history,&rdquo; the optimization direction sinks from kernel to memory layout, cache reuse, scheduling, and architecture.</strong></p>
+<hr>
+<h2 id="7-four-layers-of-inference-optimization-kernel-engine-model-hardware">7. Four Layers of Inference Optimization: Kernel, Engine, Model, Hardware</h2>
+<p>To avoid mixing all technologies together in one pot, I prefer to divide LLM inference optimization into four layers:</p>
+<h3 id="layer-1-kernel-layer">Layer 1: Kernel layer</h3>
+<p>FlashAttention is the classic example here.
+It asks: <strong>how can a single attention / decode kernel move less data between HBM and keep more data on on-chip SRAM, to execute more efficiently?</strong> This layer is important, but it only answers &ldquo;how to compute this step faster.&rdquo; <a href="https://arxiv.org/abs/2205.14135" title="https://arxiv.org/abs/2205.14135">19</a></p>
+<h3 id="layer-2-engine-layer">Layer 2: Engine layer</h3>
+<p>Classic examples are Orca, vLLM, SGLang, Sarathi-Serve.
+This layer cares about: <strong>how are requests dynamically scheduled, how is KV cache paged/reused, how do prefill and decode cooperate, how do you improve GPU utilization and goodput?</strong> Orca changed request-level scheduling to iteration-level scheduling; vLLM uses PagedAttention to solve KV memory fragmentation; SGLang uses RadixAttention for prefix reuse; Sarathi-Serve balances throughput and latency through chunked-prefill. <a href="https://www.usenix.org/conference/osdi22/presentation/yu" title="https://www.usenix.org/conference/osdi22/presentation/yu">20</a></p>
+<h3 id="layer-3-model-layer">Layer 3: Model layer</h3>
+<p>Classic examples are MQA / GQA, and the more radical Mamba / RWKV direction.
+This layer asks: <strong>if decode is slow because we need to read too much K/V, can we reduce or even eliminate K/V?</strong> MQA shares K/V directly; GQA is an engineering compromise between MHA and MQA; Mamba/RWKV try to compress history into a recurrent state. <a href="https://arxiv.org/abs/1911.02150" title="https://arxiv.org/abs/1911.02150">7</a></p>
+<h3 id="layer-4-hardware-layer">Layer 4: Hardware layer</h3>
+<p>Classic examples are Apple UMA, Grace Hopper coherent memory, CXL memory pool.
+This layer asks: <strong>since history must be read, can we make &ldquo;reading&rdquo; more like accessing local memory instead of frequently copying across buses?</strong> Apple went with unified memory; NVIDIA brought coherent memory to CPU+GPU with GH200; Beluga, TraCT, and CXL-SpecKV attempt to introduce larger shared memory pools for cluster-scale inference. <a href="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/" title="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/">14</a></p>
+<p>If you only focus on the first layer, you'll think the problem is &ldquo;attention isn't fast enough.&rdquo;
+If you see the second layer, you'll realize the problem is &ldquo;GPUs are often waiting and not fully utilized.&rdquo;
+If you see the third layer, you'll discover that <strong>the model architecture itself determines the system bandwidth pressure</strong>.
+If you see the fourth layer, you'll understand: <strong>today many so-called AI infrastructure innovations are essentially memory system papers, not neural network papers.</strong></p>
+<hr>
+<h2 id="8-continuous-batching-from-request-level-to-token-level-scheduling">8. Continuous Batching: From Request-Level to Token-Level Scheduling</h2>
+<p>A fundamental contradiction in LLM serving is that each decode step has little computation, so without batching it's hard to fill the GPU; but once you batch, sequence lengths and completion times are highly inconsistent, and traditional static batching creates a lot of waste.</p>
+<p>Orca is one of the origins of this line. It proposed <strong>iteration-level scheduling</strong>: instead of running a whole batch of requests to completion before switching to the next batch, the system schedules at the iteration granularity—each time, it only lets the engine execute a single iteration, then immediately allows new requests to enter and completed requests to exit. The Orca paper clearly states the benefit: for Transformer-based generative models, this iteration-level scheduling is significantly better than traditional request-granularity serving. <a href="https://www.usenix.org/conference/osdi22/presentation/yu" title="https://www.usenix.org/conference/osdi22/presentation/yu">20</a></p>
+<p>vLLM further engineering this idea.
+The PagedAttention paper starts from the observation that KV cache is large and dynamically growing, so traditional contiguous allocation wastes GPU memory and makes high-throughput serving difficult. PagedAttention manages KV cache like operating system paging, enabling more flexible request assembly and memory reuse. <a href="https://arxiv.org/abs/2309.06180" title="https://arxiv.org/abs/2309.06180">21</a></p>
+<p>Once KV cache can be managed via paging, <strong>continuous batching</strong> truly becomes feasible.
+Its core isn't &ldquo;accumulate more requests for one batch&rdquo;—it's: <strong>rebuild the batch every decode step</strong>. Whoever finishes exits, whoever arrives new inserts as soon as possible; the batch lifetime shrinks from &ldquo;the full generation of one request&rdquo; to &ldquo;one token step.&rdquo; This is fundamentally different from static batching not in batch size, but in the finer granularity of batch reorganization. Iteration-level scheduling in Orca, continuous batching in vLLM, and in-flight batching in TensorRT-LLM all essentially do this. <a href="https://www.usenix.org/conference/osdi22/presentation/yu" title="https://www.usenix.org/conference/osdi22/presentation/yu">20</a></p>
+<p>Why does this significantly improve GPU utilization?
+Because single-request decode computation is so small that you need to pack the &ldquo;next token&rdquo; from multiple requests together to improve tensor parallelism; static batching gets held up by the longest request, and the &ldquo;empty seats&rdquo; left after shorter requests complete can't be immediately refilled. Continuous batching changes the serial model waiting for the longest request into a token-level pipelined model. Sarathi-Serve further points out that decode batching is particularly effective for overall throughput, but mixing prefill and decode causes stalls, so chunked-prefill is needed to reduce this interference. <a href="https://arxiv.org/abs/2403.02310" title="https://arxiv.org/abs/2403.02310">4</a></p>
+<p>Of course, continuous batching doesn't mean &ldquo;bigger is always better.&rdquo;
+Revisiting SLO and Goodput Metrics in LLM Serving, DistServe, and a series of subsequent works all remind us: the goal of online serving isn't simply maximum throughput—it's goodput that satisfies SLO constraints like TTFT / TPOT / tail latency. If the batch gets too large, throughput might increase slightly, but TPOT and P99 latency can degrade, and ultimately goodput actually decreases. <a href="https://arxiv.org/abs/2410.14257" title="https://arxiv.org/abs/2410.14257">22</a></p>
+<p>Therefore, the real goal of continuous batching isn't &ldquo;make the batch infinitely large&rdquo;—it's:</p>
+<blockquote>
+<p><strong>Within the given constraints of KV bandwidth, tail latency, and SLO, let the GPU do useful token computation every time slice.</strong></p>
+</blockquote>
+<p>This is already very much like online scheduling in an operating system, not like &ldquo;fixed batch training&rdquo; in classical deep learning.</p>
+<hr>
+<h2 id="9-how-model-structure-directly-determines-system-limits-mqa--gqa">9. How Model Structure Directly Determines System Limits: MQA / GQA</h2>
+<p>If you understand that the core cost of decode is &ldquo;repeatedly reading historical K/V,&rdquo; then the significance of MQA / GQA becomes very clear.</p>
+<p>When Shazeer proposed MQA in 2019, the problem statement was already the common language of the entire industry today: incremental decoding is slow because of the memory-bandwidth cost from repeated loading of large keys and values tensors. MQA's solution is simple and brutal: <strong>let all query heads share the same set of K/V heads</strong>. This doesn't reduce the number of query heads, but it significantly reduces the size of K/V, thereby lowering bandwidth pressure during decode. <a href="https://arxiv.org/abs/1911.02150" title="https://arxiv.org/abs/1911.02150">7</a></p>
+<p>GQA is an engineering compromise along this line.
+Google's GQA paper clearly points out that MQA gives fast inference but may hurt quality; so they proposed grouped-query attention, taking a middle ground between &ldquo;each head has independent K/V&rdquo; and &ldquo;all heads share K/V.&rdquo; The paper's conclusion is also clear: <strong>well-trained GQA achieves quality close to MHA while keeping speed close to MQA</strong>. <a href="https://arxiv.org/abs/2305.13245" title="https://arxiv.org/abs/2305.13245">23</a></p>
+<p>The importance of this at the system level goes far beyond &ldquo;a variant of attention mechanism.&rdquo;
+Because when you reduce <code>H_kv</code>, you're not just reducing KV cache occupancy—you're also reducing <strong>the amount of data that must be read back per decode step</strong>. In other words:</p>
+<ul>
+<li>MHA pushes the system toward the memory wall;</li>
+<li>MQA/GQA actively reduces the per-request memory footprint;</li>
+<li>This directly increases the achievable optimal batch size and improves the TTOT/throughput curve.</li>
+</ul>
+<p>This is a classic example of &ldquo;model design serving system efficiency.&rdquo; It's not just for academic elegance—it trades system bandwidth through structural design. <a href="https://arxiv.org/abs/1911.02150" title="https://arxiv.org/abs/1911.02150">7</a></p>
+<p>From this perspective, the common separation of &ldquo;model architecture&rdquo; and &ldquo;system optimization&rdquo; into two separate worlds is already outdated.
+GQA isn't a pure model innovation disconnected from deployment—it's explicitly responding to the physical bottleneck of the serving era. When you look at later approaches like CAKE, R-KV, and FlexiCache, you'll see this line going even further: it's not just about making K/V smaller—it's about making K/V <strong>exist more intelligently</strong>. <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></p>
+<p>From late 2024 to early 2025, this evolutionary path has taken several more critical steps:</p>
+<h3 id="mla-low-rank-compressed-kv-in-deepseek-v31">MLA: Low-Rank Compressed KV in DeepSeek V3.1</h3>
+<p><strong>Multi-Head Latent Attention (MLA)</strong> proposed by DeepSeek V3.1 pushes the idea of MQA/GQA to a new level. Instead of simply sharing K/V heads, it applies <strong>low-rank projection compression</strong> to K/V: it projects original K/V into a lower-dimensional latent space for storage, and recovers it when needed. This approach maintains model quality while compressing KV cache volume by <strong>30–50%</strong>, significantly reducing bandwidth pressure during the decode phase. The significance of MLA is that it proves model architecture can actively serve system-level memory efficiency through <strong>representation compression</strong>, rather than passively waiting for system-level optimization.</p>
+<h3 id="lightning-indexer-incremental-kv-optimization-in-deepseek-v32">Lightning Indexer: Incremental KV Optimization in DeepSeek V3.2</h3>
+<p>DeepSeek V3.2 further introduced <strong>Lightning Indexer</strong>, which optimizes incremental inference specifically for MLA. It changes the index structure of KV cache from global compression to incremental update—new incoming token KV can be written directly to the compressed cache without recompressing the entire sequence, thus maintaining compression ratio without adding latency overhead. This demonstrates again that <strong>model structure and memory system design must co-evolve</strong>—compression gives capacity benefits, but the engineering problem of incremental update must be solved together for it to be practical.</p>
+<h3 id="attention-residuals-hierarchical-kv-retention-by-kimi--minimax">Attention Residuals: Hierarchical KV Retention by Kimi / MiniMax</h3>
+<p>Both Kimi and MiniMax have recently adopted similar <strong>Attention Residuals</strong> ideas in their inference optimizations: instead of keeping full-precision KV for all layers and all tokens, they only keep full KV in lower layers, and only keep residuals or incremental information in upper layers. This hierarchical compression further reduces overall KV volume, and since lower layers attention focuses more on local positions while upper layers focus more on abstract semantics, this non-uniform compression has very limited impact on model quality. It represents another direction: <strong>leveraging the hierarchical properties of the attention mechanism itself for non-uniform KV compression</strong>.</p>
+<p>These new developments continue to validate the same direction: model architecture design is increasingly actively responding to the memory bottleneck during inference, rather than throwing all problems over to the system side. Only when the model defines the redundant structure of KV can the system do more fine-grained management on top of that structure.</p>
+<hr>
+<h2 id="10-kv-cache-is-actually-highly-redundant-external-memory">10. KV Cache Is Actually Highly Redundant External Memory</h2>
+<p>If before 2023, many systems still defaulted to &ldquo;KV cache is something that should be stored, we just need to fit it somewhere,&rdquo; then after 2025, a growing consensus is:</p>
+<blockquote>
+<p><strong>KV cache is not the optimal representation—it's just the most conservative representation.</strong></p>
+</blockquote>
+<p>It retains all the historical state that Transformer saves to avoid information loss, but there is significant redundancy across time, layers, heads, and token dimensions.</p>
+<p>R-KV's problem formulation is representative: reasoning models often generate extremely long chains-of-thought, which leads to &ldquo;prohibitively large KV caches during inference.&rdquo; The authors further point out that traditional KV compression methods often fail on reasoning models because reasoning tokens contain both truly critical reasoning states and lots of redundant tokens; through redundancy-aware compression, R-KV achieves near-full performance with only <strong>10% KV</strong>, and can even outperform the full KV baseline with just 16% KV. <a href="https://arxiv.org/abs/2505.24133" title="https://arxiv.org/abs/2505.24133">9</a></p>
+<p>CAKE, from another angle, shows that redundancy is not uniformly distributed.
+It models KV eviction as a layer-aware, time-aware resource allocation problem: different layers have different attention patterns, and token importance changes over time. The result is quite aggressive: on LongBench and NeedleBench, CAKE maintains performance with only <strong>3.2% KV cache</strong>, and significantly reduces decode latency under long contexts. <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></p>
+<p>FlexiCache offers a third perspective:
+attention heads have different temporal stability. Some heads consistently focus on similar top-K pages, while others change more frequently. Therefore, the system doesn't need to treat all heads equally: stable heads only need to keep top-K pages on GPU, while the rest can be下沉 to host memory; unstable heads retain more GPU-resident pages. <a href="https://arxiv.org/abs/2511.00868" title="https://arxiv.org/abs/2511.00868">24</a></p>
+<p>When you put these three lines of work together, they jointly point to a conclusion:</p>
+<ol>
+<li><strong>Many tokens contribute sparsely;</strong></li>
+<li><strong>Many layers and many heads do not contribute equally;</strong></li>
+<li><strong>A lot of historical state can be compressed, evicted, lazy-loaded, or partially recomputed.</strong></li>
+</ol>
+<p>At this point, KV cache increasingly behaves like an &ldquo;external memory system&rdquo; rather than &ldquo;fixed intermediate results.&rdquo; The traditional Transformer approach essentially archives history token-by-token; but a more mature memory system asks: which should stay in the hot tier? Which can be moved to colder tiers? Which are just redundant copies? Which should be predictively prefetched? Which can simply be forgotten? <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></p>
+<p>Therefore, I argue that in many future inference systems, <strong>KV compression may have greater strategic value than parameter quantization</strong>.
+Parameter compression solves &ldquo;can we fit the model&rdquo;; KV compression solves &ldquo;can the system actually run well—fast, stable, consistently.&rdquo; The results from R-KV and CAKE already prove this to a large extent. <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></p>
+<hr>
+<h2 id="11-why-many-production-systems-still-recompute-history">11. Why Many Production Systems Still Recompute History</h2>
+<p>At this point, a natural question arises: since KV cache is so important, why haven't many production systems fully leveraged it?</p>
+<p>The answer is: <strong>the optimal solution for systems engineering is not equal to the optimal solution for single-request computation.</strong></p>
+<p>At the API level, many cloud services have long adopted an almost stateless interaction model.
+OpenAI's Chat Completions documentation is clear: you need to provide <code>messages</code> in the request, which means &ldquo;the conversation so far&rdquo;; this requires the client to send the entire historical conversation back. Later, the Responses API added state mechanisms like <code>previous_response_id</code> and Conversations, allowing you to &ldquo;store and retrieve conversation state across Response API calls,&rdquo; and Prompt Caching enables automatic caching for <strong>exactly identical prefixes</strong>. But from a system perspective, this is still not the same as pinning the full KV cache of a user session to a specific GPU long-term. <a href="https://platform.openai.com/docs/api-reference/chat/" title="https://platform.openai.com/docs/api-reference/chat/">25</a></p>
+<p>Why don't people do strongly stateful KV serving directly?
+Because that would bind sessions strongly to specific GPU/nodes, hurting load balancing, fault tolerance, and multi-tenancy isolation. As long as any request can go to any replica, the replica must be able to handle the request without prior context; so the most conservative design requires the client or upper-level service to resend the necessary context. Prompt Caching is a clever compromise: OpenAI documentation explicitly says cache hits only occur on <strong>exact prefix matches</strong>, and now you can improve hit rate via <code>prompt_cache_key</code> and extended prompt caching up to 24 hours. It does reduce prefill cost, but it's still an <strong>engineering compromise around prefix reuse</strong>, not a general cross-request KV memory system. <a href="https://developers.openai.com/api/docs/guides/prompt-caching" title="https://developers.openai.com/api/docs/guides/prompt-caching">11</a></p>
+<p>This is the essence of many &ldquo;pseudo-agent&rdquo; systems.
+Logically, they look like multi-turn agents: user asks a question, tool runs a round, model thinks another round. But physically, in many cases it's actually: <strong>every round reconstructs the prompt and does a full prefill</strong>.
+As the context grows longer, with more chains and more tools, what you see isn't &ldquo;steady state retention&rdquo;—it's &ldquo;history repeated over and over.&rdquo; This makes prefill cost very high, and explains why prompt caching / prefix reuse / PD disaggregation have become so important. <a href="https://developers.openai.com/api/docs/guides/prompt-caching" title="https://developers.openai.com/api/docs/guides/prompt-caching">11</a></p>
+<p>Therefore, the real contradiction for online systems isn't &ldquo;engineers don't know KV cache is useful&rdquo;—it's:</p>
+<blockquote>
+<p><strong>How to recover the benefits of KV cache reuse within a scalable, fault-tolerant, schedulable cloud architecture.</strong></p>
+</blockquote>
+<p>First-generation KV-centric architectures solve this contradiction.</p>
+<hr>
+<h2 id="12-first-generation-kv-centric-architectures-distserve-mooncake-lmcache">12. First-Generation KV-Centric Architectures: DistServe, Mooncake, LMCache</h2>
+<p>If vLLM and SGLang primarily solve &ldquo;how to run better within a single engine or single node,&rdquo; then starting in 2024, a wave of systems began to upgrade the question to:</p>
+<blockquote>
+<p><strong>Across requests, nodes, and phases—how should KV cache become a system-level resource?</strong></p>
+</blockquote>
+<p>In this line, DistServe, Mooncake, and LMCache are three key milestones.</p>
+<h3 id="distserve-disentangle-prefill-and-decode-first">DistServe: Disentangle prefill and decode first</h3>
+<p>DistServe starts with goodput:
+existing serving systems mix prefill and decode on the same GPUs, which causes <strong>prefill-decoding interference</strong> and <strong>resource coupling</strong>. The former makes the two phases mutually bottleneck each other; the latter means resource allocation can't be optimized separately for TTFT vs TPOT goals. So DistServe directly implements <strong>prefill/decode disaggregation</strong>: it assigns prefill to one set of GPUs, decode to another set, then jointly optimizes resource allocation and parallel strategy according to the application's TTFT/TPOT objectives. The paper reports that across different models and workloads, DistServe can significantly increase the number of serviceable requests under latency constraints. <a href="https://arxiv.org/abs/2401.09670" title="https://arxiv.org/abs/2401.09670">5</a></p>
+<p>The importance of DistServe isn't that it's the only answer—it's that it first systematically turned a common sense into an architectural principle:
+<strong>prefill and decode don't demand the same resources.</strong></p>
+<h3 id="mooncake-elevate-kv-cache-to-scheduling-core">Mooncake: Elevate KV cache to scheduling core</h3>
+<p>Mooncake goes one step further.
+It defines itself as a <strong>KVCache-centric disaggregated architecture</strong>. In Mooncake, prefill and decode clusters are separated, and the system leverages the otherwise underutilized CPU, DRAM, SSD, and NIC resources in GPU clusters to build a distributed KV cache; the core is a scheduler designed around KV cache, which balances scheduling under throughput, SLO, and overload conditions. The Mooncake paper reports that on Kimi workloads, it can handle about <strong>75% more requests</strong> in real-world scenarios. <a href="https://arxiv.org/abs/2407.00079" title="https://arxiv.org/abs/2407.00079">26</a></p>
+<p>Mooncake's approach is noteworthy:
+it no longer treats KV cache as &ldquo;a temporary byproduct left after model execution&rdquo;—it treats it as <strong>the object of system scheduling</strong>.
+This is a major paradigm shift.</p>
+<h3 id="lmcache-turn-kv-cache-into-a-shared-layer">LMCache: Turn KV cache into a shared layer</h3>
+<p>If Mooncake leans more toward architecture and scheduling, LMCache is more like abstracting KV into a pluggable cache layer.
+The LMCache paper clearly states its positioning: it extracts and stores KV cache from modern LLM engines like vLLM and SGLang, then shares these KV caches <strong>across queries and across engines</strong>, supporting both prefix reuse and cross-engine KV transfer under PD disaggregation. The paper reports that when combined with vLLM, throughput can be improved up to <strong>15x</strong> on some workloads. <a href="https://arxiv.org/abs/2510.09665" title="https://arxiv.org/abs/2510.09665">27</a></p>
+<p>So if you force me to summarize the three with the most concise division of labor, I'd put it this way:</p>
+<ul>
+<li><strong>DistServe</strong>: first separates prefill and decode, solving the two-phase interference problem;</li>
+<li><strong>Mooncake</strong>: makes KV cache the core of distributed scheduling;</li>
+<li><strong>LMCache</strong>: abstracts KV cache into a storable, migratable, reusable system layer.</li>
+</ul>
+<p>At the same time, RadixAttention in SGLang provides another critical capability: <strong>automatically discovers and reuses shared prefixes in complex LM programs</strong>. The SGLang paper emphasizes that its runtime can leverage RadixAttention for KV cache reuse, and significantly improves throughput across multiple tasks. <a href="https://arxiv.org/abs/2312.07104" title="https://arxiv.org/abs/2312.07104">28</a></p>
+<p>Interestingly, by early 2026, the official documentation of both Mooncake and LMCache explicitly shows integration: Mooncake can be used as a backend storage and transfer engine for LMCache, and they even directly demonstrate a PD-disaggregated demo with LMCache + Mooncake + vLLM. In other words, in practice they aren't &ldquo;either-or&rdquo;—they're often used together. <a href="https://kvcache-ai.github.io/Mooncake/getting_started/examples/vllm-integration/vllmv1-lmcache-integration.html" title="https://kvcache-ai.github.io/Mooncake/getting_started/examples/vllm-integration/vllmv1-lmcache-integration.html">29</a></p>
+<hr>
+<h2 id="13-why-mooncake--lmcache-are-not-the-end">13. Why Mooncake / LMCache Are Not the End</h2>
+<p>If Mooncake / LMCache have already elevated KV to first-class citizen, why have a flurry of &ldquo;next-generation&rdquo; papers still emerged after 2025?</p>
+<p>Because once you make KV a system-level resource, new bottlenecks immediately become exposed.</p>
+<h3 id="first-kv-is-too-large-to-move-cheaply">First, KV is too large to move cheaply</h3>
+<p>The default assumption in Mooncake/LMCache is still:
+<strong>KV is worth storing, moving, reusing.</strong>
+But once context grows longer, requests multiply, and agents get more complex, KV cache volume quickly outgrows GPU capacity. At that point the problem changes from &ldquo;do we have cache&rdquo; to &ldquo;<strong>how can cache efficiently move back to GPU from CPU/SSD/remote memory</strong>.&rdquo;</p>
+<p>The abstract of Strata almost directly calls out this issue: under long contexts, hierarchical caching is unavoidable, but reloading large cached contexts back to GPU encounters severe bottlenecks—<strong>fragmented I/O from paged layouts can't saturate bandwidth, and existing schedulers don't account for cache-loading delay, so the system becomes loading-bound instead of compute-bound</strong>. <a href="https://arxiv.org/abs/2508.18572" title="https://arxiv.org/abs/2508.18572">30</a></p>
+<h3 id="second-prefix-reuse-can-conflict-with-latency-goals">Second, prefix reuse can conflict with latency goals</h3>
+<p>Automatic prefix reuse doesn't automatically mean better online latency.
+The NeurIPS 2025 paper on RadixAttention scheduling from LinkedIn did something very important: after formalizing online scheduling with prefix reuse, it proved that <strong>this problem is NP-hard under TTFT constraints</strong>. More intuitively, simply greedily pursuing longest-prefix-match can cause TTFT to explode for some requests. The authors therefore propose k-LPM to balance prefix reuse with fairness/waiting time. <a href="https://arxiv.org/pdf/2502.04677" title="https://arxiv.org/pdf/2502.04677">10</a></p>
+<p>What does this tell us?
+It tells us that Mooncake / LMCache solved &ldquo;can we use cache,&rdquo; but haven't fully solved &ldquo;when should we use cache, and who gets priority.&rdquo;</p>
+<h3 id="third-reuse-patterns-for-agent-workloads-differ-from-vanilla-lru">Third, reuse patterns for agent workloads differ from vanilla LRU</h3>
+<p>KVFlow directly targets agentic workflows:
+current systems do prefix caching but usually use LRU eviction, which evicts an agent's KV cache right before it's called again. KVFlow therefore introduces workflow-aware Agent Step Graph, fine-grained eviction, and proactive prefetch. Essentially, it's saying: <strong>in agent scenarios, cache management must understand workflow structure, not just recent access time</strong>. <a href="https://arxiv.org/abs/2507.07400" title="https://arxiv.org/abs/2507.07400">31</a></p>
+<h3 id="fourth-preemption-and-context-switching-have-costs">Fourth, preemption and context switching have costs</h3>
+<p>FastSwitch exposes another problem:
+existing block-based KV cache allocation reduces memory waste but leads to insufficient context switching granularity and high switching overhead. FastSwitch therefore proposes a fairness-aware serving system that specifically optimizes the efficiency of preemption/context switching. In other words, <strong>once KV becomes state, preemption isn't free anymore</strong>. <a href="https://arxiv.org/abs/2411.18424" title="https://arxiv.org/abs/2411.18424">32</a></p>
+<h3 id="fifth-exact-prefix-matching-is-inherently-too-restrictive">Fifth, exact prefix matching is inherently too restrictive</h3>
+<p>In scenarios like RAG, two requests often don't have &ldquo;exactly identical prefixes&rdquo;—they share a lot of retrieved context but aren't strictly prefix-aligned. CacheBlend moves forward on this problem: it doesn't require strict prefix matches, instead allowing reuse of already cached KV and only doing selective recompute for a small number of new tokens, which significantly improves TTFT and throughput for RAG. <a href="https://arxiv.org/abs/2405.16444" title="https://arxiv.org/abs/2405.16444">33</a></p>
+<p>So the reason Mooncake / LMCache &ldquo;aren't the latest&rdquo; isn't that they're obsolete—it's that they pushed the problem to the next stage.
+They solved: <strong>getting KV into the system picture</strong>.
+And the next generation of work solves: <strong>how to handle I/O, scheduling, agent reuse, hierarchical caching, fairness, and partial recompute after KV becomes a system resource.</strong></p>
+<hr>
+<h2 id="14-next-generation-memory-centric-architectures-strata-cake-r-kv-kvflow-fastswitch-cacheblend">14. Next-Generation Memory-Centric Architectures: Strata, CAKE, R-KV, KVFlow, FastSwitch, CacheBlend</h2>
+<p>I prefer to call work after 2025 <strong>memory-centric</strong>, not just KV-centric. Because by now the research focus isn't just &ldquo;is cache being reused&rdquo;—it's:</p>
+<blockquote>
+<p><strong>How to manage KV cache as a true hierarchical memory system.</strong></p>
+</blockquote>
+<h3 id="strata-hierarchical-caching--gpu-assisted-io--cache-aware-scheduling">Strata: Hierarchical caching + GPU-assisted I/O + cache-aware scheduling</h3>
+<p>Strata can be seen as the most systematic upgrade after Mooncake/LMCache.
+It doesn't focus on &ldquo;how to do prefix reuse&rdquo;—it focuses on <strong>when long-context cache is stored in hierarchical layers, how to efficiently move it back to GPU</strong>. The paper proposes GPU-assisted I/O, GPU/CPU layout decoupling, and cache-aware scheduling, and reports up to <strong>5x lower TTFT</strong> compared to vLLM + LMCache on long-context benchmarks. <a href="https://arxiv.org/abs/2508.18572" title="https://arxiv.org/abs/2508.18572">30</a></p>
+<p>This work is critical because it turns the question of &ldquo;where does KV cache live&rdquo; from a yes/no question into a multi-level question: HBM, CPU DRAM, SSD, and even remote memory pools can all be part of the cache hierarchy.</p>
+<h3 id="cake-layer-aware-eviction">CAKE: Layer-aware eviction</h3>
+<p>CAKE's contribution is that it makes the question of &ldquo;who to evict&rdquo; global and structured.
+Instead of treating eviction as simple LRU, it does cascading allocation combining layer-specific preference and temporal dynamics. What's most memorable isn't the specific algorithm—it's the signal from its results: <strong>many layers, many tokens, at many time steps, KV is actually not valuable</strong>. <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></p>
+<h3 id="r-kv-reasoning-specific-compression">R-KV: Reasoning-specific compression</h3>
+<p>R-KV deserves special mention because it directly targets today's hottest workload: reasoning.
+The authors point out that reasoning models often generate excessively long outputs, and existing compression approaches fail on reasoning failure, so they specifically compress redundancy for reasoning. The result is also iconic: <strong>10% KV achieves near-full performance, 16% KV can even outperform baseline</strong>. <a href="https://arxiv.org/abs/2505.24133" title="https://arxiv.org/abs/2505.24133">9</a></p>
+<p>This tells us that reasoning scenarios aren't just &ldquo;longer&rdquo;—they also mean <strong>the redundancy structure differs from ordinary chat output</strong>.</p>
+<h3 id="flexicache-hierarchical-management-by-head-stability">FlexiCache: Hierarchical management by head stability</h3>
+<p>FlexiCache pushes memory policy down to the attention head level:
+stable heads keep only top-K pages on GPU; unstable heads keep more hot pages. This represents another important trend: <strong>cache management is increasingly getting closer to the internal structure of the model at finer granularity</strong>. <a href="https://arxiv.org/abs/2511.00868" title="https://arxiv.org/abs/2511.00868">24</a></p>
+<h3 id="kvflow-workflow-aware-cache-for-agents">KVFlow: workflow-aware cache for agents</h3>
+<p>KVFlow takes a clear stand on the side of agent workflows.
+Its core idea is simple but powerful: agent workload isn't a random sequence—it's an Agent Step Graph with workflow dependencies; therefore cache policy should &ldquo;know&rdquo; which agent is more likely to be activated again next step. Combined with fully overlapped prefetch, it's already very similar to &ldquo;predict what will be used next&rdquo; in CPU cache. <a href="https://arxiv.org/abs/2507.07400" title="https://arxiv.org/abs/2507.07400">31</a></p>
+<h3 id="fastswitch-context-switching-is-also-a-cost">FastSwitch: context switching is also a cost</h3>
+<p>FastSwitch shows that when you make a large number of requests preemptible and interruptible KV-stateful processes, <strong>context switching itself becomes the bottleneck</strong>. This is increasingly like process switching in operating systems: it's not that preemption can't be done—it's that the granularity of preemption, context layout, and recovery cost must all be carefully designed. <a href="https://arxiv.org/abs/2411.18424" title="https://arxiv.org/abs/2411.18424">32</a></p>
+<h3 id="cacheblend-from-exact-prefix-reuse-to-approximate-reuse">CacheBlend: From exact prefix reuse to approximate reuse</h3>
+<p>CacheBlend is noteworthy because it points out that exact prefix reuse is too limited.
+For scenarios like RAG, shared context doesn't have to be &ldquo;exactly the same prefix&rdquo;—it's still worth reusing a large chunk of history. CacheBlend enables this approximate reuse with a small amount of selective recompute, which essentially turns &ldquo;cache&rdquo; and &ldquo;compute&rdquo; into a continuum rather than an either/or. <a href="https://arxiv.org/abs/2405.16444" title="https://arxiv.org/abs/2405.16444">33</a></p>
+<p>When you put all this work together, you'll find that the keywords for the new generation architecture aren't just simple &ldquo;cache reuse&rdquo;—they are:</p>
+<ul>
+<li>hierarchical tiers</li>
+<li>cache-aware scheduling</li>
+<li>workflow-aware eviction</li>
+<li>partial recompute</li>
+<li>proactive prefetch</li>
+<li>fairness-aware switching</li>
+</ul>
+<p>This is already entirely the language of memory systems.</p>
+<hr>
+<h2 id="15-cxl-why-it-looks-like-the-ultimate-answer-but-remains-challenging-in-practice">15. CXL: Why It Looks Like the Ultimate Answer But Remains Challenging in Practice</h2>
+<p>CXL is exciting because it superficially looks like a path that &ldquo;has it all&rdquo;:
+capacity can be expanded, memory pools can be shared, load/store semantics are more natural, and it looks more like real memory than RDMA.</p>
+<p>Beluga's abstract is representative: it proposes using a CXL switch to let GPUs and CPUs access a shared large-scale memory pool, and emphasizes that this load/store access semantics delivers near-local memory latency while reducing synchronization and programming complexity. The paper reports significant improvements in TTFT and throughput over an RDMA baseline on vLLM. <a href="https://arxiv.org/abs/2511.20172" title="https://arxiv.org/abs/2511.20172">34</a></p>
+<p>But it would be too optimistic to conclude that &ldquo;CXL is the final answer.&rdquo;</p>
+<h3 id="first-cxl-solves-for-capacity-not-hbm-level-bandwidth">First, CXL solves for capacity, not HBM-level bandwidth</h3>
+<p>The value of HBM isn't just that it's close—it's <strong>close and high-bandwidth</strong>.
+CXL can create larger shared memory pools, but it doesn't automatically give you HBM-level throughput. Beluga's improvement holds relative to more roundabout paths like RDMA; it doesn't mean CXL can replace GPU local VRAM without cost. <a href="https://arxiv.org/abs/2511.20172" title="https://arxiv.org/abs/2511.20172">34</a></p>
+<h3 id="second-cxl-isnt-automatically-a-paradise-of-coherence">Second, CXL isn't automatically a paradise of coherence</h3>
+<p>TraCT's abstract is very instructive.
+It explicitly points out that to achieve rack-scale KV cache based on CXL shared memory, you must handle <strong>synchronization, consistency, and data management on non-coherent CXL memory</strong>. In other words, in practice, at least for many commercial-quality deployment configurations, CXL isn't &ldquo;naturally globally coherent UMA.&rdquo; You still have to implement software protocols yourself. <a href="https://arxiv.org/abs/2512.18194" title="https://arxiv.org/abs/2512.18194">35</a></p>
+<h3 id="third-data-movement-isnt-always-cheaper-than-recomputation">Third, data movement isn't always cheaper than recomputation</h3>
+<p>When KV is large enough, access is scattered enough, and contention is high enough, cross-tier data movement itself becomes the main cost. TraCT specifically identifies KV transfer as the fundamental bottleneck for PD disaggregation; CXL-SpecKV has to introduce speculative prefetch + FPGA compression/decompression to keep the cost of disaggregated KV cache under control. <a href="https://arxiv.org/abs/2512.18194" title="https://arxiv.org/abs/2512.18194">35</a></p>
+<h3 id="fourth-cxl-solutions-often-require-more-system-patches">Fourth, CXL solutions often require more &ldquo;system patches&rdquo;</h3>
+<p>Beluga reduces programming complexity through shared pool + native load/store; TraCT handles non-coherence through software-level synchronization; CXL-SpecKV compensates for bandwidth/latency issues through speculative prefetch and compression. You'll find that CXL isn't a &ldquo;buy-and-use&rdquo; hardware silver bullet—it's a <strong>platform that requires co-design of system/software/hardware</strong>. <a href="https://arxiv.org/abs/2511.20172" title="https://arxiv.org/abs/2511.20172">34</a></p>
+<p>So I'd summarize the real positioning of CXL in one sentence:</p>
+<blockquote>
+<p><strong>CXL is important, but it's more like &ldquo;adding another memory tier&rdquo; rather than &ldquo;making all remote memory local HBM.&quot;</strong></p>
+</blockquote>
+<p>Once you understand it this way, many phenomena are no longer contradictory:
+Why do CXL solutions always discuss prefetch, compression, shared pool, non-coherence, software sync?
+Because what they're essentially doing is—<strong>acknowledging that remote memory is still slower, then trying to hide that slowness as much as possible</strong>.</p>
+<hr>
+<h2 id="16-llm-serving-is-becoming-an-operating-system-problem">16. LLM Serving Is Becoming an &ldquo;Operating System Problem&rdquo;</h2>
+<p>When you compare today's mainstream LLM serving systems with DNN serving systems from five years ago, the biggest change isn't larger models—it's that the abstraction layer has changed.</p>
+<p>You can see a whole set of concepts that increasingly resemble an operating system:</p>
+<ul>
+<li><code>pages / blocks</code>: PagedAttention is like virtual memory paging; <a href="https://arxiv.org/abs/2309.06180" title="https://arxiv.org/abs/2309.06180">21</a></li>
+<li><code>radix tree</code>: RadixAttention is like a prefix-based shared index; <a href="https://arxiv.org/abs/2312.07104" title="https://arxiv.org/abs/2312.07104">28</a></li>
+<li><code>cache hit / miss</code>: prompt caching, prefix reuse, KVFlow, CacheBlend all revolve around hit rate; <a href="https://developers.openai.com/api/docs/guides/prompt-caching" title="https://developers.openai.com/api/docs/guides/prompt-caching">11</a></li>
+<li><code>eviction policy</code>: CAKE, KVFlow, FastSwitch all study who should be evicted; <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></li>
+<li><code>prefetch</code>: systems like KVFlow, CXL-SpecKV, Beluga all emphasize predictive loading; <a href="https://arxiv.org/abs/2507.07400" title="https://arxiv.org/abs/2507.07400">31</a></li>
+<li><code>scheduling under SLO</code>: DistServe, Revisiting SLO and Goodput, and the LinkedIn k-LPM theoretical work all treat serving as latency-constrained online scheduling. <a href="https://arxiv.org/abs/2401.09670" title="https://arxiv.org/abs/2401.09670">5</a></li>
+</ul>
+<p>Even the evaluation metrics are increasingly unlike traditional training.
+In the training era, people compare tokens/sec, TFLOPS utilization, samples/sec.
+In the serving era, what's increasingly critical is: <strong>TTFT, TPOT, P99, SLO attainment, goodput</strong>. Revisiting SLO and Goodput Metrics in LLM Serving explicitly points out that traditional goodput metrics can even encourage behaviors that contradict user experience, so we need to redefine the serving metric framework. <a href="https://arxiv.org/abs/2410.14257" title="https://arxiv.org/abs/2410.14257">22</a></p>
+<p>This means a very fundamental change:
+We used to say &ldquo;the core of LLM infra is distributed training systems.&rdquo;
+Today a more accurate statement might be: <strong>the core of LLM serving is becoming an online memory operating system for KV state.</strong></p>
+<p>This &ldquo;operating system&rdquo; needs to solve:</p>
+<ol>
+<li>How to split state into pages;</li>
+<li>How to place it across multiple storage tiers;</li>
+<li>How to decide who stays resident on GPU;</li>
+<li>How to predict who will be used next;</li>
+<li>How to balance fairness, throughput, and tail latency;</li>
+<li>How to compress, recompute, preempt, and migrate when necessary;</li>
+<li>How to make prefix sharing coexist with multi-tenancy.</li>
+</ol>
+<p>From this perspective, Mooncake/LMCache are just the first step to &ldquo;building the file system&rdquo;; Strata, KVFlow, FastSwitch, Beluga, and TraCT are moving toward a &ldquo;complete memory manager.&rdquo;</p>
+<hr>
+<h2 id="17-what-comes-after-kv-cache-mamba-rwkv-and-online-compressed-memory">17. What Comes After KV Cache: Mamba, RWKV, and &ldquo;Online Compressed Memory&rdquo;</h2>
+<p>If we push the question all the way to the end, a more radical question emerges:</p>
+<blockquote>
+<p><strong>Since everyone accepts that KV cache is large, expensive, and redundant, why not just get rid of KV cache entirely?</strong></p>
+</blockquote>
+<p>This is the attraction of directions like Mamba and RWKV.</p>
+<p>Mamba's core claim is clear: Transformers have a fundamental computational efficiency problem on long sequences, so it uses selective state spaces to build a <strong>linear-time sequence model</strong>. The paper emphasizes that Mamba is fully recurrent, and reports strong performance on language modeling while delivering better inference throughput than Transformers of the same scale. <a href="https://arxiv.org/abs/2312.00752" title="https://arxiv.org/abs/2312.00752">36</a></p>
+<p>RWKV's statement is also direct: it wants to combine the advantages of Transformer parallel training with the efficient inference of RNN, achieving linearly scalable inference. <a href="https://arxiv.org/abs/2305.13048" title="https://arxiv.org/abs/2305.13048">37</a></p>
+<p>Put more systematically, Transformer KV cache is a kind of external memory that <strong>archives history token-by-token</strong>; while models like Mamba/RWKV are more like trying &ldquo;online compressed memory&rdquo;: instead of keeping every piece of history intact, they continuously compress history into a recurrent state.</p>
+<p>This path is extremely attractive because it fundamentally avoids the problem of &ldquo;must read full historical K/V every step.&rdquo;
+But reality is clear: as of 2026, Transformers remain the mainstream for industrial deployment, and system innovation around KV cache is still progressing rapidly. This shows that the short-to-medium-term consensus in industry isn't &ldquo;replace Transformers immediately&rdquo;—it's <strong>first optimize the KV-based world to the extreme</strong>. <a href="https://arxiv.org/abs/2312.00752" title="https://arxiv.org/abs/2312.00752">36</a></p>
+<p>Therefore, the future after KV cache is most likely not a story of instantaneous replacement—it's two lines progressing in parallel:</p>
+<ul>
+<li>One line continues to turn Transformer serving into a truly mature memory system;</li>
+<li>Another line explores how state-space / recurrent / hybrid architectures reduce the cost of historical storage at the model level.</li>
+</ul>
+<p>These two paths don't conflict. On the contrary, all the system understanding we've gained around KV cache today will become the foundation for understanding the next generation of sequence architectures.</p>
+<hr>
+<h2 id="18-conclusion-three-fundamental-trends">18. Conclusion: Three Fundamental Trends</h2>
+<p>If I had to condense the entire article into three main themes, I'd summarize it this way.</p>
+<h3 id="first-trend-from-compute-to-memory">First Trend: From Compute to Memory</h3>
+<p>In the Transformer training era, the focus is on FLOPS;
+In the Transformer inference era, the focus is increasingly <strong>working set, bandwidth, latency, state reuse</strong>.
+FlashAttention is important, but it's not the endgame; the real endgame question is: <strong>how should historical information be stored, accessed, moved, and compressed</strong>. <a href="https://arxiv.org/abs/2205.14135" title="https://arxiv.org/abs/2205.14135">19</a></p>
+<h3 id="second-trend-from-stateless-to-stateful">Second Trend: From Stateless to Stateful</h3>
+<p>Cloud APIs naturally偏向 stateless for scalability, fault tolerance, and multi-tenancy;
+But agents, multi-turn dialogue, long CoT, and RL rollout naturally need stateful.
+So almost all the most important serving innovations of the past two years attempt to reconcile this contradiction: prompt caching, prefix reuse, RadixAttention, LMCache, Mooncake, DistServe, KVFlow, Beluga, TraCT. Their common goal is: <strong>recover the benefits of state reuse without sacrificing the elasticity of cloud architecture</strong>. <a href="https://developers.openai.com/api/docs/guides/prompt-caching" title="https://developers.openai.com/api/docs/guides/prompt-caching">11</a></p>
+<h3 id="third-trend-from-model-to-system-to-memory-os">Third Trend: From Model to System, to Memory OS</h3>
+<p>We used to think of &ldquo;model innovation&rdquo; and &ldquo;system optimization&rdquo; as separate.
+But today, structural designs like GQA directly affect bandwidth; compression methods like R-KV directly affect serving cost; systems like KVFlow/FastSwitch/Strata deeply leverage temporal stability, prefix structure, and inter-layer differences within the model. At this stage, model, engine, scheduling, and memory hierarchy are already tightly coupled. <a href="https://arxiv.org/abs/2305.13245" title="https://arxiv.org/abs/2305.13245">23</a></p>
+<p>Therefore, this article doesn't really want to argue &ldquo;whether Mac is better or NVIDIA is better,&rdquo; nor &ldquo;whether Mooncake and LMCache are obsolete.&rdquo;
+What I want to emphasize more is:</p>
+<blockquote>
+<p><strong>The next stage of large language model inference is increasingly less a &ldquo;neural network operator optimization&rdquo; problem and more a &ldquo;how to turn history into manageable memory&rdquo; systems problem.</strong></p>
+</blockquote>
+<p>Once you accept this, many seemingly fragmented phenomena from the past become unified:</p>
+<ul>
+<li>Why does RL rollout make inference more expensive than training;</li>
+<li>Why does Mac's unified memory become relevant again;</li>
+<li>Why is FlashAttention not enough;</li>
+<li>Why have vLLM, SGLang, Mooncake, LMCache, Strata, Beluga, TraCT emerged simultaneously;</li>
+<li>Why is CXL both exciting and problematic;</li>
+<li>Why might KV cache compression be more important than parameter compression;</li>
+<li>Why does future LLM serving increasingly look like an operating system.</li>
+</ul>
+<p>And this, perhaps, is the most important change in AI infrastructure that deserves careful understanding over the past two years.</p>
+<hr>
+<h2 id="further-reading-grouped-by-topic">Further Reading (grouped by topic)</h2>
+<h3 id="fundamentals">Fundamentals</h3>
+<ol start="6">
+<li><em>Attention Is All You Need</em> — Transformer and masked decoder. <a href="https://arxiv.org/abs/1706.03762v7" title="https://arxiv.org/abs/1706.03762v7">6</a></li>
+<li><em>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</em> — bidirectional encoder approach. <a href="https://arxiv.org/abs/1810.04805" title="https://arxiv.org/abs/1810.04805">3</a></li>
+<li><em>Language Models are Unsupervised Multitask Learners</em> — representative early text in the GPT路线. <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" title="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf">38</a></li>
+</ol>
+<h3 id="kernel--engine">Kernel / Engine</h3>
+<ol start="19">
+<li><em>FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</em>. <a href="https://arxiv.org/abs/2205.14135" title="https://arxiv.org/abs/2205.14135">19</a></li>
+<li><em>Efficient Memory Management for Large Language Model Serving with PagedAttention</em> (vLLM). <a href="https://arxiv.org/abs/2309.06180" title="https://arxiv.org/abs/2309.06180">21</a></li>
+<li><em>Orca: A Distributed Serving System for Transformer-Based Generative Models</em>. <a href="https://www.usenix.org/conference/osdi22/presentation/yu" title="https://www.usenix.org/conference/osdi22/presentation/yu">20</a></li>
+<li><em>Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve</em>. <a href="https://arxiv.org/abs/2403.02310" title="https://arxiv.org/abs/2403.02310">4</a></li>
+<li><em>SGLang: Efficient Execution of Structured Language Model Programs</em>. <a href="https://arxiv.org/abs/2312.07104" title="https://arxiv.org/abs/2312.07104">28</a></li>
+</ol>
+<h3 id="model-structure-and-kv">Model Structure and KV</h3>
+<ol start="7">
+<li><em>Fast Transformer Decoding: One Write-Head is All You Need</em> (MQA). <a href="https://arxiv.org/abs/1911.02150" title="https://arxiv.org/abs/1911.02150">7</a></li>
+<li><em>GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints</em>. <a href="https://arxiv.org/abs/2305.13245" title="https://arxiv.org/abs/2305.13245">23</a></li>
+<li><em>CAKE: Cascading and Adaptive KV Cache Eviction with Layer Preferences</em>. <a href="https://arxiv.org/abs/2503.12491" title="https://arxiv.org/abs/2503.12491">8</a></li>
+<li><em>R-KV: Redundancy-aware KV Cache Compression for Training-Free Reasoning Models Acceleration</em>. <a href="https://arxiv.org/abs/2505.24133" title="https://arxiv.org/abs/2505.24133">9</a></li>
+<li><em>FlexiCache: Leveraging Temporal Stability of Attention Heads for Efficient KV Cache Management</em>. <a href="https://arxiv.org/abs/2511.00868" title="https://arxiv.org/abs/2511.00868">24</a></li>
+</ol>
+<h3 id="architecture-and-systems">Architecture and Systems</h3>
+<ol start="5">
+<li><em>DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving</em>. <a href="https://arxiv.org/abs/2401.09670" title="https://arxiv.org/abs/2401.09670">5</a></li>
+<li><em>Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving</em>. <a href="https://arxiv.org/abs/2407.00079" title="https://arxiv.org/abs/2407.00079">26</a></li>
+<li><em>LMCache: An Efficient KV Cache Layer for Enterprise-Scale LLM Inference</em>. <a href="https://arxiv.org/abs/2510.09665" title="https://arxiv.org/abs/2510.09665">27</a></li>
+<li><em>Strata: Hierarchical Context Caching for Long Context Language Model Serving</em>. <a href="https://arxiv.org/abs/2508.18572" title="https://arxiv.org/abs/2508.18572">30</a></li>
+<li><em>KVFlow: Efficient Prefix Caching for Accelerating LLM-Based Multi-Agent Workflows</em>. <a href="https://arxiv.org/abs/2507.07400" title="https://arxiv.org/abs/2507.07400">31</a></li>
+<li><em>FastSwitch: Optimizing Context Switching Efficiency in Fairness-aware Serving Systems</em>. <a href="https://arxiv.org/abs/2411.18424" title="https://arxiv.org/abs/2411.18424">32</a></li>
+<li><em>CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion</em>. <a href="https://arxiv.org/abs/2405.16444" title="https://arxiv.org/abs/2405.16444">33</a></li>
+<li><em>LLM Query Scheduling with Prefix Reuse and Latency Constraints</em>. <a href="https://arxiv.org/pdf/2502.04677" title="https://arxiv.org/pdf/2502.04677">10</a></li>
+<li><em>Revisiting SLO and Goodput Metrics in LLM Serving</em>. <a href="https://arxiv.org/abs/2410.14257" title="https://arxiv.org/abs/2410.14257">22</a></li>
+</ol>
+<h3 id="rl--agent--post-training">RL / Agent / Post-training</h3>
+<ol>
+<li><em>OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework</em>. <a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">1</a></li>
+<li><em>ECHO-2: A Large-Scale Distributed Rollout Framework for Cost-Efficient RL Post-Training</em>. <a href="https://arxiv.org/pdf/2602.02192" title="https://arxiv.org/pdf/2602.02192">12</a></li>
+<li><em>AgentRL</em> / <em>Agent Lightning</em> — agentic RL infrastructure work. <a href="https://arxiv.org/abs/2510.04206" title="https://arxiv.org/abs/2510.04206">13</a></li>
+</ol>
+<h3 id="hardware-and-memory-systems">Hardware and Memory Systems</h3>
+<ol start="14">
+<li>Apple official materials on unified memory, M2 Ultra, M3 Ultra, M5 Pro/Max, MLX. <a href="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/" title="https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/">14</a></li>
+<li>NVIDIA Grace Hopper / GH200 official coherent memory materials. <a href="https://developer.nvidia.com/blog/nvidia-grace-hopper-superchip-architecture-in-depth/" title="https://developer.nvidia.com/blog/nvidia-grace-hopper-superchip-architecture-in-depth/">39</a></li>
+<li><em>Beluga</em>, <em>TraCT</em>, <em>CXL-SpecKV</em> — CXL/shared memory direction. <a href="https://arxiv.org/abs/2511.20172" title="https://arxiv.org/abs/2511.20172">34</a></li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#AI Infrastructure</span>
+      
+      <span class="tag">#LLM</span>
+      
+      <span class="tag">#KV Cache</span>
+      
+      <span class="tag">#Memory System</span>
+      
+      <span class="tag">#Inference Optimization</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">Share this post on:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fen%2ffrom-kv-cache-to-ai-memory-system%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fen%2ffrom-kv-cache-to-ai-memory-system%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=From%20KV%20Cache%20to%20AI%20Memory%20System%3a%20The%20Evolution%20of%20Large%20Language%20Model%20Inference%20Architecture&body=https%3a%2f%2fblog.xieydd.top%2fen%2ffrom-kv-cache-to-ai-memory-system%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">Back to Top</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/verl-rl-pitfalls/" class="prev-post">
+        <span class="nav-label">Previous Post</span>
+        <span class="nav-title">One-Minute RL 101: Concepts and Framework Overview for Agent RL</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/en/vector-search/" class="next-post">
+        <span class="nav-label">Next Post</span>
+        <span class="nav-title">The internals of Vector Databases</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+    </main>
+  </div>
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

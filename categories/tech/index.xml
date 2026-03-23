@@ -8,7 +8,7 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Thu, 19 Mar 2026 10:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 22 Mar 2026 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.xieydd.top/categories/tech/index.xml" rel="self" type="application/rss+xml" />
     
@@ -65,6 +65,24 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</guid>
       <description>最近在搞在内部自研平台上做一些 NUMA 感知调度的工作，涉及到 kubernetes 节点资源拓扑的发现以及调度方面的内容。但是无奈才疏学浅，遇到问题查问题，一知半解的始</description>
+    </item>
+    
+    <item>
+      <title>一分钟 RL 入门：Agent RL 概念与框架扫盲</title>
+      <link>https://blog.xieydd.top/verl-rl-pitfalls/</link>
+      <pubDate>Sun, 22 Mar 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/verl-rl-pitfalls/</guid>
+      <description>为什么我现在才入坑 RL？ 受高策这篇文章启发，最近我也想深入玩玩 Agent RL 这个方向，了解一下目前 Agent RL Infra 的进展，亲手从零开始做一遍炼丹实验。 前一段时间</description>
+    </item>
+    
+    <item>
+      <title>从 KV Cache 到 AI 内存系统：大模型推理架构的演进</title>
+      <link>https://blog.xieydd.top/from-kv-cache-to-ai-memory-system/</link>
+      <pubDate>Sun, 22 Mar 2026 10:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/from-kv-cache-to-ai-memory-system/</guid>
+      <description>从 KV Cache 到 AI 内存系统：大模型推理架构的演进 摘要 这篇文章想回答一个看似分散、其实高度统一的问题：为什么这两年围绕大模型推理的系统创新，越来越不像</description>
     </item>
     
     <item>
