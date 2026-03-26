@@ -1,8 +1,0 @@
-User-agent: *
-Disallow: /tags/
-Disallow: /en/tags/
-Disallow: /page/
-Disallow: /en/page/
-Disallow: /posts/page/
-Disallow: /en/posts/page/
-Sitemap: https://blog.xieydd.top/sitemap.xml

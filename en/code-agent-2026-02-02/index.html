@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-02-02T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="Code Agent">
   
@@ -86,7 +86,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2026-02-02T10:00:00+08:00","description":"A practical reflection on building with Code Agent, covering workflow changes, mistakes, wins, and what actually improved my output.","headline":"Coding at Agent-Speed","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/code-agent-2026-02-02/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/code-agent-2026-02-02/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2026-02-02T10:00:00+08:00","description":"A practical reflection on building with Code Agent, covering workflow changes, mistakes, wins, and what actually improved my output.","headline":"Coding at Agent-Speed","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/code-agent-2026-02-02/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/code-agent-2026-02-02/"}
   </script>
   
 
@@ -172,7 +172,7 @@
     <h2>Table of Contents</h2>
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -> Cursor -> Gemini -> VS Code -> Codex -> VS Code -> Claude Code -> OpenCode -> OhMyOpenCode -> VS Code</a></li>
+    <li><a href="#vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; OpenCode -&gt; OhMyOpenCode -&gt; VS Code</a></li>
     <li><a href="#my-choices">My Choices</a></li>
     <li><a href="#how-i-work">How I Work</a></li>
     <li><a href="#thoughts">Thoughts</a></li>
@@ -185,16 +185,16 @@
   <div class="post-content">
     <p>I recently built a security product using Code Agents—an LLM Security Insight platform based on eBPF + PostgreSQL. The tech stack was eclectic: eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB. I was a complete beginner at React and eBPF, but the project shipped in a month.</p>
 <h2 id="vs-code---cursor---gemini---vs-code---codex---vs-code---claude-code---opencode---ohmyopencode---vs-code">VS Code -&gt; Cursor -&gt; Gemini -&gt; VS Code -&gt; Codex -&gt; VS Code -&gt; Claude Code -&gt; OpenCode -&gt; OhMyOpenCode -&gt; VS Code</h2>
-<p>I'm a long-time VS Code user. First came VS Code Copilot—specify the file, describe the change, generate a patch. Code Assistant is the more accurate term; it's pair programming. In familiar domains, it's genuinely comfortable. Code completion + pair programming is how programming should be.</p>
-<p>Around March-April 2025, I tried Cursor. It's forked from VS Code, but details made it feel different. Multi-file editing and Agent mode. Many people scoffed at first—used to pair programming, multi-file editing extended review time, and model-generated code wasn't reliable enough to approve without review. But Cursor dared to be first. With Claude Sonnet's capabilities, Cursor went wild.</p>
-<p>Here's the fun part: in early 2025, Cursor co-founder <a href="https://www.sualehasif.me/">Sualeh Asif</a> emailed our team engineer <a href="https://blog.mapotofu.org/">keming</a> about our reproducible dev infra tool (<a href="https://github.com/tensorchord/envd">envd</a>). Cursor had already foreseen consistency issues in large-scale Agent deployments. They used vector databases + <a href="https://turbopuffer.com/">Turbopuffer</a> for code search in multi-tenant scenarios—the same approach we took with VectorChord. But after their user base exploded and free quotas got slashed, I couldn't renew without a credit card, so I moved on.</p>
+<p>I&rsquo;m a long-time VS Code user. First came VS Code Copilot—specify the file, describe the change, generate a patch. Code Assistant is the more accurate term; it&rsquo;s pair programming. In familiar domains, it&rsquo;s genuinely comfortable. Code completion + pair programming is how programming should be.</p>
+<p>Around March-April 2025, I tried Cursor. It&rsquo;s forked from VS Code, but details made it feel different. Multi-file editing and Agent mode. Many people scoffed at first—used to pair programming, multi-file editing extended review time, and model-generated code wasn&rsquo;t reliable enough to approve without review. But Cursor dared to be first. With Claude Sonnet&rsquo;s capabilities, Cursor went wild.</p>
+<p>Here&rsquo;s the fun part: in early 2025, Cursor co-founder <a href="https://www.sualehasif.me/">Sualeh Asif</a> emailed our team engineer <a href="https://blog.mapotofu.org/">keming</a> about our reproducible dev infra tool (<a href="https://github.com/tensorchord/envd">envd</a>). Cursor had already foreseen consistency issues in large-scale Agent deployments. They used vector databases + <a href="https://turbopuffer.com/">Turbopuffer</a> for code search in multi-tenant scenarios—the same approach we took with VectorChord. But after their user base exploded and free quotas got slashed, I couldn&rsquo;t renew without a credit card, so I moved on.</p>
 <p><img src="Xnip2026-02-02_19-57-32.jpg" alt="cursor-email" /></p>
-<p>Then came Gemini CLI. Google's resources and Infra were impressive—free, powerful tokens attracted tons of users including me. But I was busy with VectorChord Cloud, so I only used it for small fixes and tests. Human context worked well, but still no Agent feeling—just pair programming.</p>
-<p>After hitting Gemini's quota limit, I went back to VS Code. GitHub's free Copilot + VS Code Agent mode + multi-vendor support (OpenAI, Claude, Google) with Enterprise quota was enough. But I preferred multi-file editing, keeping every line of code in check.</p>
+<p>Then came Gemini CLI. Google&rsquo;s resources and Infra were impressive—free, powerful tokens attracted tons of users including me. But I was busy with VectorChord Cloud, so I only used it for small fixes and tests. Human context worked well, but still no Agent feeling—just pair programming.</p>
+<p>After hitting Gemini&rsquo;s quota limit, I went back to VS Code. GitHub&rsquo;s free Copilot + VS Code Agent mode + multi-vendor support (OpenAI, Claude, Google) with Enterprise quota was enough. But I preferred multi-file editing, keeping every line of code in check.</p>
 <p>Claude Code finally gave me the real Agent experience. Leap in model capability meant better code and design docs. Smooth Plan/Auto/Edit mode switching let me build with planning and rhythm.</p>
-<p>Claude's region restrictions were brutal though—I had to get tokens through special channels. Then GLM came out, people said its coding and tool-calling were solid. They were right.</p>
-<p>Later, I saw good buzz about OpenCode on Twitter, tried it briefly—not bad. Then OhMyOpenCode plugin went viral on X. For users with multiple vendor models, it's genuinely useful—seamless model switching, unified workflow. But models iterate fast, plugins update constantly, managing subscriptions and tracking changes—it's exhausting.</p>
-<p>So why back to VS Code? I've always used VS Code Remote to connect to my dev machine. Claude Code and Codex have official VS Code extensions, and I often need to feed images to the Agent. Conductor and similar Orchestration tools? Didn't use them much.</p>
+<p>Claude&rsquo;s region restrictions were brutal though—I had to get tokens through special channels. Then GLM came out, people said its coding and tool-calling were solid. They were right.</p>
+<p>Later, I saw good buzz about OpenCode on Twitter, tried it briefly—not bad. Then OhMyOpenCode plugin went viral on X. For users with multiple vendor models, it&rsquo;s genuinely useful—seamless model switching, unified workflow. But models iterate fast, plugins update constantly, managing subscriptions and tracking changes—it&rsquo;s exhausting.</p>
+<p>So why back to VS Code? I&rsquo;ve always used VS Code Remote to connect to my dev machine. Claude Code and Codex have official VS Code extensions, and I often need to feed images to the Agent. Conductor and similar Orchestration tools? Didn&rsquo;t use them much.</p>
 <h2 id="my-choices">My Choices</h2>
 <p><strong>Tool Choices</strong></p>
 <table>
@@ -277,21 +277,21 @@
 </div>
 </div><p>All research, design, and utility code go here. Agents read directly—huge efficiency win.</p>
 <p><strong>2. Global Context</strong>
-Following <a href="https://gist.github.com/Xuanwo/fa5162ed3548ae4f962dcc8b8e256bed">Xuanwo's approach</a>, my Global Context is <code>agents.md</code>—defining Agent behavior, constraints, and Best Practices. Shared across all projects.</p>
+Following <a href="https://gist.github.com/Xuanwo/fa5162ed3548ae4f962dcc8b8e256bed">Xuanwo&rsquo;s approach</a>, my Global Context is <code>agents.md</code>—defining Agent behavior, constraints, and Best Practices. Shared across all projects.</p>
 <p><strong>3. Design First</strong>
-Polish design docs with the Agent, lock in tech stack and architecture. The design doc is the Agent's manual—clearer is better.</p>
+Polish design docs with the Agent, lock in tech stack and architecture. The design doc is the Agent&rsquo;s manual—clearer is better.</p>
 <p><strong>4. Validate Before Build</strong>
 Have the Agent write verification code first. Before committing to a PostgreSQL Schema, I had the Agent generate DDL, then ran a Demo to validate.</p>
 <p><strong>5. Full Implementation</strong>
-Once validated, Agent implements everything. There are cases the Agent can't handle—eBPF kernel compatibility, for example. For those, I switch to Claude Sonnet 4.5 with full context to Debug directly. Efficient.</p>
-<p>Git Worktree is my safety net. Agents mess around in branches, main stays clean. But database schema changes are painful—Docker PG can't do concurrent schema changes, so it's serial.</p>
+Once validated, Agent implements everything. There are cases the Agent can&rsquo;t handle—eBPF kernel compatibility, for example. For those, I switch to Claude Sonnet 4.5 with full context to Debug directly. Efficient.</p>
+<p>Git Worktree is my safety net. Agents mess around in branches, main stays clean. But database schema changes are painful—Docker PG can&rsquo;t do concurrent schema changes, so it&rsquo;s serial.</p>
 <p>I used to worry about Git—fear the Agent would delete fine-tuned code. But as Agent quality improved, that mental burden faded.</p>
 <h2 id="thoughts">Thoughts</h2>
 <p><strong>Fork is a Must-Have</strong></p>
 <ul>
 <li><strong>Code/File Level</strong>: Solved by Git.</li>
-<li><strong>Runtime Level</strong>: Docker/envd solved personal use cases, but large-scale Agent scheduling has no perfect solution yet. Unikernel might work, but Firecracker isn't fast or mature enough.</li>
-<li><strong>Database Level</strong>: ACID makes forking hard. Distributed databases mean data redundancy and consistency issues when forking. PostgreSQL's monolithic nature is an advantage. PITR + JuiceFS Snapshot enables PG forks—tools like <a href="https://piglet.run/docs/concept/snapshot/">piglet</a> help.</li>
+<li><strong>Runtime Level</strong>: Docker/envd solved personal use cases, but large-scale Agent scheduling has no perfect solution yet. Unikernel might work, but Firecracker isn&rsquo;t fast or mature enough.</li>
+<li><strong>Database Level</strong>: ACID makes forking hard. Distributed databases mean data redundancy and consistency issues when forking. PostgreSQL&rsquo;s monolithic nature is an advantage. PITR + JuiceFS Snapshot enables PG forks—tools like <a href="https://piglet.run/docs/concept/snapshot/">piglet</a> help.</li>
 </ul>
 <p><strong>Multi-Model Collaboration is the Future</strong></p>
 <p><strong>Skill Best Practices + MCP Boost Productivity</strong></p>

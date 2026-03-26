@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2025-01-09T10:20:28&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="llm">
   
@@ -84,7 +84,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2025-01-09T10:20:28+08:00","description":"A practical guide to LLM infrastructure covering GPT-3 foundations, Transformer internals, training parallelism, and inference system design.","headline":"Everything You Need to Know About LLM Infra","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/llm-infra/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/llm-infra/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2025-01-09T10:20:28+08:00","description":"A practical guide to LLM infrastructure covering GPT-3 foundations, Transformer internals, training parallelism, and inference system design.","headline":"Everything You Need to Know About LLM Infra","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/llm-infra/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/llm-infra/"}
   </script>
   
 
@@ -184,11 +184,11 @@
   <div class="post-content">
     <h1 id="everything-you-need-to-know-about-llm-infra">Everything You Need to Know About LLM Infra</h1>
 <h2 id="gpt-3">GPT 3</h2>
-<p>The GPT model is the starting point of LLM models. If you say Transformer is the starting point, that's also correct. Since we're going to discuss LLM Infra, we need to know who our system architecture and design are serving. Without understanding the model architecture, you'll feel confused about the Infra designs introduced later, such as Prefill-Decode Disaggregation during inference, Context Cache Migration, Traffic-Adaptive Request Routing, etc. Know not only the how but also the why. We start with GPT3 because the parameter sizes of GPT1 and GPT2 are too small. GPT2 has only 1.5B parameters, while GPT3 has 175B parameters. If you're not familiar with Transformer architecture, I recommend this article <a href="https://www.datacamp.com/tutorial/how-transformers-work">How Transformers Work</a>. For Chinese users, I recommend the Zhihu article <a href="https://zhuanlan.zhihu.com/p/338817680">Transformer模型详解（图解最完整版）</a> (in Chinese).</p>
+<p>The GPT model is the starting point of LLM models. If you say Transformer is the starting point, that&rsquo;s also correct. Since we&rsquo;re going to discuss LLM Infra, we need to know who our system architecture and design are serving. Without understanding the model architecture, you&rsquo;ll feel confused about the Infra designs introduced later, such as Prefill-Decode Disaggregation during inference, Context Cache Migration, Traffic-Adaptive Request Routing, etc. Know not only the how but also the why. We start with GPT3 because the parameter sizes of GPT1 and GPT2 are too small. GPT2 has only 1.5B parameters, while GPT3 has 175B parameters. If you&rsquo;re not familiar with Transformer architecture, I recommend this article <a href="https://www.datacamp.com/tutorial/how-transformers-work">How Transformers Work</a>. For Chinese users, I recommend the Zhihu article <a href="https://zhuanlan.zhihu.com/p/338817680">Transformer模型详解（图解最完整版）</a> (in Chinese).</p>
 <div align="center">
   <img src="in_out_2.png" alt="gpt3 in and out" />
 </div>
-<p>First, let's determine the input and output of GPT3:</p>
+<p>First, let&rsquo;s determine the input and output of GPT3:</p>
 <ul>
 <li>Input: A text segment with a length of 2048 tokens</li>
 <li>Output: The probability distribution of the next token given 2048 input tokens</li>
@@ -208,7 +208,7 @@
   <img src="embedding2.png" alt="embedding" />
 </div>
 <h3 id="positional-encoding">Positional Encoding</h3>
-<p>Since Transformer doesn't have a recurrent mechanism like RNN, positional encoding is used to provide information about the position of each token in the sequence. This enables them to understand the position of each word in the sentence. Transformer uses a combination of sin and cos, allowing position encoding to encode sentences of arbitrary length.</p>
+<p>Since Transformer doesn&rsquo;t have a recurrent mechanism like RNN, positional encoding is used to provide information about the position of each token in the sequence. This enables them to understand the position of each word in the sentence. Transformer uses a combination of sin and cos, allowing position encoding to encode sentences of arbitrary length.</p>
 <div align="center">
   <img src="position-encoding.png" alt="position encoding" />
 </div>
@@ -236,7 +236,7 @@
 <li>The attention score is dotted with Value</li>
 </ul>
 <h3 id="sparse-attention">Sparse Attention</h3>
-<p>GPT3 doesn't use standard Attention, but Sparse Attention. In Sparse Attention, the attention of all tokens is set to 0, except for tokens with a relative distance not exceeding k and tokens with relative distances of k, 2k, 3k, &hellip;, as shown in the following figure:</p>
+<p>GPT3 doesn&rsquo;t use standard Attention, but Sparse Attention. In Sparse Attention, the attention of all tokens is set to 0, except for tokens with a relative distance not exceeding k and tokens with relative distances of k, 2k, 3k, &hellip;, as shown in the following figure:</p>
 <div align="center">
   <img src="sparse-attention.png" alt="sparse attention" />
 </div>
@@ -268,7 +268,7 @@
 <div align="center">
   <img src="unembedding2.png" alt="decoding2" />
 </div>
-<p>Understanding the architecture of GPT3 allows us to better understand the design of LLM Infra. Next, let's enter the topic of how to train large models. Here, we'll use the current SOTA open-source model <a href="https://github.com/deepseek-ai/DeepSeek-V3">DeepSeek-V3</a> for explanation.</p>
+<p>Understanding the architecture of GPT3 allows us to better understand the design of LLM Infra. Next, let&rsquo;s enter the topic of how to train large models. Here, we&rsquo;ll use the current SOTA open-source model <a href="https://github.com/deepseek-ai/DeepSeek-V3">DeepSeek-V3</a> for explanation.</p>
 <h2 id="infra">Infra</h2>
 <h3 id="gpu">GPU</h3>
 <p>The comprehensive solution <a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">GB200 NVL72</a>:</p>
@@ -301,7 +301,7 @@
   <img src="v2-bb13207ca0cdc8e8893cfc98eee9faee_1440w.jpg" alt="sxm" />
 </div>
 Note that only SXM sockets can truly use NVLink P2P communication, not NVLink Bridge connections.
-<p>NVLink's latest technology, <a href="https://www.nvidia.com/en-us/data-center/nvlink-c2c/?ncid=no-ncid">NVLink C2C interconnect</a>, connects two high-performance NVIDIA Blackwell Tensor Core GPUs and an NVIDIA Grace CPU to two Blackwell GPUs. The ultimate goal is to enable NVIDIA GPUs, DPUs, and CPUs to achieve consistent interconnection with custom chips, reaching speeds of 900 GB/s. The following figure shows the architecture diagram of NVIDIA GH200 Grace Hopper Superchip:</p>
+<p>NVLink&rsquo;s latest technology, <a href="https://www.nvidia.com/en-us/data-center/nvlink-c2c/?ncid=no-ncid">NVLink C2C interconnect</a>, connects two high-performance NVIDIA Blackwell Tensor Core GPUs and an NVIDIA Grace CPU to two Blackwell GPUs. The ultimate goal is to enable NVIDIA GPUs, DPUs, and CPUs to achieve consistent interconnection with custom chips, reaching speeds of 900 GB/s. The following figure shows the architecture diagram of NVIDIA GH200 Grace Hopper Superchip:</p>
 <div align="center">
   <img src="nvidia-gh200-grace-hopper-superchip.png" alt="nvidia-gh200-grace-hopper-superchip" />
 </div>
@@ -322,7 +322,7 @@ Note that only SXM sockets can truly use NVLink P2P communication, not NVLink Br
 <li>RoCE (RDMA over Converged Ethernet)</li>
 <li>iWARP (Internet Wide Area RDMA Protocol)</li>
 </ul>
-<p>RDMA protocol doesn't require CPU participation like the TCP/IP protocol. Data doesn't need to pass through the data link layer, network layer, transport layer, and application layer, with the CPU participating in operations such as receiving and unpacking data packets. RDMA's kernel bypass mechanism allows direct data reading and writing between applications and network cards. At the same time, RDMA's zero-copy mechanism allows the receiving end to directly read data from the sender's memory, greatly reducing the burden on the CPU and improving CPU efficiency.</p>
+<p>RDMA protocol doesn&rsquo;t require CPU participation like the TCP/IP protocol. Data doesn&rsquo;t need to pass through the data link layer, network layer, transport layer, and application layer, with the CPU participating in operations such as receiving and unpacking data packets. RDMA&rsquo;s kernel bypass mechanism allows direct data reading and writing between applications and network cards. At the same time, RDMA&rsquo;s zero-copy mechanism allows the receiving end to directly read data from the sender&rsquo;s memory, greatly reducing the burden on the CPU and improving CPU efficiency.</p>
 <div align="center">
   <img src="v2-525d2effeeb83eba38a638648f211410_1440w.jpg" alt="rdma" />
 </div>
@@ -339,7 +339,7 @@ Note that only SXM sockets can truly use NVLink P2P communication, not NVLink Br
 </div>
 <p>Here, x4 and x12 refer to the number of Links in the cable. x4 represents 4 Links, and x12 represents 12 Links. One Link consists of two wires, one for sending and one for receiving.</p>
 <p>InfiniBand cables are different from Ethernet cables and fiber optic cables. InfiniBand network interconnection products include: DAC high-speed copper cables, AOC active cables, and optical modules.</p>
-<p>Mellanox's market share in the global InfiniBand market is basically unbeatable. After NVIDIA acquired Mellanox, it also launched its own seventh-generation NVIDIA InfiniBand architecture in 2021: NVIDIA Quantum-2.</p>
+<p>Mellanox&rsquo;s market share in the global InfiniBand market is basically unbeatable. After NVIDIA acquired Mellanox, it also launched its own seventh-generation NVIDIA InfiniBand architecture in 2021: NVIDIA Quantum-2.</p>
 <p>NVIDIA Quantum-2 platform includes: NVIDIA Quantum-2 series switches, NVIDIA ConnectX-7 InfiniBand adapters, BlueField-3 InfiniBand DPUs, and cables.
 Currently, the latest are:</p>
 <ul>
@@ -368,12 +368,12 @@ Currently, the latest are:</p>
 GPUDirect technology includes GPUDirect Storage, GPUDirect RDMA, GPUDirect P2P, and GPUDirect Video.</p>
 <ul>
 <li>GPUDirect P2P is mainly for multi-GPU scenarios on a single machine, allowing GPUs to directly access the video memory of the target GPU through PCI Express</li>
-<li>GPUDirect RDMA is mainly for multi-machine, multi-GPU scenarios. GPU 1 on computer 1 can directly access the GPU memory of computer 2 without needing CPU -&gt; CPU and then from computer 2's CPU -&gt; GPU with multiple copies</li>
+<li>GPUDirect RDMA is mainly for multi-machine, multi-GPU scenarios. GPU 1 on computer 1 can directly access the GPU memory of computer 2 without needing CPU -&gt; CPU and then from computer 2&rsquo;s CPU -&gt; GPU with multiple copies</li>
 </ul>
 <h4 id="communication">Communication</h4>
 <p>MPI (Message Passing Interface) is a communication protocol commonly used in parallel computing. MPI has multiple implementations, such as OpenMPI, Gloo, NCCL, etc.</p>
 <p>NCCL (Nvidia Collective multi-GPU Communication Library) implements multi-GPU and multi-node collective communication primitives optimized for NVIDIA GPU performance. NCCL provides implementations such as All Gather, All Reduce, Broadcast, Reduce, Reduce-Scatter, etc. These implementations are optimized to communicate through PCIe, NVLink, InfiniBand, and other high-speed interconnections, thereby achieving high bandwidth and low latency.</p>
-<p>Let's introduce several communication primitives:</p>
+<p>Let&rsquo;s introduce several communication primitives:</p>
 <ul>
 <li>Reduce: Receive data from multiple senders, and finally combine them onto one node.
 <div align="center">
@@ -430,19 +430,19 @@ GPUDirect technology includes GPUDirect Storage, GPUDirect RDMA, GPUDirect P2P, 
 <li>GPU Card Loss: Usually triggers CUDA Error or the program exits abnormally, such as: &ldquo;RuntimeError: Caught RuntimeError in pin memory thread for device 4.&rdquo;</li>
 <li>Machine Abnormalities: Hardware abnormalities other than GPU, such as hard disk, CPU, etc., or even the machine crashing directly.</li>
 <li>Machine Configuration Abnormalities: For example, discovering that a machine has MIG enabled.</li>
-<li>Cluster Maintenance: Usually, a cluster doesn't support just one task, and occasionally maintenance and upgrades are needed, which may require stopping tasks.</li>
+<li>Cluster Maintenance: Usually, a cluster doesn&rsquo;t support just one task, and occasionally maintenance and upgrades are needed, which may require stopping tasks.</li>
 <li>Storage Failure: For example, Lustre storage failing</li>
 </ol>
 <h5 id="monitoring--fault-tolerance">Monitoring &amp; Fault Tolerance</h5>
 <p>Automatic failure detection and rapid recovery mechanisms are needed:</p>
 <ol>
-<li>When a user submits a training task, in addition to creating a training Executor on each GPU, a training daemon process is also created that periodically sends heartbeats to the Driver. Heartbeat signals contain various information to enable real-time anomaly detection and send alert information. When the Driver doesn't receive heartbeat signals within a specific time, it also triggers the failure recovery process, including:</li>
+<li>When a user submits a training task, in addition to creating a training Executor on each GPU, a training daemon process is also created that periodically sends heartbeats to the Driver. Heartbeat signals contain various information to enable real-time anomaly detection and send alert information. When the Driver doesn&rsquo;t receive heartbeat signals within a specific time, it also triggers the failure recovery process, including:</li>
 </ol>
 <ul>
 <li>Pause all training Executors and perform a series of self-check diagnostics.</li>
 <li>Once an abnormal machine is identified, it is evicted, and an equal number of healthy machines that passed tests are added to the cluster. Additionally, user interfaces are provided to allow users to manually identify and evict abnormal machines.</li>
 <li>After machine recovery is complete, training resumes from the most recent Checkpoint. The process of saving and restoring Checkpoints also needs optimization to minimize the impact on training progress. A two-stage approach is introduced. In the first stage, each GPU training process writes state information from video memory to host memory. Due to high-speed PCIe bandwidth, this process usually takes only a few seconds, so the training process can immediately continue training. In the second stage, a background process asynchronously synchronizes state information to a distributed file system. MegaScale uses HDFS.</li>
-<li>Its heartbeat signals include IP address, Pod name, hardware information, etc., and also include current training progress information. Additionally, the stdout/stderr logs of training processes are also collected for real-time aggregation, filtering, and analysis. If warning or error keywords are identified, the Driver will report these diagnostic information in real-time. Finally, RAMA's traffic metrics are also included to better identify network utilization and communication efficiency</li>
+<li>Its heartbeat signals include IP address, Pod name, hardware information, etc., and also include current training progress information. Additionally, the stdout/stderr logs of training processes are also collected for real-time aggregation, filtering, and analysis. If warning or error keywords are identified, the Driver will report these diagnostic information in real-time. Finally, RAMA&rsquo;s traffic metrics are also included to better identify network utilization and communication efficiency</li>
 </ul>
 <p>Routine inspections (need a monitoring system accurate to the millisecond level to avoid Spikes):</p>
 <ul>
@@ -453,25 +453,25 @@ GPUDirect technology includes GPUDirect Storage, GPUDirect RDMA, GPUDirect P2P, 
 <li>NCCL testing: All-to-All testing is performed within the machine, and All Reduce testing is also performed between machines on the same TOR switch to discover potential hardware failures and performance issues</li>
 </ul>
 <h2 id="training">Training</h2>
-<p>For large model training, here we mainly reference Andrej Karpathy's sharing at MSBuild 2023, which is divided into the following four stages:</p>
+<p>For large model training, here we mainly reference Andrej Karpathy&rsquo;s sharing at MSBuild 2023, which is divided into the following four stages:</p>
 <ol>
 <li>Pre-training</li>
 <li>Supervised Fine-Tuning</li>
 <li>Reward Modeling</li>
 <li>Reforcement Learning</li>
 </ol>
-<p>Before introducing these four stages, let's first普及 some Hardware knowledge, because large model training requires a large amount of computing resources, such as GPUs. Additionally, data storage and network communication need to be considered.</p>
+<p>Before introducing these four stages, let&rsquo;s first普及 some Hardware knowledge, because large model training requires a large amount of computing resources, such as GPUs. Additionally, data storage and network communication need to be considered.</p>
 <h3 id="hardware">Hardware</h3>
 <h4 id="gpu-1">GPU</h4>
-<p>When we mention GPU (Graphics Processing Unit), we naturally associate it with NVIDIA. There's some truth to this because NVIDIA's GPUs occupy a large market share in the deep learning field. However, this market is huge, with Application-specific Integrated Circuits (ASICs) chips from AMD and Brodcom also continuously devouring market share.</p>
-<p>Although GPU has the word &ldquo;Graph&rdquo; in it, in AI, we mostly use GPGPU (General-purpose computing on graphics processing units). If you're not familiar with GPU terminology, I recommend checking out the <a href="https://modal.com/gpu-glossary">GPU Glossary</a> maintained by Modal. GPU relative to CPU</p>
+<p>When we mention GPU (Graphics Processing Unit), we naturally associate it with NVIDIA. There&rsquo;s some truth to this because NVIDIA&rsquo;s GPUs occupy a large market share in the deep learning field. However, this market is huge, with Application-specific Integrated Circuits (ASICs) chips from AMD and Brodcom also continuously devouring market share.</p>
+<p>Although GPU has the word &ldquo;Graph&rdquo; in it, in AI, we mostly use GPGPU (General-purpose computing on graphics processing units). If you&rsquo;re not familiar with GPU terminology, I recommend checking out the <a href="https://modal.com/gpu-glossary">GPU Glossary</a> maintained by Modal. GPU relative to CPU</p>
 <h4 id="network-1">Network</h4>
 <h4 id="storage-system">Storage System</h4>
 <h3 id="pre-training">Pre-training</h3>
-<p>Pre-training the model is the stage that consumes the most computing power and data in large model training. The goal of this stage is to let the model learn the basic laws of language, such as grammar, semantics, etc. The data volume in this stage is very large, usually at the TB level, and the training usually takes from a few weeks to several months. Training in this stage is usually unsupervised, meaning we don't need labeled data. Training in this stage is usually done on large-scale GPU clusters, such as OpenAI's GPT3, which was trained on thousands of V100s for a month.</p>
-<p>As the pre-training that consumes the most computing resources, in this chapter, we'll share some techniques for LLM training, such as distributed training parallelism techniques and training optimization techniques.</p>
+<p>Pre-training the model is the stage that consumes the most computing power and data in large model training. The goal of this stage is to let the model learn the basic laws of language, such as grammar, semantics, etc. The data volume in this stage is very large, usually at the TB level, and the training usually takes from a few weeks to several months. Training in this stage is usually unsupervised, meaning we don&rsquo;t need labeled data. Training in this stage is usually done on large-scale GPU clusters, such as OpenAI&rsquo;s GPT3, which was trained on thousands of V100s for a month.</p>
+<p>As the pre-training that consumes the most computing resources, in this chapter, we&rsquo;ll share some techniques for LLM training, such as distributed training parallelism techniques and training optimization techniques.</p>
 <h4 id="distributed-training">Distributed Training</h4>
-<p>Refer to OpenAI's article <a href="https://openai.com/index/techniques-for-training-large-neural-networks/">Techniques for training large neural networks</a>, which is mainly divided into the following four parts:</p>
+<p>Refer to OpenAI&rsquo;s article <a href="https://openai.com/index/techniques-for-training-large-neural-networks/">Techniques for training large neural networks</a>, which is mainly divided into the following four parts:</p>
 <ol>
 <li>Data Parallelism</li>
 <li>Pipeline Parallelism</li>
@@ -488,7 +488,7 @@ GPUDirect technology includes GPUDirect Storage, GPUDirect RDMA, GPUDirect P2P, 
 </ol>
 <h5 id="data-parallelism">Data Parallelism</h5>
 <p>Data Parallelism divides data into different subsets and distributes them to different GPUs. For each GPU, the model is complete, so each GPU needs to store the complete parameters of the model. Therefore, when GPU video memory cannot store model parameters, Data Parallelism is not applicable, although there are currently some Offload Memory technologies or KV Cache that can alleviate this problem.</p>
-<p>Because each GPU needs complete parameters, when updating, it's necessary to ensure that the parameters of working threads (usually consistent with GPUs) remain consistent. This requires introducing blocking communication on working threads:</p>
+<p>Because each GPU needs complete parameters, when updating, it&rsquo;s necessary to ensure that the parameters of working threads (usually consistent with GPUs) remain consistent. This requires introducing blocking communication on working threads:</p>
 <ol>
 <li>Each worker calculates gradients</li>
 <li>Average the gradients of each worker</li>
@@ -516,7 +516,7 @@ GPUDirect technology includes GPUDirect Storage, GPUDirect RDMA, GPUDirect P2P, 
 </div>
 <p>Repeat the receiving, reducing, and sending process N-1 times, so each worker obtains a part of the result. Finally, perform another round of Send operations without reduce operations, so each worker obtains the final result.</p>
 <h5 id="pipeline-parallelism-model-parallelism">Pipeline Parallelism (Model Parallelism)</h5>
-<p>Pipeline Parallelism divides the model into different stages and distributes them to different GPUs. For large models, such as LLaMA 65B, if the parameters are FP32, the total video memory needed is 260GB. However, most training uses half precision, which is FP16, so 130GB of video memory is needed. Currently, the most advanced H200 has 80GB of video memory. Currently, the <a href="https://huggingface.co/deepseek-ai/DeepSeek-V3">DeepSeek V3</a> trained by the DeepSeek team has first verified the feasibility and effectiveness of FP8 training on ultra-large-scale models. However, DeepSeek V3 is a MOE (Mixtures of Experts) model with parameters reaching 671B, which we'll discuss later. The communication volume of PP is relatively small, so it's often placed on different machines.</p>
+<p>Pipeline Parallelism divides the model into different stages and distributes them to different GPUs. For large models, such as LLaMA 65B, if the parameters are FP32, the total video memory needed is 260GB. However, most training uses half precision, which is FP16, so 130GB of video memory is needed. Currently, the most advanced H200 has 80GB of video memory. Currently, the <a href="https://huggingface.co/deepseek-ai/DeepSeek-V3">DeepSeek V3</a> trained by the DeepSeek team has first verified the feasibility and effectiveness of FP8 training on ultra-large-scale models. However, DeepSeek V3 is a MOE (Mixtures of Experts) model with parameters reaching 671B, which we&rsquo;ll discuss later. The communication volume of PP is relatively small, so it&rsquo;s often placed on different machines.</p>
 <div align="center">
   <img src="model-parallelism.svg" alt="model-parallelism" />
 </div>
@@ -535,7 +535,7 @@ The above figure shows the schematic of GPipe. GPipe continuously passes the act
 </div>
 <p>PipeDream, on the other hand, lets workers alternately handle forward and backward passing. Compared to GPiPe, PipeDream has better resource utilization but requires more communication overhead.</p>
 <h5 id="tensor-parallelism">Tensor Parallelism</h5>
-<p>Tensor Parallelism divides the model's operators into different subsets and distributes them to different GPUs, such as matrix multiplication. Pipeline parallelism divides the model's layers onto different GPUs, while Tensor Parallelism divides the operators within model layers onto different GPUs. For modern models such as Transformer, dot product computation of activation values and large weights is the bottleneck of computation. For example, <a href="https://nv-adlr.github.io/MegatronLM">MegatronLM</a> parallelizes matrix multiplication in the Self-Attention and MLP layers of Transformer. <a href="https://arxiv.org/abs/2104.04473">PTD-P</a> uses tensor, pipeline, and data parallelism, where the pipeline scheduler assigns multiple non-consecutive layers to each device, reducing bubble overhead at the cost of network communication. Its communication volume is larger, so TP is often placed within a single machine to fully utilize the high bandwidth of NVLink within the machine.</p>
+<p>Tensor Parallelism divides the model&rsquo;s operators into different subsets and distributes them to different GPUs, such as matrix multiplication. Pipeline parallelism divides the model&rsquo;s layers onto different GPUs, while Tensor Parallelism divides the operators within model layers onto different GPUs. For modern models such as Transformer, dot product computation of activation values and large weights is the bottleneck of computation. For example, <a href="https://nv-adlr.github.io/MegatronLM">MegatronLM</a> parallelizes matrix multiplication in the Self-Attention and MLP layers of Transformer. <a href="https://arxiv.org/abs/2104.04473">PTD-P</a> uses tensor, pipeline, and data parallelism, where the pipeline scheduler assigns multiple non-consecutive layers to each device, reducing bubble overhead at the cost of network communication. Its communication volume is larger, so TP is often placed within a single machine to fully utilize the high bandwidth of NVLink within the machine.</p>
 <p>The following figure uses the 8DP 12PP 4TP scheme, so the GPUs needed are 8x12x4=384:</p>
 <div align="center">
   <img src="3d-parallelism.png" alt="3d-parallelism" />
@@ -548,7 +548,7 @@ The above figure shows the schematic of GPipe. GPipe continuously passes the act
 <p>Obviously, the MoE architecture can significantly increase the size of the model. This comes from an experience: with limited computing resource budgets, training a larger model with fewer training steps often yields better results than training a smaller model with more steps. Especially in the pre-training stage, compared to dense models, mixture-of-experts models can usually reach the same quality level faster. MoE is based on the Transformer architecture and consists of the following two parts:</p>
 <ol>
 <li>Sparse MoE layers: MoE layers have several experts. As shown in the following figure, there are 8 experts. These experts can be FFN layers or MoE layers, like Russian nesting dolls.</li>
-<li>Gating network or routing: This routing decides which expert a token will be sent to. The router's parameters are trained during training.</li>
+<li>Gating network or routing: This routing decides which expert a token will be sent to. The router&rsquo;s parameters are trained during training.</li>
 </ol>
 <div align="center">
   <img src="00_switch_transformer.png" alt="moe2" />
@@ -564,7 +564,7 @@ The above figure shows the schematic of GPipe. GPipe continuously passes the act
 <li>Random noise is to make the load between experts more balanced, avoiding only popular experts being trained during training. In the transformers library, this can be controlled by the aux_loss parameter.</li>
 <li>topk can selectively retain the top k values, accelerating training and inference</li>
 </ul>
-<p>Let's list two typical MoE models or methods:</p>
+<p>Let&rsquo;s list two typical MoE models or methods:</p>
 <ol>
 <li>Gshard</li>
 </ol>
@@ -574,7 +574,7 @@ The above figure shows the schematic of GPipe. GPipe continuously passes the act
 To ensure load balancing and training efficiency, Gshard uses the following optimizations in addition to the auxiliary loss mentioned above:
 <ul>
 <li>Random routing: In the Top-2 setting, we always choose the highest-ranked expert, but the second expert is randomly chosen based on its weight proportion.</li>
-<li>Define how many tokens an expert can handle. If both experts&rsquo; capacities reach the limit, tokens will overflow and be passed to the next layer through residual connections, or in some cases, completely discarded.</li>
+<li>Define how many tokens an expert can handle. If both experts' capacities reach the limit, tokens will overflow and be passed to the next layer through residual connections, or in some cases, completely discarded.</li>
 </ul>
 <ol start="2">
 <li>Switch Transformer</li>
@@ -591,8 +591,8 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <p>Researchers of ST-MoE found that different experts in the encoder tend to focus on specific types of tokens or shallow concepts. For example, some experts may specialize in punctuation, while others focus on proper nouns, etc. In contrast, experts in the decoder usually have a lower degree of specialization.</p>
 <p>What are some tricks for training MoE models:</p>
 <ol>
-<li>Sparse models are more prone to overfitting, so it's beneficial to try stronger internal regularization measures when handling these models, such as using a higher dropout rate. For example, we can set a lower dropout rate for dense layers and a higher dropout rate for sparse layers to optimize model performance;</li>
-<li>MoE models are prone to overfitting on small tasks such as SuperGLUE and don't perform as well as on large tasks such as TriviaQA;</li>
+<li>Sparse models are more prone to overfitting, so it&rsquo;s beneficial to try stronger internal regularization measures when handling these models, such as using a higher dropout rate. For example, we can set a lower dropout rate for dense layers and a higher dropout rate for sparse layers to optimize model performance;</li>
+<li>MoE models are prone to overfitting on small tasks such as SuperGLUE and don&rsquo;t perform as well as on large tasks such as TriviaQA;</li>
 <li>Freezing MoE parameters for fine-tuning can significantly speed up training and has little impact on model effectiveness;</li>
 <li>MoE is suitable for smaller batch sizes and higher learning rates;</li>
 <li>Fine-tuning on sparse models works better than on dense models.</li>
@@ -630,7 +630,7 @@ During training, the auxiliary loss for each Switch layer is added to the total 
   <img src="tokenization.png" alt="tokenization" />
 </div>
 <h4 id="model">Model</h4>
-<p>Let's look at a comparison of some parameters between GPT3 in 2020 and LLaMA in 2023:</p>
+<p>Let&rsquo;s look at a comparison of some parameters between GPT3 in 2020 and LLaMA in 2023:</p>
 <div align="center">
   <img src="gpt3-llama-model.png" alt="gpt3-llama-model" />
 </div>
@@ -638,7 +638,7 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <ol>
 <li>Vocabulary Size: 50257. This refers to the number of vocabulary in the Tokenizer, which is the dimension of the input vector.</li>
 <li>Context Length: 2048. This refers to the size of the window that the generative model sees before generating the next token.</li>
-<li>Although the parameter size of GPT3 training is 175B, while LLaMA only has 65B, the tokens trained by LLaMA are 1.5T &gt; GPT3's 300B.</li>
+<li>Although the parameter size of GPT3 training is 175B, while LLaMA only has 65B, the tokens trained by LLaMA are 1.5T &gt; GPT3&rsquo;s 300B.</li>
 <li>Some training hyperparameters, such as batch size, learning rate, number of heads, and number of model layers, etc.</li>
 </ol>
 <p>If the training input is the following text, it will be marked by special tokens <code>&lt;s&gt;</code>:</p>
@@ -682,7 +682,7 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <ol>
 <li>The blue prompt in each row is the same</li>
 <li>Yellow is the SFT model output, serving as the initialization value and as training data for the Reward Model</li>
-<li>Green is the reward token, which will evaluate the sampled token, which is the yellow part. If it's high, the probability of the yellow part token being sampled in subsequent sampling will increase.</li>
+<li>Green is the reward token, which will evaluate the sampled token, which is the yellow part. If it&rsquo;s high, the probability of the yellow part token being sampled in subsequent sampling will increase.</li>
 </ol>
 <p>The PPO algorithm is the RLHF model. Why use RLHF? See the following figure. RLHF can significantly reduce the entropy of predict, meaning the prediction is more stable.</p>
 <div align="center">
@@ -694,29 +694,29 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <h3 id="model-optimization">Model Optimization</h3>
 <p>I originally wanted to put this model section under <a href="#model">Model</a>, but the model optimization here is mainly to make inference faster, so I put it under Serving.</p>
 <h4 id="mha-vs-mqa-vs-gqa-vs-mla">MHA vs MQA vs GQA vs MLA</h4>
-<p>First, let's explain these terms:</p>
+<p>First, let&rsquo;s explain these terms:</p>
 <ul>
 <li>MHA: Multi-Head Attention</li>
 <li>MQA: Multi-Query Attention</li>
 <li>GQA: Global Query Attention</li>
 <li>MLA: Multi-Latent Attention</li>
 </ul>
-<p>Refer to Soochow University's blog <a href="https://kexue.fm/archives/10091">缓存与效果的极限拉扯：从MHA、MQA、GQA到MLA</a> (in Chinese).</p>
+<p>Refer to Soochow University&rsquo;s blog <a href="https://kexue.fm/archives/10091">缓存与效果的极限拉扯：从MHA、MQA、GQA到MLA</a> (in Chinese).</p>
 <h5 id="mha">MHA</h5>
-<p>In the Transformer decoder, since the attention of a token depends on previous tokens, it doesn't recalculate the previous context but caches its Key and Value. Why isn't Query cached?</p>
+<p>In the Transformer decoder, since the attention of a token depends on previous tokens, it doesn&rsquo;t recalculate the previous context but caches its Key and Value. Why isn&rsquo;t Query cached?</p>
 <div align="center">
   <img src="attention-formula.png" alt="attention-formula" />
 </div>
-<p>As shown in the Attention formula above without Causal Mask, from top to bottom, in stage T, only Q participates in the calculation at every place, but K and V are already calculated and don't need to be calculated again. However, after introducing KV Cache, although the computational amount is reduced, the resident memory usage increases. Moreover, as the Context length grows, the video memory occupation also increases, and a single card may not be able to hold it. If extended to multiple cards or multiple machines, communication bandwidth bottleneck limitations will be introduced. Therefore, this chapter is to optimize the KV Cache problem.</p>
+<p>As shown in the Attention formula above without Causal Mask, from top to bottom, in stage T, only Q participates in the calculation at every place, but K and V are already calculated and don&rsquo;t need to be calculated again. However, after introducing KV Cache, although the computational amount is reduced, the resident memory usage increases. Moreover, as the Context length grows, the video memory occupation also increases, and a single card may not be able to hold it. If extended to multiple cards or multiple machines, communication bandwidth bottleneck limitations will be introduced. Therefore, this chapter is to optimize the KV Cache problem.</p>
 <h5 id="mqa">MQA</h5>
 <p>MQA (Multi-Query Attention) has a simple idea: all headers share one K V, so KV Cache is reduced to 1/h of the original. Its disadvantage is that it brings certain impacts to model performance.</p>
 <h5 id="gqa">GQA</h5>
-<p>GQA (Grouped-Query Attention) is to alleviate the impact of MQA on model performance. It divides h heads into g groups, so KV Cache is compressed by h/g times. In llama2/3-70B, GQA's g=8, and h=32. Here, g=8 is considering that a single machine has 8 cards, so during calculation, it ensures the diversity of K and V as much as possible while minimizing inter-card communication.</p>
+<p>GQA (Grouped-Query Attention) is to alleviate the impact of MQA on model performance. It divides h heads into g groups, so KV Cache is compressed by h/g times. In llama2/3-70B, GQA&rsquo;s g=8, and h=32. Here, g=8 is considering that a single machine has 8 cards, so during calculation, it ensures the diversity of K and V as much as possible while minimizing inter-card communication.</p>
 <h5 id="mla">MLA</h5>
 <p>MLA (Multi-Latent Attention) has many mathematical concepts that are a bit complex for me. You can refer to the Soochow University blog mentioned above. Let me summarize the idea:</p>
 <ol>
 <li>On the basis of GQA, treat K and V together as the result of multiplying the input by a parameter matrix [K,V] = x.W</li>
-<li>Enhance GQA's capability through different projection matrices, and the KV Cache can be kept the same size during inference</li>
+<li>Enhance GQA&rsquo;s capability through different projection matrices, and the KV Cache can be kept the same size during inference</li>
 <li>Then conversely, if we only need capabilities similar to GQA, we can take a smaller value for dimension W (DeepSeek-V2 took 512), thereby further compressing KV Cache.</li>
 </ol>
 <h3 id="serving-pattern">Serving Pattern</h3>
@@ -725,7 +725,7 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <p>Why separate P (Prefill) and D (Decode)? Refer to <a href="https://zhuanlan.zhihu.com/p/1280567902">prefill 和 decode 该分离到不同的卡上么？ - Chayenne Zhao的文章 - 知乎</a> (in Chinese).</p>
 <p>The essence of P and D separation is that the computational models of the P and D stages are different. The P stage is Compute bound, and the D stage is Memory bound.</p>
 <ul>
-<li>Compute bound: The calculation of Attention for all input tokens. Increasing batch is limited by this, and there's no more computing power available.</li>
+<li>Compute bound: The calculation of Attention for all input tokens. Increasing batch is limited by this, and there&rsquo;s no more computing power available.</li>
 <li>Memory bound: Each token generation requires frequent reading of KV Cache from video memory. Increasing batch is limited by this.</li>
 </ul>
 <p>Advantages:</p>
@@ -754,7 +754,7 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <li>Requests that were estimated during the prefill stage and not rejected may be rejected during the decode stage due to SLO reasons. This is also a significant staleness problem.</li>
 </ul>
 <p>Chunked prefill can refer to <a href="https://zhuanlan.zhihu.com/p/718715866">基于 chunked prefill 理解 prefill 和 decode 的计算特性 - Chayenne Zhao的文章 - 知乎</a> (in Chinese).</p>
-<p>MLC's MicroServing API orchestrates the inference engine through <a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines">fine-grained APIs</a>:</p>
+<p>MLC&rsquo;s MicroServing API orchestrates the inference engine through <a href="https://blog.mlc.ai/2025/01/07/microserving-llm-engines">fine-grained APIs</a>:</p>
 <ul>
 <li>Data Parallel</li>
 <li>Prefill-Decode Disaggregation</li>
@@ -766,7 +766,7 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <p>Dynamically reconfigure orchestration patterns based on workload characteristics without changing the underlying engine. Programmable routers allow seamless switching between different orchestration strategies:</p>
 <ul>
 <li>When the prefill:decode ratio (time of prefill input tokens / total time of decode all output tokens) increases, more prefill computation can be transferred to the decode engine through balanced prefill-decode disaggregation.</li>
-<li>If most prompt data is found in the decode engine's Context Cache, the system can completely bypass the prefill engine and directly call start_generate to handle the non-cache part of the prompt.</li>
+<li>If most prompt data is found in the decode engine&rsquo;s Context Cache, the system can completely bypass the prefill engine and directly call start_generate to handle the non-cache part of the prompt.</li>
 </ul>
 <h3 id="serving-optimization">Serving Optimization</h3>
 <ul>
@@ -804,18 +804,18 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <li>Scenario
 <ol>
 <li>Parallel Sampling: I send a request to the model, hoping it will continue writing the prompt and give three different answers. We call this scenario parallel sampling.</li>
-<li>Beam Search: At each decode stage, I don't produce just 1 token, but produce top k tokens (here k is also called beam width). The top k tokens necessarily correspond to the top k sequences at this moment. I feed these top k sequences into the model. Assuming the vocabulary size is |V|, at the next moment, I'll select top k again among k*|V| candidates, and so on. It's not hard to imagine that every time I feed the top k sequences into the model, there's a lot of KV cache duplication in their preceding tokens.</li>
+<li>Beam Search: At each decode stage, I don&rsquo;t produce just 1 token, but produce top k tokens (here k is also called beam width). The top k tokens necessarily correspond to the top k sequences at this moment. I feed these top k sequences into the model. Assuming the vocabulary size is |V|, at the next moment, I&rsquo;ll select top k again among k*|V| candidates, and so on. It&rsquo;s not hard to imagine that every time I feed the top k sequences into the model, there&rsquo;s a lot of KV cache duplication in their preceding tokens.</li>
 </ol>
 </li>
 <li>How does vLLM schedule:
 <ol>
-<li>Parallel Sampling: Each request is assigned a Logical Block, which is mapped to a Physical Block in vRAM. For Parallel Sampling, each request's Logical Block is independent, but Physical Blocks are shared. Whether to release is determined by ref count rather than independently allocating Physical Blocks. In the Decode stage, through Copy-on-Write, the KV Block of the newly generated token is copied to a new Physical Block, and the ref count of the Block where the preceding token of the newly generated token is located is -1.</li>
+<li>Parallel Sampling: Each request is assigned a Logical Block, which is mapped to a Physical Block in vRAM. For Parallel Sampling, each request&rsquo;s Logical Block is independent, but Physical Blocks are shared. Whether to release is determined by ref count rather than independently allocating Physical Blocks. In the Decode stage, through Copy-on-Write, the KV Block of the newly generated token is copied to a new Physical Block, and the ref count of the Block where the preceding token of the newly generated token is located is -1.</li>
 <li>Beam Search: Based on the latest beam search decoding results, release the logical blocks and corresponding physical memory space that are no longer needed, achieving the goal of saving video memory. For the specific process, refer to the Zhihu article mentioned above.</li>
 </ol>
 </li>
 </ul>
 <h4 id="speculate-decoding">Speculate Decoding</h4>
-<p>Refer to Jiarui's article <a href="https://zhuanlan.zhihu.com/p/651359908">大模型推理妙招—投机采样（Speculative Decoding） - 方佳瑞的文章 - 知乎</a> (in Chinese).</p>
+<p>Refer to Jiarui&rsquo;s article <a href="https://zhuanlan.zhihu.com/p/651359908">大模型推理妙招—投机采样（Speculative Decoding） - 方佳瑞的文章 - 知乎</a> (in Chinese).</p>
 <p>The professional name &ldquo;speculative sampling&rdquo; is a bit awkward and should be called inference sampling. The core of this technology is that during the decoding process, the decoding of some tokens is relatively easy, while the decoding of other tokens is very difficult. Therefore, simple token generation can be handled by small models, while difficult tokens are handled by large models. The small model here can use the same structure as the original model but with fewer parameters, or simply use n-gram models. Small models not only have less computational volume but, more importantly, small model generation with large model correction reduces the need for memory access.</p>
 <h4 id="constrainted-decoding">Constrainted Decoding</h4>
 <h4 id="chunked-prefill">Chunked prefill</h4>
@@ -823,7 +823,7 @@ During training, the auxiliary loss for each Switch layer is added to the total 
 <h4 id="kv-compression">KV Compression</h4>
 <h4 id="quantization">Quantization</h4>
 <h2 id="deepseek-v3">DeepSeek V3</h2>
-<p>Finally, let's analyze the domestic LLM model DeepSeek V3. This model was developed by the DeepSeek team. Through analysis, let's correspond it with the technologies mentioned above.
+<p>Finally, let&rsquo;s analyze the domestic LLM model DeepSeek V3. This model was developed by the DeepSeek team. Through analysis, let&rsquo;s correspond it with the technologies mentioned above.
 Currently, DeepSeek-V3 is a <a href="#expert-parallelism">MoE</a> architecture trained on 14.8T tokens, with total parameters of 671B and 38B activated per token. Complete training took 2.788M hours on H800.</p>
 <h3 id="architecture">Architecture</h3>
 <div align="center">
@@ -850,7 +850,7 @@ Currently, DeepSeek-V3 is a <a href="#expert-parallelism">MoE</a> architecture t
 <li>Isolate some experts as shared experts to capture general knowledge and reduce redundancy between routing experts
 <ul>
 <li>Having dedicated shared experts to capture and integrate general knowledge from different contexts can reduce parameter redundancy between other routing experts. This reduction in redundancy will help build a model with higher parameter efficiency and more professional experts.</li>
-<li>Here, the router won't work on shared experts but will directly assign tokens to shared experts.</li>
+<li>Here, the router won&rsquo;t work on shared experts but will directly assign tokens to shared experts.</li>
 <li>Shared experts are separated from the total number of experts, meaning subdivided experts = total experts - shared experts</li>
 </ul>
 </li>
@@ -862,13 +862,13 @@ Currently, DeepSeek-V3 is a <a href="#expert-parallelism">MoE</a> architecture t
 Specific approach:</p>
 <ol>
 <li>Introduce bias</li>
-<li>During training, if it's discovered which experts are overloaded, reduce γ (the hyperparameter for bias update speed). If expert load is insufficient, increase γ</li>
+<li>During training, if it&rsquo;s discovered which experts are overloaded, reduce γ (the hyperparameter for bias update speed). If expert load is insufficient, increase γ</li>
 </ol>
 <p>But to prevent extreme imbalance within any single sequence, Complementary Sequence-Wise Auxiliary Loss is also adopted, encouraging expert load on each sequence to reach balance. For specific algorithm formulas, refer to the paper.</p>
 <h4 id="node-limited-routing">Node-Limited Routing</h4>
 <p>Use a limited routing mechanism to limit communication costs during training. Ensure each token will be sent to at most M nodes, which are selected based on the sum of the highest affinity scores of experts distributed on each node. Under this constraint, the MoE training framework can almost achieve full computation-communication overlap, meaning computation and communication can proceed simultaneously without blocking each other.</p>
 <h4 id="no-token-dropping">No Token-Dropping</h4>
-<p>DeepSeek-V3 doesn't drop any tokens during training. Additionally, specific deployment strategies are used to ensure load balancing during inference, so DeepSeek-V3 also doesn't lose tokens during inference.</p>
+<p>DeepSeek-V3 doesn&rsquo;t drop any tokens during training. Additionally, specific deployment strategies are used to ensure load balancing during inference, so DeepSeek-V3 also doesn&rsquo;t lose tokens during inference.</p>
 <h4 id="multi-token-prediction">Multi-Token Prediction</h4>
 <div align="center">
   <img src="mtp.png" alt="multi-token-prediction" />
@@ -907,7 +907,7 @@ Specific approach:</p>
 <ol>
 <li>DualPipe significantly reduces bubbles</li>
 <li>DualPipe increases peak activation memory by several times, with PP &lt; 1</li>
-<li>Although DualPipe needs to retain two copies of model parameters, this doesn't significantly increase memory consumption because a larger <a href="#expert-parallelism">EP</a> size is used during training</li>
+<li>Although DualPipe needs to retain two copies of model parameters, this doesn&rsquo;t significantly increase memory consumption because a larger <a href="#expert-parallelism">EP</a> size is used during training</li>
 <li>Neither bubbles nor activation memory increase as mini-batch increases</li>
 </ol>
 <h4 id="communication-1">Communication</h4>
@@ -919,7 +919,7 @@ Specific approach:</p>
 </ol>
 <ul>
 <li>Limit each token to be scheduled to at most 4 nodes, thereby reducing IB traffic</li>
-<li>When each token makes a routing decision, it will first be transmitted via IB to the GPU with the same intra-node index on its target node. Once it arrives at the target node, we will strive to ensure it's immediately forwarded via NVLink to the specific GPU hosting the target expert without being blocked by subsequently arriving tokens</li>
+<li>When each token makes a routing decision, it will first be transmitted via IB to the GPU with the same intra-node index on its target node. Once it arrives at the target node, we will strive to ensure it&rsquo;s immediately forwarded via NVLink to the specific GPU hosting the target expert without being blocked by subsequently arriving tokens</li>
 <li>Communication via IB and NVLink is completely overlapped, and each token can effectively select an average of 3.2 experts per node without additional overhead from NVLink. This means that while DeepSeek-V3 currently selects 8 experts, it can be expanded to 3.2x4.</li>
 <li>Use warp specialization technique to split the Streaming Multiprocessor (SM) into 10 communication channels.
 <ul>
@@ -955,12 +955,12 @@ Specific approach:</p>
 <li>Introduce scaling factors along the internal dimension of the GEMM operation</li>
 <li>microscaling formats with smaller quantization granularity will be supported in Tensor Cores of NVIDIA next-generation GPUs (Blackwell series)</li>
 <li>Underflow issues: During MMA (matrix multiplication accumulation) on Tensor Core, a limited bit width is used to accumulate intermediate results. Once the interval N is reached, these partial results are copied to FP32 registers on the CUDA kernel, where full-precision FP32 accumulation is performed. As mentioned earlier, our fine-grained quantization applies a set of scaling factors per group along the internal dimension K. These scaling factors can be effectively multiplied on the CUDA kernel as a dequantization process with minimal additional computational cost.</li>
-<li>It's worth noting that this modification reduces the WGMMA (Warpgroup-level matrix multiply accumulate) instruction issue rate of a single warpgroup. However, on the H800 architecture, two WGMMA being concurrently active is typical: when one warpgroup executes a promotion operation, another warpgroup can execute MMA operations. This design enables the overlap of two operations, thereby maintaining high Tensor Core utilization. According to experiments, setting N = 128 elements, equivalent to 4 WGMMA, represents the minimum accumulation interval and can significantly improve accuracy without introducing significant overhead.</li>
+<li>It&rsquo;s worth noting that this modification reduces the WGMMA (Warpgroup-level matrix multiply accumulate) instruction issue rate of a single warpgroup. However, on the H800 architecture, two WGMMA being concurrently active is typical: when one warpgroup executes a promotion operation, another warpgroup can execute MMA operations. This design enables the overlap of two operations, thereby maintaining high Tensor Core utilization. According to experiments, setting N = 128 elements, equivalent to 4 WGMMA, represents the minimum accumulation interval and can significantly improve accuracy without introducing significant overhead.</li>
 </ol>
 <p>Low-Precision Storage and Communication:</p>
 <ol>
 <li>Compress cached activations and optimizer states to lower-precision formats, further reducing memory consumption and communication overhead. Low-precision optimizer states. We adopt the BF16 data format rather than FP32 to track the first and second moments in the AdamW (Loshchilov and Hutter, 2017) optimizer without causing observable performance degradation. However, the main weights (stored by the optimizer) and gradients (for batch size accumulation) are retained in FP32 to ensure numerical stability throughout training.</li>
-<li>Low-precision activations. Wgrad operations are performed in FP8. To reduce memory consumption, it's a natural choice to cache activations in FP8 format for the backward pass of linear operators. But for low-cost, high-precision training, special consideration is given to several operators:</li>
+<li>Low-precision activations. Wgrad operations are performed in FP8. To reduce memory consumption, it&rsquo;s a natural choice to cache activations in FP8 format for the backward pass of linear operators. But for low-cost, high-precision training, special consideration is given to several operators:</li>
 </ol>
 <ul>
 <li>Linear input after attention operator. These activations are also used in the backward pass of the attention operator, making it sensitive to precision. We specifically adopt a customized E5M6 data format for these activations. Additionally, these activations will be converted from 1x128 quantized tiles to 128x1 tiles during the backward pass. To avoid introducing additional quantization errors, all scaling factors are rounded to powers of 2.</li>
@@ -978,8 +978,8 @@ Specific approach:</p>
 <li>Prefilling stage:</li>
 </ol>
 <ul>
-<li>The minimum deployment unit for the prefilling stage consists of 4 nodes and 32 GPUs. The attention part uses 4-way tensor parallelism (TP4) and sequence parallelism (SP), combined with 8-way data parallelism (DP8). Its smaller TP size of 4 limits TP communication overhead. For the MoE part, we use 32-way expert parallelism (EP32), ensuring each expert handles a sufficiently large batch size, thereby improving computational efficiency. For MoE's all-to-all communication, we use the same method as in training: first transmit tokens across nodes via IB, then forward between GPUs within the node via NVLink. In particular, we use 1-way tensor parallelism for the dense MLP in shallow layers to save TP communication.</li>
-<li>To achieve load balancing between different experts in the MoE part, it's necessary to ensure each GPU processes approximately the same number of tokens. To this end, a redundant expert deployment strategy is introduced, which means replicating high-load experts and deploying them redundantly. High-load experts are detected based on statistics collected during online deployment and are adjusted periodically (e.g., every 10 minutes). After determining the set of redundant experts, we carefully rearrange experts between GPUs within the node based on observed loads, striving to balance loads between GPUs as much as possible without increasing cross-node all-to-all communication overhead. For DeepSeek-V3 deployment, we set 32 redundant experts for the prefilling stage. For each GPU, in addition to the 8 experts it originally hosts, it will also host an additional redundant expert.</li>
+<li>The minimum deployment unit for the prefilling stage consists of 4 nodes and 32 GPUs. The attention part uses 4-way tensor parallelism (TP4) and sequence parallelism (SP), combined with 8-way data parallelism (DP8). Its smaller TP size of 4 limits TP communication overhead. For the MoE part, we use 32-way expert parallelism (EP32), ensuring each expert handles a sufficiently large batch size, thereby improving computational efficiency. For MoE&rsquo;s all-to-all communication, we use the same method as in training: first transmit tokens across nodes via IB, then forward between GPUs within the node via NVLink. In particular, we use 1-way tensor parallelism for the dense MLP in shallow layers to save TP communication.</li>
+<li>To achieve load balancing between different experts in the MoE part, it&rsquo;s necessary to ensure each GPU processes approximately the same number of tokens. To this end, a redundant expert deployment strategy is introduced, which means replicating high-load experts and deploying them redundantly. High-load experts are detected based on statistics collected during online deployment and are adjusted periodically (e.g., every 10 minutes). After determining the set of redundant experts, we carefully rearrange experts between GPUs within the node based on observed loads, striving to balance loads between GPUs as much as possible without increasing cross-node all-to-all communication overhead. For DeepSeek-V3 deployment, we set 32 redundant experts for the prefilling stage. For each GPU, in addition to the 8 experts it originally hosts, it will also host an additional redundant expert.</li>
 <li>Additionally, during the prefilling stage, to improve throughput and hide the overhead of all-to-all and TP communication, two micro-batches with similar computational workloads are processed simultaneously, overlapping the attention and MoE of one mini-batch with the scheduling and combining of another micro-batch.</li>
 <li>Finally, the dynamic redundant strategy for experts, where each GPU hosts more experts (e.g., 16 experts), but only 9 experts are activated in each inference step. Before all-to-all operations at each layer begin, we dynamically calculate the global optimal routing scheme. Considering the large amount of computation involved in the prefilling stage, the overhead of calculating this routing scheme is almost negligible.</li>
 </ul>
@@ -988,21 +988,21 @@ Specific approach:</p>
 </ol>
 <ul>
 <li>Treat shared experts as routing experts. From this perspective, each token selects 9 experts during routing, where shared experts are considered heavy-load experts and are always selected. The minimum deployment unit for the decoding stage consists of 40 nodes and 320 GPUs. The attention part uses TP4+SP, combined with DP80, and the MoE part uses EP320. For the MoE part, each GPU hosts only one expert, with 64 GPUs responsible for hosting redundant experts and shared experts. All-to-all communication for the scheduling and combining parts is performed via direct point-to-point transmission over IB to achieve low latency. Additionally, we utilize IBGDA (InfiniBand GPUDirect Accelerator) (NVIDIA, 2022) technology to further reduce latency and improve communication efficiency.</li>
-<li>Similar to prefilling, based on the statistical expert load of online services, the set of redundant experts is determined periodically at certain time intervals. However, rearranging experts isn't needed because each GPU hosts only one expert.</li>
-<li>To improve throughput and hide all communication overhead, we're exploring processing two micro-batches with similar computational workloads simultaneously during the decoding stage. Unlike prefilling, attention consumes most of the time during the decoding stage. Therefore, we overlap the attention of one micro-batch with the scheduling+MoE+combining of another micro-batch. During the decoding stage, the batch size per expert is relatively small (usually within 256 tokens), and the bottleneck is memory access rather than computation. Since the MoE part only needs to load the parameters of one expert, the memory access overhead is small, so using fewer SMs doesn't significantly affect overall performance. Therefore, to avoid affecting the computational speed of the attention part, we can allocate only a small portion of SMs to dispatch+MoE+combine.</li>
+<li>Similar to prefilling, based on the statistical expert load of online services, the set of redundant experts is determined periodically at certain time intervals. However, rearranging experts isn&rsquo;t needed because each GPU hosts only one expert.</li>
+<li>To improve throughput and hide all communication overhead, we&rsquo;re exploring processing two micro-batches with similar computational workloads simultaneously during the decoding stage. Unlike prefilling, attention consumes most of the time during the decoding stage. Therefore, we overlap the attention of one micro-batch with the scheduling+MoE+combining of another micro-batch. During the decoding stage, the batch size per expert is relatively small (usually within 256 tokens), and the bottleneck is memory access rather than computation. Since the MoE part only needs to load the parameters of one expert, the memory access overhead is small, so using fewer SMs doesn&rsquo;t significantly affect overall performance. Therefore, to avoid affecting the computational speed of the attention part, we can allocate only a small portion of SMs to dispatch+MoE+combine.</li>
 </ul>
 <h4 id="hardware-recommendations">Hardware Recommendations</h4>
 <p>Communication Hardware:</p>
 <ol>
 <li>Future vendors develop hardware capable of offloading these communication tasks from the computing unit SM, acting as a GPU coprocessor or network coprocessor.</li>
-<li>To reduce application programming complexity, unify IB (scale-out) and NVLink (scale-up) networks from the computing unit's perspective. With this unified interface, the computing unit can easily complete read, write, multicast, and reduce operations across the entire IB-NVLink unified domain by submitting communication requests based on simple primitives.</li>
+<li>To reduce application programming complexity, unify IB (scale-out) and NVLink (scale-up) networks from the computing unit&rsquo;s perspective. With this unified interface, the computing unit can easily complete read, write, multicast, and reduce operations across the entire IB-NVLink unified domain by submitting communication requests based on simple primitives.</li>
 </ol>
 <p>Compute Hardware:</p>
 <ol>
 <li>Recommend that future chip designs improve accumulation precision in Tensor Cores to support full-precision accumulation, or select appropriate accumulation bit widths based on the precision requirements of training and inference algorithms. This approach ensures errors remain within acceptable ranges while maintaining computational efficiency.</li>
 <li>Current GPUs only support per-tensor quantization and lack native support for fine-grained quantization (such as tiled quantization and block quantization). In current implementations, when the N interval is reached, partial results are copied from Tensor Core to CUDA Core, multiplied by scaling factors, and then added to FP32 registers on CUDA Core. Although combined with our precise FP32 accumulation strategy, this significantly alleviates dequantization overhead, but frequent data movement between Tensor Core and CUDA Core still limits computational efficiency. Therefore, we recommend that future chips support fine-grained quantization by enabling Tensor Core to receive scaling factors and achieve MMA through group scaling. This way, the entire partial sum accumulation and dequantization can be completed directly inside Tensor Core until the final result is produced, avoiding frequent data movement.</li>
 <li>Support online quantization. Although our research demonstrates the effectiveness of online quantization, current implementations still struggle to effectively support online quantization. In the existing workflow, we need to read 128 BF16 activation values (previously computed outputs) from HBM (High Bandwidth Memory) for quantization, then write the quantized FP8 values back to HBM, and read them again only during MMA. To solve this inefficiency, we recommend that future chips integrate FP8 conversion and TMA (Tensor Memory Accelerator) access into a single fused operation, so quantization can be completed during the process of transferring activations from global memory to shared memory, thereby avoiding frequent memory reads and writes. We also recommend supporting warp-level conversion instructions for acceleration, which further promotes better fusion of layer normalization and FP8 conversion. Alternatively, near-memory computing approaches can be adopted, where computational logic is placed near HBM. In this case, BF16 elements can be directly converted to FP8 when read from HBM into the GPU, reducing off-chip memory access by approximately 50%.</li>
-<li>Support transposed GEMM operations. Current architectures make it cumbersome to fuse matrix transposition with GEMM operations. In the workflow, activations during the forward pass are quantized into 1x128 FP8 blocks and stored. During the backward pass, it's necessary to read out the matrix, dequantize, transpose, requantize into 128x1 blocks, and store in HBM. To reduce memory operations, we recommend that future chips enable direct transposed reads of matrices in shared memory before MMA operations to meet the precision required in training and inference. Combined with the fusion of FP8 format conversion and TMA access, this enhancement will significantly simplify the quantization workflow.</li>
+<li>Support transposed GEMM operations. Current architectures make it cumbersome to fuse matrix transposition with GEMM operations. In the workflow, activations during the forward pass are quantized into 1x128 FP8 blocks and stored. During the backward pass, it&rsquo;s necessary to read out the matrix, dequantize, transpose, requantize into 128x1 blocks, and store in HBM. To reduce memory operations, we recommend that future chips enable direct transposed reads of matrices in shared memory before MMA operations to meet the precision required in training and inference. Combined with the fusion of FP8 format conversion and TMA access, this enhancement will significantly simplify the quantization workflow.</li>
 </ol>
 <h3 id="pre-training-1">Pre-Training</h3>
 <h2 id="references">References</h2>

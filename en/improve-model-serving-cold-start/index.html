@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2025-01-08T16:37:10&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="serving">
   
@@ -82,7 +82,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2025-01-08T16:37:10+08:00","description":"A practical breakdown of model inference cold starts, covering image pull latency, model caching, image streaming, Nydus, and JuiceFS-based optimizations.","headline":"Optimizing Model Inference Cold Start","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/improve-model-serving-cold-start/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/improve-model-serving-cold-start/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2025-01-08T16:37:10+08:00","description":"A practical breakdown of model inference cold starts, covering image pull latency, model caching, image streaming, Nydus, and JuiceFS-based optimizations.","headline":"Optimizing Model Inference Cold Start","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/improve-model-serving-cold-start/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/improve-model-serving-cold-start/"}
   </script>
   
 
@@ -182,7 +182,7 @@
     <p>Previously, while working on Serverless model inference <a href="https://modelz.ai/">Modelz</a>, although we have pivoted now, I still want to share how to optimize the cold start problem of model inference. Since our service is based on container orchestration, it also involves the cold start problem of containers.</p>
 <h1 id="optimizing-model-inference-cold-start">Optimizing Model Inference Cold Start</h1>
 <h2 id="problem">Problem</h2>
-<p>First, let's look at the process of Serverless model inference, from user request to model inference:</p>
+<p>First, let&rsquo;s look at the process of Serverless model inference, from user request to model inference:</p>
 <details>
   <summary>Click me</summary>
 <div class="highlight"><div class="chroma">
@@ -269,7 +269,7 @@
 <p>From the above two images, we can see that</p>
 <ol>
 <li>Except for the NVIDIA Kernel Driver and CUDA Lib placed on the Host, the libraries that AI applications and frameworks depend on are all placed in the image.</li>
-<li>NVIDIA's strategy prevents you from significantly reducing your image size. You don't know which libraries will be used, so you have to put all the libraries in the image.</li>
+<li>NVIDIA&rsquo;s strategy prevents you from significantly reducing your image size. You don&rsquo;t know which libraries will be used, so you have to put all the libraries in the image.</li>
 </ol>
 <h2 id="solutions-we-have-tried">Solutions we have tried</h2>
 <h3 id="1-preheating">1. Preheating</h3>
@@ -277,7 +277,7 @@
 <h3 id="2-cache-model">2. Cache Model</h3>
 <p>We developed a HuggingFace model caching service. This service compares the hash value of the model when the model is called. If the model already exists in the caching service, it directly returns the cached model; otherwise, it downloads the model to the caching service.</p>
 <h3 id="3-gcp-image-streaming">3. GCP Image Streaming</h3>
-<p>Use <a href="https://cloud.google.com/blog/products/containers-kubernetes/introducing-container-image-streaming-in-gke">GCP Image Streaming</a> to convert self-managed images or user-defined images to GCP's Artifact Registry. When the node pulls the image, it mounts the container layers to the node through the network, making containerd think the image is already on the node. However, this solution has several drawbacks:</p>
+<p>Use <a href="https://cloud.google.com/blog/products/containers-kubernetes/introducing-container-image-streaming-in-gke">GCP Image Streaming</a> to convert self-managed images or user-defined images to GCP&rsquo;s Artifact Registry. When the node pulls the image, it mounts the container layers to the node through the network, making containerd think the image is already on the node. However, this solution has several drawbacks:</p>
 <ol>
 <li>Requires GCP support, vendor lock-in</li>
 <li>User images need to be proxy converted to GCP, which will have some delay</li>
@@ -290,7 +290,7 @@
 <h2 id="possible-future-optimizations">Possible Future Optimizations</h2>
 <ul>
 <li>
-<p>Use GCP's <a href="data-container-image-preloading">image preloading</a> feature to preload images to the node through secondary boot disks.</p>
+<p>Use GCP&rsquo;s <a href="data-container-image-preloading">image preloading</a> feature to preload images to the node through secondary boot disks.</p>
 </li>
 <li>
 <p>In-class registry cache <a href="https://github.com/spegel-org/spegel">spegel</a>.</p>
@@ -302,12 +302,12 @@
 <p><a href="https://github.com/containerd/containerd/issues/8881">Parallel Container Layer Unpacking</a>, mentioned in reference 1, containerd needs to implement high IO queue depth to fully utilize EBS throughput.</p>
 </li>
 <li>
-<p><a href="https://x.com/yetone/status/1858034646585368891">yetone's solution</a>:</p>
+<p><a href="https://x.com/yetone/status/1858034646585368891">yetone&rsquo;s solution</a>:</p>
 <blockquote>
-<p>parsed the Dockerfile, then obtained the base image and a series of args, env, and commands, and merged them in order to hash as the s3 object key. Then, in the image builder job's pod container, started dind, then started a new container with the base image inside, executed the parsed commands, and after completion, tarred the container's rootfs, compressed it with zstd, and uploaded it to s3.</p>
+<p>parsed the Dockerfile, then obtained the base image and a series of args, env, and commands, and merged them in order to hash as the s3 object key. Then, in the image builder job&rsquo;s pod container, started dind, then started a new container with the base image inside, executed the parsed commands, and after completion, tarred the container&rsquo;s rootfs, compressed it with zstd, and uploaded it to s3.</p>
 </blockquote>
 <blockquote>
-<p>OCI image builder and containerd remote snapshotter, on the builder side, build the image and split all layers into two layers: environment (very large) and code (very small). Then use pzstd and s5cmd for streaming compression and streaming upload to s3. On the snapshotter side, use s5cmd and pzstd for streaming download and streaming decompression, fully utilizing GKE's disk IO, improving image pull speed by about 4 times.</p>
+<p>OCI image builder and containerd remote snapshotter, on the builder side, build the image and split all layers into two layers: environment (very large) and code (very small). Then use pzstd and s5cmd for streaming compression and streaming upload to s3. On the snapshotter side, use s5cmd and pzstd for streaming download and streaming decompression, fully utilizing GKE&rsquo;s disk IO, improving image pull speed by about 4 times.</p>
 </blockquote>
 </li>
 <li>

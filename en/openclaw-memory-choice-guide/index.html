@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T14:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="OpenClaw">
   
@@ -94,7 +94,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"A complete guide to OpenClaw memory, from lossless-claw compression and qmd hybrid search to persistent memory with Nowledge Mem and mem9.ai.","headline":"Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"A complete guide to OpenClaw memory, from lossless-claw compression and qmd hybrid search to persistent memory with Nowledge Mem and mem9.ai.","headline":"Why Does OpenClaw Keep Forgetting? A Complete Memory Solution from Single-Session to Permanent Memory","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/openclaw-memory-choice-guide/"}
   </script>
   
 
@@ -189,7 +189,7 @@
     <li><a href="#one-minute-selection-comparison-table">One-Minute Selection Comparison Table</a></li>
     <li><a href="#recommended-combination-solutions">Recommended Combination Solutions</a></li>
     <li><a href="#verify-correct-configuration">Verify Correct Configuration</a></li>
-    <li><a href="#whats-next-looking-forward-to-postgresql-native-memory-backend">What's Next: Looking Forward to PostgreSQL Native Memory Backend</a></li>
+    <li><a href="#whats-next-looking-forward-to-postgresql-native-memory-backend">What&rsquo;s Next: Looking Forward to PostgreSQL Native Memory Backend</a></li>
     <li><a href="#related-reading">Related Reading</a></li>
   </ul>
 </nav>
@@ -204,7 +204,7 @@
 <p>OpenClaw, as a flexible Agent framework, has developed various memory solutions in its ecosystem, each solving different problems. This article helps you understand the landscape and find what suits you in just one minute.</p>
 <hr>
 <h2 id="what-problems-does-memory-actually-need-to-solve">What Problems Does Memory Actually Need to Solve?</h2>
-<p>Let's break down the requirements. AI memory actually spans two completely different dimensions:</p>
+<p>Let&rsquo;s break down the requirements. AI memory actually spans two completely different dimensions:</p>
 <table>
 <thead>
 <tr>
@@ -231,16 +231,16 @@
 </tr>
 </tbody>
 </table>
-<p>Different solutions focus on different aspects. Let's go through them one by one, with detailed configuration steps.</p>
+<p>Different solutions focus on different aspects. Let&rsquo;s go through them one by one, with detailed configuration steps.</p>
 <hr>
 <h2 id="solution-1-lossless-claw--single-session-lossless-compression">Solution 1: lossless-claw — Single-Session Lossless Compression</h2>
 <p><strong>Project URL</strong>: <a href="https://github.com/Martian-Engineering/lossless-claw">https://github.com/Martian-Engineering/lossless-claw</a></p>
 <p><strong>One-line positioning</strong>: Replaces OpenClaw native sliding window truncation with DAG hierarchical compression, <strong>losing no original information</strong>.</p>
 <h3 id="core-features">Core Features</h3>
 <ul>
-<li><strong>LCM (Lossless Context Management) algorithm</strong>: Old messages aren't directly deleted but hierarchically compressed into summaries, forming a Directed Acyclic Graph (DAG)</li>
+<li><strong>LCM (Lossless Context Management) algorithm</strong>: Old messages aren&rsquo;t directly deleted but hierarchically compressed into summaries, forming a Directed Acyclic Graph (DAG)</li>
 <li><strong>Originals preserved forever</strong>: All original messages stored in SQLite, Agent can use <code>lcm_grep</code> / <code>lcm_expand</code> to search and expand to retrieve details when needed</li>
-<li><strong>Works out of the box</strong>: After installation, replaces <code>contextEngine</code> slot, works automatically, users don't need to manage it</li>
+<li><strong>Works out of the box</strong>: After installation, replaces <code>contextEngine</code> slot, works automatically, users don&rsquo;t need to manage it</li>
 </ul>
 <h3 id="installation-and-configuration-steps">Installation and Configuration Steps</h3>
 <div class="highlight"><div class="chroma">
@@ -307,7 +307,7 @@ pnpm openclaw plugins install @martian-engineering/lossless-claw
 <tr>
 <td><code>LCM_FRESH_TAIL_COUNT</code></td>
 <td>32</td>
-<td>Don't compress the most recent N messages, keep original content</td>
+<td>Don&rsquo;t compress the most recent N messages, keep original content</td>
 </tr>
 <tr>
 <td><code>LCM_INCREMENTAL_MAX_DEPTH</code></td>
@@ -432,19 +432,19 @@ bun install -g https://github.com/tobi/qmd
           <span class="nt">&#34;update&#34;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&#34;interval&#34;</span><span class="p">:</span> <span class="s2">&#34;5m&#34;</span><span class="p">,</span>
             <span class="nt">&#34;debounceMs&#34;</span><span class="p">:</span> <span class="mi">15000</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;limits&#34;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&#34;maxResults&#34;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
             <span class="nt">&#34;timeoutMs&#34;</span><span class="p">:</span> <span class="mi">4000</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;scope&#34;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="s2">&#34;deny&#34;</span><span class="p">,</span>
             <span class="nt">&#34;rules&#34;</span><span class="p">:</span> <span class="p">[</span>
               <span class="p">{</span> <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="s2">&#34;allow&#34;</span><span class="p">,</span> <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;chatType&#34;</span><span class="p">:</span> <span class="s2">&#34;direct&#34;</span> <span class="p">}</span> <span class="p">}</span>
             <span class="p">]</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;paths&#34;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span> <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;notes&#34;</span><span class="p">,</span> <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;~/notes&#34;</span><span class="p">,</span> <span class="nt">&#34;pattern&#34;</span><span class="p">:</span> <span class="s2">&#34;**/*.md&#34;</span> <span class="p">}</span><span class="p">,</span>
+            <span class="p">{</span> <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;notes&#34;</span><span class="p">,</span> <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;~/notes&#34;</span><span class="p">,</span> <span class="nt">&#34;pattern&#34;</span><span class="p">:</span> <span class="s2">&#34;**/*.md&#34;</span> <span class="p">},</span>
             <span class="p">{</span> <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;docs&#34;</span><span class="p">,</span> <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;~/project/docs&#34;</span><span class="p">,</span> <span class="nt">&#34;pattern&#34;</span><span class="p">:</span> <span class="s2">&#34;**/*.md&#34;</span> <span class="p">}</span>
           <span class="p">]</span>
         <span class="p">}</span>
@@ -534,8 +534,8 @@ openclaw status
 <td class="lntd">
 <pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># Use the same XDG config as OpenClaw</span>
 <span class="nv">STATE_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENCLAW_STATE_DIR</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.openclaw</span><span class="si">}</span><span class="s2">&#34;</span>
-<span class="nb">export</span> <span class="nv">XDG_CONFIG_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-config</span><span class="s2">&#34;</span>
-<span class="nb">export</span> <span class="nv">XDG_CACHE_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-cache</span><span class="s2">&#34;</span>
+<span class="nb">export</span> <span class="nv">XDG_CONFIG_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-config&#34;</span>
+<span class="nb">export</span> <span class="nv">XDG_CACHE_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-cache&#34;</span>
 
 <span class="c1"># Force refresh index + generate embeddings</span>
 qmd update
@@ -577,14 +577,14 @@ qmd embed --force
 <hr>
 <h2 id="solution-3-nowledge-mem--local-first-structured-cross-session-memory">Solution 3: Nowledge Mem — Local-First Structured Cross-Session Memory</h2>
 <p><strong>Website</strong>: <a href="https://mem.nowledge.co/zh/docs/integrations/openclaw">https://mem.nowledge.co/zh/docs/integrations/openclaw</a></p>
-<p><strong>One-line positioning</strong>: Local-first <strong>structured knowledge memory</strong>, lets AI remember decisions and preferences you've made, automatically recalls across sessions.</p>
+<p><strong>One-line positioning</strong>: Local-first <strong>structured knowledge memory</strong>, lets AI remember decisions and preferences you&rsquo;ve made, automatically recalls across sessions.</p>
 <h3 id="core-features-2">Core Features</h3>
 <ul>
 <li><strong>Structured memory</strong>: Each memory marked with type (fact/decision/preference/plan/&hellip;), time, source associations, not just text piled together</li>
 <li><strong>Knowledge evolution</strong>: When cognition changes, add new versions preserving history, can see how ideas evolved</li>
 <li><strong>Fully automatic</strong>: <code>autoRecall</code> automatically inserts relevant memories at session start, <code>autoCapture</code> automatically saves and extracts at session end</li>
 <li><strong>Local-first</strong>: Defaults to local storage, no cloud account needed, privacy fully controlled</li>
-<li><strong>Cross-tool sharing</strong>: Cursor/Claude/OpenClaw share the same memory library, knowledge doesn't belong to any specific tool</li>
+<li><strong>Cross-tool sharing</strong>: Cursor/Claude/OpenClaw share the same memory library, knowledge doesn&rsquo;t belong to any specific tool</li>
 </ul>
 <h3 id="installation-and-configuration-steps-1">Installation and Configuration Steps</h3>
 <h4 id="1-install-nowledge-mem-and-start">1. Install Nowledge Mem and start</h4>
@@ -636,7 +636,7 @@ qmd embed --force
   <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;openclaw-nowledge-mem&#34;</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;openclaw-nowledge-mem&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -709,7 +709,7 @@ openclaw nowledge-mem status
 <ul>
 <li>✅ Your biggest pain point is &ldquo;AI forgets what I decided next session&rdquo;</li>
 <li>✅ You want AI to remember your preferences, decisions, facts, new sessions automatically bring context</li>
-<li>✅ You prefer local-first, don't want forced cloud sync</li>
+<li>✅ You prefer local-first, don&rsquo;t want forced cloud sync</li>
 <li>✅ You need structured knowledge, not just storing text chunks</li>
 </ul>
 <hr>
@@ -721,7 +721,7 @@ openclaw nowledge-mem status
 <li><strong>Zero operations</strong>: Works out of the box, no need to set up services yourself, create persistent backend in seconds</li>
 <li><strong>Progressive hybrid search</strong>: Start with pure keywords, add embeddings to automatically upgrade to hybrid search, no need to rebuild index</li>
 <li><strong>Cross-Agent sharing</strong>: Multiple Agents share memory, cloud sync consistent</li>
-<li><strong>Open source self-hosted</strong>: Apache 2.0, if you don't want to use official cloud, you can host it yourself</li>
+<li><strong>Open source self-hosted</strong>: Apache 2.0, if you don&rsquo;t want to use official cloud, you can host it yourself</li>
 </ul>
 <h3 id="installation-and-configuration-steps-2">Installation and Configuration Steps</h3>
 <p>Follow official instructions: <a href="https://mem9.ai/SKILL.md">https://mem9.ai/SKILL.md</a></p>
@@ -744,9 +744,9 @@ openclaw nowledge-mem status
 <h3 id="suitable-for-you-if-3">Suitable for you if:</h3>
 <ul>
 <li>✅ You use OpenClaw on multiple devices, need memory to follow you</li>
-<li>✅ You don't want to deal with infrastructure, want cloud to manage everything</li>
+<li>✅ You don&rsquo;t want to deal with infrastructure, want cloud to manage everything</li>
 <li>✅ You need multiple Agents to share memory</li>
-<li>✅ You accept cloud storage, trust service provider's security solution</li>
+<li>✅ You accept cloud storage, trust service provider&rsquo;s security solution</li>
 </ul>
 <hr>
 <h2 id="solution-5-openviking--open-source-context-database-by-volcengine-filesystem-paradigm-memory-management">Solution 5: OpenViking — Open-source Context Database by Volcengine, Filesystem Paradigm Memory Management</h2>
@@ -780,7 +780,7 @@ openclaw nowledge-mem status
 <td><strong>Visible retrieval trace</strong>: Complete preservation of directory browsing and retrieval paths, root cause is clear at a glance</td>
 </tr>
 <tr>
-<td>Memory can't iterate</td>
+<td>Memory can&rsquo;t iterate</td>
 <td><strong>Automatic session management</strong>: Automatically extracts long-term memory after session ends, lets Agent get smarter with usage</td>
 </tr>
 </tbody>
@@ -885,7 +885,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
     <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
     <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -930,7 +930,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
     <span class="nt">&#34;api_key&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;YOUR_API_KEY&gt;&#34;</span><span class="p">,</span>
     <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;doubao-seed-2-0-pro-260215&#34;</span><span class="p">,</span>
     <span class="nt">&#34;api_base&#34;</span><span class="p">:</span> <span class="s2">&#34;https://ark.cn-beijing.volces.com/api/v3&#34;</span>
-  <span class="p">}</span><span class="p">,</span>
+  <span class="p">},</span>
   <span class="nt">&#34;embedding&#34;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&#34;dense&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;volcengine&#34;</span><span class="p">,</span>
@@ -984,7 +984,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
     <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
     <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -1048,7 +1048,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 <tr>
 <td>Want everything</td>
 <td>Install all</td>
-<td>lossless (single-session compression) + OpenViking/Nowledge/qmd (cross-session/documents) don't conflict, work best together</td>
+<td>lossless (single-session compression) + OpenViking/Nowledge/qmd (cross-session/documents) don&rsquo;t conflict, work best together</td>
 </tr>
 </tbody>
 </table>
@@ -1070,9 +1070,9 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 </div><p>This is the most concise local full-stack solution, data entirely on your own machine.</p>
 <p><strong>Configuration checklist</strong>:</p>
 <ul>
-<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
-<li><input disabled="" type="checkbox"><code>agents.defaults.memory.backend = &quot;qmd&quot;</code></li>
-<li><input disabled="" type="checkbox"><code>agents.defaults.memory.qmd.paths</code> configured with your note directories</li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"> <code>agents.defaults.memory.backend = &quot;qmd&quot;</code></li>
+<li><input disabled="" type="checkbox"> <code>agents.defaults.memory.qmd.paths</code> configured with your note directories</li>
 </ul>
 <h3 id="users-needing-cross-session-memory">Users needing cross-session memory:</h3>
 <p>Choose based on your infrastructure preference:</p>
@@ -1091,9 +1091,9 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 </div>
 </div><p><strong>Configuration checklist</strong>:</p>
 <ul>
-<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
-<li><input disabled="" type="checkbox"><code>plugins.slots.memory = memory-openviking</code></li>
-<li><input disabled="" type="checkbox"><code>~/.openviking/ov.conf</code> configured with valid API keys</li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.memory = memory-openviking</code></li>
+<li><input disabled="" type="checkbox"> <code>~/.openviking/ov.conf</code> configured with valid API keys</li>
 </ul>
 <p><strong>Option B: Nowledge Mem (local-first structured)</strong></p>
 <div class="highlight"><div class="chroma">
@@ -1112,9 +1112,9 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 </div>
 </div><p><strong>Configuration checklist</strong>:</p>
 <ul>
-<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
-<li><input disabled="" type="checkbox"><code>plugins.slots.memory = openclaw-nowledge-mem</code></li>
-<li><input disabled="" type="checkbox"><code>agents.defaults.memory.backend = &quot;qmd&quot;</code></li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.memory = openclaw-nowledge-mem</code></li>
+<li><input disabled="" type="checkbox"> <code>agents.defaults.memory.backend = &quot;qmd&quot;</code></li>
 </ul>
 <h3 id="multi-device-mobile-user">Multi-device mobile user:</h3>
 <div class="highlight"><div class="chroma">
@@ -1136,14 +1136,14 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 <h2 id="verify-correct-configuration">Verify Correct Configuration</h2>
 <p>After installing all components, run through this checklist:</p>
 <ol>
-<li><strong>lossless-claw</strong>: Start a long conversation, chat until compression triggers, ask AI if it can remember what was said at the beginning, if it can retrieve through <code>lcm_expand</code>, it's OK</li>
+<li><strong>lossless-claw</strong>: Start a long conversation, chat until compression triggers, ask AI if it can remember what was said at the beginning, if it can retrieve through <code>lcm_expand</code>, it&rsquo;s OK</li>
 <li><strong>Nowledge Mem</strong>: <code>/remember</code> save one, <code>/new</code> start new session, ask if it can recall</li>
 <li><strong>qmd</strong>: Ask AI &ldquo;search my notes for content about XXX&rdquo;, see if it returns correct results</li>
 </ol>
 <p>All pass, your OpenClaw is now an AI assistant with &ldquo;photographic memory&rdquo; 🎉</p>
 <hr>
-<h2 id="whats-next-looking-forward-to-postgresql-native-memory-backend">What's Next: Looking Forward to PostgreSQL Native Memory Backend</h2>
-<p>If you're a PostgreSQL heavy user like me, here's something to look forward to: the OpenClaw community is discussing a native PostgreSQL + pgvector memory backend (<a href="https://github.com/openclaw/openclaw/issues/15093">Issue #15093</a>).</p>
+<h2 id="whats-next-looking-forward-to-postgresql-native-memory-backend">What&rsquo;s Next: Looking Forward to PostgreSQL Native Memory Backend</h2>
+<p>If you&rsquo;re a PostgreSQL heavy user like me, here&rsquo;s something to look forward to: the OpenClaw community is discussing a native PostgreSQL + pgvector memory backend (<a href="https://github.com/openclaw/openclaw/issues/15093">Issue #15093</a>).</p>
 <p><strong>Why is it worth looking forward to?</strong></p>
 <p>The current qmd solution is powerful, but has pain points:</p>
 <ul>
@@ -1197,7 +1197,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
         <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;voyage&#34;</span><span class="p">,</span>
         <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;voyage-3-lite&#34;</span><span class="p">,</span>
         <span class="nt">&#34;dimensions&#34;</span><span class="p">:</span> <span class="mi">512</span>
-      <span class="p">}</span><span class="p">,</span>
+      <span class="p">},</span>
       <span class="nt">&#34;hybrid&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
         <span class="nt">&#34;vectorWeight&#34;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
@@ -1209,11 +1209,11 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 </code></pre></td></tr></table>
 </div>
 </div><p><strong>Status</strong>: RFC stage, awaiting maintainer feedback. If you also want this feature, go to the Issue and leave a 👍 to show support.</p>
-<p>Once merged, I'll write a practical guide on &ldquo;migrating from qmd to PostgreSQL memory backend&rdquo;.</p>
+<p>Once merged, I&rsquo;ll write a practical guide on &ldquo;migrating from qmd to PostgreSQL memory backend&rdquo;.</p>
 <hr>
 <h2 id="related-reading">Related Reading</h2>
 <ul>
-<li><a href="../vectorchord-deep-dive/">Why I Only Bet on PostgreSQL for Agent Projects: Vector Search</a> - Deep dive into vector retrieval's role in Agent applications</li>
+<li><a href="../vectorchord-deep-dive/">Why I Only Bet on PostgreSQL for Agent Projects: Vector Search</a> - Deep dive into vector retrieval&rsquo;s role in Agent applications</li>
 <li><a href="../vector-search/">Ins and Outs of Vector Databases</a> - Vector search technology fundamentals</li>
 </ul>
 <hr>

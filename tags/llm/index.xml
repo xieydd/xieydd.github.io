@@ -8,11 +8,7 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Sun, 22 Mar 2026 10:00:00 +0800</lastBuildDate>
-    
-	<atom:link href="https://blog.xieydd.top/tags/llm/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 22 Mar 2026 10:00:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/llm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>LLM Infra 你需要知道的一切</title>
       <link>https://blog.xieydd.top/llm-infra/</link>
@@ -20,15 +16,6 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/llm-infra/</guid>
       <description>LLM Infra 你需要知道的一切 GPT 3 GPT 模型是 LLM 模型的起点，你如果说 Transformer 是，那也没错。既然我们要讨论 LLM Infra，那么我们需要知道我们的系统架构以及设计是给</description>
-    </item>
-    
-    <item>
-      <title>一分钟 RL 入门：Agent RL 概念与框架扫盲</title>
-      <link>https://blog.xieydd.top/verl-rl-pitfalls/</link>
-      <pubDate>Sun, 22 Mar 2026 10:00:00 +0800</pubDate>
-      <author>xieydd@gmail.com (xieydd)</author>
-      <guid>https://blog.xieydd.top/verl-rl-pitfalls/</guid>
-      <description>为什么我现在才入坑 RL？ 受高策这篇文章启发，最近我也想深入玩玩 Agent RL 这个方向，了解一下目前 Agent RL Infra 的进展，亲手从零开始做一遍炼丹实验。 前一段时间</description>
     </item>
     
     <item>

@@ -8,18 +8,14 @@
     <language>en</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Sun, 22 Mar 2026 10:00:00 +0800</lastBuildDate>
-    
-	<atom:link href="https://blog.xieydd.top/en/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 22 Mar 2026 10:00:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Everything You Need to Know About LLM Infra</title>
       <link>https://blog.xieydd.top/en/llm-infra/</link>
       <pubDate>Thu, 09 Jan 2025 10:20:28 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/llm-infra/</guid>
-      <description>Everything You Need to Know About LLM Infra GPT 3 The GPT model is the starting point of LLM models. If you say Transformer is the starting point, that&#39;s also correct. Since we&#39;re going to discuss LLM Infra, we need to know who our system architecture and design are serving. Without understanding the model architecture, you&#39;ll feel confused about the Infra designs introduced later, such as Prefill-Decode Disaggregation during inference, Context Cache Migration, Traffic-Adaptive Request Routing, etc.</description>
+      <description>Everything You Need to Know About LLM Infra GPT 3 The GPT model is the starting point of LLM models. If you say Transformer is the starting point, that&amp;rsquo;s also correct. Since we&amp;rsquo;re going to discuss LLM Infra, we need to know who our system architecture and design are serving. Without understanding the model architecture, you&amp;rsquo;ll feel confused about the Infra designs introduced later, such as Prefill-Decode Disaggregation during inference, Context Cache Migration, Traffic-Adaptive Request Routing, etc.</description>
     </item>
     
     <item>
@@ -29,7 +25,7 @@
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/improve-model-serving-cold-start/</guid>
       <description>Previously, while working on Serverless model inference Modelz, although we have pivoted now, I still want to share how to optimize the cold start problem of model inference. Since our service is based on container orchestration, it also involves the cold start problem of containers.
-Optimizing Model Inference Cold Start Problem First, let&#39;s look at the process of Serverless model inference, from user request to model inference:
+Optimizing Model Inference Cold Start Problem First, let&amp;rsquo;s look at the process of Serverless model inference, from user request to model inference:
  Click me 1 2 3 4 5 6 7 8 9 10 11 12 13  sequenceDiagram participant User participant Cloudflare participant Ingress participant AutoScaler participant Node participant containerd User-&amp;gt;&amp;gt;Cloudflare: Model Call Cloudflare-&amp;gt;&amp;gt;Ingress: Request Ingress-&amp;gt;&amp;gt;AutoScaler: Request AutoScaler-&amp;gt;&amp;gt;Node: Scale Up Node-&amp;gt;&amp;gt;containerd: Container Note right of containerd: 1.</description>
     </item>
     
@@ -39,7 +35,7 @@ Optimizing Model Inference Cold Start Problem First, let&#39;s look at the proce
       <pubDate>Fri, 26 Jul 2024 12:40:32 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/postgres-ha/</guid>
-      <description>I&#39;ve been researching PostgreSQL high availability solutions recently, and here&#39;s what I&#39;ve learned.
+      <description>I&amp;rsquo;ve been researching PostgreSQL high availability solutions recently, and here&amp;rsquo;s what I&amp;rsquo;ve learned.
 PostgreSQL High Availability High Availability Goals PostgreSQL high availability typically has two main objectives:
  RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time. This represents how much data loss a business can tolerate. RTO (Recovery Time Objective): The maximum acceptable downtime, measured from when a disaster occurs until the system is operational again.</description>
     </item>
@@ -50,7 +46,7 @@ PostgreSQL High Availability High Availability Goals PostgreSQL high availabilit
       <pubDate>Thu, 29 Dec 2022 16:27:06 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/kubernetes-topo-aware-all-you-need-know/</guid>
-      <description>Recently, I&#39;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
+      <description>Recently, I&amp;rsquo;ve been working on some NUMA-aware scheduling tasks on an internally developed platform, involving the discovery of Kubernetes node resource topology and scheduling. However, due to my limited knowledge, I often find myself struggling to grasp the full picture. This article is an attempt to summarize and organize my understanding.
 Why Topology Awareness is Needed According to the official Kubernetes documentation, more and more systems are utilizing CPUs and hardware accelerators like GPUs and DPUs to support low-latency tasks and high-throughput parallel computing tasks.</description>
     </item>
     
@@ -60,7 +56,7 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
       <pubDate>Sat, 13 Jul 2024 14:52:44 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/vector-search/</guid>
-      <description>It has been over a year since I joined Tensorchord, and I haven&#39;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+      <description>It has been over a year since I joined Tensorchord, and I haven&amp;rsquo;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
     </item>
     
     <item>
@@ -74,24 +70,14 @@ If we characterize pre-2023 LLM engineering as &amp;ldquo;racing for FLOPS, Tens
     </item>
     
     <item>
-      <title>One-Minute RL 101: Concepts and Framework Overview for Agent RL</title>
-      <link>https://blog.xieydd.top/en/verl-rl-pitfalls/</link>
-      <pubDate>Sun, 22 Mar 2026 10:00:00 +0800</pubDate>
-      <author>xieydd@gmail.com (xieydd)</author>
-      <guid>https://blog.xieydd.top/en/verl-rl-pitfalls/</guid>
-      <description>Why Get Started with RL Now Inspired by this article from Gao Ce, I&#39;ve been wanting to dive deeper into Agent RL, understand the current progress of Agent RL infrastructure, and get hands-on with a full training experiment.
-After DeepSeek R1, everyone now sees that reinforcement learning can really improve reasoning ability in LLMs. As someone who works with AI infrastructure every day, I naturally wanted to try it myself.</description>
-    </item>
-    
-    <item>
       <title>Why I Only Use PostgreSQL For Full-Text Search In Agent Projects</title>
       <link>https://blog.xieydd.top/en/postgres-fts-agent/</link>
       <pubDate>Thu, 19 Mar 2026 10:00:00 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/postgres-fts-agent/</guid>
-      <description>In my previous post about vector search, someone asked me: what about full-text search? Shouldn&#39;t we still use Elasticsearch for keyword search in Agent projects?
+      <description>In my previous post about vector search, someone asked me: what about full-text search? Shouldn&amp;rsquo;t we still use Elasticsearch for keyword search in Agent projects?
 My answer remains the same: for most Agent projects, I still prioritize PostgreSQL.
-This might sound counter-intuitive. After all, when people talk about full-text search, the first thing that comes to mind is Elasticsearch, and PostgreSQL&#39;s FTS is often seen as a &amp;ldquo;good-enough but not professional&amp;rdquo; secondary feature.</description>
+This might sound counter-intuitive. After all, when people talk about full-text search, the first thing that comes to mind is Elasticsearch, and PostgreSQL&amp;rsquo;s FTS is often seen as a &amp;ldquo;good-enough but not professional&amp;rdquo; secondary feature.</description>
     </item>
     
     <item>
@@ -112,7 +98,7 @@ This might sound counter-intuitive. After all, when people talk about full-text 
       <guid>https://blog.xieydd.top/en/vectorchord-deep-dive/</guid>
       <description>A friend recently asked me: What do you use for vector search in Agent projects? I answered without hesitation: PostgreSQL + VectorChord.
 He was surprised: &amp;ldquo;Not Milvus, Pinecone, or other dedicated vector databases?&amp;rdquo;
-This made me realize many people misunderstand vector storage needs in the Agent era. Today I&#39;ll share why I only bet on PostgreSQL for Agent projects, how VectorChord achieves low-cost billion-scale vector retrieval, and its advantages over traditional HNSW approaches.</description>
+This made me realize many people misunderstand vector storage needs in the Agent era. Today I&amp;rsquo;ll share why I only bet on PostgreSQL for Agent projects, how VectorChord achieves low-cost billion-scale vector retrieval, and its advantages over traditional HNSW approaches.</description>
     </item>
     
     <item>
@@ -122,7 +108,7 @@ This made me realize many people misunderstand vector storage needs in the Agent
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/code-agent-2026-02-02/</guid>
       <description>I recently built a security product using Code Agents—an LLM Security Insight platform based on eBPF + PostgreSQL. The tech stack was eclectic: eBPF, React, Go, Docker, Kubernetes, PostgreSQL, DuckDB. I was a complete beginner at React and eBPF, but the project shipped in a month.
-VS Code -&amp;gt; Cursor -&amp;gt; Gemini -&amp;gt; VS Code -&amp;gt; Codex -&amp;gt; VS Code -&amp;gt; Claude Code -&amp;gt; OpenCode -&amp;gt; OhMyOpenCode -&amp;gt; VS Code I&#39;m a long-time VS Code user.</description>
+VS Code -&amp;gt; Cursor -&amp;gt; Gemini -&amp;gt; VS Code -&amp;gt; Codex -&amp;gt; VS Code -&amp;gt; Claude Code -&amp;gt; OpenCode -&amp;gt; OhMyOpenCode -&amp;gt; VS Code I&amp;rsquo;m a long-time VS Code user.</description>
     </item>
     
     <item>

@@ -7,10 +7,6 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
-    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    
-	<atom:link href="https://blog.xieydd.top/tags/configuration/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster><atom:link href="https://blog.xieydd.top/tags/configuration/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

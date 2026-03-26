@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2024-07-26T12:40:32&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="High Availability">
   
@@ -80,7 +80,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2024-07-26T12:40:32+08:00","description":"A practical overview of PostgreSQL high availability covering replication, failover, WAL archiving, and point-in-time recovery.","headline":"PostgreSQL High Availability","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/postgres-ha/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/postgres-ha/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2024-07-26T12:40:32+08:00","description":"A practical overview of PostgreSQL high availability covering replication, failover, WAL archiving, and point-in-time recovery.","headline":"PostgreSQL High Availability","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/postgres-ha/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/postgres-ha/"}
   </script>
   
 
@@ -178,7 +178,7 @@
   
 
   <div class="post-content">
-    <p>I've been researching PostgreSQL high availability solutions recently, and here's what I've learned.</p>
+    <p>I&rsquo;ve been researching PostgreSQL high availability solutions recently, and here&rsquo;s what I&rsquo;ve learned.</p>
 <h1 id="postgresql-high-availability">PostgreSQL High Availability</h1>
 <h2 id="high-availability-goals">High Availability Goals</h2>
 <p>PostgreSQL high availability typically has two main objectives:</p>
@@ -210,11 +210,11 @@ In simple terms, this means determining how quickly to restore the database and 
 Advantages:</p>
 <ol>
 <li>Logical backups can be performed at table to database level as needed</li>
-<li>Backups don't block read/write activities on the database</li>
+<li>Backups don&rsquo;t block read/write activities on the database</li>
 <li>Can be restored to different major PostgreSQL versions and even different operating system architectures
 Disadvantages:</li>
 <li>Logical backups require replay during recovery, which can take considerable time for large datasets and may impact overall performance</li>
-<li>Doesn't support dumping global variables, requires pg_dumpall instead</li>
+<li>Doesn&rsquo;t support dumping global variables, requires pg_dumpall instead</li>
 </ol>
 <h4 id="2-physical-backup">2. Physical Backup</h4>
 <p>Physical backup is an offline backup of the PostgreSQL cluster performed when the cluster is stopped, containing the entire cluster data.
@@ -261,9 +261,9 @@ From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/
 <li><a href="https://github.com/patroni/patroni">Patroni</a></li>
 </ul>
 <p>Patroni uses asynchronous Streaming Replication by default, meaning transactions committed on the primary node may take some time to replicate to standby nodes. During this time, if the primary node fails, data from this period could be lost. Synchronous replication can be used to reduce data loss, but this affects primary node performance as it must wait for all standby nodes to receive and write WAL logs before committing transactions. A balance between availability and performance must be struck.</p>
-<p>Patroni's maximum_lag_on_failover and PostgreSQL's wal_segsize need to be balanced between availability and durability:</p>
+<p>Patroni&rsquo;s maximum_lag_on_failover and PostgreSQL&rsquo;s wal_segsize need to be balanced between availability and durability:</p>
 <ol>
-<li><code>maximum_lag_on_failover</code> defaults to 1MB (1048576 bytes), meaning if a node lags beyond this value, it won't be chosen as the new primary. This typically works in conjunction with <code>loop_wait</code> and <code>ttl</code> parameters. For example, with a ttl of 30, if a Patroni node fails to renew with Etcd or Consul within 30 seconds, it loses leadership. With loop_wait set to 10 seconds, Patroni performs its main operation loop every 10 seconds, including status checks and necessary operations. Worst-case data loss: maximum_lag_on_failover bytes + logs written in the last TTL seconds. Reducing this value lowers the upper limit of data loss during failover but increases the chance of automatic failover being rejected due to unhealthy replicas (too far behind).</li>
+<li><code>maximum_lag_on_failover</code> defaults to 1MB (1048576 bytes), meaning if a node lags beyond this value, it won&rsquo;t be chosen as the new primary. This typically works in conjunction with <code>loop_wait</code> and <code>ttl</code> parameters. For example, with a ttl of 30, if a Patroni node fails to renew with Etcd or Consul within 30 seconds, it loses leadership. With loop_wait set to 10 seconds, Patroni performs its main operation loop every 10 seconds, including status checks and necessary operations. Worst-case data loss: maximum_lag_on_failover bytes + logs written in the last TTL seconds. Reducing this value lowers the upper limit of data loss during failover but increases the chance of automatic failover being rejected due to unhealthy replicas (too far behind).</li>
 <li><code>wal_segsize</code> parameter defines the size of each WAL log segment file, defaulting to 16MB</li>
 </ol>
 <h2 id="architecture">Architecture</h2>
@@ -277,7 +277,7 @@ From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/
 <img src="https://pigsty.io/img/pigsty/ha.png" alt=""></p>
 <p>From top to bottom:</p>
 <ol>
-<li>Application layer resolves DNS to vip-manager's VIP, vip-manager gets the current primary's IP address through etcd, then binds the L2 VIP to the primary node; HAProxy handles L5 layer port forwarding.
+<li>Application layer resolves DNS to vip-manager&rsquo;s VIP, vip-manager gets the current primary&rsquo;s IP address through etcd, then binds the L2 VIP to the primary node; HAProxy handles L5 layer port forwarding.
 <ul>
 <li>Patroni: Synchronizes primary node information to etcd.</li>
 <li><a href="https://github.com/cybertec-postgresql/vip-manager">vip-manager</a>: Virtual IP and state managed synchronously by etcd.</li>
@@ -301,7 +301,7 @@ From this <a href="https://github.com/cloudnative-pg/cloudnative-pg/discussions/
 <li>Etcd provides distributed configuration storage (DCS) capability and is used for leader election after failures</li>
 <li>Patroni relies on Etcd to reach cluster leader consensus and provides health check interfaces.</li>
 <li>HAProxy exposes cluster services and automatically distributes traffic to healthy nodes using Patroni health check interfaces.</li>
-<li>vip-manager provides an optional layer 2 VIP, gets leader information from Etcd, and binds the VIP to the node hosting the cluster's primary.
+<li>vip-manager provides an optional layer 2 VIP, gets leader information from Etcd, and binds the VIP to the node hosting the cluster&rsquo;s primary.
 With primary-replica architecture + automatic failover + synchronous streaming replication + pgBackRest backup, RTO is within 1 minute and RPO is 0, meaning recovery within 1 minute with no data loss.</li>
 </ul>
 </blockquote>
@@ -312,7 +312,7 @@ With primary-replica architecture + automatic failover + synchronous streaming r
 <li>Multi-region Kubernetes deployment</li>
 <li>PostgreSQL nodes deployed across multiple availability zones (three or more)</li>
 <li>Primary-Standby using synchronous or asynchronous Streaming Replication</li>
-<li>PostgreSQL instances don't share resources, have dedicated node resources, run on different Kubernetes worker nodes, use local volumes</li>
+<li>PostgreSQL instances don&rsquo;t share resources, have dedicated node resources, run on different Kubernetes worker nodes, use local volumes</li>
 <li>Application layer provides <code>rw</code>, <code>ro</code>, <code>r</code> services for connecting to primary node, hot standby replicas for read-only workloads, and any read-only workloads respectively; during failover, it automatically updates services to point to the promoted service, ensuring seamless traffic redirection from applications.</li>
 <li>Provides Pooler object to create PGBouncer connection pools for connecting to primary and read-only nodes</li>
 <li>Deploys PostgreSQL across multiple Kubernetes clusters through Replica Cluster

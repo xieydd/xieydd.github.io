@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2024-07-13T14:52:44&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="vector search">
   
@@ -80,7 +80,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2024-07-13T14:52:44+08:00","description":"A practical introduction to vector databases, from embeddings and distance metrics to ANN indexes and production search systems.","headline":"The internals of Vector Databases","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/vector-search/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/vector-search/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2024-07-13T14:52:44+08:00","description":"A practical introduction to vector databases, from embeddings and distance metrics to ANN indexes and production search systems.","headline":"The internals of Vector Databases","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/vector-search/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/vector-search/"}
   </script>
   
 
@@ -180,7 +180,7 @@
   
 
   <div class="post-content">
-    <p>It has been over a year since I joined <a href="https://tensorchord.ai">Tensorchord</a>, and I haven't had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference <a href="https://modelz.ai/">Modelz</a> to the vector search field <a href="https://vectorchord.ai/">VectorChord</a>. The experience of this pivot might be shared in future articles, and those interested can also directly <a href="/en/about/">contact</a> me. Recently, I have been developing <a href="https://cloud.vectorchord.ai/">VectorChord Cloud</a>, so I am summarizing the ins and outs of vector databases while learning.</p>
+    <p>It has been over a year since I joined <a href="https://tensorchord.ai">Tensorchord</a>, and I haven&rsquo;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference <a href="https://modelz.ai/">Modelz</a> to the vector search field <a href="https://vectorchord.ai/">VectorChord</a>. The experience of this pivot might be shared in future articles, and those interested can also directly <a href="/en/about/">contact</a> me. Recently, I have been developing <a href="https://cloud.vectorchord.ai/">VectorChord Cloud</a>, so I am summarizing the ins and outs of vector databases while learning.</p>
 <h2 id="1-what-is-a-vector">1. What is a Vector</h2>
 <p>The meaning of vectors in physics, mathematics, and computer science is different. Here, vectors mainly refer to vectors in computer science, which are an ordered set of numerical values. In computer science, vectors are usually used to represent data. For example, in machine learning, we usually convert an image into a vector or tokenize a piece of text and then convert it into a vector for training. In vector databases, we usually convert an image, a piece of text, or an audio segment into a vector through an embedding model and then store and retrieve it. Below is a simple example where we convert a piece of text into a vector using the <code>all-MiniLM-L6-v2</code> model. <code>all-MiniLM-L6-v2</code> maps sentences and paragraphs to a 384-dimensional dense vector and can be used for tasks such as clustering or semantic search.</p>
 <div class="highlight"><div class="chroma">
@@ -206,28 +206,28 @@
 <td class="lntd">
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">SentenceTransformer</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">all-MiniLM-L6-v2</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SentenceTransformer</span><span class="p">(</span><span class="s1">&#39;all-MiniLM-L6-v2&#39;</span><span class="p">)</span>
 
 <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">Hugging Face is creating a tool that democratizes AI.</span><span class="s2">&#34;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">I love natural language processing.</span><span class="s2">&#34;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">Transformers are state-of-the-art models for NLP tasks.</span><span class="s2">&#34;</span>
+    <span class="s2">&#34;Hugging Face is creating a tool that democratizes AI.&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;I love natural language processing.&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;Transformers are state-of-the-art models for NLP tasks.&#34;</span>
 <span class="p">]</span>
 
 <span class="c1"># generate embeddings</span>
 <span class="n">embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
 
 <span class="c1"># print the embeddings</span>
-<span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Sentence: {sentence}</span><span class="s2">&#34;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Embedding: {embedding}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;Sentence: {sentence}&#34;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;Embedding: {embedding}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>In summary, vectors are actually the bridge between real-world entities and the computer world. Computers understand and process real-world data through vectors.</p>
 <h2 id="2-what-is-a-vector-database">2. What is a Vector Database</h2>
 <p>The world originally did not have vector databases, but with more vectors, vector databases emerged, just kidding hh. Here I give a simple definition: a database that can index and store vectors to achieve fast retrieval and similarity search functions. Many people on the internet define vector databases as databases that focus on processing vector data, which is not accurate. To be precise, vectors and vector search are a new data type and query processing method, which is not fundamentally different from similar and indexing methods in traditional databases.</p>
 <h2 id="3-what-is-vector-search">3. What is Vector Search</h2>
-<p>Vector search, also known as vector retrieval, is a technique in Information Retrieval used to find the most similar vectors to a given query vector in a high-dimensional vector space. To measure the similarity between two vectors, we usually use cosine similarity, Euclidean distance, Manhattan distance, etc. To speed up vector search, we usually use index structures such as KD-Tree, IVF (Inverted File Index), HNSW (Hierarchical Navigable Small World), etc. Vector search has applications in many fields, such as in recommendation systems, where we can use vector search to find products most similar to a user's historical behavior and then recommend them to the user; in image retrieval, we can use vector search to find images most similar to a given image; in RAG (Retrieval Augmented Generation), we can use vector search to find text most similar to a given question, enhancing the Context of large models to improve the quality of generated answers.</p>
+<p>Vector search, also known as vector retrieval, is a technique in Information Retrieval used to find the most similar vectors to a given query vector in a high-dimensional vector space. To measure the similarity between two vectors, we usually use cosine similarity, Euclidean distance, Manhattan distance, etc. To speed up vector search, we usually use index structures such as KD-Tree, IVF (Inverted File Index), HNSW (Hierarchical Navigable Small World), etc. Vector search has applications in many fields, such as in recommendation systems, where we can use vector search to find products most similar to a user&rsquo;s historical behavior and then recommend them to the user; in image retrieval, we can use vector search to find images most similar to a given image; in RAG (Retrieval Augmented Generation), we can use vector search to find text most similar to a given question, enhancing the Context of large models to improve the quality of generated answers.</p>
 <h3 id="31-vector-search-application-scenarios">3.1 Vector Search Application Scenarios</h3>
 <h4 id="311-recommendation-system">3.1.1 Recommendation System</h4>
 <p>As in the On-premise case of Qdrant about <a href="https://qdrant.tech/blog/vector-search-vector-recommendation/">Video Content-based Recommendation</a>, the multilingual universal sentence encoder is used to embed the script when uploading a video. Here, it is not simply extracting frames from the video, but more information comes from the video title, description, automatically detected tags, and content recognized by Whisper speech recognition. So the current problem is that if the video has no audio, the title and description are forced to be used for recommendation, which is a big challenge for the review team. Here, the call start issues in the recommendation field are mentioned, that is, when users first start using the system, the recommendation quality of the recommendation system is not high, and the user experience is poor at this time. On the basis of non-real-time updated collaborative recommenders and metadata recommenders, adding a content-based recommender can greatly optimize call start issues.</p>
@@ -255,10 +255,10 @@
 <li>Obtain streaming real-time data of financial news and historical data.</li>
 <li>Chunk the data into inputs for the embedding model, and then store the embeddings in the vector database.</li>
 <li>User asks a question.</li>
-<li>Find the most similar news chunks through vector search, and then perform Prompt composition with the user's historical chat information and news chunks.</li>
+<li>Find the most similar news chunks through vector search, and then perform Prompt composition with the user&rsquo;s historical chat information and news chunks.</li>
 <li>Input into the LLM to generate an answer.</li>
 <li>Return the answer to the user.</li>
-<li>Store the new chat information in the user's historical data.</li>
+<li>Store the new chat information in the user&rsquo;s historical data.</li>
 </ol>
 <p><img src="./rag-2.png" alt="alt text"></p>
 <ol>
@@ -266,7 +266,7 @@
 <li>Input the chunks into the embedding model, and then store the embeddings in the vector database.</li>
 <li>The Vector Database builds an Index.</li>
 <li>User asks a question, input into the embedding model.</li>
-<li>The embedding model outputs the query's embedding vector.</li>
+<li>The embedding model outputs the query&rsquo;s embedding vector.</li>
 <li>Use the vector from step 5 as the Query vector and input it into the vector database.</li>
 <li>The vector database finds the most similar chunks through ANNs (Approximate Nearest Neighbors Search).</li>
 <li>Construct a Prompt with the searched chunks and the query.</li>
@@ -407,14 +407,14 @@
 <li>During the graph construction process, subgraphs will gradually be connected to the Navigation Point, so other nodes only need to maintain a few edges, thereby reducing the size of the graph.</li>
 <li>Each search starts from the Navigation Point and can point to specific subgraphs, reducing invalid searches and achieving better search performance.</li>
 </ul>
-<p>NSG's edge selection is different from HNSW's minimum edge selection strategy. Taking point r as an example, when r is connected to p, circles are drawn with r and p as the center and the distance between r and p as the radius. If there are no other points connected to p within the intersection of the two circles, then r is connected to p. When connecting point s, since there is already point r connected to p within the intersection circle of s and p, s is not connected to p. Point t is retained because point s has been excluded. In the figure below, only points r, t, and q are connected to point p, reducing redundant edges and average out-degree.
+<p>NSG&rsquo;s edge selection is different from HNSW&rsquo;s minimum edge selection strategy. Taking point r as an example, when r is connected to p, circles are drawn with r and p as the center and the distance between r and p as the radius. If there are no other points connected to p within the intersection of the two circles, then r is connected to p. When connecting point s, since there is already point r connected to p within the intersection circle of s and p, s is not connected to p. Point t is retained because point s has been excluded. In the figure below, only points r, t, and q are connected to point p, reducing redundant edges and average out-degree.
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/2/18/17057379bc7bdab3~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" alt=""></p>
 <h4 id="334-diskann">3.3.4 DiskANN</h4>
 <p>The DiskANN series consists of three articles: DiskANN, FreshDiskANN, and FilterDiskANN, which are essentially optimizations of the HNSW or NSG algorithm.</p>
 <p>DiskANN introduces an SSD-friendly graph algorithm called Vamana, minimizing disk operations. The Vamana graph is similar to HNSW and NSG graphs, with the difference being the initial graph selection and the introduction of a loose parameter alpha during graph pruning to balance graph diameter and node connectivity, improving graph quality. Additionally, to avoid multiple random disk reads and writes, DiskANN combines two types of algorithms: clustering compression algorithms and graph structure algorithms. First, by compressing the original data, only the compressed codebook information and centroid mapping information are kept in memory, while the original data and the constructed graph structure data are stored on disk, only reading from disk when specific nodes are matched during queries. Second, by modifying the arrangement of vector data and graph structures, data points and their neighbor nodes are stored together, allowing a single disk operation to read the vector data and neighbor node information of a node.</p>
 <p>Graph construction process:</p>
 <ol>
-<li>First, build a random graph. Unlike NSG's K-nearest-neighbor graph, each node is randomly connected to R nodes.</li>
+<li>First, build a random graph. Unlike NSG&rsquo;s K-nearest-neighbor graph, each node is randomly connected to R nodes.</li>
 <li>Calculate the starting point, finding the point closest to the global centroid to minimize the average search radius.</li>
 <li>Search from the starting point and perform ANN for each point, using all points on the search path as candidate neighbor sets, and execute an alpha = 1 edge pruning strategy.</li>
 <li>Repeat step 3 with alpha &gt; 1 (recommended 1.2 in the paper). Since step 3 is based on a random neighbor graph, the graph quality is not high after the first iteration, so another iteration is needed to improve graph quality, which is important for recall. Taking the above figure as an example, if alpha is 1.2, the ps edge is pruned only when the distance of ps is greater than 1.2 * the distance of pr.</li>
@@ -437,7 +437,7 @@
 <h3 id="34-vector-search-algorithm-optimization">3.4 Vector Search Algorithm Optimization</h3>
 <p>By reducing the size of vectors or reducing dimensions to make searches faster, here are some common vector search algorithm optimization methods.</p>
 <h4 id="341-pqproduct-quantization">3.4.1 PQ（Product Quantization）</h4>
-<p>Here I borrow a diagram from a Zhihu user, as the user's diagram is very well-drawn:
+<p>Here I borrow a diagram from a Zhihu user, as the user&rsquo;s diagram is very well-drawn:
 <img src="v2-8f9324cc9ee6d50b4f72eea54ff4abdc_b.jpg" alt="">
 Construction phase:</p>
 <ol>
@@ -520,7 +520,7 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
 </ul>
 </li>
 </ul>
-<p>Milvus's cloud-native architecture is its advantage, but it also brings significant challenges to developers, such as learning new concepts and the operational management challenges brought by related components like Pulsar or etcd.</p>
+<p>Milvus&rsquo;s cloud-native architecture is its advantage, but it also brings significant challenges to developers, such as learning new concepts and the operational management challenges brought by related components like Pulsar or etcd.</p>
 <h3 id="44-pineconehttpswwwpineconeio">4.4 <a href="https://www.pinecone.io/">Pinecone</a></h3>
 <h3 id="45-qdranthttpsqdranttech">4.5 <a href="https://qdrant.tech/">Qdrant</a></h3>
 <h3 id="46-pgvectorhttpsgithubcompgvectorpgvector">4.6 <a href="https://github.com/pgvector/pgvector">Pgvector</a></h3>
@@ -531,7 +531,7 @@ Decoding: value = min + (code + 0.5)*(max-min)/255.</p>
 <h2 id="7-summary">7. Summary</h2>
 <p>Here, I have briefly introduced some basic knowledge of vector search, as well as some common vector search algorithms, vector search application scenarios, vector search algorithm optimization, common vector databases and their pros and cons, excellent vector search libraries, and open-source vector database projects. I hope to apply this knowledge to actual scenarios in the future. I hope this article can help you better understand vector search.</p>
 <h2 id="8-references">8. References</h2>
-<p>Thank you very much to Pinecone's articles, which gave me a deeper understanding of vector databases.</p>
+<p>Thank you very much to Pinecone&rsquo;s articles, which gave me a deeper understanding of vector databases.</p>
 <ul>
 <li><a href="https://www.pinecone.io/learn/series/faiss/vector-indexes/">https://www.pinecone.io/learn/series/faiss/vector-indexes/</a></li>
 <li><a href="https://www.pinecone.io/learn/series/faiss/locality-sensitive-hashing/">https://www.pinecone.io/learn/series/faiss/locality-sensitive-hashing/</a></li>

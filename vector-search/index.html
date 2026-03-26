@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2024-07-13T14:52:44&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="vector search">
   
@@ -80,7 +80,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2024-07-13T14:52:44+08:00","description":"从 embedding、距离计算、索引结构到工程落地，系统理解向量数据库与向量检索的核心原理、选型逻辑与实践路径。","headline":"向量数据库中的门门道道","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/vector-search/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/vector-search/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2024-07-13T14:52:44+08:00","description":"从 embedding、距离计算、索引结构到工程落地，系统理解向量数据库与向量检索的核心原理、选型逻辑与实践路径。","headline":"向量数据库中的门门道道","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/vector-search/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/vector-search/"}
   </script>
   
 
@@ -209,22 +209,22 @@
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
 
 <span class="c1"># 初始化模型</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">SentenceTransformer</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">all-MiniLM-L6-v2</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SentenceTransformer</span><span class="p">(</span><span class="s1">&#39;all-MiniLM-L6-v2&#39;</span><span class="p">)</span>
 
 <span class="c1"># 要嵌入的文本示例</span>
 <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">Hugging Face is creating a tool that democratizes AI.</span><span class="s2">&#34;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">I love natural language processing.</span><span class="s2">&#34;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s2">&#34;</span><span class="s2">Transformers are state-of-the-art models for NLP tasks.</span><span class="s2">&#34;</span>
+    <span class="s2">&#34;Hugging Face is creating a tool that democratizes AI.&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;I love natural language processing.&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;Transformers are state-of-the-art models for NLP tasks.&#34;</span>
 <span class="p">]</span>
 
 <span class="c1"># 生成嵌入</span>
 <span class="n">embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
 
 <span class="c1"># 打印嵌入</span>
-<span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Sentence: {sentence}</span><span class="s2">&#34;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Embedding: {embedding}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;Sentence: {sentence}&#34;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;Embedding: {embedding}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>总结一下,向量其实是真实世界的实体和计算机世界的桥梁, 计算机通过向量来理解和处理真实世界的数据。</p>

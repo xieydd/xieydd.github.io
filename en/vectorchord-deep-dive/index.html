@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="VectorChord">
   
@@ -94,7 +94,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"How VectorChord brings low-cost billion-scale vector search to PostgreSQL, with IVF+RaBitQ, HNSW tradeoffs, and practical RAG guidance.","headline":"Why I Only Bet on PostgreSQL for Agent Projects: Vector Search","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/vectorchord-deep-dive/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2026-03-16T10:00:00+08:00","description":"How VectorChord brings low-cost billion-scale vector search to PostgreSQL, with IVF+RaBitQ, HNSW tradeoffs, and practical RAG guidance.","headline":"Why I Only Bet on PostgreSQL for Agent Projects: Vector Search","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/vectorchord-deep-dive/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/vectorchord-deep-dive/"}
   </script>
   
 
@@ -200,17 +200,17 @@
     <p><img src="/infographic/vectorchord-deep-dive/infographic.png" alt="VectorChord: Vector Search Inside PostgreSQL"></p>
 <p>A friend recently asked me: What do you use for vector search in Agent projects? I answered without hesitation: PostgreSQL + <a href="https://github.com/tensorchord/vectorchord">VectorChord</a>.</p>
 <p>He was surprised: &ldquo;Not Milvus, Pinecone, or other dedicated vector databases?&rdquo;</p>
-<p>This made me realize many people misunderstand vector storage needs in the Agent era. Today I'll share why I only bet on PostgreSQL for Agent projects, how VectorChord achieves low-cost billion-scale vector retrieval, and its advantages over traditional HNSW approaches.</p>
+<p>This made me realize many people misunderstand vector storage needs in the Agent era. Today I&rsquo;ll share why I only bet on PostgreSQL for Agent projects, how VectorChord achieves low-cost billion-scale vector retrieval, and its advantages over traditional HNSW approaches.</p>
 <h2 id="what-does-vector-storage-need-in-the-agent-era">What Does Vector Storage Need in the Agent Era?</h2>
-<p>Before diving into technology, let's think about Agent project characteristics:</p>
+<p>Before diving into technology, let&rsquo;s think about Agent project characteristics:</p>
 <p><strong>1. Knowledge bases update frequently</strong></p>
-<p>Agent knowledge bases aren't static. Users constantly upload new documents, new conversation history, and vector indexes need frequent rebuilding. Traditional <a href="../vector-search/#hnsw-hierarchical-navigable-small-world">HNSW</a> index building for 100 million vectors takes hours - this can't keep up with update节奏.</p>
+<p>Agent knowledge bases aren&rsquo;t static. Users constantly upload new documents, new conversation history, and vector indexes need frequent rebuilding. Traditional <a href="../vector-search/#hnsw-hierarchical-navigable-small-world">HNSW</a> index building for 100 million vectors takes hours - this can&rsquo;t keep up with update节奏.</p>
 <p><strong>2. Scale grows rapidly</strong></p>
 <p>Agent application vector scale often correlates with user activity and document count.</p>
 <p>Looking at real-world scenarios:</p>
 <ul>
 <li>
-<p><strong>Personal knowledge bases</strong>: Personal notes, documents, emails, and similar content typically generate vector scales in the <strong>100K ~ 1 million</strong> range. A single user's total document volume is limited, and even with incremental updates, million-level vectors can cover most personal scenarios.</p>
+<p><strong>Personal knowledge bases</strong>: Personal notes, documents, emails, and similar content typically generate vector scales in the <strong>100K ~ 1 million</strong> range. A single user&rsquo;s total document volume is limited, and even with incremental updates, million-level vectors can cover most personal scenarios.</p>
 </li>
 <li>
 <p><strong>Enterprise Agent applications</strong>: This is where vector scale really explodes. Customer service bots need to store all product documentation, conversation history, and FAQs; enterprise knowledge base Q&amp;A needs to cover internal wikis, ticket records, and meeting notes; employee assistants need access to emails, documents, and code repositories. As business grows, vector scale can easily reach <strong>tens of millions or even hundreds of millions</strong>. For example, a mid-sized company (1000-5000 employees) knowledge base might have millions of documents, which translates to tens of millions of vector chunks.</p>
@@ -236,10 +236,10 @@
 <li><strong>Fast build</strong>: Can handle frequent updates</li>
 <li><strong>Low cost</strong>: Small teams can afford it</li>
 <li><strong>Already in tech stack</strong>: No additional components</li>
-<li><strong>Good enough</strong>: Don't chase ultimate performance</li>
+<li><strong>Good enough</strong>: Don&rsquo;t chase ultimate performance</li>
 </ul>
 <h2 id="problems-with-dedicated-vector-databases">Problems with Dedicated Vector Databases</h2>
-<p>Let me first explain why I don't choose dedicated vector databases.</p>
+<p>Let me first explain why I don&rsquo;t choose dedicated vector databases.</p>
 <p>When evaluating vector database options, many immediately consider dedicated solutions like Milvus, Pinecone, or Weaviate. However, in Agent scenarios, these solutions expose significant issues:</p>
 <table>
 <thead>
@@ -301,7 +301,7 @@
 <p><strong>Cost is only 1/5, build speed is 30x faster</strong>. This is what Agent projects need.</p>
 <h2 id="core-technology-why-so-fast-and-efficient">Core Technology: Why So Fast and Efficient?</h2>
 <h3 id="ivfvector-searchivfinverted-file-index--rabitqvector-searchrabitq-why-i-gave-up-hnsw"><a href="../vector-search/#ivfinverted-file-index">IVF</a> + <a href="../vector-search/#rabitq">RaBitQ</a>: Why I Gave Up HNSW</h3>
-<p><a href="../vector-search/#hnsw-hierarchical-navigable-small-world">HNSW</a>&lsquo;s multi-layer graph structure does have fast query speeds, but several fatal problems:</p>
+<p><a href="../vector-search/#hnsw-hierarchical-navigable-small-world">HNSW</a>&rsquo;s multi-layer graph structure does have fast query speeds, but several fatal problems:</p>
 <ol>
 <li><strong>Huge memory footprint</strong>: Each node stores multi-layer neighbor information, memory usage is several times the vectors themselves</li>
 <li><strong>Slow construction</strong>: Need to insert nodes one by one and maintain multi-layer graph structure</li>
@@ -310,13 +310,13 @@
 <p>VectorChord uses IVF (Inverted File) + RaBitQ (Randomized Bit Quantization) combination:</p>
 <ul>
 <li><strong>High storage compression</strong>: 1-bit quantization 32x compression, 8-bit 4x compression</li>
-<li><strong>Fast construction</strong>: Streaming build, doesn't need all data in memory</li>
+<li><strong>Fast construction</strong>: Streaming build, doesn&rsquo;t need all data in memory</li>
 <li><strong>Disk-friendly</strong>: Clustered sequential storage, sequential IO optimization</li>
 </ul>
 <h3 id="storage-layout-sequential-io--cache-friendly-two-layer-design">Storage Layout: Sequential IO + Cache-Friendly Two-Layer Design</h3>
-<p>This is one of VectorChord's most core designs, directly borrowing design ideas from <a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS">column-oriented databases</a>.</p>
+<p>This is one of VectorChord&rsquo;s most core designs, directly borrowing design ideas from <a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS">column-oriented databases</a>.</p>
 <p><strong>Global: Clustered Sequential Storage</strong></p>
-<p>The entire index's quantized vectors are stored sequentially in PostgreSQL data pages by cluster, structured as follows:</p>
+<p>The entire index&rsquo;s quantized vectors are stored sequentially in PostgreSQL data pages by cluster, structured as follows:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -372,7 +372,7 @@
 <p>All quantized vectors are stored on disk, and only candidate cluster data is loaded during queries. For a 100 million vector index, total memory usage is under 1GB.</p>
 <h3 id="rabitqvector-searchrabitq-low-bit-compression-with-theoretical-guarantees"><a href="../vector-search/#rabitq">RaBitQ</a>: Low-Bit Compression with Theoretical Guarantees</h3>
 <p><a href="../vector-search/#rabitq">RaBitQ</a> comes from the paper <a href="https://arxiv.org/abs/2405.12497">RaBitQ: Quantizing High-Dimensional Vectors with a Theoretical Error Bound for Approximate Nearest Neighbor Search</a>. The core innovation is using random rotation to make dimensions independent, with strict theoretical bounds on quantization error. At the same compression rate, it achieves 5%-10% higher recall than traditional low-bit <a href="../vector-search/#pqproduct-quantization">quantization</a>.</p>
-<p>Let's walk through a complete 2-dimensional vector example:</p>
+<p>Let&rsquo;s walk through a complete 2-dimensional vector example:</p>
 <p><strong>Step 1: Training Set Centering</strong></p>
 <p>For all vectors in the training set, subtract the mean of each dimension. This is a common technique in <a href="https://en.wikipedia.org/wiki/Standard_score">Standardization</a>.</p>
 <div class="highlight"><div class="chroma">
@@ -417,7 +417,7 @@ x_rotated = R * x_centered = [0.06, -1.08]
 <li><strong>4-bit quantization</strong>: Divide into 16 intervals, store 4-bit interval index per dimension</li>
 <li><strong>8-bit quantization</strong>: Divide into 256 intervals, store 8-bit interval index per dimension</li>
 </ul>
-<p>Let's demonstrate 1-bit quantization:</p>
+<p>Let&rsquo;s demonstrate 1-bit quantization:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -469,7 +469,7 @@ Original float32 needs 8B → 32x compression ratio
 </tbody>
 </table>
 <h3 id="streaming-build-build-10-billion-scale-index-with-128gb-memory">Streaming Build: Build 10 Billion-Scale Index with 128GB Memory</h3>
-<p>VectorChord's biggest highlight: streaming disk build.</p>
+<p>VectorChord&rsquo;s biggest highlight: streaming disk build.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -493,10 +493,10 @@ Original float32 needs 8B → 32x compression ratio
 <li>Already in tech stack, no need to learn new things</li>
 </ul>
 <p>For small teams, this means fast time-to-market, not spending time on infrastructure.</p>
-<p>This is also PostgreSQL's advantage as a Pinecone alternative—no need to introduce new tech stacks, directly extending vector retrieval capabilities on your existing database.</p>
+<p>This is also PostgreSQL&rsquo;s advantage as a Pinecone alternative—no need to introduce new tech stacks, directly extending vector retrieval capabilities on your existing database.</p>
 <h2 id="query-performance-good-enough-is-enough">Query Performance: Good Enough is Enough</h2>
 <p>Some might ask: How fast can PostgreSQL native be?</p>
-<p>VectorChord's query pipeline:</p>
+<p>VectorChord&rsquo;s query pipeline:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -534,7 +534,7 @@ Original float32 needs 8B → 32x compression ratio
 <tr>
 <td>Post-filter</td>
 <td>Do vector search first to get far more candidates than needed, then SQL filter</td>
-<td>Guarantee sufficient results, won't easily return empty</td>
+<td>Guarantee sufficient results, won&rsquo;t easily return empty</td>
 <td>Loose filtering, need to guarantee result count</td>
 </tr>
 </tbody>
@@ -565,19 +565,19 @@ Original float32 needs 8B → 32x compression ratio
 <li>Within each mid-level cluster, cluster again to get final k clusters</li>
 </ol>
 <p>Overall computation reduces from <code>O(n * k * d)</code> to <code>O(n * d * √k)</code>. For k=4096, computation is reduced by 64x.</p>
-<p>This hierarchical structure itself comes from <a href="https://github.com/lkuffo/SuperKMeans">Hierarchical SuperKMeans</a>, which VectorChord has already implemented. Iterative intra-pruning is SuperKMeans&rsquo; biggest innovation and is the future evolution direction.</p>
+<p>This hierarchical structure itself comes from <a href="https://github.com/lkuffo/SuperKMeans">Hierarchical SuperKMeans</a>, which VectorChord has already implemented. Iterative intra-pruning is SuperKMeans' biggest innovation and is the future evolution direction.</p>
 <h2 id="future-evolution-integrating-superkmeans--pdx">Future Evolution: Integrating SuperKMeans + PDX</h2>
 <p>VectorChord is still rapidly evolving, with several exciting directions:</p>
 <h3 id="superkmeans-build-speed-another-30x-faster">SuperKMeans: Build Speed Another 30x Faster</h3>
-<p><a href="https://github.com/lkuffo/SuperKMeans">SuperKMeans</a>&lsquo;s core innovation is progressive pruning within each K-Means iteration:</p>
+<p><a href="https://github.com/lkuffo/SuperKMeans">SuperKMeans</a>&rsquo;s core innovation is progressive pruning within each K-Means iteration:</p>
 <ol>
-<li>Compute only first d&rsquo; (12%-25%) dimensions, use <a href="https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms">BLAS GEMM</a> batch computation</li>
+<li>Compute only first d' (12%-25%) dimensions, use <a href="https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms">BLAS GEMM</a> batch computation</li>
 <li>Prune 97%+ of unlikely candidates based on partial dimension distances</li>
 <li>Compute full dimension distances only for remaining 3% of candidates</li>
 </ol>
 <p><strong>Performance Estimate</strong>: After integrating SuperKMeans, 100 million 768-dimensional vector build time can be reduced from 20 minutes to <strong>2-3 minutes</strong>.</p>
 <h3 id="pdx-layout-search-qps-another-200300-higher">PDX Layout: Search QPS Another 200%~300% Higher</h3>
-<p><a href="https://arxiv.org/abs/2105.08177">PDX</a> is a columnar layout optimization from the CWI team. VectorChord's current intra-cluster columnar layout already has similar ideas:</p>
+<p><a href="https://arxiv.org/abs/2105.08177">PDX</a> is a columnar layout optimization from the CWI team. VectorChord&rsquo;s current intra-cluster columnar layout already has similar ideas:</p>
 <ul>
 <li><strong>Vertical blocks</strong>: First 25% dimensions fully columnar, dedicated to fast pruning</li>
 <li><strong>Horizontal blocks</strong>: Remaining dimensions grouped by 64 dimensions in columnar storage</li>
@@ -586,14 +586,14 @@ Original float32 needs 8B → 32x compression ratio
 <h2 id="thoughts">Thoughts</h2>
 <p><strong>Good Enough vs Ultimate Performance</strong></p>
 <p>In early Agent projects, the most important thing is rapid validation and iteration, not chasing ultimate query performance.</p>
-<p>VectorChord's design philosophy is &ldquo;good enough&rdquo;: under acceptable precision and latency, minimize storage and cost.</p>
+<p>VectorChord&rsquo;s design philosophy is &ldquo;good enough&rdquo;: under acceptable precision and latency, minimize storage and cost.</p>
 <p>This pragmatic attitude is how small teams survive.</p>
 <p><strong>PostgreSQL is the Best Data Foundation for Agent Era</strong></p>
-<p>Vector search is just one of PostgreSQL's many capabilities.</p>
-<p>Later I'll also talk about:</p>
+<p>Vector search is just one of PostgreSQL&rsquo;s many capabilities.</p>
+<p>Later I&rsquo;ll also talk about:</p>
 <ul>
-<li>Full-text search: Why PostgreSQL's FTS is more suitable for Agent projects than ES</li>
-<li>ACID transactions: Why Agent state management can't live without transactions</li>
+<li>Full-text search: Why PostgreSQL&rsquo;s FTS is more suitable for Agent projects than ES</li>
+<li>ACID transactions: Why Agent state management can&rsquo;t live without transactions</li>
 <li>JSONB: Why I prefer JSONB over separate MongoDB</li>
 <li>OLAP scenarios: PostgreSQL exploration in analytical scenarios</li>
 <li>Supabase: Why I recommend developers start with Supabase</li>
@@ -605,7 +605,7 @@ Original float32 needs 8B → 32x compression ratio
 <li>Integrate SuperKMeans iterative pruning, build speed another 30x faster</li>
 <li>Integrate PDX layout, search QPS improve another 200%-300%</li>
 </ul>
-<p>But the core philosophy won't change: <strong>PostgreSQL native + low cost + good enough</strong>.</p>
+<p>But the core philosophy won&rsquo;t change: <strong>PostgreSQL native + low cost + good enough</strong>.</p>
 <hr>
 <p><em>This is the first article in the &ldquo;Why I Only Bet on PostgreSQL for Agent Projects&rdquo; series. Next up: Full-text Search.</em></p>
 

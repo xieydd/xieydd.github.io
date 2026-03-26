@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-19T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="PostgreSQL">
   
@@ -94,7 +94,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2026-03-19T10:00:00+08:00","description":"Why PostgreSQL FTS beats Elasticsearch for full-text search in AI Agent projects. A deep dive into PostgreSQL FTS, pg_tokenizer.rs, VectorChord-BM25, BM25 with WeakAND.","headline":"Why I Only Use PostgreSQL For Full-Text Search In Agent Projects","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/postgres-fts-agent/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/postgres-fts-agent/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2026-03-19T10:00:00+08:00","description":"Why PostgreSQL FTS beats Elasticsearch for full-text search in AI Agent projects. A deep dive into PostgreSQL FTS, pg_tokenizer.rs, VectorChord-BM25, BM25 with WeakAND.","headline":"Why I Only Use PostgreSQL For Full-Text Search In Agent Projects","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/postgres-fts-agent/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/postgres-fts-agent/"}
   </script>
   
 
@@ -179,14 +179,14 @@
 
   <div class="post-content">
     <p><img src="/infographic/postgres-fts-agent/infographic.png" alt="Why PostgreSQL FTS For Agent Projects"></p>
-<p>In my <a href="../vectorchord-deep-dive/">previous post</a> about vector search, someone asked me: what about full-text search? Shouldn't we still use Elasticsearch for keyword search in Agent projects?</p>
+<p>In my <a href="../vectorchord-deep-dive/">previous post</a> about vector search, someone asked me: what about full-text search? Shouldn&rsquo;t we still use Elasticsearch for keyword search in Agent projects?</p>
 <p>My answer remains the same: <strong>for most Agent projects, I still prioritize PostgreSQL.</strong></p>
-<p>This might sound counter-intuitive. After all, when people talk about full-text search, the first thing that comes to mind is Elasticsearch, and PostgreSQL's <a href="https://www.postgresql.org/docs/current/textsearch-intro.html">FTS</a> is often seen as a &ldquo;good-enough but not professional&rdquo; secondary feature.</p>
+<p>This might sound counter-intuitive. After all, when people talk about full-text search, the first thing that comes to mind is Elasticsearch, and PostgreSQL&rsquo;s <a href="https://www.postgresql.org/docs/current/textsearch-intro.html">FTS</a> is often seen as a &ldquo;good-enough but not professional&rdquo; secondary feature.</p>
 <p>But in my view, while this judgment might hold for traditional search engine scenarios, the conclusion is often reversed when it comes to <strong>Agent projects</strong>.</p>
 <p>Because full-text search in Agent projects is not the same problem as building a site search engine.</p>
 <h2 id="what-do-we-really-need-to-solve-in-the-agent-era">What Do We Really Need To Solve In The Agent Era?</h2>
-<p>Before jumping into BM25, inverted indexes, and tokenizers, let's step back and look at the real requirements in Agent projects.</p>
-<h3 id="1-the-search-target-isnt-a-static-document-collection">1. The search target isn't a static document collection</h3>
+<p>Before jumping into BM25, inverted indexes, and tokenizers, let&rsquo;s step back and look at the real requirements in Agent projects.</p>
+<h3 id="1-the-search-target-isnt-a-static-document-collection">1. The search target isn&rsquo;t a static document collection</h3>
 <p>Agents typically need to search more than just product documentation.</p>
 <p>They might need to search across:</p>
 <ul>
@@ -232,18 +232,18 @@
 <span class="k">LIMIT</span> <span class="n">k</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>In this case, <strong>filtering and sorting aren't two separate logic steps in two different systems — they should be two parts of the same execution path.</strong></p>
+</div><p>In this case, <strong>filtering and sorting aren&rsquo;t two separate logic steps in two different systems — they should be two parts of the same execution path.</strong></p>
 <h3 id="3-agents-fear-consistency-problems-more-than-they-fear-not-squeezing-out-every-last-qps">3. Agents fear consistency problems more than they fear not squeezing out every last QPS</h3>
-<p>What really hurts in Agent projects isn't &ldquo;queries being 20% slower&rdquo;, it's:</p>
+<p>What really hurts in Agent projects isn&rsquo;t &ldquo;queries being 20% slower&rdquo;, it&rsquo;s:</p>
 <ul>
-<li>User just uploaded a document and can't find it</li>
+<li>User just uploaded a document and can&rsquo;t find it</li>
 <li>Database deleted a record but ES still has stale dirty data</li>
 <li>Permissions were revoked but search results still leak</li>
-<li>Business table updated title/state/ownership but search index isn't in sync</li>
+<li>Business table updated title/state/ownership but search index isn&rsquo;t in sync</li>
 </ul>
 <p>In these systems, <strong>consistency, simpler architecture, and lower operations overhead</strong> are usually more important than the theoretical peak performance of a dedicated search system.</p>
-<h2 id="why-i-dont-prioritize-elasticsearch">Why I Don't Prioritize Elasticsearch</h2>
-<p>Let me be clear: <strong>I'm not saying Elasticsearch is bad.</strong></p>
+<h2 id="why-i-dont-prioritize-elasticsearch">Why I Don&rsquo;t Prioritize Elasticsearch</h2>
+<p>Let me be clear: <strong>I&rsquo;m not saying Elasticsearch is bad.</strong></p>
 <p>Elasticsearch is still excellent for these scenarios:</p>
 <ul>
 <li>Massive-scale public search sites</li>
@@ -279,7 +279,7 @@
 </tbody>
 </table>
 <p>The first point is often underestimated.</p>
-<p>When many teams adopt Elasticsearch, they only think &ldquo;it's better for search&rdquo; but don't properly calculate the engineering cost down the road:</p>
+<p>When many teams adopt Elasticsearch, they only think &ldquo;it&rsquo;s better for search&rdquo; but don&rsquo;t properly calculate the engineering cost down the road:</p>
 <ul>
 <li>Needs synchronization pipeline</li>
 <li>Needs mapping management</li>
@@ -290,14 +290,14 @@
 </ul>
 <p>And Agent projects are typically still in the rapid experimentation phase. The last thing you need is to introduce another complex system along the critical path of &ldquo;memory, retrieval, state management&rdquo;.</p>
 <h2 id="why-postgresql-fts-is-better-for-agent-projects">Why PostgreSQL FTS Is Better For Agent Projects</h2>
-<p>In Agent scenarios, PostgreSQL's advantage isn't just that it &ldquo;can also do full-text search&rdquo; — it happens to hit exactly the points that Agent systems value most.</p>
+<p>In Agent scenarios, PostgreSQL&rsquo;s advantage isn&rsquo;t just that it &ldquo;can also do full-text search&rdquo; — it happens to hit exactly the points that Agent systems value most.</p>
 <h3 id="1-business-data-and-search-data-live-in-the-same-transaction">1. Business data and search data live in the same transaction</h3>
 <p>This is the biggest advantage.</p>
 <p>If your documents table, conversation table, and memory table are already in PostgreSQL, then full-text search can naturally live together with your master data:</p>
 <ul>
 <li>When you insert a document, you write the search field at the same time</li>
 <li>When you update title, state, or permissions, it takes effect in the same transaction</li>
-<li>When you delete a record, it doesn't leave behind an &ldquo;index ghost in a parallel universe&rdquo;</li>
+<li>When you delete a record, it doesn&rsquo;t leave behind an &ldquo;index ghost in a parallel universe&rdquo;</li>
 </ul>
 <p>For Agent projects, this &ldquo;one system rules them all&rdquo; feeling is incredibly important.</p>
 <h3 id="2-filtering-sorting-and-joins-can-all-happen-in-a-single-execution-plan">2. Filtering, sorting, and joins can all happen in a single execution plan</h3>
@@ -310,8 +310,8 @@
 <li><code>WHERE source_type IN (...)</code></li>
 <li><code>ORDER BY rank</code></li>
 </ul>
-<p>PostgreSQL's value is clear here: <strong>these aren't &ldquo;post-search processing steps&rdquo; — they're native SQL capabilities.</strong></p>
-<p>If you've already accepted that &ldquo;PostgreSQL is the data foundation for Agents&rdquo;, then keeping full-text search in PostgreSQL significantly reduces overall complexity.</p>
+<p>PostgreSQL&rsquo;s value is clear here: <strong>these aren&rsquo;t &ldquo;post-search processing steps&rdquo; — they&rsquo;re native SQL capabilities.</strong></p>
+<p>If you&rsquo;ve already accepted that &ldquo;PostgreSQL is the data foundation for Agents&rdquo;, then keeping full-text search in PostgreSQL significantly reduces overall complexity.</p>
 <h3 id="3-built-in-fts-is-already-much-more-capable-than-most-people-think">3. Built-in FTS is already much more capable than most people think</h3>
 <p>Many people still have an outdated impression of PostgreSQL FTS:</p>
 <ul>
@@ -328,14 +328,14 @@
 <li>highlighting</li>
 <li>dictionaries and stemmers</li>
 </ul>
-<p>For the scenario of &ldquo;finding documents containing keywords, phrases, and semantically similar word forms with business filtering&rdquo;, it's not weak at all.</p>
+<p>For the scenario of &ldquo;finding documents containing keywords, phrases, and semantically similar word forms with business filtering&rdquo;, it&rsquo;s not weak at all.</p>
 <h3 id="4-when-you-need-more-modern-ranking-you-can-still-upgrade-without-leaving-postgresql">4. When you need more modern ranking, you can still upgrade without leaving PostgreSQL</h3>
 <p>This is what I value most.</p>
 <p>Many teams think:</p>
 <blockquote>
 <p>Start with PostgreSQL for basic search, when you want BM25 or better ranking, switch to ES.</p>
 </blockquote>
-<p>But nowadays you don't have to make that jump.</p>
+<p>But nowadays you don&rsquo;t have to make that jump.</p>
 <p>You can follow this upgrade path completely within the PostgreSQL ecosystem:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -385,15 +385,15 @@
 <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">fts</span> <span class="n">tsvector</span><span class="p">;</span>
 
 <span class="k">UPDATE</span> <span class="n">documents</span>
-<span class="k">SET</span> <span class="n">fts</span> <span class="o">=</span> <span class="n">to_tsvector</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">|</span><span class="o">|</span> <span class="s1">&#39;</span><span class="s1"> </span><span class="s1">&#39;</span> <span class="o">|</span><span class="o">|</span> <span class="n">body</span><span class="p">)</span><span class="p">;</span>
+<span class="k">SET</span> <span class="n">fts</span> <span class="o">=</span> <span class="n">to_tsvector</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">||</span> <span class="s1">&#39; &#39;</span> <span class="o">||</span> <span class="n">body</span><span class="p">);</span>
 
 <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">documents_fts_gin</span>
-<span class="k">ON</span> <span class="n">documents</span> <span class="k">USING</span> <span class="n">gin</span> <span class="p">(</span><span class="n">fts</span><span class="p">)</span><span class="p">;</span>
+<span class="k">ON</span> <span class="n">documents</span> <span class="k">USING</span> <span class="n">gin</span> <span class="p">(</span><span class="n">fts</span><span class="p">);</span>
 
 <span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span>
 <span class="k">FROM</span> <span class="n">documents</span>
-<span class="k">WHERE</span> <span class="n">fts</span> <span class="o">@</span><span class="o">@</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s1">postgresql search</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ts_rank</span><span class="p">(</span><span class="n">fts</span><span class="p">,</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;</span><span class="s1">english</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s1">postgresql search</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span> <span class="k">DESC</span>
+<span class="k">WHERE</span> <span class="n">fts</span> <span class="o">@@</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="s1">&#39;postgresql search&#39;</span><span class="p">)</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ts_rank</span><span class="p">(</span><span class="n">fts</span><span class="p">,</span> <span class="n">websearch_to_tsquery</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="s1">&#39;postgresql search&#39;</span><span class="p">))</span> <span class="k">DESC</span>
 <span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
 </code></pre></td></tr></table>
 </div>
@@ -414,7 +414,7 @@
 <li>Want token ids as sparse retrieval input</li>
 </ul>
 <p>This is where <a href="https://github.com/tensorchord/pg_tokenizer.rs"><code>pg_tokenizer.rs</code></a> comes in.</p>
-<p>It doesn't just &ldquo;add a tokenizer to Postgres&rdquo; — it breaks the text processing pipeline into configurable modules:</p>
+<p>It doesn&rsquo;t just &ldquo;add a tokenizer to Postgres&rdquo; — it breaks the text processing pipeline into configurable modules:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -440,7 +440,7 @@
 <li>token filter: <code>stopwords</code>, <code>stemmer</code>, <code>synonym</code>, <code>pg_dict</code>, <code>ngram</code></li>
 <li>model: builtin / Hugging Face / Lindera / custom model</li>
 </ul>
-<p>Its value isn't &ldquo;replacing PostgreSQL FTS&rdquo; — it's <strong>making text cleaning, tokenization, and vocabulary mapping a configurable infrastructure inside the database.</strong></p>
+<p>Its value isn&rsquo;t &ldquo;replacing PostgreSQL FTS&rdquo; — it&rsquo;s <strong>making text cleaning, tokenization, and vocabulary mapping a configurable infrastructure inside the database.</strong></p>
 <h3 id="layer-3-vectorchord-bm25">Layer 3: <code>VectorChord-BM25</code></h3>
 <p>When you want more than just &ldquo;matching&rdquo;, you can upgrade to:</p>
 <ul>
@@ -615,7 +615,7 @@ Top-k rows
 </div>
 </div><h2 id="why-pg_tokenizerrs-matters">Why <code>pg_tokenizer.rs</code> Matters</h2>
 <p>Many people when they see BM25 immediately focus on the inverted index and ranking function.</p>
-<p>But in my opinion, for Agent projects, what really determines the lower bound of retrieval quality isn't BM25 itself — it's the <strong>tokenization pipeline</strong>.</p>
+<p>But in my opinion, for Agent projects, what really determines the lower bound of retrieval quality isn&rsquo;t BM25 itself — it&rsquo;s the <strong>tokenization pipeline</strong>.</p>
 <p>The reason is simple:</p>
 <ul>
 <li>How you tokenize defines what the term space looks like</li>
@@ -643,7 +643,7 @@ Top-k rows
 <li>User-defined terminology</li>
 <li>Internal company abbreviations</li>
 </ul>
-<p>You can't always count on a generic tokenizer to get it right.</p>
+<p>You can&rsquo;t always count on a generic tokenizer to get it right.</p>
 <p><strong>3. Preloaded models</strong></p>
 <p>Models can be preloaded on PostgreSQL startup to avoid stalling the first query.</p>
 <p>This costs extra memory, but for interactive Agents, this tradeoff is completely reasonable.</p>
@@ -654,7 +654,7 @@ Top-k rows
 </blockquote>
 <p>It has three core layers of capability:</p>
 <h3 id="1-bm25vector">1. <code>bm25vector</code></h3>
-<p>It's not plain text — it's a sparse bag-of-words representation:</p>
+<p>It&rsquo;s not plain text — it&rsquo;s a sparse bag-of-words representation:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -672,17 +672,17 @@ Top-k rows
 <li>Document frequency <code>df</code> for each term</li>
 <li>Posting list for each term</li>
 </ul>
-<p>In other words, it doesn't &ldquo;compute relevance on the fly at query time&rdquo; — it actually puts BM25 into the index structure.</p>
+<p>In other words, it doesn&rsquo;t &ldquo;compute relevance on the fly at query time&rdquo; — it actually puts BM25 into the index structure.</p>
 <h3 id="3-weakand--block-wand">3. WeakAND / Block-WAND</h3>
 <p>This is what really makes top-k retrieval fast.</p>
-<p>BM25 determines &ldquo;how to score&rdquo;, WeakAND determines &ldquo;which candidates don't even need to be scored&rdquo;.</p>
+<p>BM25 determines &ldquo;how to score&rdquo;, WeakAND determines &ldquo;which candidates don&rsquo;t even need to be scored&rdquo;.</p>
 <p>The idea can be compressed into one sentence:</p>
 <blockquote>
-<p>If the theoretical maximum score of a posting block can't even pass the current top-k threshold, skip the entire block.</p>
+<p>If the theoretical maximum score of a posting block can&rsquo;t even pass the current top-k threshold, skip the entire block.</p>
 </blockquote>
-<p>So the core performance gain isn't &ldquo;computing faster&rdquo; — it's &ldquo;computing less&rdquo;.</p>
+<p>So the core performance gain isn&rsquo;t &ldquo;computing faster&rdquo; — it&rsquo;s &ldquo;computing less&rdquo;.</p>
 <h2 id="why-this-is-a-better-fit-for-agent-projects-than-es">Why This Is A Better Fit For Agent Projects Than ES</h2>
-<p>Putting it all together, you'll find this path fits the real needs of Agent projects perfectly.</p>
+<p>Putting it all together, you&rsquo;ll find this path fits the real needs of Agent projects perfectly.</p>
 <table>
 <thead>
 <tr>
@@ -737,10 +737,10 @@ Top-k rows
 <li>Incremental upgrade</li>
 </ul>
 <p>And the PostgreSQL path delivers exactly on these four points.</p>
-<h2 id="version-evolution-why-im-bullish-on-this-path">Version Evolution: Why I'm Bullish On This Path</h2>
-<p>This path isn't static — it's still evolving rapidly.</p>
+<h2 id="version-evolution-why-im-bullish-on-this-path">Version Evolution: Why I&rsquo;m Bullish On This Path</h2>
+<p>This path isn&rsquo;t static — it&rsquo;s still evolving rapidly.</p>
 <h3 id="pg_tokenizerrs-filling-out-the-text-processing-layer"><code>pg_tokenizer.rs</code>: Filling out the text processing layer</h3>
-<p>This is an important complement to PostgreSQL's built-in FTS. Many times, the problem isn't that Postgres can't search — it's that it lacks a more flexible tokenizer/analyzer体系. <code>pg_tokenizer.rs</code> fills exactly this gap.</p>
+<p>This is an important complement to PostgreSQL&rsquo;s built-in FTS. Many times, the problem isn&rsquo;t that Postgres can&rsquo;t search — it&rsquo;s that it lacks a more flexible tokenizer/analyzer体系. <code>pg_tokenizer.rs</code> fills exactly this gap.</p>
 <h3 id="vectorchord-bm25-current-stable-a-complete-functional-generation"><code>VectorChord-BM25</code> current stable: A complete functional generation</h3>
 <p>The current mainline version has these characteristics:</p>
 <ul>
@@ -748,9 +748,9 @@ Top-k rows
 <li>Supports build / insert / scan / vacuum</li>
 <li>Has its own page / segment / posting / growing segment structure</li>
 </ul>
-<p>In other words, it's a complete system that &ldquo;runs, supports incremental writes, and can be maintained&rdquo;.</p>
+<p>In other words, it&rsquo;s a complete system that &ldquo;runs, supports incremental writes, and can be maintained&rdquo;.</p>
 <h3 id="pr-100-rewritehttpsgithubcomtensorchordvectorchord-bm25pull100-second-generation-refactoring-for-long-term-maintenance"><a href="https://github.com/tensorchord/VectorChord-bm25/pull/100">PR #100 rewrite</a>: Second-generation refactoring for long-term maintenance</h3>
-<p>But we're also rewriting the second-generation kernel.</p>
+<p>But we&rsquo;re also rewriting the second-generation kernel.</p>
 <p>The direction of this rewrite is clear:</p>
 <ul>
 <li>Extract the BM25 core into an independent library</li>
@@ -760,8 +760,8 @@ Top-k rows
 <li>Introduce configurable <code>k1/b</code> parameters</li>
 <li>Move some configurations from old GUC to the new reloption / GUC system</li>
 </ul>
-<p>What's most interesting about this version isn't that &ldquo;it's a rewrite&rdquo; — it's that it clarifies our optimization direction for the next release.</p>
-<p>We'll focus on these areas in the next release:</p>
+<p>What&rsquo;s most interesting about this version isn&rsquo;t that &ldquo;it&rsquo;s a rewrite&rdquo; — it&rsquo;s that it clarifies our optimization direction for the next release.</p>
+<p>We&rsquo;ll focus on these areas in the next release:</p>
 <ul>
 <li><strong>Make storage format clearer and more stable</strong>: Moving from an engineering-internal page/segment organization to tuple-based, explicitly versioned disk format. This gives clearer paths for index upgrades, compatibility, and migration going forward.</li>
 <li><strong>Continue standardizing the build/search main path</strong>: Extract the BM25 build and search core and decouple it from the PostgreSQL adaptation layer. This reduces surface area for changes when we optimize retrieval logic, tune parameters, or extend scanning strategies.</li>
@@ -769,23 +769,23 @@ Top-k rows
 <li><strong>Unify subsequent online maintenance capabilities</strong>: Including incremental writes, delete maintenance, and VACUUM-related paths will all eventually live on the same relation/page abstraction instead of continuing to use the heavier custom storage layer from the original version.</li>
 <li><strong>Lay the groundwork for long-term performance optimizations</strong>: Clearer block summaries, token upper bounds, and scan path abstractions essentially prepare the interface for future optimizations to top-k retrieval, prefiltering, and hybrid search.</li>
 </ul>
-<p>In other words, the value of this rewrite isn't just &ldquo;cleaner code&rdquo; — <strong>we're taking BM25 from a working implementation to an easier-to-evolve, easier-to-migrate, production-ready PostgreSQL search kernel</strong> for the long term.</p>
+<p>In other words, the value of this rewrite isn&rsquo;t just &ldquo;cleaner code&rdquo; — <strong>we&rsquo;re taking BM25 from a working implementation to an easier-to-evolve, easier-to-migrate, production-ready PostgreSQL search kernel</strong> for the long term.</p>
 <p>So my recommendation on versions is pragmatic:</p>
 <h3 id="production-selection">Production Selection</h3>
-<p><strong>If you're deploying to production now:</strong></p>
+<p><strong>If you&rsquo;re deploying to production now:</strong></p>
 <ul>
 <li>Prioritize the current stable release / mainline version</li>
 <li>Especially if you need online writes, deletes, and VACUUM</li>
 </ul>
-<p><strong>If you're watching for future migration:</strong></p>
+<p><strong>If you&rsquo;re watching for future migration:</strong></p>
 <ul>
 <li>The next version will require a <code>REINDEX</code></li>
 <li>Some GUC and index parameters will be normalized</li>
 <li>After disk format versioning, migration and upgrade paths will be clearer</li>
 </ul>
-<p>In other words, this path isn't &ldquo;perfect today&rdquo; — it's &ldquo;good enough to use today, and pointing in the right direction for the future&rdquo;.</p>
+<p>In other words, this path isn&rsquo;t &ldquo;perfect today&rdquo; — it&rsquo;s &ldquo;good enough to use today, and pointing in the right direction for the future&rdquo;.</p>
 <h2 id="practical-recommendations">Practical Recommendations</h2>
-<p>If you're working on an Agent project, here's how I'd choose:</p>
+<p>If you&rsquo;re working on an Agent project, here&rsquo;s how I&rsquo;d choose:</p>
 <h3 id="small-scale-simple-requirements">Small scale, simple requirements</h3>
 <ul>
 <li>Start directly with PostgreSQL built-in FTS</li>
@@ -807,21 +807,21 @@ Top-k rows
 <li>Keyword search with VectorChord-BM25</li>
 <li>Everything stays inside PostgreSQL</li>
 </ul>
-<p>The biggest advantage of this path is that you don't need to split your system into pieces from day one.</p>
+<p>The biggest advantage of this path is that you don&rsquo;t need to split your system into pieces from day one.</p>
 <p>You can start from the simplest native SQL capability and upgrade layer by layer as your requirements grow.</p>
 <h2 id="thoughts">Thoughts</h2>
-<p><strong>Full-text search in an Agent project isn't fundamentally about &ldquo;building a search engine&rdquo; — it's about &ldquo;giving Agent a consistent, controllable, and extensible retrieval foundation.&quot;</strong></p>
-<p>This goal doesn't completely overlap with what Elasticsearch is best at.</p>
+<p><strong>Full-text search in an Agent project isn&rsquo;t fundamentally about &ldquo;building a search engine&rdquo; — it&rsquo;s about &ldquo;giving Agent a consistent, controllable, and extensible retrieval foundation.&quot;</strong></p>
+<p>This goal doesn&rsquo;t completely overlap with what Elasticsearch is best at.</p>
 <p>Elasticsearch is great, but it excels at &ldquo;being the search system itself&rdquo;.</p>
 <p>Where PostgreSQL is stronger:</p>
 <ul>
-<li>It's already your master data foundation</li>
-<li>It's already your transaction boundary</li>
-<li>It's already the center of your permissions and business logic</li>
+<li>It&rsquo;s already your master data foundation</li>
+<li>It&rsquo;s already your transaction boundary</li>
+<li>It&rsquo;s already the center of your permissions and business logic</li>
 </ul>
-<p>When full-text search is just one part of an Agent's data foundation, keeping it inside PostgreSQL is often the more advanced engineering decision.</p>
+<p>When full-text search is just one part of an Agent&rsquo;s data foundation, keeping it inside PostgreSQL is often the more advanced engineering decision.</p>
 <h2 id="next-step">Next Step</h2>
-<p>I'll continue writing this series:</p>
+<p>I&rsquo;ll continue writing this series:</p>
 <ul>
 <li>ACID Transactions: Why Agent state management离不开 transactions</li>
 <li>JSONB: Why I prefer JSONB over introducing a separate MongoDB</li>
@@ -899,9 +899,9 @@ Top-k rows
       </a>
       
       
-      <a href="https://blog.xieydd.top/en/verl-rl-pitfalls/" class="next-post">
+      <a href="https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/" class="next-post">
         <span class="nav-label">Next Post</span>
-        <span class="nav-title">One-Minute RL 101: Concepts and Framework Overview for Agent RL</span>
+        <span class="nav-title">From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture</span>
       </a>
       
     </div>

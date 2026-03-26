@@ -44,7 +44,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-16T14:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-26T13:38:56&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-26T14:42:21&#43;08:00">
   
   <meta property="article:tag" content="OpenClaw">
   
@@ -96,7 +96,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T13:38:56+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"OpenClaw 记忆全解析：为什么 AI 总是忘事？从 lossless-claw 无损压缩、qmd 原生混合搜索、Nowledge Mem 跨会话记忆、LanceDB 嵌入式向量搜索到 mem9.ai 云存储，一套完整的 Memory 方案让 AI 过目不忘。","headline":"OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/openclaw-memory-choice-guide/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-26T14:42:21+08:00","datePublished":"2026-03-16T14:00:00+08:00","description":"OpenClaw 记忆全解析：为什么 AI 总是忘事？从 lossless-claw 无损压缩、qmd 原生混合搜索、Nowledge Mem 跨会话记忆、LanceDB 嵌入式向量搜索到 mem9.ai 云存储，一套完整的 Memory 方案让 AI 过目不忘。","headline":"OpenClaw 为什么总失忆？一套从单会话到永久记忆的 Memory 方案","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/openclaw-memory-choice-guide/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/openclaw-memory-choice-guide/"}
   </script>
   
 
@@ -435,19 +435,19 @@ bun install -g https://github.com/tobi/qmd
           <span class="nt">&#34;update&#34;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&#34;interval&#34;</span><span class="p">:</span> <span class="s2">&#34;5m&#34;</span><span class="p">,</span>
             <span class="nt">&#34;debounceMs&#34;</span><span class="p">:</span> <span class="mi">15000</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;limits&#34;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&#34;maxResults&#34;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
             <span class="nt">&#34;timeoutMs&#34;</span><span class="p">:</span> <span class="mi">4000</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;scope&#34;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="s2">&#34;deny&#34;</span><span class="p">,</span>
             <span class="nt">&#34;rules&#34;</span><span class="p">:</span> <span class="p">[</span>
               <span class="p">{</span> <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="s2">&#34;allow&#34;</span><span class="p">,</span> <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;chatType&#34;</span><span class="p">:</span> <span class="s2">&#34;direct&#34;</span> <span class="p">}</span> <span class="p">}</span>
             <span class="p">]</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;paths&#34;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span> <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;notes&#34;</span><span class="p">,</span> <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;~/notes&#34;</span><span class="p">,</span> <span class="nt">&#34;pattern&#34;</span><span class="p">:</span> <span class="s2">&#34;**/*.md&#34;</span> <span class="p">}</span><span class="p">,</span>
+            <span class="p">{</span> <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;notes&#34;</span><span class="p">,</span> <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;~/notes&#34;</span><span class="p">,</span> <span class="nt">&#34;pattern&#34;</span><span class="p">:</span> <span class="s2">&#34;**/*.md&#34;</span> <span class="p">},</span>
             <span class="p">{</span> <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;docs&#34;</span><span class="p">,</span> <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;~/project/docs&#34;</span><span class="p">,</span> <span class="nt">&#34;pattern&#34;</span><span class="p">:</span> <span class="s2">&#34;**/*.md&#34;</span> <span class="p">}</span>
           <span class="p">]</span>
         <span class="p">}</span>
@@ -537,8 +537,8 @@ openclaw status
 <td class="lntd">
 <pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 使用与 OpenClaw 相同的 XDG 配置</span>
 <span class="nv">STATE_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENCLAW_STATE_DIR</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.openclaw</span><span class="si">}</span><span class="s2">&#34;</span>
-<span class="nb">export</span> <span class="nv">XDG_CONFIG_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-config</span><span class="s2">&#34;</span>
-<span class="nb">export</span> <span class="nv">XDG_CACHE_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-cache</span><span class="s2">&#34;</span>
+<span class="nb">export</span> <span class="nv">XDG_CONFIG_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-config&#34;</span>
+<span class="nb">export</span> <span class="nv">XDG_CACHE_HOME</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$STATE_DIR</span><span class="s2">/agents/main/qmd/xdg-cache&#34;</span>
 
 <span class="c1"># 强制刷新索引 + 生成嵌入</span>
 qmd update
@@ -639,7 +639,7 @@ qmd embed --force
   <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;openclaw-nowledge-mem&#34;</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;openclaw-nowledge-mem&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -710,7 +710,7 @@ openclaw nowledge-mem status
 </div>
 </div><h3 id="适合你如果-2">适合你，如果：</h3>
 <ul>
-<li>✅ 你最痛的问题是&quot;AI 下次会话就忘了我做过什么决定&rdquo;</li>
+<li>✅ 你最痛的问题是&quot;AI 下次会话就忘了我做过什么决定&quot;</li>
 <li>✅ 希望 AI 能记住你的偏好、决策、事实，新会话自动带上背景</li>
 <li>✅ 偏爱本地优先，不想强制云端同步</li>
 <li>✅ 需要结构化知识，不是简单存文本块</li>
@@ -921,7 +921,7 @@ npm install
   <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&#34;load&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;paths&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;plugins/memory-lancedb-pro&#34;</span><span class="p">]</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory-lancedb-pro&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -934,7 +934,7 @@ npm install
             <span class="nt">&#34;taskQuery&#34;</span><span class="p">:</span> <span class="s2">&#34;retrieval.query&#34;</span><span class="p">,</span>
             <span class="nt">&#34;taskPassage&#34;</span><span class="p">:</span> <span class="s2">&#34;retrieval.passage&#34;</span><span class="p">,</span>
             <span class="nt">&#34;normalized&#34;</span><span class="p">:</span> <span class="kc">true</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;dbPath&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/memory/lancedb-pro&#34;</span><span class="p">,</span>
           <span class="nt">&#34;autoCapture&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
           <span class="nt">&#34;autoRecall&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
@@ -953,7 +953,7 @@ npm install
             <span class="nt">&#34;filterNoise&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nt">&#34;lengthNormAnchor&#34;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
             <span class="nt">&#34;hardMinScore&#34;</span><span class="p">:</span> <span class="mf">0.35</span>
-          <span class="p">}</span><span class="p">,</span>
+          <span class="p">},</span>
           <span class="nt">&#34;sessionStrategy&#34;</span><span class="p">:</span> <span class="s2">&#34;systemSessionMemory&#34;</span><span class="p">,</span>
           <span class="nt">&#34;scopes&#34;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="s2">&#34;global&#34;</span><span class="p">,</span>
@@ -963,7 +963,7 @@ npm install
           <span class="p">}</span>
         <span class="p">}</span>
       <span class="p">}</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-lancedb-pro&#34;</span>
     <span class="p">}</span>
@@ -1156,7 +1156,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
     <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
     <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -1201,7 +1201,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
     <span class="nt">&#34;api_key&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;YOUR_API_KEY&gt;&#34;</span><span class="p">,</span>
     <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;doubao-seed-2-0-pro-260215&#34;</span><span class="p">,</span>
     <span class="nt">&#34;api_base&#34;</span><span class="p">:</span> <span class="s2">&#34;https://ark.cn-beijing.volces.com/api/v3&#34;</span>
-  <span class="p">}</span><span class="p">,</span>
+  <span class="p">},</span>
   <span class="nt">&#34;embedding&#34;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&#34;dense&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;volcengine&#34;</span><span class="p">,</span>
@@ -1255,7 +1255,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
     <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
     <span class="nt">&#34;slots&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory&#34;</span><span class="p">:</span> <span class="s2">&#34;memory-openviking&#34;</span>
-    <span class="p">}</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&#34;memory-openviking&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -1350,9 +1350,9 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 </ul>
 <p><strong>配置检查清单</strong>：</p>
 <ul>
-<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
-<li><input disabled="" type="checkbox"><code>agents.defaults.memory.backend = &quot;qmd&quot;</code> 或 <code>&quot;lancedb&quot;</code></li>
-<li><input disabled="" type="checkbox">根据后端配置对应参数（qmd.paths 或 lancedb.uri）</li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"> <code>agents.defaults.memory.backend = &quot;qmd&quot;</code> 或 <code>&quot;lancedb&quot;</code></li>
+<li><input disabled="" type="checkbox"> 根据后端配置对应参数（qmd.paths 或 lancedb.uri）</li>
 </ul>
 <h3 id="需要跨会话记忆的用户">需要跨会话记忆的用户：</h3>
 <p>根据你的基础设施偏好选择：</p>
@@ -1371,9 +1371,9 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 </div>
 </div><p><strong>配置检查清单</strong>：</p>
 <ul>
-<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
-<li><input disabled="" type="checkbox"><code>plugins.slots.memory = memory-openviking</code></li>
-<li><input disabled="" type="checkbox"><code>~/.openviking/ov.conf</code> 配置正确的 API Key</li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.memory = memory-openviking</code></li>
+<li><input disabled="" type="checkbox"> <code>~/.openviking/ov.conf</code> 配置正确的 API Key</li>
 </ul>
 <p><strong>方案 B：Nowledge Mem（本地优先结构化）</strong></p>
 <div class="highlight"><div class="chroma">
@@ -1392,9 +1392,9 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
 </div>
 </div><p><strong>配置检查清单</strong>：</p>
 <ul>
-<li><input disabled="" type="checkbox"><code>plugins.slots.contextEngine = lossless-claw</code></li>
-<li><input disabled="" type="checkbox"><code>plugins.slots.memory = openclaw-nowledge-mem</code></li>
-<li><input disabled="" type="checkbox"><code>agents.defaults.memory.backend = &quot;qmd&quot;</code> 或 <code>&quot;lancedb&quot;</code></li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.contextEngine = lossless-claw</code></li>
+<li><input disabled="" type="checkbox"> <code>plugins.slots.memory = openclaw-nowledge-mem</code></li>
+<li><input disabled="" type="checkbox"> <code>agents.defaults.memory.backend = &quot;qmd&quot;</code> 或 <code>&quot;lancedb&quot;</code></li>
 </ul>
 <h3 id="多设备流动用户">多设备流动用户：</h3>
 <div class="highlight"><div class="chroma">
@@ -1477,7 +1477,7 @@ cp <span class="nv">$OPENViking_REPO</span>/examples/openclaw-memory-plugin/* ~/
         <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;voyage&#34;</span><span class="p">,</span>
         <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;voyage-3-lite&#34;</span><span class="p">,</span>
         <span class="nt">&#34;dimensions&#34;</span><span class="p">:</span> <span class="mi">512</span>
-      <span class="p">}</span><span class="p">,</span>
+      <span class="p">},</span>
       <span class="nt">&#34;hybrid&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
         <span class="nt">&#34;vectorWeight&#34;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
