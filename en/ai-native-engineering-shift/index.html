@@ -13,6 +13,11 @@
   
   
   
+    
+    
+      
+    
+  
   
   
     
@@ -32,20 +37,20 @@
   <meta property="og:url" content="https://blog.xieydd.top/en/ai-native-engineering-shift/">
   <meta property="og:site_name" content="Xieydd&#39;s Blog">
   <meta property="og:locale" content="en_US">
-  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  <meta property="og:image" content="https://blog.xieydd.top/cover.png">
   
   
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AI-Native Engineering Is Moving from Models to Execution Systems | Xieydd&#39;s Blog">
   <meta name="twitter:description" content="As code generation gets cheaper, the real battleground in AI-native engineering is shifting toward durable execution, externalized state, sandbox boundaries, recovery semantics, and verification.">
-  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  <meta name="twitter:image" content="https://blog.xieydd.top/cover.png">
   
   <meta name="twitter:creator" content="@xieydd_">
   
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-27T21:46:21&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-28T09:16:09&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-28T19:27:39&#43;08:00">
   
   <meta property="article:tag" content="AI Native Engineering">
   
@@ -90,7 +95,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-28T09:16:09+08:00","datePublished":"2026-03-27T21:46:21+08:00","description":"As code generation gets cheaper, the real battleground in AI-native engineering is shifting toward durable execution, externalized state, sandbox boundaries, recovery semantics, and verification.","headline":"AI-Native Engineering Is Moving from Models to Execution Systems","image":"https://blog.xieydd.top/IMG_0595.JPG","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/ai-native-engineering-shift/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/ai-native-engineering-shift/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-28T19:27:39+08:00","datePublished":"2026-03-27T21:46:21+08:00","description":"As code generation gets cheaper, the real battleground in AI-native engineering is shifting toward durable execution, externalized state, sandbox boundaries, recovery semantics, and verification.","headline":"AI-Native Engineering Is Moving from Models to Execution Systems","image":"https://blog.xieydd.top/cover.png","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/ai-native-engineering-shift/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/ai-native-engineering-shift/"}
   </script>
   
 
@@ -172,8 +177,6 @@
   </header>
 
   
-
-  
   <nav class="toc">
     <h2>Table of Contents</h2>
     <nav id="TableOfContents">
@@ -201,7 +204,9 @@
   
 
   <div class="post-content">
-    <p>Where does the real bottleneck move once code generation becomes cheap?</p>
+    <h1 id="ai-native-engineering-is-moving-from-models-to-execution-systems">AI-Native Engineering Is Moving from Models to Execution Systems</h1>
+<p><img src="cover.png" alt="AI-Native Engineering Is Moving from Models to Execution Systems"></p>
+<p>Where does the real bottleneck move once code generation becomes cheap?</p>
 <h2 id="1-tldr-what-this-article-is-actually-arguing">1. TL;DR: What This Article Is Actually Arguing</h2>
 <p>Over the last two years, the most visible changes in AI engineering came from the models: they write better code, call tools more reliably, and increasingly feel like coworkers who can get real work done. But zoom out a little, and the thing being rewritten is often not whether the model can do the task. It is <strong>how the system absorbs a long-running execution process that touches the outside world, fails, branches, and creates side effects</strong>. What OpenAI showed in <em>Harness engineering</em> was not simply that Codex produced one million lines of code. It was that once the engineer&rsquo;s job shifts from &ldquo;writing code by hand&rdquo; to &ldquo;designing environments, clarifying intent, and building feedback loops,&rdquo; the engineering system itself has to be reorganized.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
 <p>The core claim of this article is only one sentence:</p>

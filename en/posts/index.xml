@@ -65,7 +65,7 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
       <pubDate>Fri, 27 Mar 2026 21:46:21 +0800</pubDate>
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/ai-native-engineering-shift/</guid>
-      <description>Where does the real bottleneck move once code generation becomes cheap?
+      <description>AI-Native Engineering Is Moving from Models to Execution Systems Where does the real bottleneck move once code generation becomes cheap?
 1. TL;DR: What This Article Is Actually Arguing Over the last two years, the most visible changes in AI engineering came from the models: they write better code, call tools more reliably, and increasingly feel like coworkers who can get real work done. But zoom out a little, and the thing being rewritten is often not whether the model can do the task.</description>
     </item>
     

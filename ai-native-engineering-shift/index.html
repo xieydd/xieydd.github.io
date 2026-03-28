@@ -13,6 +13,11 @@
   
   
   
+    
+    
+      
+    
+  
   
   
     
@@ -32,20 +37,20 @@
   <meta property="og:url" content="https://blog.xieydd.top/ai-native-engineering-shift/">
   <meta property="og:site_name" content="Xieydd&#39;s Blog">
   <meta property="og:locale" content="zh_CN">
-  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  <meta property="og:image" content="https://blog.xieydd.top/cover.png">
   
   
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AI 原生工程栈，正在从“模型中心”转向“执行系统中心” | Xieydd&#39;s Blog">
   <meta name="twitter:description" content="当代码生成变便宜后，AI 原生工程的主战场正在从模型能力转向 durable execution、状态持久化、sandbox 边界、恢复语义与验证系统。">
-  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  <meta name="twitter:image" content="https://blog.xieydd.top/cover.png">
   
   <meta name="twitter:creator" content="@xieydd_">
   
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-27T21:46:21&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-28T09:16:09&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-28T19:27:39&#43;08:00">
   
   <meta property="article:tag" content="AI Native Engineering">
   
@@ -90,7 +95,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-28T09:16:09+08:00","datePublished":"2026-03-27T21:46:21+08:00","description":"当代码生成变便宜后，AI 原生工程的主战场正在从模型能力转向 durable execution、状态持久化、sandbox 边界、恢复语义与验证系统。","headline":"AI 原生工程栈，正在从“模型中心”转向“执行系统中心”","image":"https://blog.xieydd.top/IMG_0595.JPG","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/ai-native-engineering-shift/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/ai-native-engineering-shift/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-28T19:27:39+08:00","datePublished":"2026-03-27T21:46:21+08:00","description":"当代码生成变便宜后，AI 原生工程的主战场正在从模型能力转向 durable execution、状态持久化、sandbox 边界、恢复语义与验证系统。","headline":"AI 原生工程栈，正在从“模型中心”转向“执行系统中心”","image":"https://blog.xieydd.top/cover.png","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/ai-native-engineering-shift/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/ai-native-engineering-shift/"}
   </script>
   
 
@@ -172,8 +177,6 @@
   </header>
 
   
-
-  
   <nav class="toc">
     <h2>目录</h2>
     <nav id="TableOfContents">
@@ -201,7 +204,9 @@
   
 
   <div class="post-content">
-    <p>当代码生成变便宜后，新的主战场到底在哪里？</p>
+    <h1 id="ai-原生工程栈正在从模型中心转向执行系统中心">AI 原生工程栈，正在从“模型中心”转向“执行系统中心”</h1>
+<p><img src="cover.png" alt="AI 原生工程栈，正在从“模型中心”转向“执行系统中心”"></p>
+<p>当代码生成变便宜后，新的主战场到底在哪里？</p>
 <h2 id="1-tldr这篇文章到底想说什么">1. TL;DR：这篇文章到底想说什么</h2>
 <p>过去两年，AI 工程最显眼的变化来自模型：更会写代码、更会调工具、更像能干活的同事。可如果把视角再往前推一点，会看到真正被重写的往往不是“模型能不能做”，而是<strong>系统如何承接一个会长时间运行、会触碰外部世界、会失败、会产生副作用的执行过程</strong>。OpenAI 在 <em>Harness engineering</em> 里展示的，不只是 Codex 写出了一百万行代码，而是当工程师的主要工作从“亲手编码”转向“设计环境、明确意图、构建反馈回路”时，整个工程系统会被迫重组。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
 <p>这篇文章的核心判断只有一句：</p>
