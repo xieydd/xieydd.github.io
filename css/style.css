@@ -332,6 +332,18 @@ ul {
   gap: var(--spacing-sm);
 }
 
+.post-cover {
+  margin: 0 0 var(--spacing-xl);
+}
+
+.post-cover-image {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
+}
+
 .tag {
   color: var(--color-text-light);
   font-size: 0.8125rem;

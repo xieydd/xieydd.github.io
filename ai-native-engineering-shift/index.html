@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 原生工程栈，正在从“模型中心”转向“执行系统中心” | Xieydd&#39;s Blog</title>
+  <meta name="description" content="当代码生成变便宜后，AI 原生工程的主战场正在从模型能力转向 durable execution、状态持久化、sandbox 边界、恢复语义与验证系统。">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="AI 原生工程栈，正在从“模型中心”转向“执行系统中心” | Xieydd&#39;s Blog">
+  <meta property="og:description" content="当代码生成变便宜后，AI 原生工程的主战场正在从模型能力转向 durable execution、状态持久化、sandbox 边界、恢复语义与验证系统。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/ai-native-engineering-shift/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI 原生工程栈，正在从“模型中心”转向“执行系统中心” | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="当代码生成变便宜后，AI 原生工程的主战场正在从模型能力转向 durable execution、状态持久化、sandbox 边界、恢复语义与验证系统。">
+  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-03-27T21:46:21&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-28T09:16:09&#43;08:00">
+  
+  <meta property="article:tag" content="AI Native Engineering">
+  
+  <meta property="article:tag" content="Agent Infra">
+  
+  <meta property="article:tag" content="Durable Execution">
+  
+  <meta property="article:tag" content="Sandbox">
+  
+  <meta property="article:tag" content="Observability">
+  
+  <meta property="article:tag" content="Workflow">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/ai-native-engineering-shift/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/ai-native-engineering-shift/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/ai-native-engineering-shift/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/ai-native-engineering-shift/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-28T09:16:09+08:00","datePublished":"2026-03-27T21:46:21+08:00","description":"当代码生成变便宜后，AI 原生工程的主战场正在从模型能力转向 durable execution、状态持久化、sandbox 边界、恢复语义与验证系统。","headline":"AI 原生工程栈，正在从“模型中心”转向“执行系统中心”","image":"https://blog.xieydd.top/IMG_0595.JPG","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/ai-native-engineering-shift/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/ai-native-engineering-shift/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/posts/">文章</a>
+        <a href="https://blog.xieydd.top/about/">关于</a>
+        
+        <div class="nav-icons">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/ai-native-engineering-shift/" class="lang-link">EN</a>
+          
+        
+      
+      
+      
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.zh-cn">AI 原生工程栈，正在从“模型中心”转向“执行系统中心”</h1>
+    <div class="post-meta">
+      <span>发布于 27 Mar, 2026</span>
+      <span>• 27 min read</span>
+    </div>
+  </header>
+
+  
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-tldr这篇文章到底想说什么">1. TL;DR：这篇文章到底想说什么</a></li>
+    <li><a href="#2-引子我们为什么会误判-agent-时代的基础设施">2. 引子：我们为什么会误判 Agent 时代的基础设施</a></li>
+    <li><a href="#3-什么是ai-原生工程从模型会不会生成到系统能不能执行">3. 什么是“AI 原生工程”：从“模型会不会生成”到“系统能不能执行”</a></li>
+    <li><a href="#4-从-openai-的-harness-engineering-说起工程团队到底在优化什么">4. 从 OpenAI 的 Harness Engineering 说起：工程团队到底在优化什么</a></li>
+    <li><a href="#5-为什么-durable-execution-会成为新的系统原语">5. 为什么 durable execution 会成为新的系统原语</a></li>
+    <li><a href="#6-agent-和-rl-为什么会把执行系统问题逼到台前">6. Agent 和 RL 为什么会把“执行系统问题”逼到台前</a></li>
+    <li><a href="#7-为什么现有-agent-infra-很难直接承接生产系统">7. 为什么现有 Agent Infra 很难直接承接生产系统</a></li>
+    <li><a href="#8-session恢复和任意实例都能接手的重要性">8. Session、恢复和“任意实例都能接手”的重要性</a></li>
+    <li><a href="#9-sandboxagent-时代真正该讨论的不只是隔离而是共享了什么能碰什么什么会跨运行保留">9. Sandbox：Agent 时代真正该讨论的，不只是“隔离”，而是“共享了什么、能碰什么、什么会跨运行保留”</a></li>
+    <li><a href="#10-运行时底座怎么选容器gvisormicrovmwasmunikernel">10. 运行时底座怎么选：容器、gVisor、microVM、Wasm、unikernel</a></li>
+    <li><a href="#11-为什么传统-k8s-沙箱方案会先撞上瓶颈">11. 为什么传统 K8s 沙箱方案会先撞上瓶颈</a></li>
+    <li><a href="#12-一个我认可的ai-原生工程栈分层">12. 一个我认可的“AI 原生工程栈”分层</a></li>
+    <li><a href="#13-为什么-2026-年最重要的工程问题已经不是代码生成">13. 为什么 2026 年最重要的工程问题，已经不是代码生成</a></li>
+    <li><a href="#14-评估一套-agent-infra我现在只问这-10-个问题">14. 评估一套 Agent Infra，我现在只问这 10 个问题</a></li>
+    <li><a href="#15-对研发团队的具体启发">15. 对研发团队的具体启发</a></li>
+    <li><a href="#16-结语从写代码到设计执行系统">16. 结语：从“写代码”到“设计执行系统”</a></li>
+    <li><a href="#17-参考阅读按主题分组">17. 参考阅读（按主题分组）</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>当代码生成变便宜后，新的主战场到底在哪里？</p>
+<h2 id="1-tldr这篇文章到底想说什么">1. TL;DR：这篇文章到底想说什么</h2>
+<p>过去两年，AI 工程最显眼的变化来自模型：更会写代码、更会调工具、更像能干活的同事。可如果把视角再往前推一点，会看到真正被重写的往往不是“模型能不能做”，而是<strong>系统如何承接一个会长时间运行、会触碰外部世界、会失败、会产生副作用的执行过程</strong>。OpenAI 在 <em>Harness engineering</em> 里展示的，不只是 Codex 写出了一百万行代码，而是当工程师的主要工作从“亲手编码”转向“设计环境、明确意图、构建反馈回路”时，整个工程系统会被迫重组。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>这篇文章的核心判断只有一句：</p>
+<blockquote>
+<p><strong>AI 原生工程栈，正在从“模型中心”转向“执行系统中心”。</strong></p>
+</blockquote>
+<p>更具体地说，过去工程系统主要优化“模型如何给出一个答案”；现在越来越多团队被迫优化“系统如何承接一个长程、带状态、会分支、会失败、会产生副作用的执行过程”。DBOS 和 Pydantic AI 对 durable execution 的实践、Microsoft Durable Agents 对会话恢复语义的强调、Luis Cardoso 对 sandbox 的边界/策略/生命周期三分法，都在说明同一件事：Agent 时代真正稀缺的，不再只是生成能力，而是<strong>状态、恢复、边界和验证</strong>。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> <a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>全文会沿着一条更完整的演化线展开：</p>
+<ol>
+<li>SFT 时代，工程关注点仍然偏“模型如何生成答案”。</li>
+<li>RLHF / RLVR / reasoning RL 先把 rollout、环境交互和执行系统问题暴露出来。<a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a></li>
+<li>Agent 再把这些问题从训练系统扩展到真实世界，于是 durable execution、effect log、capability boundary、recovery semantics 开始成为新的基础设施主战场。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></li>
+</ol>
+<p>如果把全文压缩成一句话，那就是：</p>
+<blockquote>
+<p><strong>当代码生成越来越便宜，软件工程的主战场就不再只是“谁写代码更快”，而会转向“谁能设计出一个让 Agent 持续、可靠、可恢复地执行的系统”。</strong></p>
+</blockquote>
+<h2 id="2-引子我们为什么会误判-agent-时代的基础设施">2. 引子：我们为什么会误判 Agent 时代的基础设施</h2>
+<p>我们很容易误判 Agent 时代的问题，因为模型的进步最显眼：长上下文、更强工具调用、更会写代码、更像“会干活”的人类同事。可模型进步并不自动等价于系统成熟。OpenAI 的 <em>Harness engineering</em> 给了一个极强的反例：他们从一个空 Git 仓库起步，五个月里做出了一个真实使用中的产品，仓库增长到约一百万行代码、约 1,500 个 PR，而且团队坚持“没有一行人工直接编写的代码”；真正被重写的，不只是代码本身，而是代码库组织、文档、测试、CI、可观测性和合并流程。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>这说明一个很容易被忽略的事实：<strong>当 Agent 真正开始参与交付，系统首先暴露出来的不是“模型会不会做”，而是“环境够不够清晰、状态够不够显式、验证够不够自动化”。</strong> OpenAI 文中明确说，早期进展比预期慢，并不是因为 Codex 不具备能力，而是因为环境规范不够明确；工程师的主要任务变成了协助智能体完成有用工作，方法不是“再努力提示一点”，而是追问：究竟还需要什么能力，以及怎样让这种能力对 Agent 来说既清晰可读又可强制执行。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>更深一层的问题在于，Agentic RL 和普通在线推理根本不是同一种基础设施对象。MiniMax 那篇讲 Agent Runtime 的文章给了一个很现实的视角：当训练进入 on-policy rollout，Agent 需要在真实、可交互的环境里做数以百万乃至千万计的探索、试错与交互时，沙箱就不再是附属工具，而会变成直接决定训练吞吐、稳定性和成本的基础设施底座。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>所以，我们误判 Agent 时代基础设施的根本原因，不只是高估了传统应用 Infra 的适配能力，也低估了“环境供给”本身会成为瓶颈。很多团队以为“LLM wrapper + 几个 tool call + 一套 harness”就足够支撑系统；但一旦场景变成大规模 Agentic RL、长链路 rollout、全场景交互环境和高频 checkpoint 回放，问题就会从工程边角料升级成底层资源调度、隔离、观测和镜像分发的系统问题。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h2 id="3-什么是ai-原生工程从模型会不会生成到系统能不能执行">3. 什么是“AI 原生工程”：从“模型会不会生成”到“系统能不能执行”</h2>
+<p>我对“AI 原生工程”的定义是：</p>
+<blockquote>
+<p><strong>AI 原生工程，不是给传统软件工程流程加一个 Copilot 或 Agent；而是从系统设计一开始，就把 Agent 视为一等执行者和一等读者，据此重构代码组织、知识管理、执行语义、状态持久化、Sandbox 边界、可观测性和验证流程的一套工程方法。</strong></p>
+</blockquote>
+<p>这里最关键的是两个“一等公民”。</p>
+<p>第一，<strong>Agent 是一等执行者</strong>。它不只是补全代码，而会读仓库、改代码、跑测试、调工具、等待外部反馈、继续决策。OpenAI 那篇文章最值得记的不是“Codex 生成了一百万行代码”，而是当软件工程团队的主要工作不再是写代码，而是设计环境、明确意图和构建反馈回路时，系统会发生什么变化。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>第二，<strong>Agent 是一等读者</strong>。这意味着代码、文档、日志、指标、trace 和运行时状态，不再只给人看，也必须能被 Agent 直接消费。OpenAI 团队最终把 <code>AGENTS.md</code> 从“大说明书”缩成“目录”，把真正知识沉淀到结构化 <code>docs/</code> 目录，并把日志、指标、Chrome DevTools 等可观测性信号变成 Codex 的直接输入。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>从这个角度看，AI 原生工程和“传统工程 + AI 助手”的根本区别，不在于 IDE 里是否多了一个聊天窗口，而在于工程系统有没有围绕 Agent 的阅读和执行去重构。前者只是把模型嵌进旧流程；后者是在重写流程本身。更准确地说，传统软件工程优化的是“人如何写、读、改、协作”，而 AI 原生工程优化的是“人和 Agent 如何共同在一个系统里持续生产、执行、验证和恢复”。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>这也是为什么 AI 原生工程天然会把问题推向 durable execution、状态外部化、sandbox 生命周期、副作用日志和恢复语义。因为一旦 Agent 从“会生成答案”走到“会执行任务”，执行不再是一次 request，而会变成一条长程轨迹；状态也不再只属于进程，而会变成系统级对象。DBOS 和 Durable Agents 之类系统之所以重要，不是因为它们发明了一个新数据库，而是因为它们把这种迁移工程化了。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<h2 id="4-从-openai-的-harness-engineering-说起工程团队到底在优化什么">4. 从 OpenAI 的 Harness Engineering 说起：工程团队到底在优化什么</h2>
+<p>OpenAI 的 <em>Harness engineering</em> 对我最大的启发，不是“AI 能写很多代码”，而是<strong>工程团队的优化目标已经变了</strong>。文章一开头就说，他们用五个月从空仓库构建并交付了一个真实产品，所有应用逻辑、测试、CI、文档、可观测性和内部工具都由 Codex 生成，而且只花了人工编码约十分之一的时间。这里真正值得注意的不是吞吐数字，而是这意味着：<strong>一旦代码生成足够便宜，工程团队的稀缺资源就不再是“产出代码”，而是“如何组织环境、如何表达意图、如何构建可靠反馈回路”。</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>OpenAI 团队在文中反复强调一个变化：工程师的工作从“人工编码”转向“系统、架构和杠杆”。当事情不顺时，解决方案不再是“再努力一点提示”，而是补足抽象层、工具、内部结构和可强制执行的规则，让 Agent 能跨过原本过不去的坎。这其实已经不是传统意义上的“软件开发”，而更像是在做一种新的 harness engineering：<strong>不是自己去写实现，而是搭一个足够清晰、足够可验证、足够可执行的系统，让 Agent 可以持续推进工作。</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>这也是为什么 OpenAI 会把代码仓库当成 <strong>记录系统（record system）</strong>。他们最早学到的教训之一，就是给 Codex 的应该是一张地图，而不是一本 1000 页的说明书。巨大的 <code>AGENTS.md</code> 会挤占上下文、迅速腐烂、难以验证；更好的做法是让仓库里的知识层次化、结构化、可导航。这里最重要的变化不是文档从多到少，而是：<strong>代码仓库开始从“源码集合”转向“知识和执行的记录系统”。</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>OpenAI 还做了另一件更关键、但更容易被忽略的事：他们把 UI、日志、指标和 trace 都做成了 Codex 的直接输入。随着代码吞吐上来，团队的瓶颈迅速变成了人工 QA，于是他们让 Codex 直接驱动 Chrome DevTools、抓 DOM snapshot、读截图、跑 LogQL/PromQL，从而自己复现 bug、验证修复、重启应用、再验证。这件事的重要性在于：<strong>可观测性第一次不只是给人看的 dashboard，而成为 Agent 的调试接口。</strong> 一旦接受这一点，你会重新理解 observability：它不再只是运维系统，而是执行系统本身的一部分。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>Karpathy 的 <code>autoresearch</code> 最近之所以会迅速流行，在我看来也说明了同一件事。它真正打动人的，并不是“Agent 会自己改训练代码”这件事本身，而是它把自我迭代压缩成了一个<strong>可观察、可比较、可裁决</strong>的最小闭环：Agent 只改一个 <code>train.py</code>，每次训练固定 5 分钟，用统一的 <code>val_bpb</code> 指标判断是否变好，保留或丢弃，再继续下一轮，最后留下一串完整实验日志。这个项目真正证明的，不是 Agent 已经能无限自我改进，而是：<strong>只要问题边界收得足够小、反馈足够快、指标足够单一、keep/discard 规则足够清楚，Agent 就已经可以在局部系统里开始自我迭代。</strong><a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+<p>所以，<em>Harness engineering</em> 这篇文章真正告诉我的，是未来工程团队最重要的能力，很可能不再是“写代码”，而是<strong>把系统改造成一个让 Agent 能够可靠执行、可靠验证、可靠恢复的环境</strong>。</p>
+<h2 id="5-为什么-durable-execution-会成为新的系统原语">5. 为什么 durable execution 会成为新的系统原语</h2>
+<p>如果说 <em>Harness engineering</em> 主要展示了“把 Agent 当执行者和读者之后，软件工程流程会怎样变化”，那 DBOS、Durable Agents 和 Pydantic AI + DBOS 展示的则是更底层的一件事：<strong>一旦执行变成长程过程，工作流状态就必须被持久化和外部化。</strong></p>
+<p>DBOS 在架构文档里说得非常直白：传统工作流系统里，工作流由运行时内存驱动，服务挂掉后，状态会丢；他们的做法是把 workflow state 和 step checkpoint 落到 Postgres，让数据库成为 durable execution 的底层记录系统。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> 这件事的重要性，不在于“又用了一次 Postgres”，而在于它把执行状态从进程私有内存中拿出来，变成了系统级对象。</p>
+<p>Pydantic AI + DBOS 的结合，本质上也说明了同一个方向。他们不是把 Agent 包成一个“更复杂的 prompt loop”，而是把 Agent workflow / step 明确接进 durable workflow 语义里，从而使 Agent 的执行轨迹天然带上了恢复点、重试点和持久化边界。<a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a></p>
+<p>Microsoft Durable Agents 也把这个问题说得很清楚：如果一个 session 被一个 worker 持有，当实例挂掉时，状态就可能消失；durable agents 的目标则是 <strong>any worker can resume a session</strong>，即任意实例都能接续同一会话和任务状态。<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> 对生产系统来说，这和“重新开一个新会话”完全不是一回事，因为它意味着用户交互、任务上下文、长期执行轨迹都不再被绑死在某个进程上。</p>
+<p>也就是说，durable execution 的真正意义，并不是“故障后自动重试”，而是：</p>
+<ul>
+<li>状态不再只存在于进程</li>
+<li>任务不再等价于一次请求</li>
+<li>恢复不再是例外分支，而是默认能力</li>
+</ul>
+<p>我觉得这一点对 Agent Infra 的意义被严重低估了。过去很多 Agent 框架本质上还是 request/response 的延长线：模型输出 -&gt; tool call -&gt; 再输出 -&gt; 再调工具。只要链路够短，问题还不明显；一旦任务跨分钟、跨小时、跨用户确认、跨外部系统状态变更，就会立刻暴露出三个系统性问题：</p>
+<ol>
+<li><strong>状态放哪？</strong></li>
+<li><strong>失败后从哪继续？</strong></li>
+<li><strong>副作用如何被记录和验证？</strong></li>
+</ol>
+<p>如果这三个问题答不出来，那它就还不能算一个成熟的执行系统。也正因为如此，我越来越倾向于把 durable execution 看成 Agent 时代的一种“新系统原语”，它的重要性更接近消息队列、数据库事务和作业调度，而不是一个可选增强特性。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> <a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a></p>
+<h2 id="6-agent-和-rl-为什么会把执行系统问题逼到台前">6. Agent 和 RL 为什么会把“执行系统问题”逼到台前</h2>
+<p>很多人理解 durable execution、sandbox、状态外部化这些概念时，会觉得它们听起来不像 AI，而更像传统分布式系统。可恰恰是 Agent 和 RL，把这些问题重新推到了台前。</p>
+<p>OpenRLHF 和一系列 reasoning / agentic post-training 工作已经把一个事实讲得越来越清楚：<strong>在 RLHF / RLVR / reasoning RL 里，真正昂贵的，往往不是参数更新本身，而是 rollout、环境交互和长链路推理。</strong> OpenRLHF 那篇系统性文章里就明确指出，随着后训练重点从监督学习转向 RLHF / RLVR，rollout / inference 会成为主要运行时瓶颈。<a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a></p>
+<p><em>Let It Flow</em> 也在同一方向上往前推：它讨论的不是单点算法技巧，而是如何把 rollout 环境、上下文工程和后训练优化放在一个 agentic learning ecosystem 里一起设计。<a href="https://arxiv.org/abs/2512.24873" title="https://arxiv.org/abs/2512.24873">3</a> 这说明当系统目标从“给出一个答案”转向“在环境里反复试错、产生轨迹、获取反馈并更新策略”时，环境本身就已经不再是背景板，而会成为训练系统的一部分。</p>
+<p>这件事一旦发生，执行系统问题就会被显著放大：</p>
+<ul>
+<li>每次执行不再只是一次短 request，而是长轨迹 rollout</li>
+<li>状态不再只是在进程里临时保留，而要跨 step、跨环境、跨节点保存</li>
+<li>失败和恢复不再是稀有异常，而会成为高频路径</li>
+<li>副作用不再只是写个日志，而会真实影响环境、文件系统、网络和下游系统</li>
+</ul>
+<p>换句话说，RL 先在训练系统里暴露出“执行系统”的基础性，Agent 再把这件事扩展到真实业务环境。前者让 rollout、environment、checkpoint 成为核心问题；后者让 durable execution、sandbox boundary、effect log、capability policy 成为生产系统问题。</p>
+<p>这也是为什么我会把 Agent Infra 和 RL Infra 看成同一条系统演化线上的前后两个阶段：<strong>RL 先在训练里把“执行问题”显影，Agent 再把它带进现实世界。</strong></p>
+<h2 id="7-为什么现有-agent-infra-很难直接承接生产系统">7. 为什么现有 Agent Infra 很难直接承接生产系统</h2>
+<p>我很认同那篇《为什么现有的 Agent Infra 无法支撑生产级应用？》里的一个基本判断：<strong>现在很多 Agent Infra，其实还停留在“把 prompt loop 包装得更方便”的阶段，而没有真正解决生产系统需要的执行语义。</strong><a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></p>
+<p>这篇文章最核心的批评，不是“模型还不够强”，而是现有系统的抽象层级错了。它提到的几个问题都很关键：</p>
+<ul>
+<li><strong>执行语义缺失</strong>：很多框架会把多步决策包装成一个链路，但没有清晰的恢复点、补偿点和状态语义。</li>
+<li><strong>副作用处理缺失</strong>：一旦 Agent 会调用外部 API、写数据库、改文件、发消息，系统就必须知道哪些 effect 已经发生、哪些可以重放、哪些必须幂等。</li>
+<li><strong>长生命周期任务缺失</strong>：生产系统里任务可能要跨分钟、跨小时、跨人机确认，不再适合用一次 request 承接。</li>
+</ul>
+<p>这些问题和 durable execution 是一体的。你可以把它们理解成：“生产级 Agent 系统要求的是<strong>长期、可恢复、可验证的执行过程</strong>，而不是一次次更聪明的模型输出。” 一旦把这个问题问对，很多看起来花哨的 Agent 框架就会迅速暴露出边界：它们可能非常适合做 demo、做单机工具调用、做短链路原型，但一旦进入真实权限、真实状态和真实副作用世界，就需要另一套底层语义。<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></p>
+<p>所以，我越来越不愿意把 Agent Infra 理解成“模型编排层”。更准确的说法应该是：</p>
+<blockquote>
+<p><strong>生产级 Agent Infra，本质上是一套围绕长程执行、状态外部化、副作用管理、恢复语义和环境边界的执行系统。</strong></p>
+</blockquote>
+<p>如果没有这层语义，你就很难解释：</p>
+<ul>
+<li>任务中断后从哪里继续</li>
+<li>effect 已经做过没有</li>
+<li>实例挂掉后谁来接手</li>
+<li>人机交互等待期间状态如何保存</li>
+<li>rollback 到底回滚的是模型状态、环境状态，还是业务状态</li>
+</ul>
+<p>这些都不是“框架体验”问题，而是系统语义问题。<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></p>
+<h2 id="8-session恢复和任意实例都能接手的重要性">8. Session、恢复和“任意实例都能接手”的重要性</h2>
+<p>Durable Agents 文档里有一句话我觉得特别关键：<strong>any worker can resume a session</strong>。<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> 这句话看起来像一个分布式系统实现细节，实际上却是 Agent 系统能不能进入生产的分水岭。</p>
+<p>为什么？</p>
+<p>因为生产环境里的 Agent 几乎不可能一直被同一个进程、同一台机器、同一个 Pod 持有到底。会有：</p>
+<ul>
+<li>实例重启</li>
+<li>机器故障</li>
+<li>滚动升级</li>
+<li>长时间等待人类输入</li>
+<li>长链路外部系统反馈延迟</li>
+</ul>
+<p>如果会话状态只绑在当前 worker 内存里，那这些情况一发生，系统就只能：</p>
+<ol>
+<li>整个任务从头来过；</li>
+<li>把用户拖回一个不一致状态；</li>
+<li>靠人工补救。</li>
+</ol>
+<p>这三种都不是真正可用的生产语义。</p>
+<p>所以，我认为 Durable Agents 真正重要的地方，不只是“可以恢复 session”，而是它把一个之前被隐藏的问题显性化了：<strong>Agent session 本身，已经开始像分布式系统里的长期任务对象，而不是 Web 会话。</strong><a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<p>一旦接受这个视角，很多系统设计会跟着变：</p>
+<ul>
+<li>session state 要持久化</li>
+<li>worker 不再拥有 session，只是临时执行它</li>
+<li>crash recovery 是默认路径</li>
+<li>人机交互等待是系统级状态，而不是 UI hack</li>
+</ul>
+<p>从这里往前再走一步，就会自然过渡到 effect log 和 recovery semantics。因为如果任意实例都能接手，那系统必须回答：当前已经做过哪些 side effect？哪些可以重试？哪些只能补偿？哪些必须等确认？</p>
+<p>也就是说，session recovery 不是一个“更方便的 resume 功能”，而是在逼系统把 <strong>执行语义显式化</strong>。</p>
+<h2 id="9-sandboxagent-时代真正该讨论的不只是隔离而是共享了什么能碰什么什么会跨运行保留">9. Sandbox：Agent 时代真正该讨论的，不只是“隔离”，而是“共享了什么、能碰什么、什么会跨运行保留”</h2>
+<p>Luis Cardoso 那篇 <em>A field guide to sandboxes for AI</em> 之所以重要，是因为它把所有 sandbox 讨论都拉回了一个极简框架：</p>
+<blockquote>
+<p><strong>Sandbox = boundary + policy + lifecycle.</strong><a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</blockquote>
+<p>这个定义的价值，在于它把很多被混在一起说的概念拆开了。</p>
+<p>首先是 <strong>boundary</strong>。Luis 直接列了四类最常见边界：container boundary 仍然是同一个 host kernel；gVisor boundary 是 userspace kernel 先接住 workload syscalls；microVM boundary 把 syscall 交给 guest kernel；runtime boundary 则根本不给 guest syscall ABI，只暴露显式 host APIs。然后他给出了一句很有力量的话：<strong>边界，就是你押注攻击者跨不过去的那条线。</strong> 这几乎可以拿来当所有 sandbox 讨论的起点。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>其次是 <strong>policy</strong>。Luis 并没有把 policy 缩成 seccomp 配置，而是展开为文件系统路径、网络目的地和协议、进程创建、设备访问、time/memory/CPU/disk quotas、syscalls/import surface 等完整能力面。更重要的是，他那句判断几乎值得全文照抄一遍：<strong>a tight policy in a weak boundary is still a weak sandbox; a strong boundary with a permissive policy is a missed opportunity.</strong> 这句话把“边界”和“能力范围”这两个经常被混淆的概念一下分开了。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>最后是 <strong>lifecycle</strong>。这也是 Agent 和 RL 最关心、却最容易被低估的维度。Luis 把生命周期分成三种：fresh run、workspace、snapshot/restore，并明确说这对 agents and RL matters a lot。敌意代码适合 fresh run；agent workspace 需要长生命周期文件系统和会话；RL rollouts 和 pre-warmed agents 则天然偏向 snapshot/restore。也就是说，sandbox 根本不是一个二元“安全/不安全”问题，而是一组围绕边界、策略和生命周期的工程选择。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>从这个框架往回看，你会发现很多系统争论其实都争错了焦点。问题不是“容器好还是 microVM 好”，而是：<strong>你要承接的是敌意代码、agent workspace，还是 RL fast reset？你要的生命周期到底是什么？</strong> 一旦问题问对了，技术选择才会自然收敛。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<h2 id="10-运行时底座怎么选容器gvisormicrovmwasmunikernel">10. 运行时底座怎么选：容器、gVisor、microVM、Wasm、unikernel</h2>
+<p>有了 boundary / policy / lifecycle 这个框架，再来看底座选型，就会清晰很多。</p>
+<p>Luis 的文章已经把几类主流边界拆得很明确：容器共享 host kernel；gVisor 用 userspace kernel 截住 workload syscalls；microVM 在 guest kernel 后面提供更强边界；Wasm / isolates 则把边界放在 runtime 里，不给 ambient filesystem 或 network，而只给显式提供的 host capabilities。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<h3 id="容器不是不能用而是边界要看清">容器：不是不能用，而是边界要看清</h3>
+<p>Luis 对容器的评价很直接：<strong>仅靠容器，并不足以构成敌意代码场景下的安全边界。</strong> 原因并不是容器完全没有隔离，而是它们仍然共享 host kernel；只要允许的 syscall 路径上有 host kernel bug，那就是 host bug。容器当然可以被加固，但“加固过的共享内核”依然不是“更强的边界”。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>高策那篇《Agent sandbox 可能的选型以及 unikernel 的机会》也给了一个很好的现实补充：很多人误会容器启动时间不如 Firecracker 之类轻量 VM 快，其实排除镜像拉取等外部因素后，容器本身启动可以做到几十毫秒甚至更快；它的问题更多来自安全性，命名空间和 cgroups 提供的是一定程度隔离，但仍共享宿主机内核。<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<h3 id="microvm为什么越来越像现实答案">microVM：为什么越来越像现实答案</h3>
+<p>Luis 还提醒了一个很关键的事实：在 2010 年，“用 VM 跑 sandbox”几乎天然意味着秒级启动和密度损失；但到了 2026 年，microVM 已经可以“快到像容器”，snapshot/restore 甚至能让 reset 接近免费。这个变化非常重要，因为它意味着底座的 trade space 已经变了，而很多人的词汇表还停留在“容器 vs VM”的旧时代。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>高策那篇文章里也反映了同一个现实判断：agent sandbox 的现实主流候选，已经是 <strong>firecracker、gvisor、kata containers，可能再带上 wasm</strong>；他甚至明确列出 agent sandbox 的几个核心需求：冷启动 ideally &lt;100ms、安全性高、兼容 Python 生态、镜像构建流程方便。<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<h3 id="wasm--runtime-sandboxes能力边界更清晰但兼容性是约束">Wasm / runtime sandboxes：能力边界更清晰，但兼容性是约束</h3>
+<p>Luis 把 runtime sandbox 单独拿出来讲，也很对。因为 Wasm / isolates 最大的价值，不是更快，而是<strong>默认没有 ambient capabilities</strong>：没有默认文件系统、没有默认网络、没有默认 syscall ABI，guest 只能调用显式提供的 host APIs。这在 capability-oriented 设计里非常美。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>但高策也点出了现实难点：Wasm 对 Python 这种复杂动态语言并不天然友好，WASI 提供的是精简、可移植接口层，远少于 Linux 原生接口；复杂 Python 生态和大量 C bindings 会很快把你拖回兼容性泥潭。所以问题不是 Wasm “好不好”，而是它适不适合你的工作负载形状。<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<h3 id="unikernel理论诱人现实稀缺">unikernel：理论诱人，现实稀缺</h3>
+<p>高策那篇之所以会重新提起 unikernel，是因为它从理论上看几乎是 Agent sandbox 的理想底座：应用和内核编译成一个单一镜像，运行在硬件虚拟化之上，攻击面极小，启动极快。但现实里行业并没有广泛采用它，而更多在 Firecracker、gVisor、Kata 和 Wasm 这些路线里权衡。这个判断很有价值，因为它说明：<strong>工程里真正有意义的问题，不是“哪条路线在理论上最美”，而是“哪条路线在今天的生态里最能同时满足边界、兼容性和生命周期”。</strong><a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<p>所以，我对这一节的判断很简单：<strong>没有一个永远正确的底座，但 Agent 会持续把系统往更强边界、更清晰 capability、更可 snapshot / restore 的方向推。</strong><a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>如果一定要把这一节压成一个选型口诀，我会这么总结：</p>
+<ul>
+<li>敌意代码或高风险权限：优先考虑更强边界，而不是先追求“和容器一样方便”</li>
+<li>长生命周期 agent workspace：重点看状态保留、会话语义和恢复成本</li>
+<li>RL rollout / fast reset：重点看 snapshot / restore 的速度和密度</li>
+</ul>
+<p>底座之争的关键，从来不是“谁更先进”，而是<strong>谁更匹配你的工作负载形状</strong>。</p>
+<h2 id="11-为什么传统-k8s-沙箱方案会先撞上瓶颈">11. 为什么传统 K8s 沙箱方案会先撞上瓶颈</h2>
+<p>这篇 MiniMax 案例真正批评的，不是“现有 Agent Infra 抽象层都错了”，而是<strong>直接拿传统 K8s 方案来承接 Agentic RL 沙箱，往往会先撞到瓶颈。</strong><a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="1k8s-的默认假设更偏微服务而不是高脉冲沙箱">1）K8s 的默认假设更偏微服务，而不是高脉冲沙箱</h3>
+<p>K8s 擅长的是资源编排、容器管理和长期运行服务，但 Agentic RL 的需求是大规模、脉冲式、瞬时创建和销毁的沙箱洪峰。文章明确提到，在这类场景里，etcd、调度器、外部存储和网络依赖都会成为瓶颈，而 Controller 和状态协调链路又会进一步拉长延迟。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="2安全隔离和多租户诉求会把问题放大">2）安全隔离和多租户诉求会把问题放大</h3>
+<p>对多租户沙箱来说，K8s 默认互通的网络平面本身就会引出额外安全问题。也就是说，K8s 不是不能做沙箱，而是它的默认设计目标不是“强隔离 + 海量瞬时环境供给”。面对 Agentic RL，这通常不是最优起点。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="3所以重点不只是有没有沙箱而是沙箱是不是按这个场景设计的">3）所以重点不只是“有没有沙箱”，而是“沙箱是不是按这个场景设计的”</h3>
+<p>腾讯云 Agent Runtime 在这篇文章里被拿来证明的，恰好就是这点：只有把轻量调度、预热池、设备池化、镜像按需加载、块级去重、快照恢复、VNC 观测、MCP/CLI 接入这些能力一起做成底座，沙箱才会从附属工具变成可规模化交付的 Agentic RL 基础设施。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>把这件事放回全文主线，结论就是：<strong>运行时不是越强越好，而是必须按工作负载来设计。</strong> 对 Agentic RL 来说，关键字不是 request serving，而是 rollout、环境供给、checkpoint 和实验回放。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h2 id="12-一个我认可的ai-原生工程栈分层">12. 一个我认可的“AI 原生工程栈”分层</h2>
+<p>如果把前面的材料收成一张图，我会把 AI 原生工程栈分成四层。这个分层的作用，不是再发明一套术语，而是把上文提到的系统放到同一个坐标系里，便于后面落到“评估一套 Agent Infra 时该问什么”。</p>
+<h3 id="第一层模型与工具层">第一层：模型与工具层</h3>
+<p>这一层负责推理、规划、工具调用、代码生成、多模态交互。它决定 Agent “会不会做”。OpenAI 的 Codex、各种 Skills，浏览器操作、代码修复都属于这一层。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h3 id="第二层durable-execution--workflow-层">第二层：durable execution / workflow 层</h3>
+<p>这一层负责把一次次模型输出组织成可持久化、可恢复、可调度的执行过程。DBOS 的 durable workflows、Pydantic AI + DBOS 的 agent workflow/step wrapping、Microsoft Durable Agents 的 session recovery 都在这里。它解决的不是“模型怎么想”，而是“执行到哪里、失败怎么接着跑、别的实例怎么接手”。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<h3 id="第三层sandbox--runtime-层">第三层：sandbox / runtime 层</h3>
+<p>这一层解决的是“在哪里执行”和“以什么边界执行”。Luis 的 boundary/policy/lifecycle 框架、Firecracker / gVisor / Wasm 这类隔离底座、ROCK 的环境控制面、Zeroboot 的 CoW VM fork，以及 MiniMax 案例里那类面向 Agentic RL 的沙箱平台，都属于这一层。它负责回答：共享什么、能碰什么、什么会跨运行保留，以及环境能否被大规模、低延迟地供给出来。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a> <a href="https://github.com/alibaba/ROCK" title="https://github.com/alibaba/ROCK">10</a> <a href="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file" title="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file">12</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="第四层observability--validation--experiment-loop-层">第四层：observability / validation / experiment loop 层</h3>
+<p>这一层最容易被低估，却会越来越关键。OpenAI 让日志、指标和 UI 成为 Codex 的直接输入；MiniMax 这篇则把 checkpoint、快照回滚、分叉实验、轨迹记录、VNC 观测、执行日志都提升成训练基础设施的一部分。也就是说，可观测性不再只是运维工具，而是执行系统和实验系统的一部分。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>从这个角度看，“AI 原生工程栈，正在从模型中心转向执行系统中心”就有了更准确的含义：<strong>不是模型不重要，而是只有把执行层、状态层、边界层和验证层一起做好，模型能力才能被稳定兑现。</strong> 这也就是为什么我后面会把文章收束成一套判断问题，而不是停在一张抽象分层图上。</p>
+<h2 id="13-为什么-2026-年最重要的工程问题已经不是代码生成">13. 为什么 2026 年最重要的工程问题，已经不是代码生成</h2>
+<p>我想把一个有点反直觉的判断写得更直白一点：</p>
+<blockquote>
+<p><strong>2026 年最重要的工程问题，已经不是“如何生成更多代码”，而是“如何承接更多由 Agent 生成并执行的结果”。</strong></p>
+</blockquote>
+<p>OpenAI 的例子已经说明，随着代码吞吐上来，瓶颈迅速变成了人工 QA，而不是继续提升生成速度。也就是说，当生成成本下降后，真正稀缺的资源会重新暴露出来：<strong>人类的注意力、可信的验证体系、良好的状态语义，以及可靠的恢复机制。</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>这也是为什么 durable execution、sandbox lifecycle、checkpoint / snapshot、observability 这些看起来不那么“AI”的概念，会在接下来的几年里越来越值钱。它们不是模型的竞争对手，而是模型吞吐被放大后自然暴露出来的主战场。OpenAI 展示的是第一步：当 Agent 能写出大量代码时，验证、观测和知识组织会先成为瓶颈；DBOS / Durable Agents 展示的是第二步：执行状态必须外部化；MiniMax 这篇则把第三步补得更具体：一旦进入 Agentic RL，环境供给、镜像分发、快照回放和全链路观测会直接变成训练吞吐与稳定性的硬约束。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p><code>autoresearch</code> 的流行，其实把这件事又往前推了一步。它让更多人直观看到：所谓 “Agent 开始能自我迭代”，背后靠的并不神秘，核心还是两件事有没有被系统化地做出来。第一，<strong>可观测性</strong>，也就是每一轮到底改了什么、跑了什么、发生了什么，系统能不能完整留下来；第二，<strong>可评估性</strong>，也就是每一轮结果能不能在统一预算、统一指标和清晰的 keep/discard 规则下被比较。没有这两根支柱，Agent 的自我迭代很容易退化成自我漂移；有了它们，它才开始像一个真正的实验系统。<a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+<p>所以，未来团队之间的差异，很可能不再主要体现在“谁的模型能多写一个函数”，而体现在：</p>
+<ul>
+<li>谁能让 Agent 更快理解系统</li>
+<li>谁能把执行状态持久化得更正确</li>
+<li>谁能让失败恢复成为默认能力</li>
+<li>谁能把环境供给、checkpoint、验证和可观测性前置成系统原语</li>
+</ul>
+<p>换句话说，<strong>谁能生成更多代码，不一定会赢；谁能验证更多结果、恢复更多失败、承接更多执行，才更有可能赢。</strong></p>
+<p>也正因为如此，真正有用的评估框架，不该再从“模型能力清单”开始，而应该先问一套系统有没有把承接、恢复、边界和验证这些基础能力做扎实。</p>
+<h2 id="14-评估一套-agent-infra我现在只问这-10-个问题">14. 评估一套 Agent Infra，我现在只问这 10 个问题</h2>
+<p>如果把上面的分层再压缩成一个能落地使用的框架，我现在评估一套 Agent Infra，基本只问这 10 个问题：</p>
+<ol>
+<li>
+<p><strong>状态是在进程内存里，还是持久化在外部存储？</strong>
+如果状态只在内存里，那它本质上还只是一次会话，而不是可恢复执行。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a></p>
+</li>
+<li>
+<p><strong>失败后是从头重来，还是从上一个完成 step 恢复？</strong>
+这几乎是普通 workflow 和 durable workflow 的分水岭。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a></p>
+</li>
+<li>
+<p><strong>有没有 checkpoint、快照回滚和分叉实验能力？</strong>
+如果环境状态不能被精准保存、回放和分叉，很多 Agentic RL 训练和调试成本会高得不可接受。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+</li>
+<li>
+<p><strong>隔离边界是什么？</strong>
+容器、gVisor、microVM、Wasm 的边界完全不同，不能混在一起说。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</li>
+<li>
+<p><strong>Policy 到底收紧了什么？</strong>
+文件系统、网络、设备、进程、syscall、quota，哪些被限制，哪些没有。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</li>
+<li>
+<p><strong>Lifecycle 是什么：fresh、workspace，还是 snapshot/restore？</strong>
+不同工作负载的要求完全不同。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</li>
+<li>
+<p><strong>实例切换时，会不会丢失会话和任务状态？</strong>
+Any worker can resume a session 还是 state lost on crash，这个差异在生产里会非常致命。<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+</li>
+<li>
+<p><strong>日志、指标、trace 是只给人看，还是 Agent 也能直接消费？</strong>
+如果只给人看，你的调试吞吐会很快成为瓶颈。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+</li>
+<li>
+<p><strong>验证体系是事后兜底，还是前置设计？</strong>
+这不只是有没有测试，还包括有没有统一、可比较的评价指标，以及清晰的 keep/discard 规则；没有这些，Agent 的自我迭代很容易退化成自我漂移。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+</li>
+<li>
+<p><strong>这套系统支撑的是 demo，还是能承受真实权限、长程执行和真实副作用的生产环境？</strong>
+能跑的原型和真正可用于生产的系统之间，往往隔着的就是前面九个问题。<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a> <a href="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file" title="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file">12</a></p>
+</li>
+</ol>
+<p>这 10 个问题几乎都不直接问“模型多强”。不是因为模型不重要，而是因为当模型足够强之后，<strong>真正会卡住你的，往往是执行系统本身。</strong> 前面的“四层”是在解释问题空间；这“十问”则是给一套能直接拿去评估系统的阅读框架。</p>
+<h2 id="15-对研发团队的具体启发">15. 对研发团队的具体启发</h2>
+<p>如果把前面的“十问”翻成研发团队今天就能执行的动作，我觉得至少有六条。</p>
+<h3 id="1文档要为-agent-而写">1）文档要为 Agent 而写</h3>
+<p>如果你还在把文档写成“人类读起来很完整的说明书”，很可能已经落后了。OpenAI 的经验说明，Agent 真正需要的是一张地图，而不是一大坨说明。更直接一点说，文档系统至少要做到三件事：结构化、可导航、可验证新鲜度。否则模型上下文很快就会被过期说明和模糊规则占满。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h3 id="2测试和验收标准要前置">2）测试和验收标准要前置</h3>
+<p>当生成成本下降之后，验证会迅速成为瓶颈。团队越早把测试、回归、验收标准和运行时检查前置进系统，越能把 Agent 吞吐变成真实产能。OpenAI 的瓶颈从写代码切到 QA，本身就是这件事最好的例子。别把验证当成最后一层兜底，而要把它当成执行系统的入口条件。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a>
+如果你还希望 Agent 真能自己迭代，这一步还得继续前移：固定预算、统一指标、清晰的 keep/discard 规则，都要先写进系统。<code>autoresearch</code> 最有说服力的地方，正是它把这套最小实验闭环做得足够清楚。<a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+<h3 id="3可观测性要同时服务人和-agent">3）可观测性要同时服务人和 Agent</h3>
+<p>日志、指标、trace 不应只给人类值班工程师看，也应该成为 Agent 的直接输入。让 Agent 能读 LogQL、PromQL、UI runtime signals，这件事的重要性会越来越接近今天“能不能自动化跑测试”这种基础能力。对很多团队来说，这意味着可观测性不只是给人看的 dashboard，而是 Agent 的调试接口。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h3 id="4状态不能只放在进程里">4）状态不能只放在进程里</h3>
+<p>只要你在做多步 Agent、长程工作流、工具调用或人机混合执行，就应该默认进程会挂、实例会漂移、任务会等待。DBOS 和 Durable Agents 提醒我们的核心其实非常简单：<strong>状态必须外部化，才能恢复。</strong> 如果状态只能靠进程内存续命，那系统离生产还差得很远。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<h3 id="5sandbox-选型必须回答三问">5）Sandbox 选型必须回答三问</h3>
+<p>借用 Luis 的三问模型，任何 sandbox 选型都应该先回答：</p>
+<ul>
+<li>它和 host 共享什么？</li>
+<li>代码能碰什么？</li>
+<li>哪些东西会跨运行保留？</li>
+</ul>
+<p>如果这三个问题答不清，你其实就还没理解自己的运行时边界。很多选型争论吵到最后，其实只是工作负载、权限模型和生命周期假设没有先说清。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<h3 id="6真正的组织差异会体现在环境设计">6）真正的组织差异会体现在环境设计</h3>
+<p>未来团队之间最大的差距，可能不是“会不会用 Agent”，而是<strong>会不会为 Agent 设计环境</strong>。这既包括代码库结构、文档系统、测试体系，也包括 durable execution、状态存储、sandbox 生命周期、副作用日志和恢复语义。<em>Harness engineering</em> 重要，不是因为它讲了一个很强的模型，而是因为它展示了一个团队如何开始围绕 Agent 重写工程系统。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h2 id="16-结语从写代码到设计执行系统">16. 结语：从“写代码”到“设计执行系统”</h2>
+<p>如果把 2023 年以前的大模型工程叙事概括成“拼参数、拼训练、拼模型能力”，那么 2024–2026 年更像是在沿另一条线演化：<strong>先是 RL / rollout 把生成、状态和环境交互变成训练主角，再是 Agent 把这些问题从训练系统扩展到真实业务系统，最后 durable execution、sandbox lifecycle、checkpoint / snapshot、环境供给和 observability 逐渐成为新的基础设施前提。</strong><a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a> <a href="https://arxiv.org/abs/2512.24873" title="https://arxiv.org/abs/2512.24873">3</a> <a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>所以，我对未来两年的判断很简单：</p>
+<p><strong>模型能力会继续进步，但真正拉开差距的，将是执行系统。</strong></p>
+<p>更直白一点，未来团队之间的差异，不会只体现在“谁能更快生成代码”，而会更多体现在：</p>
+<ul>
+<li>谁能把代码库组织成 Agent 可读的记录系统</li>
+<li>谁能把执行状态外部化，并把恢复做成默认能力</li>
+<li>谁能把 sandbox 的边界、策略和生命周期设计清楚</li>
+<li>谁能把 checkpoint、验证和可观测性前置成系统原语，而不是事后补丁</li>
+</ul>
+<p>谁先把这几件事做出来，谁就更接近真正的 AI 原生工程栈。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>也正是在这个意义上，我才会把这篇文章的标题定成：</p>
+<blockquote>
+<p><strong>AI 原生工程栈，正在从“模型中心”转向“执行系统中心”。</strong></p>
+</blockquote>
+<p>这不是一句漂亮的趋势判断，而是一条已经开始发生、并且会持续数年的系统演化线。</p>
+<h2 id="17-参考阅读按主题分组">17. 参考阅读（按主题分组）</h2>
+<h3 id="durable-execution--workflow">Durable Execution / Workflow</h3>
+<ol>
+<li><em>DBOS Architecture</em>：把 workflow / step checkpoint 到 Postgres 的 durable execution 设计。<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a></li>
+<li><em>Durable Agents</em>：会话恢复、多实例接管、human-in-the-loop 持久等待。<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></li>
+<li><em>Pydantic AI + DBOS</em>：把 Agent workflow 明确接到 durable execution 上。<a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a></li>
+</ol>
+<h3 id="harness--eval--self-iteration">Harness / Eval / Self-Iteration</h3>
+<ol start="4">
+<li><em>Harness engineering</em>：OpenAI 如何把代码库、验证和可观测性重写成 Agent 可消费的执行系统。<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></li>
+<li><em>autoresearch</em>：最小化自我迭代闭环，强调统一指标、固定预算与 keep/discard 规则。<a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></li>
+</ol>
+<h3 id="production-agent-infra--runtime">Production Agent Infra / Runtime</h3>
+<ol start="5">
+<li><em>为什么现有的 Agent Infra 无法支撑生产级应用？</em>：执行语义错位、语义原语缺失与生产级 Agent Infra 的结构性问题。<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></li>
+<li><em>百万级吞吐，十万级并发：揭秘 MiniMax 大模型 Agentic RL 训练背后的沙箱底座</em>：Agentic RL 对沙箱底座的四类诉求，以及腾讯云 Agent Runtime 的实现路径。<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></li>
+<li><em>Zeroboot</em>：sub-millisecond VM sandbox 原语与 snapshot / CoW fork 方向。<a href="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file" title="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file">12</a></li>
+</ol>
+<h3 id="rl--agentic-post-training--environment">RL / Agentic Post-training / Environment</h3>
+<ol start="2">
+<li><em>OpenRLHF</em>：RLHF / RLVR 中 rollout / inference 成为主要运行时瓶颈。<a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a></li>
+<li><em>Let It Flow</em>：把 rollout 环境、上下文工程和后训练优化一起设计的 agentic learning ecosystem。<a href="https://arxiv.org/abs/2512.24873" title="https://arxiv.org/abs/2512.24873">3</a></li>
+<li><em>ROCK</em>：面向 agentic reinforcement learning 的环境控制面与管理框架。<a href="https://github.com/alibaba/ROCK" title="https://github.com/alibaba/ROCK">10</a></li>
+</ol>
+<h3 id="sandbox--boundary--runtime-base">Sandbox / Boundary / Runtime Base</h3>
+<ol start="8">
+<li><em>A field guide to sandboxes for AI</em>：boundary / policy / lifecycle 三分法。<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></li>
+<li><em>Agent sandbox 可能的选型以及 unikernel 的机会</em>：Firecracker、gVisor、Wasm、unikernel 的现实权衡。<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#AI Native Engineering</span>
+      
+      <span class="tag">#Agent Infra</span>
+      
+      <span class="tag">#Durable Execution</span>
+      
+      <span class="tag">#Sandbox</span>
+      
+      <span class="tag">#Observability</span>
+      
+      <span class="tag">#Workflow</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">分享到:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fai-native-engineering-shift%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fai-native-engineering-shift%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=AI%20%e5%8e%9f%e7%94%9f%e5%b7%a5%e7%a8%8b%e6%a0%88%ef%bc%8c%e6%ad%a3%e5%9c%a8%e4%bb%8e%e2%80%9c%e6%a8%a1%e5%9e%8b%e4%b8%ad%e5%bf%83%e2%80%9d%e8%bd%ac%e5%90%91%e2%80%9c%e6%89%a7%e8%a1%8c%e7%b3%bb%e7%bb%9f%e4%b8%ad%e5%bf%83%e2%80%9d&body=https%3a%2f%2fblog.xieydd.top%2fai-native-engineering-shift%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">返回顶部</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/from-kv-cache-to-ai-memory-system/" class="prev-post">
+        <span class="nav-label">上一篇</span>
+        <span class="nav-title">从 KV Cache 到 AI 内存系统：大模型推理架构的演进</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/" class="next-post">
+        <span class="nav-label">下一篇</span>
+        <span class="nav-title">关于 Kubernetes 中，拓扑感知你需要知道的一切</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-cn"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+    </main>
+  </div>
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

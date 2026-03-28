@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Observability on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/tags/observability/</link>
+    <description>Recent content in Observability on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Fri, 27 Mar 2026 21:46:21 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/observability/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI 原生工程栈，正在从“模型中心”转向“执行系统中心”</title>
+      <link>https://blog.xieydd.top/ai-native-engineering-shift/</link>
+      <pubDate>Fri, 27 Mar 2026 21:46:21 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/ai-native-engineering-shift/</guid>
+      <description>当代码生成变便宜后，新的主战场到底在哪里？ 1. TL;DR：这篇文章到底想说什么 过去两年，AI 工程最显眼的变化来自模型：更会写代码、更会调工具、</description>
+    </item>
+    
+  </channel>
+</rss>

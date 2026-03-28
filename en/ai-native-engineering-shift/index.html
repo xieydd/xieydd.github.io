@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI-Native Engineering Is Moving from Models to Execution Systems | Xieydd&#39;s Blog</title>
+  <meta name="description" content="As code generation gets cheaper, the real battleground in AI-native engineering is shifting toward durable execution, externalized state, sandbox boundaries, recovery semantics, and verification.">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="AI-Native Engineering Is Moving from Models to Execution Systems | Xieydd&#39;s Blog">
+  <meta property="og:description" content="As code generation gets cheaper, the real battleground in AI-native engineering is shifting toward durable execution, externalized state, sandbox boundaries, recovery semantics, and verification.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/ai-native-engineering-shift/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI-Native Engineering Is Moving from Models to Execution Systems | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="As code generation gets cheaper, the real battleground in AI-native engineering is shifting toward durable execution, externalized state, sandbox boundaries, recovery semantics, and verification.">
+  <meta name="twitter:image" content="https://blog.xieydd.top/IMG_0595.JPG">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-03-27T21:46:21&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-28T09:16:09&#43;08:00">
+  
+  <meta property="article:tag" content="AI Native Engineering">
+  
+  <meta property="article:tag" content="Agent Infra">
+  
+  <meta property="article:tag" content="Durable Execution">
+  
+  <meta property="article:tag" content="Sandbox">
+  
+  <meta property="article:tag" content="Observability">
+  
+  <meta property="article:tag" content="Workflow">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/en/ai-native-engineering-shift/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/ai-native-engineering-shift/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/ai-native-engineering-shift/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/ai-native-engineering-shift/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-28T09:16:09+08:00","datePublished":"2026-03-27T21:46:21+08:00","description":"As code generation gets cheaper, the real battleground in AI-native engineering is shifting toward durable execution, externalized state, sandbox boundaries, recovery semantics, and verification.","headline":"AI-Native Engineering Is Moving from Models to Execution Systems","image":"https://blog.xieydd.top/IMG_0595.JPG","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/ai-native-engineering-shift/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/ai-native-engineering-shift/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/en/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/en/posts/">Posts</a>
+        <a href="https://blog.xieydd.top/en/about/">About</a>
+        
+        <div class="nav-icons">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/ai-native-engineering-shift/" class="lang-link">中文</a>
+          
+        
+      
+      
+      
+    
+  
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.en">AI-Native Engineering Is Moving from Models to Execution Systems</h1>
+    <div class="post-meta">
+      <span>Published: 27 Mar, 2026</span>
+      <span>• 31 min read</span>
+    </div>
+  </header>
+
+  
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-tldr-what-this-article-is-actually-arguing">1. TL;DR: What This Article Is Actually Arguing</a></li>
+    <li><a href="#2-why-we-keep-misreading-the-infrastructure-problem-in-the-agent-era">2. Why We Keep Misreading the Infrastructure Problem in the Agent Era</a></li>
+    <li><a href="#3-what-ai-native-engineering-actually-means">3. What &ldquo;AI-Native Engineering&rdquo; Actually Means</a></li>
+    <li><a href="#4-what-openais-harness-engineering-reveals-about-modern-engineering-work">4. What OpenAI&rsquo;s Harness Engineering Reveals About Modern Engineering Work</a></li>
+    <li><a href="#5-why-durable-execution-is-becoming-a-new-primitive">5. Why Durable Execution Is Becoming a New Primitive</a></li>
+    <li><a href="#6-why-agents-and-rl-force-execution-system-problems-into-the-open">6. Why Agents and RL Force Execution-System Problems into the Open</a></li>
+    <li><a href="#7-why-existing-agent-infra-usually-fails-to-support-production-directly">7. Why Existing Agent Infra Usually Fails to Support Production Directly</a></li>
+    <li><a href="#8-why-session-recovery-and-any-worker-can-resume-a-session-matter-so-much">8. Why Session Recovery and &ldquo;Any Worker Can Resume a Session&rdquo; Matter So Much</a></li>
+    <li><a href="#9-sandbox-the-real-question-is-not-just-isolation-but-what-is-shared-what-is-reachable-and-what-persists-across-runs">9. Sandbox: The Real Question Is Not Just Isolation, but What Is Shared, What Is Reachable, and What Persists Across Runs</a></li>
+    <li><a href="#10-choosing-the-runtime-base-containers-gvisor-microvms-wasm-and-unikernels">10. Choosing the Runtime Base: Containers, gVisor, MicroVMs, Wasm, and Unikernels</a></li>
+    <li><a href="#11-why-traditional-kubernetes-sandbox-approaches-hit-bottlenecks-early">11. Why Traditional Kubernetes Sandbox Approaches Hit Bottlenecks Early</a></li>
+    <li><a href="#12-a-stack-model-for-ai-native-engineering-that-i-actually-find-useful">12. A Stack Model for AI-Native Engineering That I Actually Find Useful</a></li>
+    <li><a href="#13-why-the-most-important-engineering-problem-in-2026-is-no-longer-code-generation">13. Why the Most Important Engineering Problem in 2026 Is No Longer Code Generation</a></li>
+    <li><a href="#14-the-10-questions-i-now-use-to-evaluate-any-agent-infra">14. The 10 Questions I Now Use to Evaluate Any Agent Infra</a></li>
+    <li><a href="#15-practical-implications-for-engineering-teams">15. Practical Implications for Engineering Teams</a></li>
+    <li><a href="#16-conclusion-from-writing-code-to-designing-execution-systems">16. Conclusion: From Writing Code to Designing Execution Systems</a></li>
+    <li><a href="#17-further-reading-grouped-by-theme">17. Further Reading, Grouped by Theme</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p>Where does the real bottleneck move once code generation becomes cheap?</p>
+<h2 id="1-tldr-what-this-article-is-actually-arguing">1. TL;DR: What This Article Is Actually Arguing</h2>
+<p>Over the last two years, the most visible changes in AI engineering came from the models: they write better code, call tools more reliably, and increasingly feel like coworkers who can get real work done. But zoom out a little, and the thing being rewritten is often not whether the model can do the task. It is <strong>how the system absorbs a long-running execution process that touches the outside world, fails, branches, and creates side effects</strong>. What OpenAI showed in <em>Harness engineering</em> was not simply that Codex produced one million lines of code. It was that once the engineer&rsquo;s job shifts from &ldquo;writing code by hand&rdquo; to &ldquo;designing environments, clarifying intent, and building feedback loops,&rdquo; the engineering system itself has to be reorganized.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>The core claim of this article is only one sentence:</p>
+<blockquote>
+<p><strong>The AI-native engineering stack is shifting from model-centric to execution-system-centric.</strong></p>
+</blockquote>
+<p>More concretely, engineering systems used to optimize how a model produces an answer. More and more teams now have to optimize how a system handles a long-running, stateful, branching execution process that can fail and produce side effects. The durable execution work in DBOS and Pydantic AI, Microsoft Durable Agents' emphasis on session recovery semantics, and Luis Cardoso&rsquo;s boundary / policy / lifecycle framing for sandboxes all point in the same direction: in the Agent era, the scarce thing is no longer just generation capability, but <strong>state, recovery, boundaries, and verification</strong>.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> <a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>The article follows a broader evolution:</p>
+<ol>
+<li>In the SFT era, engineering was still mostly about how models generate answers.</li>
+<li>RLHF, RLVR, and reasoning RL exposed rollout, environment interaction, and execution-system problems much more directly.<a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a></li>
+<li>Agents then carried those problems from training systems into the real world, which is why durable execution, effect logs, capability boundaries, and recovery semantics are becoming new infrastructure battlegrounds.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></li>
+</ol>
+<p>If I compress the whole article into one line, it is this:</p>
+<blockquote>
+<p><strong>As code generation keeps getting cheaper, the main battleground of software engineering stops being &ldquo;who writes code faster&rdquo; and shifts toward &ldquo;who can design a system in which agents execute continuously, reliably, and recoverably.&quot;</strong></p>
+</blockquote>
+<h2 id="2-why-we-keep-misreading-the-infrastructure-problem-in-the-agent-era">2. Why We Keep Misreading the Infrastructure Problem in the Agent Era</h2>
+<p>It is easy to misread the Agent era because model progress is the most visible thing: longer context windows, stronger tool use, better coding, and models that look increasingly like humans who can &ldquo;do work.&rdquo; But model progress is not the same thing as system maturity. <em>Harness engineering</em> is a powerful counterexample. OpenAI started from an empty Git repository and, over five months, built a real product in active use. The repository grew to around one million lines of code and roughly 1,500 PRs, while the team maintained the principle that no application logic was written directly by hand. What got rewritten was not just the code, but the organization of the codebase, the docs, tests, CI, observability, and merge flow.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>This highlights an easily missed fact: <strong>once Agents begin to participate in delivery for real, the first thing that gets exposed is not whether the model is capable enough, but whether the environment is clear enough, whether the state is explicit enough, and whether validation is automated enough.</strong> OpenAI says explicitly that early progress was slower than expected not because Codex lacked capability, but because the environment was not clearly specified enough. The engineer&rsquo;s job became helping the agent do useful work, not by &ldquo;prompting harder,&rdquo; but by asking what capability is missing and how to make that capability both legible and enforceable for the agent.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>There is a deeper issue here: agentic RL and ordinary online inference are not the same infrastructure object at all. MiniMax&rsquo;s piece on Agent Runtime offers a very practical lens: once training enters on-policy rollout, and agents need to explore, interact, and make mistakes in real environments at the scale of millions or tens of millions of trajectories, sandboxing stops being an auxiliary tool and becomes infrastructure that directly determines throughput, stability, and cost.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>So the reason we misjudge Agent-era infrastructure is not just that we overestimate how well traditional application infra can adapt. It is also that we underestimate environment supply itself as a bottleneck. Many teams think an LLM wrapper plus a few tool calls plus some harness logic is enough. But once the workload becomes large-scale agentic RL, long-horizon rollout, rich interactive environments, and frequent checkpoint replay, the problems stop being edge-case engineering annoyances and become system problems in scheduling, isolation, observability, and image distribution.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h2 id="3-what-ai-native-engineering-actually-means">3. What &ldquo;AI-Native Engineering&rdquo; Actually Means</h2>
+<p>My definition of AI-native engineering is:</p>
+<blockquote>
+<p><strong>AI-native engineering is not traditional software engineering with a Copilot or Agent added on top. It is an engineering approach that treats Agents as first-class executors and first-class readers from the start, and then reorganizes code structure, knowledge management, execution semantics, state persistence, sandbox boundaries, observability, and validation flow accordingly.</strong></p>
+</blockquote>
+<p>The key is those two kinds of first-class citizenship.</p>
+<p>First, <strong>the Agent is a first-class executor</strong>. It does not merely autocomplete code. It reads the repository, edits code, runs tests, uses tools, waits for external feedback, and continues making decisions. The most important part of OpenAI&rsquo;s article is not that Codex generated one million lines of code, but that software engineers stopped primarily being coders and instead became designers of environment, intent, and feedback loops.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>Second, <strong>the Agent is a first-class reader</strong>. That means code, docs, logs, metrics, traces, and runtime state are no longer written only for humans. They must also be directly consumable by the Agent. OpenAI ultimately shrank <code>AGENTS.md</code> from a huge instruction manual into a directory, moved durable knowledge into a structured <code>docs/</code> tree, and turned logs, metrics, and Chrome DevTools signals into direct inputs for Codex.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>From that angle, the core difference between AI-native engineering and &ldquo;traditional engineering plus an AI assistant&rdquo; is not whether the IDE now has a chat panel. The difference is whether the engineering system has been reorganized around the Agent&rsquo;s reading and execution process. The former embeds a model into the old flow. The latter rewrites the flow itself. More precisely, traditional software engineering optimizes how humans write, read, edit, and collaborate, while AI-native engineering optimizes how humans and Agents continuously produce, execute, validate, and recover together inside one system.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>That is also why AI-native engineering naturally pushes toward durable execution, externalized state, sandbox lifecycle, effect logs, and recovery semantics. Once an Agent moves from &ldquo;can generate an answer&rdquo; to &ldquo;can execute a task,&rdquo; execution is no longer a single request. It becomes a long trajectory. And state no longer belongs only to the process; it becomes a system object. Systems like DBOS and Durable Agents matter not because they invented a new database, but because they made that transition operational.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<h2 id="4-what-openais-harness-engineering-reveals-about-modern-engineering-work">4. What OpenAI&rsquo;s Harness Engineering Reveals About Modern Engineering Work</h2>
+<p>What matters most to me in <em>Harness engineering</em> is not that AI can write a lot of code. It is that <strong>the optimization target of the engineering team has changed</strong>. The article opens by saying OpenAI delivered a real product from an empty repo in five months, with application logic, tests, CI, docs, observability, and internal tools all generated by Codex, using only about one-tenth of the human coding time. The key signal is not the throughput number itself. The key signal is what it implies: <strong>once code generation becomes cheap enough, the scarce resource in engineering stops being code production and becomes environment design, intent expression, and reliable feedback loops.</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>OpenAI repeatedly emphasizes the shift from &ldquo;manual coding&rdquo; to &ldquo;systems, architecture, and leverage.&rdquo; When progress stalls, the answer is no longer &ldquo;prompt a bit harder.&rdquo; It is to add missing abstractions, tools, internal structure, and enforceable rules so the Agent can clear the obstacle. At that point, this is no longer software development in the old sense. It becomes a new kind of harness engineering: <strong>not writing the implementation yourself, but building a system that is explicit enough, verifiable enough, and executable enough for the Agent to keep making progress.</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>That is also why OpenAI treats the code repository as a <strong>record system</strong>. One of their early lessons was that Codex needs a map, not a 1,000-page instruction manual. A giant <code>AGENTS.md</code> wastes context, rots quickly, and is hard to verify. A better approach is to make knowledge in the repository hierarchical, structured, and navigable. The important shift is not simply that the docs got shorter. It is that <strong>the code repository is starting to become a record system for knowledge and execution, not just a collection of source files.</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>OpenAI also did something even more important, and easier to miss: they made UI, logs, metrics, and traces direct inputs for Codex. As code throughput rose, human QA quickly became the bottleneck. So they let Codex drive Chrome DevTools directly, inspect DOM snapshots, read screenshots, query LogQL and PromQL, reproduce bugs, validate fixes, restart applications, and validate again. The importance of this move is that <strong>observability stopped being a dashboard for humans and became a debugging interface for Agents.</strong> Once you accept that, your definition of observability changes. It is no longer just an ops tool. It becomes part of the execution system itself.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>The recent popularity of Karpathy&rsquo;s <code>autoresearch</code> points in the same direction. What makes it compelling is not merely that &ldquo;the Agent can iteratively modify training code.&rdquo; It is that the project compresses self-iteration into a <strong>visible, comparable, and judgeable</strong> minimal loop: the Agent edits only one <code>train.py</code>, each run gets a fixed five-minute budget, the system evaluates outcomes with a single <code>val_bpb</code> metric, keeps or discards the change, and then continues, leaving behind a full experiment trail. What this proves is not that Agents can already self-improve without limit. It proves that <strong>once the problem boundary is small enough, the feedback loop is fast enough, the metric is simple enough, and the keep/discard rule is explicit enough, Agents can already begin self-iteration inside a local system.</strong><a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+<p>So the real lesson of <em>Harness engineering</em> is that the most important capability of future engineering teams may no longer be &ldquo;writing code.&rdquo; It may be <strong>turning the system into an environment where Agents can execute, validate, and recover reliably.</strong></p>
+<h2 id="5-why-durable-execution-is-becoming-a-new-primitive">5. Why Durable Execution Is Becoming a New Primitive</h2>
+<p>If <em>Harness engineering</em> showed what changes when Agents become first-class executors and readers, DBOS, Durable Agents, and Pydantic AI + DBOS show the lower-level consequence: <strong>once execution becomes a long-running process, workflow state must be persisted and externalized.</strong></p>
+<p>DBOS says this very clearly in its architecture docs: in traditional workflow systems, workflow state lives in runtime memory and is lost when the service crashes; DBOS stores workflow state and step checkpoints in Postgres, making the database the record system for durable execution.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> The key point is not merely &ldquo;they used Postgres again.&rdquo; The key point is that execution state is taken out of private process memory and turned into a system-level object.</p>
+<p>The Pydantic AI + DBOS integration says the same thing more implicitly. It does not package Agents as a more complex prompt loop. It explicitly connects Agent workflows and steps into durable workflow semantics, so the Agent&rsquo;s execution path naturally acquires persisted recovery points and retry points.<a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a></p>
+<p>Microsoft Durable Agents makes the same issue explicit: if a session is held by a single worker and that instance dies, the state may disappear; the goal of durable agents is <strong>any worker can resume a session</strong>.<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> In production that is categorically different from &ldquo;starting over in a new session,&rdquo; because it means user interaction state, task context, and long-running execution traces are no longer pinned to one process.</p>
+<p>So the real meaning of durable execution is not just &ldquo;automatic retry on failure.&rdquo; It means:</p>
+<ul>
+<li>state no longer lives only in-process</li>
+<li>a task is no longer equivalent to one request</li>
+<li>recovery becomes a default capability rather than an exceptional branch</li>
+</ul>
+<p>I think the importance of this is still underestimated in Agent infrastructure. Many Agent frameworks are basically extended request/response loops: model output, tool call, model output again, tool call again. As long as the chain is short, the weakness stays hidden. But once tasks span minutes, hours, human approval waits, and external system state changes, three system-level questions immediately appear:</p>
+<ol>
+<li><strong>Where does the state live?</strong></li>
+<li><strong>Where does execution resume after failure?</strong></li>
+<li><strong>How are side effects recorded and verified?</strong></li>
+</ol>
+<p>If a system cannot answer those three questions, it is not yet a mature execution system. That is why I increasingly think of durable execution as a new primitive in the Agent era, more comparable to message queues, database transactions, or job scheduling than to an optional enhancement.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> <a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a></p>
+<h2 id="6-why-agents-and-rl-force-execution-system-problems-into-the-open">6. Why Agents and RL Force Execution-System Problems into the Open</h2>
+<p>When people hear ideas like durable execution, sandboxing, and externalized state, they often feel these sound less like AI and more like distributed systems. But it is precisely Agents and RL that dragged these questions back to center stage.</p>
+<p>OpenRLHF and a range of reasoning / agentic post-training work increasingly make one point clear: <strong>in RLHF, RLVR, and reasoning RL, the truly expensive part is often not parameter updates themselves but rollout, environment interaction, and long-chain inference.</strong> The OpenRLHF systems paper says explicitly that as post-training shifts from supervised learning toward RLHF and RLVR, rollout and inference become the dominant runtime bottleneck.<a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a></p>
+<p><em>Let It Flow</em> pushes in the same direction. It is not about isolated algorithm tricks. It is about designing rollout environments, context engineering, and post-training optimization together inside one agentic learning ecosystem.<a href="https://arxiv.org/abs/2512.24873" title="https://arxiv.org/abs/2512.24873">3</a> That means once the system target shifts from &ldquo;produce an answer&rdquo; to &ldquo;repeatedly interact with an environment, generate trajectories, get feedback, and update policy,&rdquo; the environment stops being background scenery and becomes part of the training system itself.</p>
+<p>Once that happens, execution-system problems get amplified:</p>
+<ul>
+<li>each execution is no longer a short request but a long trajectory rollout</li>
+<li>state is no longer temporary process memory but something that must survive across steps, environments, and nodes</li>
+<li>failure and recovery become high-frequency paths instead of rare exceptions</li>
+<li>side effects are no longer just logs but actual changes to environments, file systems, networks, and downstream systems</li>
+</ul>
+<p>In other words, RL first exposed the fundamental importance of execution systems inside training. Agents then carry those same constraints into real business environments. The former makes rollout, environments, and checkpoints core problems. The latter makes durable execution, sandbox boundaries, effect logs, and capability policy into production problems.</p>
+<p>That is why I see Agent Infra and RL Infra as two stages of the same system evolution: <strong>RL first makes the execution problem visible in training, then Agents bring it into the real world.</strong></p>
+<h2 id="7-why-existing-agent-infra-usually-fails-to-support-production-directly">7. Why Existing Agent Infra Usually Fails to Support Production Directly</h2>
+<p>I agree strongly with the core judgment in the article <em>Why Existing Agent Infra Cannot Support Production-Grade Applications</em>: <strong>many current Agent Infra systems are still mostly packaging prompt loops more conveniently, without actually providing the execution semantics required by production systems.</strong><a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></p>
+<p>The key criticism is not that models are still too weak. It is that the abstraction layer is wrong. The problems it points out are all foundational:</p>
+<ul>
+<li><strong>missing execution semantics</strong>: many frameworks package multi-step decision-making into a chain without clear recovery points, compensation points, or state semantics</li>
+<li><strong>missing side-effect semantics</strong>: once an Agent can call external APIs, write databases, edit files, or send messages, the system must know which effects have already happened, which can be replayed, and which must be idempotent</li>
+<li><strong>missing long-lifecycle task semantics</strong>: production tasks may span minutes, hours, and human approval waits, so they no longer fit a single request model</li>
+</ul>
+<p>These are inseparable from durable execution. Another way to put it is this: <strong>production-grade Agent systems require long-running, recoverable, verifiable execution processes, not merely smarter model outputs.</strong> Once you frame the problem correctly, the limits of many flashy Agent frameworks become obvious. They may be perfectly fine for demos, single-host tool invocation, and short-chain prototypes. But once you enter a world of real permissions, real state, and real side effects, you need a much deeper execution substrate.<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></p>
+<p>So I increasingly dislike thinking of Agent Infra as just an orchestration layer for models. A more accurate formulation is:</p>
+<blockquote>
+<p><strong>Production-grade Agent Infra is fundamentally an execution system organized around long-horizon execution, externalized state, side-effect management, recovery semantics, and environment boundaries.</strong></p>
+</blockquote>
+<p>Without that semantic layer, it becomes hard to answer:</p>
+<ul>
+<li>where execution resumes after interruption</li>
+<li>whether an effect has already been performed</li>
+<li>which instance takes over after a crash</li>
+<li>how state is preserved during human-in-the-loop waits</li>
+<li>whether rollback refers to model state, environment state, or business state</li>
+</ul>
+<p>Those are not framework ergonomics problems. They are system-semantics problems.<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></p>
+<h2 id="8-why-session-recovery-and-any-worker-can-resume-a-session-matter-so-much">8. Why Session Recovery and &ldquo;Any Worker Can Resume a Session&rdquo; Matter So Much</h2>
+<p>The line from Durable Agents that matters most to me is: <strong>any worker can resume a session</strong>.<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a> It sounds like an implementation detail in distributed systems. In practice, it is one of the clearest dividing lines between an Agent system that can enter production and one that cannot.</p>
+<p>Why?</p>
+<p>Because production Agents are almost never held by one process, one machine, or one Pod from start to finish. You will have:</p>
+<ul>
+<li>instance restarts</li>
+<li>machine failures</li>
+<li>rolling deploys</li>
+<li>long waits for human input</li>
+<li>long-latency feedback from external systems</li>
+</ul>
+<p>If session state lives only in the current worker&rsquo;s memory, then once any of those things happen, the system can only:</p>
+<ol>
+<li>restart the whole task from scratch</li>
+<li>drag the user back into an inconsistent state</li>
+<li>rely on manual rescue</li>
+</ol>
+<p>None of those is acceptable production semantics.</p>
+<p>So the importance of Durable Agents is not merely that it &ldquo;can restore sessions.&rdquo; It is that it makes an important hidden fact explicit: <strong>an Agent session is increasingly becoming a long-lived task object in a distributed system, not a web session.</strong><a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<p>Once you accept that framing, the rest of the system design follows naturally:</p>
+<ul>
+<li>session state must be persisted</li>
+<li>workers no longer own sessions but only execute them temporarily</li>
+<li>crash recovery becomes the default path</li>
+<li>human waiting becomes a system-level state, not a UI hack</li>
+</ul>
+<p>From there, the next step toward effect logs and recovery semantics is obvious. If any instance can take over, then the system must answer: which side effects have already occurred? Which can be retried? Which require compensation? Which must wait for confirmation?</p>
+<p>In other words, session recovery is not a convenient resume feature. It is pressure that forces the system to make <strong>execution semantics explicit</strong>.</p>
+<h2 id="9-sandbox-the-real-question-is-not-just-isolation-but-what-is-shared-what-is-reachable-and-what-persists-across-runs">9. Sandbox: The Real Question Is Not Just Isolation, but What Is Shared, What Is Reachable, and What Persists Across Runs</h2>
+<p>Luis Cardoso&rsquo;s <em>A field guide to sandboxes for AI</em> matters because it reduces all sandbox discussion to one compact framing:</p>
+<blockquote>
+<p><strong>Sandbox = boundary + policy + lifecycle.</strong><a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</blockquote>
+<p>The value of that definition is that it separates concepts people routinely blur together.</p>
+<p>First comes <strong>boundary</strong>. Luis lays out four common ones: container boundaries still share the host kernel; gVisor boundaries intercept workload syscalls in a userspace kernel; microVM boundaries hand syscalls to a guest kernel; runtime boundaries do not expose the guest to a syscall ABI at all and instead expose only explicit host APIs. His summary line is powerful: <strong>the boundary is the line you are betting an attacker cannot cross.</strong> That is a strong starting point for almost any sandbox discussion.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>Then comes <strong>policy</strong>. Luis does not reduce policy to a seccomp profile. He expands it to file system paths, network destinations and protocols, process creation, device access, time/memory/CPU/disk quotas, syscalls, and import surface. More importantly, he gives a line that deserves to be repeated often: <strong>a tight policy in a weak boundary is still a weak sandbox; a strong boundary with a permissive policy is a missed opportunity.</strong> That neatly separates the concepts of boundary and capability scope.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>Finally there is <strong>lifecycle</strong>, arguably the dimension that matters most to Agents and RL and is easiest to underestimate. Luis splits lifecycle into three types: fresh run, workspace, and snapshot/restore, and explicitly says this matters a lot for agents and RL. Hostile code tends to want fresh runs. Agent workspaces want long-lived file systems and sessions. RL rollouts and pre-warmed agents naturally prefer snapshot/restore. Which means sandboxing is not a binary safe/unsafe question. It is a set of engineering choices around boundary, policy, and lifecycle.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>Once you use that frame, many sandbox debates become much clearer. The real question is not &ldquo;containers or microVMs?&rdquo; It is: <strong>are you serving hostile code, agent workspaces, or fast-reset RL? What lifecycle do you actually need?</strong> Once the question is correct, the technical decision tends to converge naturally.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<h2 id="10-choosing-the-runtime-base-containers-gvisor-microvms-wasm-and-unikernels">10. Choosing the Runtime Base: Containers, gVisor, MicroVMs, Wasm, and Unikernels</h2>
+<p>Once you have the boundary / policy / lifecycle frame, runtime choice becomes much easier to reason about.</p>
+<p>Luis already disentangles the major boundary types clearly: containers share the host kernel; gVisor traps workload syscalls in a userspace kernel; microVMs provide a stronger boundary via a guest kernel; Wasm / isolates move the boundary into the runtime and expose only explicit host capabilities rather than ambient file system or network access.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<h3 id="containers-usable-but-you-need-to-be-honest-about-the-boundary">Containers: usable, but you need to be honest about the boundary</h3>
+<p>Luis is direct here: <strong>containers alone are not a sufficient security boundary for hostile-code scenarios.</strong> The issue is not that they provide no isolation at all. The issue is that they still share the host kernel. If there is a bug on an allowed syscall path, it is a host-kernel bug. Containers can certainly be hardened, but &ldquo;a hardened shared-kernel environment&rdquo; is still not the same thing as &ldquo;a stronger boundary.&quot;<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>Gao Ce&rsquo;s piece <em>Possible Agent Sandbox Choices and the Opportunity for Unikernels</em> adds a useful practical nuance: many people assume containers are slower to start than Firecracker-style lightweight VMs, but once you exclude image pulling and similar external factors, container startup itself can be measured in tens of milliseconds or less. The bigger issue is security: namespaces and cgroups give some isolation, but the host kernel is still shared.<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<h3 id="microvms-why-they-increasingly-look-like-the-practical-answer">MicroVMs: why they increasingly look like the practical answer</h3>
+<p>Luis also points out a key historical shift: in 2010, &ldquo;use a VM for sandboxing&rdquo; almost automatically implied second-level startup latency and major density tradeoffs; by 2026, microVMs can be &ldquo;fast like containers,&rdquo; and snapshot/restore can make reset almost free. That matters because the trade space has changed, while many people&rsquo;s mental vocabulary is still stuck in the old &ldquo;container vs VM&rdquo; framing.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>Gao Ce&rsquo;s article reflects the same practical direction. The realistic mainstream candidates for agent sandboxes are already <strong>Firecracker, gVisor, Kata Containers, and maybe Wasm</strong>. He also lists core agent-sandbox requirements explicitly: ideally sub-100ms cold start, strong security, compatibility with the Python ecosystem, and a workable image build flow.<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<h3 id="wasm--runtime-sandboxes-clearer-capability-boundaries-but-compatibility-is-the-constraint">Wasm / runtime sandboxes: clearer capability boundaries, but compatibility is the constraint</h3>
+<p>Luis is right to isolate runtime sandboxes as a separate category. The biggest advantage of Wasm / isolates is not raw speed. It is that they <strong>do not come with ambient capabilities by default</strong>: no default file system, no default network, no default syscall ABI. The guest can only call host APIs that are explicitly exposed. That is beautiful from a capability-oriented design perspective.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>But Gao Ce also points out the practical limit: Wasm is not naturally friendly to complex dynamic languages like Python. WASI provides a smaller and more portable interface layer than native Linux. Once you need rich Python ecosystems and many C bindings, you get pulled back into compatibility trouble. So the real question is not whether Wasm is &ldquo;good.&rdquo; The question is whether it matches your workload shape.<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<h3 id="unikernels-theoretically-appealing-practically-scarce">Unikernels: theoretically appealing, practically scarce</h3>
+<p>Gao Ce revisits unikernels because, in theory, they look almost ideal for agent sandboxes: application and kernel compiled into a single image, running on hardware virtualization, with a tiny attack surface and very fast startup. But the industry has not broadly converged on them. Instead it is still balancing across Firecracker, gVisor, Kata, and Wasm. That is a useful reminder that the real engineering question is not &ldquo;which route is theoretically most elegant,&rdquo; but &ldquo;which route can, in today&rsquo;s ecosystem, jointly satisfy boundary strength, compatibility, and lifecycle needs.&quot;<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></p>
+<p>So my conclusion for this section is simple: <strong>there is no permanently correct substrate, but Agents will keep pushing systems toward stronger boundaries, clearer capabilities, and more snapshot/restore-friendly runtimes.</strong><a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<p>If I had to reduce the runtime choice into a short selection guide, it would be:</p>
+<ul>
+<li>hostile code or high-risk permissions: prioritize stronger boundaries before chasing convenience</li>
+<li>long-lived agent workspaces: focus on state retention, session semantics, and recovery cost</li>
+<li>RL rollout / fast reset: focus on snapshot/restore speed and density</li>
+</ul>
+<p>The core question in runtime debates is never &ldquo;which is more advanced?&rdquo; It is <strong>which one actually matches the shape of your workload.</strong></p>
+<h2 id="11-why-traditional-kubernetes-sandbox-approaches-hit-bottlenecks-early">11. Why Traditional Kubernetes Sandbox Approaches Hit Bottlenecks Early</h2>
+<p>What the MiniMax case study is really criticizing is not &ldquo;all current Agent Infra abstractions are wrong.&rdquo; It is that <strong>using a conventional Kubernetes stack as-is to serve agentic RL sandboxes tends to hit bottlenecks early.</strong><a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="1-kubernetes-is-optimized-for-microservices-not-bursty-sandbox-supply">1) Kubernetes is optimized for microservices, not bursty sandbox supply</h3>
+<p>Kubernetes is excellent at resource orchestration, container management, and long-running services. But agentic RL wants large-scale, bursty, short-lived sandbox floods. The article explicitly says that in such scenarios, etcd, the scheduler, external storage, and networking all become bottlenecks, while controllers and state-coordination paths further increase latency.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="2-security-isolation-and-multi-tenancy-magnify-the-problem">2) Security isolation and multi-tenancy magnify the problem</h3>
+<p>For multi-tenant sandboxes, Kubernetes' default network model, where things tend to be mutually reachable, introduces additional security issues on its own. In other words, Kubernetes is not incapable of running sandboxes. It is just that its default design target is not &ldquo;strong isolation plus massive short-lived environment supply.&rdquo; For agentic RL, that is usually not the best starting point.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="3-the-question-is-not-merely-whether-you-have-a-sandbox-but-whether-the-sandbox-was-designed-for-this-workload">3) The question is not merely whether you have a sandbox, but whether the sandbox was designed for this workload</h3>
+<p>Tencent Cloud Agent Runtime is used in the article to prove exactly that point: only when lightweight scheduling, warm pools, pooled devices, on-demand image loading, block-level deduplication, snapshot restoration, VNC observability, and MCP / CLI integration are built into one substrate does the sandbox stop being an auxiliary tool and become scalable infrastructure for agentic RL.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>That brings us back to the main thesis of this article: <strong>runtime is not better simply because it is more powerful. It has to be designed against the workload.</strong> For agentic RL, the keywords are not request serving but rollout, environment supply, checkpoints, and experiment replay.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h2 id="12-a-stack-model-for-ai-native-engineering-that-i-actually-find-useful">12. A Stack Model for AI-Native Engineering That I Actually Find Useful</h2>
+<p>If I compress all the material above into one map, I would divide the AI-native engineering stack into four layers. The point is not to invent fresh terminology. The point is to put the systems discussed above into one coordinate system, so that later we can reduce them to practical evaluation questions.</p>
+<h3 id="layer-1-model-and-tool-layer">Layer 1: model and tool layer</h3>
+<p>This layer handles inference, planning, tool invocation, code generation, and multimodal interaction. It determines whether the Agent <strong>can</strong> do something. Codex, browser automation, code-fix tools, and similar capabilities live here.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h3 id="layer-2-durable-execution--workflow-layer">Layer 2: durable execution / workflow layer</h3>
+<p>This layer organizes model outputs into an execution process that is persistable, recoverable, and schedulable. DBOS durable workflows, Pydantic AI + DBOS&rsquo;s workflow/step wrapping, and Microsoft Durable Agents' session recovery all live here. This layer does not answer &ldquo;how does the model think?&rdquo; It answers &ldquo;where is execution now, how does it resume after failure, and how does another instance take over?&quot;<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<h3 id="layer-3-sandbox--runtime-layer">Layer 3: sandbox / runtime layer</h3>
+<p>This layer answers &ldquo;where does execution happen?&rdquo; and &ldquo;under what boundary does it happen?&rdquo; Luis&rsquo;s boundary/policy/lifecycle framing, isolation substrates like Firecracker, gVisor, and Wasm, ROCK&rsquo;s environment control plane, Zeroboot&rsquo;s CoW VM fork primitives, and the Agentic-RL-oriented sandbox platforms in the MiniMax case all belong here. This layer answers what is shared, what is reachable, what persists across runs, and whether environments can be supplied at scale with low latency.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a> <a href="https://github.com/alibaba/ROCK" title="https://github.com/alibaba/ROCK">10</a> <a href="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file" title="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file">12</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<h3 id="layer-4-observability--validation--experiment-loop-layer">Layer 4: observability / validation / experiment-loop layer</h3>
+<p>This is the easiest layer to underestimate and one that will matter more and more. OpenAI made logs, metrics, and UI into direct Codex inputs. MiniMax elevates checkpoints, rollback, forked experiments, trajectory recording, VNC observability, and execution logs into part of training infrastructure. In other words, observability is no longer just an operations tool. It becomes part of both the execution system and the experiment system.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>From this perspective, the phrase &ldquo;the AI-native engineering stack is shifting from model-centric to execution-system-centric&rdquo; becomes more precise: <strong>it does not mean models no longer matter. It means model capability can only be redeemed reliably once execution, state, boundaries, and validation are all designed as one system.</strong></p>
+<h2 id="13-why-the-most-important-engineering-problem-in-2026-is-no-longer-code-generation">13. Why the Most Important Engineering Problem in 2026 Is No Longer Code Generation</h2>
+<p>I want to write one judgment as plainly as possible:</p>
+<blockquote>
+<p><strong>The most important engineering problem in 2026 is no longer how to generate more code, but how to absorb more results generated and executed by Agents.</strong></p>
+</blockquote>
+<p>OpenAI&rsquo;s example already shows that once code throughput rises, the bottleneck quickly becomes human QA rather than additional generation speed. In other words, once generation cost drops, the truly scarce resources reappear clearly: <strong>human attention, trustworthy validation systems, sound state semantics, and reliable recovery mechanisms.</strong><a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>That is why concepts like durable execution, sandbox lifecycle, checkpoint / snapshot, and observability, which do not sound especially &ldquo;AI-native&rdquo; at first glance, will become more valuable over the next few years. They are not competitors to model capability. They are the next bottlenecks revealed after model throughput is amplified. OpenAI shows the first stage: once Agents can write a lot of code, validation, observability, and knowledge organization become bottlenecks. DBOS and Durable Agents show the second stage: execution state must be externalized. MiniMax makes the third stage concrete: in agentic RL, environment supply, image distribution, snapshot replay, and full-path observability become hard constraints on training throughput and stability.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>The popularity of <code>autoresearch</code> pushes the point further. It makes more people see directly that &ldquo;Agents can start iterating on themselves&rdquo; is not magic. It rests on whether two things have been systematized. First, <strong>observability</strong>: can the system preserve exactly what changed, what ran, and what happened in each round? Second, <strong>evaluability</strong>: can each round&rsquo;s result be compared under a fixed budget, a fixed metric, and explicit keep/discard rules? Without those two pillars, Agent self-iteration easily collapses into drift. With them, it begins to look like a real experiment system.<a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+<p>So the gap between teams in the future may no longer be primarily:</p>
+<ul>
+<li>who has the model that can write one more function</li>
+</ul>
+<p>It will be:</p>
+<ul>
+<li>who lets Agents understand the system faster</li>
+<li>who persists execution state more correctly</li>
+<li>who makes recovery the default behavior</li>
+<li>who turns environment supply, checkpoints, validation, and observability into first-class system primitives</li>
+</ul>
+<p>Put differently, <strong>the team that can generate more code does not necessarily win. The team that can validate more outcomes, recover from more failures, and absorb more execution is more likely to win.</strong></p>
+<p>That is also why a useful evaluation framework should no longer start with a checklist of model capabilities. It should start by asking whether the system has made absorption, recovery, boundaries, and verification into real infrastructure.</p>
+<h2 id="14-the-10-questions-i-now-use-to-evaluate-any-agent-infra">14. The 10 Questions I Now Use to Evaluate Any Agent Infra</h2>
+<p>If I compress the stack model above into something directly usable, these are basically the 10 questions I ask when evaluating Agent infrastructure:</p>
+<ol>
+<li>
+<p><strong>Does state live in process memory, or is it persisted in external storage?</strong><br>
+If state exists only in memory, then what you really have is still just a session, not recoverable execution.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a></p>
+</li>
+<li>
+<p><strong>After failure, does execution restart from the beginning, or resume from the last completed step?</strong><br>
+This is almost the dividing line between ordinary workflow systems and durable workflow systems.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a></p>
+</li>
+<li>
+<p><strong>Are checkpointing, rollback, and branchable experiments available?</strong><br>
+If environment state cannot be precisely saved, replayed, and forked, many agentic RL training and debugging workloads become too expensive to tolerate.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+</li>
+<li>
+<p><strong>What is the isolation boundary?</strong><br>
+Containers, gVisor, microVMs, and Wasm have fundamentally different boundaries, and they should not be discussed as if they were interchangeable.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</li>
+<li>
+<p><strong>What exactly does policy restrict?</strong><br>
+File system, network, devices, process creation, syscalls, quotas, and so on. Which are constrained and which are not?<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</li>
+<li>
+<p><strong>What is the lifecycle: fresh run, workspace, or snapshot/restore?</strong><br>
+Different workloads require very different answers.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+</li>
+<li>
+<p><strong>When instances switch, is session and task state lost?</strong><br>
+&ldquo;Any worker can resume a session&rdquo; versus &ldquo;state is lost on crash&rdquo; is a devastating production difference.<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+</li>
+<li>
+<p><strong>Are logs, metrics, and traces only for humans, or can Agents consume them directly too?</strong><br>
+If they are only for humans, your debugging throughput will quickly become the bottleneck.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+</li>
+<li>
+<p><strong>Is the validation system an after-the-fact safety net, or a front-loaded design constraint?</strong><br>
+This is not just about having tests. It also includes unified evaluation metrics and clear keep/discard rules. Without those, Agent self-iteration easily degrades into drift.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+</li>
+<li>
+<p><strong>Is the system built for demos, or can it withstand real permissions, long-horizon execution, and real side effects?</strong><br>
+The distance between a working prototype and a production-ready system is often precisely the distance across the previous nine questions.<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a> <a href="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file" title="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file">12</a></p>
+</li>
+</ol>
+<p>Almost none of these questions directly ask how strong the model is. That is not because the model does not matter. It is because once the model is strong enough, <strong>what actually blocks you is usually the execution system itself.</strong> The four-layer stack above describes the problem space. These ten questions turn it into a practical reading framework for evaluating systems.</p>
+<h2 id="15-practical-implications-for-engineering-teams">15. Practical Implications for Engineering Teams</h2>
+<p>If I turn those ten questions into actions a team can take today, I think there are at least six.</p>
+<h3 id="1-write-documentation-for-agents-not-just-for-humans">1) Write documentation for Agents, not just for humans</h3>
+<p>If your docs are still written as &ldquo;complete manuals for human readers,&rdquo; you are probably already behind. OpenAI&rsquo;s experience suggests that what Agents really need is a map, not a giant handbook. More concretely, your documentation system should at least be structured, navigable, and freshness-verifiable. Otherwise model context quickly gets filled with stale instructions and vague rules.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h3 id="2-move-tests-and-acceptance-standards-forward">2) Move tests and acceptance standards forward</h3>
+<p>Once generation cost drops, validation becomes the bottleneck. The earlier a team moves testing, regression checks, acceptance criteria, and runtime guards into the system, the more likely Agent throughput turns into actual production output. OpenAI&rsquo;s bottleneck moving from coding to QA is the clearest example. Validation should not be treated as a final safety net. It should be treated as an entry condition for execution.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<p>And if you want Agents to truly self-iterate, you have to move this even further forward: fixed budgets, unified metrics, and explicit keep/discard rules all need to be written into the system first. That is exactly why <code>autoresearch</code> is convincing.<a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></p>
+<h3 id="3-observability-should-serve-both-humans-and-agents">3) Observability should serve both humans and Agents</h3>
+<p>Logs, metrics, and traces should not exist only for human operators. They should also become direct Agent inputs. Making it possible for Agents to read LogQL, PromQL, and runtime UI signals will increasingly feel like a foundational capability, comparable to automated test execution today. For many teams, this means observability is no longer just a dashboard. It is the Agent&rsquo;s debugging interface.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h3 id="4-state-cannot-live-only-in-process-memory">4) State cannot live only in process memory</h3>
+<p>If you are building multi-step Agents, long-running workflows, tool-driven execution, or mixed human/Agent flows, you should assume processes will die, instances will drift, and tasks will wait. The core lesson from DBOS and Durable Agents is simple: <strong>state must be externalized if recovery is supposed to exist.</strong> If your system still depends on process memory to survive, it is not ready for production.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a> <a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></p>
+<h3 id="5-sandbox-choice-has-to-answer-three-questions">5) Sandbox choice has to answer three questions</h3>
+<p>Using Luis&rsquo;s framework, any sandbox decision should begin by answering:</p>
+<ul>
+<li>what does it share with the host?</li>
+<li>what can the code touch?</li>
+<li>what persists across runs?</li>
+</ul>
+<p>If you cannot answer those three clearly, then you do not actually understand your runtime boundary. Many infrastructure debates drag on only because workload shape, permission model, and lifecycle assumptions were never made explicit up front.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></p>
+<h3 id="6-the-real-organizational-difference-will-show-up-in-environment-design">6) The real organizational difference will show up in environment design</h3>
+<p>The biggest difference between teams in the future may not be whether they &ldquo;use Agents.&rdquo; It may be <strong>whether they know how to design environments for Agents.</strong> That includes codebase structure, documentation systems, test frameworks, durable execution, state storage, sandbox lifecycle, side-effect logs, and recovery semantics. <em>Harness engineering</em> matters not because it showcases a strong model, but because it shows how a team begins rewriting its engineering system around an Agent.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></p>
+<h2 id="16-conclusion-from-writing-code-to-designing-execution-systems">16. Conclusion: From Writing Code to Designing Execution Systems</h2>
+<p>If you summarize the pre-2023 large-model engineering narrative as &ldquo;bigger models, bigger training, stronger model capability,&rdquo; then 2024 to 2026 looks like a different line of evolution: <strong>first RL and rollout made generation, state, and environment interaction central to training; then Agents brought those same constraints into real business systems; then durable execution, sandbox lifecycle, checkpoint / snapshot, environment supply, and observability began to emerge as new infrastructure prerequisites.</strong><a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a> <a href="https://arxiv.org/abs/2512.24873" title="https://arxiv.org/abs/2512.24873">3</a> <a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>So my prediction for the next two years is simple:</p>
+<p><strong>Model capability will keep improving, but the real differentiator will be the execution system.</strong></p>
+<p>More plainly, the gap between teams will not be only:</p>
+<ul>
+<li>who can generate code faster</li>
+</ul>
+<p>It will increasingly be:</p>
+<ul>
+<li>who can organize the codebase into a record system readable by Agents</li>
+<li>who can externalize execution state and make recovery the default</li>
+<li>who can define sandbox boundary, policy, and lifecycle clearly</li>
+<li>who can elevate checkpoints, validation, and observability into first-class system primitives rather than after-the-fact patches</li>
+</ul>
+<p>The teams that solve those first will be closer to a real AI-native engineering stack.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a> <a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></p>
+<p>That is why I chose the title of this piece:</p>
+<blockquote>
+<p><strong>The AI-native engineering stack is shifting from model-centric to execution-system-centric.</strong></p>
+</blockquote>
+<p>This is not a decorative trend statement. It is a systems-level evolution that has already started and is likely to continue for years.</p>
+<h2 id="17-further-reading-grouped-by-theme">17. Further Reading, Grouped by Theme</h2>
+<h3 id="durable-execution--workflow">Durable Execution / Workflow</h3>
+<ol>
+<li><em>DBOS Architecture</em>: durable execution via workflow / step checkpointing into Postgres.<a href="https://docs.dbos.dev/architecture" title="https://docs.dbos.dev/architecture">1</a></li>
+<li><em>Durable Agents</em>: session recovery, worker handoff, and human-in-the-loop waiting as persistent state.<a href="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents" title="https://github.com/microsoft/agent-framework/tree/main/docs/features/durable-agents">6</a></li>
+<li><em>Pydantic AI + DBOS</em>: explicitly wiring Agent workflows into durable execution.<a href="https://ai.pydantic.dev/durable_execution/dbos/" title="https://ai.pydantic.dev/durable_execution/dbos/">7</a></li>
+</ol>
+<h3 id="harness--eval--self-iteration">Harness / Eval / Self-Iteration</h3>
+<ol start="4">
+<li><em>Harness engineering</em>: how OpenAI rewrote repositories, validation, and observability into an Agent-consumable execution system.<a href="https://openai.com/zh-Hans-CN/index/harness-engineering/" title="https://openai.com/zh-Hans-CN/index/harness-engineering/">4</a></li>
+<li><em>autoresearch</em>: a minimal self-iteration loop with unified metrics, fixed budgets, and explicit keep/discard rules.<a href="https://github.com/karpathy/autoresearch?tab=readme-ov-file" title="https://github.com/karpathy/autoresearch?tab=readme-ov-file">13</a></li>
+</ol>
+<h3 id="production-agent-infra--runtime">Production Agent Infra / Runtime</h3>
+<ol start="5">
+<li><em>Why Existing Agent Infra Cannot Support Production-Grade Applications</em>: semantic mismatch, missing execution primitives, and the structural requirements of production Agent infrastructure.<a href="https://www.sohu.com/a/993822823_355140" title="https://www.sohu.com/a/993822823_355140">5</a></li>
+<li><em>Million-Scale Throughput, Hundred-Thousand Concurrency: The Sandbox Substrate Behind MiniMax Agentic RL Training</em>: the four major demands agentic RL places on sandbox infrastructure and Tencent Cloud Agent Runtime&rsquo;s implementation path.<a href="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg" title="https://mp.weixin.qq.com/s/AsdIvvZdZMVVCKsi9OG9Gg">11</a></li>
+<li><em>Zeroboot</em>: sub-millisecond VM sandbox primitives and snapshot / CoW fork direction.<a href="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file" title="https://github.com/zerobootdev/zeroboot?tab=readme-ov-file">12</a></li>
+</ol>
+<h3 id="rl--agentic-post-training--environment">RL / Agentic Post-Training / Environment</h3>
+<ol start="2">
+<li><em>OpenRLHF</em>: rollout / inference as the dominant runtime bottleneck in RLHF and RLVR.<a href="https://arxiv.org/html/2501.03262v4" title="https://arxiv.org/html/2501.03262v4">2</a></li>
+<li><em>Let It Flow</em>: jointly designing rollout environments, context engineering, and post-training optimization in an agentic learning ecosystem.<a href="https://arxiv.org/abs/2512.24873" title="https://arxiv.org/abs/2512.24873">3</a></li>
+<li><em>ROCK</em>: an environment control plane for agentic reinforcement learning.<a href="https://github.com/alibaba/ROCK" title="https://github.com/alibaba/ROCK">10</a></li>
+</ol>
+<h3 id="sandbox--boundary--runtime-base">Sandbox / Boundary / Runtime Base</h3>
+<ol start="8">
+<li><em>A field guide to sandboxes for AI</em>: the boundary / policy / lifecycle framework.<a href="https://www.luiscardoso.dev/blog/sandboxes-for-ai" title="https://www.luiscardoso.dev/blog/sandboxes-for-ai">8</a></li>
+<li><em>Possible Agent Sandbox Choices and the Opportunity for Unikernels</em>: practical tradeoffs across Firecracker, gVisor, Wasm, and unikernels.<a href="https://gaocegege.com/Blog/genai/unikernel-agent" title="https://gaocegege.com/Blog/genai/unikernel-agent">9</a></li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#AI Native Engineering</span>
+      
+      <span class="tag">#Agent Infra</span>
+      
+      <span class="tag">#Durable Execution</span>
+      
+      <span class="tag">#Sandbox</span>
+      
+      <span class="tag">#Observability</span>
+      
+      <span class="tag">#Workflow</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">Share this post on:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fen%2fai-native-engineering-shift%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fen%2fai-native-engineering-shift%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=AI-Native%20Engineering%20Is%20Moving%20from%20Models%20to%20Execution%20Systems&body=https%3a%2f%2fblog.xieydd.top%2fen%2fai-native-engineering-shift%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">Back to Top</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/" class="prev-post">
+        <span class="nav-label">Previous Post</span>
+        <span class="nav-title">From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/en/vector-search/" class="next-post">
+        <span class="nav-label">Next Post</span>
+        <span class="nav-title">The internals of Vector Databases</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+    </main>
+  </div>
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -8,7 +8,7 @@
     <language>en</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Sun, 22 Mar 2026 10:00:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 27 Mar 2026 21:46:21 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Everything You Need to Know About LLM Infra</title>
       <link>https://blog.xieydd.top/en/llm-infra/</link>
@@ -57,6 +57,16 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/vector-search/</guid>
       <description>It has been over a year since I joined Tensorchord, and I haven&amp;rsquo;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+    </item>
+    
+    <item>
+      <title>AI-Native Engineering Is Moving from Models to Execution Systems</title>
+      <link>https://blog.xieydd.top/en/ai-native-engineering-shift/</link>
+      <pubDate>Fri, 27 Mar 2026 21:46:21 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/ai-native-engineering-shift/</guid>
+      <description>Where does the real bottleneck move once code generation becomes cheap?
+1. TL;DR: What This Article Is Actually Arguing Over the last two years, the most visible changes in AI engineering came from the models: they write better code, call tools more reliably, and increasingly feel like coworkers who can get real work done. But zoom out a little, and the thing being rewritten is often not whether the model can do the task.</description>
     </item>
     
     <item>
