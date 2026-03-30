@@ -98,6 +98,12 @@
         <a href="https://blog.xieydd.top/about/">关于</a>
         
         <div class="nav-icons">
+          <button id="search-toggle" class="theme-toggle" title="Search (Ctrl+K)" aria-label="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
           <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
             <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -161,7 +167,29 @@
 
     </main>
   </div>
+  
+<div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="search-input" class="search-input" placeholder="搜索文章..." autocomplete="off" />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">
+        输入关键词开始搜索
+      </div>
+    </div>
+  </div>
+</div>
+
   <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/fuse.js@7"></script>
+  <script src="/js/search.js"></script>
   <script src="https://unpkg.com/swup@4"></script>
   <script>
     (function() {

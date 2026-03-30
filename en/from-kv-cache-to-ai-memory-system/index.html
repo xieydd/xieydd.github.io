@@ -50,7 +50,7 @@
   
   <meta property="article:author" content="xieydd">
   <meta property="article:published_time" content="2026-03-22T10:00:00&#43;08:00">
-  <meta property="article:modified_time" content="2026-03-29T10:30:35&#43;08:00">
+  <meta property="article:modified_time" content="2026-03-30T09:12:21&#43;08:00">
   
   <meta property="article:tag" content="AI Infrastructure">
   
@@ -93,7 +93,7 @@
   
   
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-29T10:30:35+08:00","datePublished":"2026-03-22T10:00:00+08:00","description":"Why has systems innovation around large language model inference increasingly looked less like optimizing a neural network and more like designing a memory system? This article strings together Mac/UMA, NVIDIA/NVLink, FlashAttention, vLLM, RL rollout, Mooncake, LMCache, CXL, and recent 2025-2026 research papers into a coherent narrative.","headline":"From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture","image":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/cover.png","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/"}
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-03-30T09:12:21+08:00","datePublished":"2026-03-22T10:00:00+08:00","description":"Why has systems innovation around large language model inference increasingly looked less like optimizing a neural network and more like designing a memory system? This article strings together Mac/UMA, NVIDIA/NVLink, FlashAttention, vLLM, RL rollout, Mooncake, LMCache, CXL, and recent 2025-2026 research papers into a coherent narrative.","headline":"From KV Cache to AI Memory System: The Evolution of Large Language Model Inference Architecture","image":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/cover.png","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/from-kv-cache-to-ai-memory-system/"}
   </script>
   
 
@@ -123,6 +123,12 @@
         <a href="https://blog.xieydd.top/en/about/">About</a>
         
         <div class="nav-icons">
+          <button id="search-toggle" class="theme-toggle" title="Search (Ctrl+K)" aria-label="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
           <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
             <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -767,7 +773,29 @@ What I want to emphasize more is:</p>
 
     </main>
   </div>
+  
+<div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="search-input" class="search-input" placeholder="Search posts..." autocomplete="off" />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">
+        Type to start searching
+      </div>
+    </div>
+  </div>
+</div>
+
   <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/fuse.js@7"></script>
+  <script src="/js/search.js"></script>
   <script src="https://unpkg.com/swup@4"></script>
   <script>
     (function() {
