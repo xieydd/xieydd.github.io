@@ -7,7 +7,7 @@
   <url>
     <loc>https://blog.xieydd.top/llm-infra/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -44,7 +44,7 @@
   <url>
     <loc>https://blog.xieydd.top/improve-model-serving-cold-start/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -81,7 +81,7 @@
   <url>
     <loc>https://blog.xieydd.top/s3/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -97,7 +97,7 @@
   <url>
     <loc>https://blog.xieydd.top/serverless/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -113,7 +113,7 @@
   <url>
     <loc>https://blog.xieydd.top/postgres-ha/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -150,7 +150,7 @@
   <url>
     <loc>https://blog.xieydd.top/scheduler/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -166,7 +166,7 @@
   <url>
     <loc>https://blog.xieydd.top/kubernetes-topo-aware-all-you-need-know/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -204,10 +204,190 @@
     
   
     
+  
+    
+  
+    
+  <url>
+    <loc>https://blog.xieydd.top/deepseek-v4-action-part3/</loc>
+    
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
+    
+    
+    <changefreq>weekly</changefreq>
+    
+    
+    <priority>0.5</priority>
+    
+    
+      
+      
+        
+          
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://blog.xieydd.top/deepseek-v4-action-part3/" />
+      
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="en"
+      href="https://blog.xieydd.top/en/deepseek-v4-action-part3/" />
+      
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/deepseek-v4-action-part3/" />
+    
+  </url>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  <url>
+    <loc>https://blog.xieydd.top/</loc>
+    
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
+    
+    
+    <changefreq>weekly</changefreq>
+    
+    
+    <priority>0.5</priority>
+    
+    
+      
+      
+        
+          
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://blog.xieydd.top/" />
+      
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="en"
+      href="https://blog.xieydd.top/en/" />
+      
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/" />
+    
+  </url>
+    
+  
+    
+  <url>
+    <loc>https://blog.xieydd.top/deepseek-v4-control-part2/</loc>
+    
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
+    
+    
+    <changefreq>weekly</changefreq>
+    
+    
+    <priority>0.5</priority>
+    
+    
+      
+      
+        
+          
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://blog.xieydd.top/deepseek-v4-control-part2/" />
+      
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="en"
+      href="https://blog.xieydd.top/en/deepseek-v4-control-part2/" />
+      
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/deepseek-v4-control-part2/" />
+    
+  </url>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  <url>
+    <loc>https://blog.xieydd.top/deepseek-v4-memory-part1/</loc>
+    
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
+    
+    
+    <changefreq>weekly</changefreq>
+    
+    
+    <priority>0.5</priority>
+    
+    
+      
+      
+        
+          
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://blog.xieydd.top/deepseek-v4-memory-part1/" />
+      
+        
+    <xhtml:link
+      rel="alternate"
+      hreflang="en"
+      href="https://blog.xieydd.top/en/deepseek-v4-memory-part1/" />
+      
+    <xhtml:link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://blog.xieydd.top/deepseek-v4-memory-part1/" />
+    
+  </url>
+    
+  
+    
+  
+    
+  
+    
+  
+    
   <url>
     <loc>https://blog.xieydd.top/ai-native-engineering-shift/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -249,61 +429,10 @@
     
   
     
-  
-    
-  
-    
-  
-    
-  <url>
-    <loc>https://blog.xieydd.top/</loc>
-    
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
-    
-    
-    <changefreq>weekly</changefreq>
-    
-    
-    <priority>0.5</priority>
-    
-    
-      
-      
-        
-          
-        
-    <xhtml:link
-      rel="alternate"
-      hreflang="zh-cn"
-      href="https://blog.xieydd.top/" />
-      
-        
-    <xhtml:link
-      rel="alternate"
-      hreflang="en"
-      href="https://blog.xieydd.top/en/" />
-      
-    <xhtml:link
-      rel="alternate"
-      hreflang="x-default"
-      href="https://blog.xieydd.top/" />
-    
-  </url>
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
   <url>
     <loc>https://blog.xieydd.top/from-kv-cache-to-ai-memory-system/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -355,12 +484,10 @@
     
   
     
-  
-    
   <url>
     <loc>https://blog.xieydd.top/postgres-fts-agent/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -409,7 +536,7 @@
   <url>
     <loc>https://blog.xieydd.top/openclaw-memory-choice-guide/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -460,7 +587,7 @@
   <url>
     <loc>https://blog.xieydd.top/vectorchord-deep-dive/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -503,7 +630,7 @@
   <url>
     <loc>https://blog.xieydd.top/code-agent-2026-02-02/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -574,7 +701,7 @@
   <url>
     <loc>https://blog.xieydd.top/vector-search/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>
@@ -617,7 +744,7 @@
   <url>
     <loc>https://blog.xieydd.top/about/</loc>
     
-    <lastmod>2026-03-30T09:12:21&#43;08:00</lastmod>
+    <lastmod>2026-04-27T18:49:16&#43;08:00</lastmod>
     
     
     <changefreq>weekly</changefreq>

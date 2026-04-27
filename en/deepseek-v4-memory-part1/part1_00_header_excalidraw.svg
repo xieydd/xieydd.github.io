@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+    <path d="M2,2 L10,6 L2,10" fill="#1F2937"/>
+  </marker>
+  <style>
+    .title { font: 700 44px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #1F2937; }
+    .subtitle { font: 500 22px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #6B7280; }
+    .label { font: 700 24px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #1F2937; }
+    .small { font: 500 17px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #6B7280; }
+    .tiny { font: 500 14px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #6B7280; }
+    .mono { font: 600 18px "SFMono-Regular", Consolas, monospace; fill: #1F2937; }
+    .note { font: 600 19px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #1F2937; }
+  </style>
+</defs>
+<rect width="1600" height="900" fill="#FFFDF7"/>
+<path d="M40 70 C210 35, 390 55, 620 38" stroke="#FBBF24" stroke-width="16" opacity=".28" fill="none" stroke-linecap="round"/>
+<text x="54" y="76" class="title">DeepSeek‑V4 的第一条暗线</text>
+<text x="58" y="112" class="subtitle">1M Context 不是长度，是一套记忆系统</text>
+
+<rect x="118" y="194" width="1370" height="600" rx="32" fill="#FFFFFF" stroke="none" opacity="0.45"/>
+<rect x="115" y="190" width="1370" height="600" rx="32" fill="#FFFFFF" stroke="#4B5563" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M147 192 C 571.6666666666667 188, 1028.3333333333335 193, 1453 191" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".45"/>
+<path d="M117 758 C 114 490.0, 118 390.0, 116 222" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".35"/>
+
+<rect x="193" y="284" width="310" height="150" rx="24" fill="#DBEAFE" stroke="none" opacity="0.45"/>
+<rect x="190" y="280" width="310" height="150" rx="24" fill="#DBEAFE" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M214 282 C 293.3333333333333 278, 396.66666666666663 283, 476 281" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".45"/>
+<path d="M192 406 C 189 355.0, 193 330.0, 191 304" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".35"/>
+<text x="216" y="338" class="label">Hybrid Attention</text><text x="216" y="376" class="small">CSA · HCA · SWA</text>
+<rect x="648" y="264" width="310" height="150" rx="24" fill="#DCFCE7" stroke="none" opacity="0.45"/>
+<rect x="645" y="260" width="310" height="150" rx="24" fill="#DCFCE7" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M669 262 C 748.3333333333334 258, 851.6666666666666 263, 931 261" fill="none" stroke="#16A34A" stroke-width="1.2" opacity=".45"/>
+<path d="M647 386 C 644 335.0, 648 310.0, 646 284" fill="none" stroke="#16A34A" stroke-width="1.2" opacity=".35"/>
+<text x="671" y="318" class="label">Compressed KV</text><text x="671" y="356" class="small">向量记忆胶囊</text>
+<rect x="1083" y="284" width="310" height="150" rx="24" fill="#EDE9FE" stroke="none" opacity="0.45"/>
+<rect x="1080" y="280" width="310" height="150" rx="24" fill="#EDE9FE" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1104 282 C 1183.3333333333333 278, 1286.6666666666667 283, 1366 281" fill="none" stroke="#7C3AED" stroke-width="1.2" opacity=".45"/>
+<path d="M1082 406 C 1079 355.0, 1083 330.0, 1081 304" fill="none" stroke="#7C3AED" stroke-width="1.2" opacity=".35"/>
+<text x="1106" y="338" class="label">MoE Waves</text><text x="1106" y="376" class="small">通信藏进计算</text>
+<rect x="393" y="574" width="330" height="150" rx="24" fill="#FEF3C7" stroke="none" opacity="0.45"/>
+<rect x="390" y="570" width="330" height="150" rx="24" fill="#FEF3C7" stroke="#D97706" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M414 572 C 500.0 568, 610.0 573, 696 571" fill="none" stroke="#D97706" stroke-width="1.2" opacity=".45"/>
+<path d="M392 696 C 389 645.0, 393 620.0, 391 594" fill="none" stroke="#D97706" stroke-width="1.2" opacity=".35"/>
+<text x="416" y="628" class="label">1M Context</text><text x="416" y="666" class="small">容量 → 成本问题</text>
+<rect x="883" y="574" width="330" height="150" rx="24" fill="#FFEDD5" stroke="none" opacity="0.45"/>
+<rect x="880" y="570" width="330" height="150" rx="24" fill="#FFEDD5" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M904 572 C 990.0 568, 1100.0 573, 1186 571" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".45"/>
+<path d="M882 696 C 879 645.0, 883 620.0, 881 594" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".35"/>
+<text x="906" y="628" class="label">Agent Memory</text><text x="906" y="666" class="small">长程任务可用</text><path d="M500 355 C 572.5 355, 572.5 335, 645 335" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/><path d="M955 335 C 1017.5 335, 1017.5 355, 1080 355" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/><path d="M345 430 C 400.0 430, 400.0 570, 455 570" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/><path d="M1230 430 C 1140.0 430, 1140.0 570, 1050 570" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/><path d="M720 645 C 800.0 645, 800.0 645, 880 645" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/><text x="180" y="810" class="subtitle">如果 Agent 要连续工作 8 小时，最先崩掉的不是智商，而是记忆成本。</text></svg>

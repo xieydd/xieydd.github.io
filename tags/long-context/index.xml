@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Long Context on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/tags/long-context/</link>
+    <description>Recent content in Long Context on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Sun, 26 Apr 2026 20:40:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/long-context/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统</title>
+      <link>https://blog.xieydd.top/deepseek-v4-memory-part1/</link>
+      <pubDate>Sun, 26 Apr 2026 20:40:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/deepseek-v4-memory-part1/</guid>
+      <description>如果一个 Agent 要连续工作 8 小时，读完一个代码仓库、几十轮终端输出、几百次工具返回，智商通常还没到瓶颈，记忆已经先变贵。 这个说法听起来有点反直觉。</description>
+    </item>
+    
+  </channel>
+</rss>

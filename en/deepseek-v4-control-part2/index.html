@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+      
+    
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek‑V4&#39;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control | Xieydd&#39;s Blog</title>
+  <meta name="description" content="The system debt behind TileLang, deterministic kernels, FP4 QAT, Muon, and KV Cache OS. DeepSeek-V4&#39;s training and deployment isn&#39;t just about getting the model to run — it&#39;s about systematically paying off every technical debt that complex architecture creates.">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="DeepSeek‑V4&#39;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control | Xieydd&#39;s Blog">
+  <meta property="og:description" content="The system debt behind TileLang, deterministic kernels, FP4 QAT, Muon, and KV Cache OS. DeepSeek-V4&#39;s training and deployment isn&#39;t just about getting the model to run — it&#39;s about systematically paying off every technical debt that complex architecture creates.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/deepseek-v4-control-part2/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://blog.xieydd.top/en/deepseek-v4-control-part2/part2_00_header_control_excalidraw.svg">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DeepSeek‑V4&#39;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="The system debt behind TileLang, deterministic kernels, FP4 QAT, Muon, and KV Cache OS. DeepSeek-V4&#39;s training and deployment isn&#39;t just about getting the model to run — it&#39;s about systematically paying off every technical debt that complex architecture creates.">
+  <meta name="twitter:image" content="https://blog.xieydd.top/en/deepseek-v4-control-part2/part2_00_header_control_excalidraw.svg">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-04-26T21:00:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-04-27T18:49:16&#43;08:00">
+  
+  <meta property="article:tag" content="DeepSeek">
+  
+  <meta property="article:tag" content="LLM">
+  
+  <meta property="article:tag" content="Training">
+  
+  <meta property="article:tag" content="FP4">
+  
+  <meta property="article:tag" content="MoE">
+  
+  <meta property="article:tag" content="KV Cache">
+  
+  <meta property="article:tag" content="AI Infrastructure">
+  
+  <meta property="article:tag" content="TileLang">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/en/deepseek-v4-control-part2/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/deepseek-v4-control-part2/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/deepseek-v4-control-part2/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/deepseek-v4-control-part2/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-04-27T18:49:16+08:00","datePublished":"2026-04-26T21:00:00+08:00","description":"The system debt behind TileLang, deterministic kernels, FP4 QAT, Muon, and KV Cache OS. DeepSeek-V4's training and deployment isn't just about getting the model to run — it's about systematically paying off every technical debt that complex architecture creates.","headline":"DeepSeek‑V4's Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control","image":"https://blog.xieydd.top/en/deepseek-v4-control-part2/part2_00_header_control_excalidraw.svg","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/deepseek-v4-control-part2/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/deepseek-v4-control-part2/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/en/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/en/posts/">Posts</a>
+        <a href="https://blog.xieydd.top/en/about/">About</a>
+        
+        <div class="nav-icons">
+          <button id="search-toggle" class="theme-toggle" title="Search (Ctrl+K)" aria-label="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/deepseek-v4-control-part2/" class="lang-link">中文</a>
+          
+        
+      
+      
+      
+    
+  
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.en">DeepSeek‑V4&#39;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control</h1>
+    <div class="post-meta">
+      <span>Published: 26 Apr, 2026</span>
+      <span>• 20 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-kernel-debt-complex-operators-cant-be-assembled-from-small-ops">1. Kernel Debt: Complex Operators Can&rsquo;t Be Assembled From Small Ops</a></li>
+    <li><a href="#2-index-safety-debt-you-cant-manually-prove-complex-subscripts-forever">2. Index Safety Debt: You Can&rsquo;t Manually Prove Complex Subscripts Forever</a></li>
+    <li><a href="#3-reproducibility-debt-the-last-few-bits-matter-for-debugging">3. Reproducibility Debt: The Last Few Bits Matter for Debugging</a></li>
+    <li><a href="#4-low-precision-debt-fp4-must-hit-the-right-targets-not-be-applied-everywhere">4. Low-Precision Debt: FP4 Must Hit the Right Targets, Not Be Applied Everywhere</a></li>
+    <li><a href="#5-optimizer-debt-muon-needs-intact-matrices-zero-wants-to-shard-them">5. Optimizer Debt: Muon Needs Intact Matrices; ZeRO Wants to Shard Them</a></li>
+    <li><a href="#6-mhc-debt-more-expressiveness-more-activation-and-pipeline-communication">6. mHC Debt: More Expressiveness, More Activation and Pipeline Communication</a></li>
+    <li><a href="#7-context-parallelism-debt-csahcas-compression-windows-cross-rank-boundaries">7. Context Parallelism Debt: CSA/HCA&rsquo;s Compression Windows Cross Rank Boundaries</a></li>
+    <li><a href="#8-activation-checkpointing-debt-cant-use-coarse-module-level-granularity">8. Activation Checkpointing Debt: Can&rsquo;t Use Coarse Module-Level Granularity</a></li>
+    <li><a href="#9-inference-debt-kv-cache-is-already-a-small-memory-manager">9. Inference Debt: KV Cache Is Already a Small Memory Manager</a></li>
+    <li><a href="#10-looking-at-all-the-ious-together">10. Looking at All the IOUs Together</a></li>
+    <li><a href="#11-boundaries-of-this-control-system">11. Boundaries of This Control System</a></li>
+    <li><a href="#12-conclusion-controlling-complexity-is-the-actually-hard-part-of-v4">12. Conclusion: Controlling Complexity Is the Actually Hard Part of V4</a></li>
+    <li><a href="#further-reading">Further Reading</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p><img src="./part2_00_header_control_excalidraw.svg" alt="DeepSeek‑V4&rsquo;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control"></p>
+<p>The first article covered memory: why V4 can use 1M context, and why the key isn&rsquo;t a larger input box but rather splitting history into different forms — raw text for recent history, compressed-then-retrieved for mid-range, heavily-compressed-then-scanned for distant.</p>
+<p>This article covers &ldquo;control.&rdquo; The other face of the same model:</p>
+<blockquote>
+<p>How is something this complex trained? Reproduced? Deployed? How do you keep it from becoming a pile of hand-written CUDA and undebuggable black boxes?</p>
+</blockquote>
+<p>V4 introduces many new pieces — CSA/HCA, mHC, MoE, FP4, Muon, long-context Context Parallelism, KV cache layering, deterministic kernels. Each one leaves an IOU in the training framework. Leave them unpaid, and even the most elegant model architecture stays locked in a paper diagram.</p>
+<p>This article breaks down each IOU:</p>
+<ol>
+<li><strong>Kernel debt</strong>: complex operators can&rsquo;t be assembled from small PyTorch ops, and can&rsquo;t be entirely hand-written CUDA either</li>
+<li><strong>Reproducibility debt</strong>: batch changes, atomicAdd, and split-K can all produce different results</li>
+<li><strong>Low-precision debt</strong>: FP4 can&rsquo;t be applied indiscriminately — it must hit the right targets</li>
+<li><strong>Optimizer debt</strong>: Muon needs intact matrices; ZeRO wants to shard them</li>
+<li><strong>Long-context training debt</strong>: CSA/HCA&rsquo;s compression windows cross Context Parallel rank boundaries</li>
+<li><strong>Inference debt</strong>: KV cache has evolved into a set of states and storage policies, far beyond a single unified buffer</li>
+</ol>
+<p>V4‑Pro has 1.6T total parameters, 49B activated; V4‑Flash has 284B total parameters, 13B activated — both support 1M context. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>) At this scale, none of these IOUs are deferrable engineering choices — they&rsquo;re system constraints that must be designed upfront.</p>
+<hr>
+<h2 id="1-kernel-debt-complex-operators-cant-be-assembled-from-small-ops">1. Kernel Debt: Complex Operators Can&rsquo;t Be Assembled From Small Ops</h2>
+<p>Start with the most basic problem.</p>
+<p>If you write a complex attention variant in PyTorch, the easiest approach is to decompose it into many small operators:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">reshape
+matmul
+mask
+softmax
+top-k
+gather
+matmul
+cast
+copy
+</code></pre></td></tr></table>
+</div>
+</div><p>Fast to write, but two runtime problems emerge.</p>
+<p>First, <strong>intermediate results repeatedly read and write HBM</strong>. Each small operator may write its result back to GPU memory, only for the next operator to read it back.</p>
+<p>Second, <strong>each kernel call carries host-side overhead</strong>. Python checks parameters, the framework dispatcher makes choices, pybind/ABI conversion happens, and only then does the GPU kernel launch.</p>
+<p>When a kernel is large — say a big GEMM running for several milliseconds — a few dozen microseconds of host overhead barely matters. But many of V4&rsquo;s highly optimized kernels can be quite small. At that point, the CPU-side fixed cost becomes a visible bottleneck.</p>
+<p>This is TileLang&rsquo;s role in V4. It&rsquo;s not simply &ldquo;a DSL for writing CUDA.&rdquo; It&rsquo;s more like a pipeline for producing complex kernels.</p>
+<p><img src="./part2_01_tilelang_pipeline_excalidraw.svg" alt="TileLang pipeline"></p>
+<p>TileLang lets developers describe tiles, layout, pipeline, and memory movement at a higher level. At compile time, it generates two things: a <strong>device kernel</strong> (the code that actually runs on the GPU) and a <strong>host launcher</strong> (lightweight CPU code for checking parameters, packing arguments, and launching).</p>
+<p>V4 moves much of the host-side logic that previously lived in Python into the generated host code. This means dtype, shape, rank, stride, and device checks no longer need to go through Python&rsquo;s dynamic attribute access on every call. TileLang&rsquo;s documentation explains that it automatically inserts argument count, pointer kind, dtype, shape, strides, and device checks into the generated host stub, specifically to avoid handwritten Python checks and reduce Python interpreter and attribute access overhead. (<a href="https://www.tilelang.com/compiler_internals/tensor_checks.html" title="https://www.tilelang.com/compiler_internals/tensor_checks.html">TileLang</a>)</p>
+<p>A simple illustration:</p>
+<p>Traditional approach:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Python:
+  check A.dtype
+  check A.shape
+  check A.stride
+  check device
+  pack arguments
+  launch GPU kernel
+</code></pre></td></tr></table>
+</div>
+</div><p>After Host Codegen:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Python:
+  call generated launcher
+
+C/C++ host launcher:
+  check dtype / shape / stride / device
+  pack arguments
+  launch GPU kernel
+</code></pre></td></tr></table>
+</div>
+</div><p>This isn&rsquo;t &ldquo;skipping checks.&rdquo; Quite the opposite — it moves checks into generated code. The checks still exist, but no longer pass through the Python hot path.</p>
+<p>TVM-FFI and DLPack matter here too. TVM-FFI documentation explains that it shares tensor descriptions and memory across PyTorch, JAX, PaddlePaddle, and other frameworks via DLPack; creating a TVM-FFI tensor from a PyTorch tensor shares the same underlying buffer, and converting back doesn&rsquo;t copy. (<a href="https://tvm.apache.org/ffi/concepts/tensor.html" title="https://tvm.apache.org/ffi/concepts/tensor.html">TVM-FFI</a>)</p>
+<p>Optimizing complex kernels can&rsquo;t focus only on GPU code. The CPU path that calls the kernel is also a bottleneck — that&rsquo;s exactly what Host Codegen addresses.</p>
+<hr>
+<h2 id="2-index-safety-debt-you-cant-manually-prove-complex-subscripts-forever">2. Index Safety Debt: You Can&rsquo;t Manually Prove Complex Subscripts Forever</h2>
+<p>The most error-prone part of hand-written CUDA isn&rsquo;t the matrix multiplication logic — it&rsquo;s the index arithmetic.</p>
+<p>A long-context attention kernel might simultaneously involve <code>block_id</code>, <code>warp_id</code>, <code>lane_id</code>, tile offsets, strides, padding, masks, vectorized load widths, and shared memory swizzle patterns. Developers must answer a stack of questions: Can this load go out of bounds? Is the address 16-byte aligned? Can shared memory writes conflict? Can barriers be eliminated? Can the loop be vectorized?</p>
+<p>For simple expressions, compilers can figure it out. For complex ones, conservative rules apply by default. Conservative means adding masks, avoiding vectorization, adding barriers — slower kernels. Manual proofs are error-prone.</p>
+<p>TileLang in V4 explores an interesting direction: SMT-solver-assisted formal integer analysis. In plain terms: hand the integer constraints to a solver like Z3, let it help the compiler prove whether certain accesses are safe. Z3 is an SMT solver developed by Microsoft Research, used to determine satisfiability of first-order logic formulas with arithmetic, bit-vector, array, and other background theories — commonly used in program verification and compiler-related contexts. (<a href="https://www.microsoft.com/en-us/research/project/z3-3/" title="https://www.microsoft.com/en-us/research/project/z3-3/">Z3</a>)</p>
+<p>A simplified example.</p>
+<p>Given:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">0 &lt;= tx &lt; 128
+0 &lt;= block_id &lt; ceildiv(N, 128)
+idx = block_id * 128 + tx
+</code></pre></td></tr></table>
+</div>
+</div><p>Prove:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">idx &lt; padded_N
+</code></pre></td></tr></table>
+</div>
+</div><p>If <code>padded_N</code> is the 128-aligned length, the solver can prove this access is safe. Real kernel expressions are more complex, but the idea is the same: transforming &ldquo;I think this won&rsquo;t overflow&rdquo; into &ldquo;under these constraints, this can be proven not to overflow.&rdquo;</p>
+<p>The value isn&rsquo;t showing off. It solves the trust problem during complex kernel iteration. Without formal analysis, compilers must be conservative, or developers must hand-code many special cases. With a solver, more optimizations can be opened automatically — kernels don&rsquo;t just need to compute fast; the compiler needs to understand why they&rsquo;re safe.</p>
+<hr>
+<h2 id="3-reproducibility-debt-the-last-few-bits-matter-for-debugging">3. Reproducibility Debt: The Last Few Bits Matter for Debugging</h2>
+<p>When people first hear about bitwise reproducibility, they often treat it as perfectionism. Do the last few bits of floating-point values really matter?</p>
+<p>In small experiments, maybe not. In trillion-parameter MoE training, they do.</p>
+<p>Because when training goes wrong, you need to reproduce it.</p>
+<p>If a loss spike occurs at one step, you need to know whether it&rsquo;s a data issue, a routing issue, an expert outlier, a communication ordering issue, a nondeterministic <code>atomicAdd</code> in some kernel, or a hardware anomaly. If the same input produces slightly different results on each run, narrowing down the cause becomes very difficult.</p>
+<p>PyTorch documentation also notes that perfect reproducibility can&rsquo;t always be guaranteed across versions or platforms; deterministic operations are typically slower but save time on experiments, debugging, and regression testing. PyTorch provides <code>torch.use_deterministic_algorithms()</code>, which makes available operations use deterministic algorithms and raises errors if only nondeterministic algorithms exist. (<a href="https://docs.pytorch.org/docs/stable/notes/randomness" title="https://docs.pytorch.org/docs/stable/notes/randomness">PyTorch</a>)(<a href="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html" title="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html">PyTorch Det</a>)</p>
+<p>V4 focuses on two levels.</p>
+<p>The first is <strong>deterministic</strong>: same input, same environment, same batch, repeated runs produce identical results.</p>
+<p>The second is <strong>batch-invariant</strong>: a single sample produces the same output whether run alone or batched with other samples.</p>
+<p>The second is harder.</p>
+<p>Why can changing the batch change results? A common cause is split-KV or split-K. To improve parallelism, systems may split the same sequence&rsquo;s KV or the K dimension of matrix multiplication across multiple SMs or splits, then merge partial results. If the merge order depends on batch layout or runtime scheduling, floating-point addition order changes.</p>
+<p>Floating-point addition isn&rsquo;t strictly associative:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">(a + b) + c
+</code></pre></td></tr></table>
+</div>
+</div><p>and</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">a + (b + c)
+</code></pre></td></tr></table>
+</div>
+</div><p>are identical in real-number mathematics but may differ in the last few bits with floating-point.</p>
+<p><img src="./part2_02_determinism_excalidraw.svg" alt="Determinism"></p>
+<p>Similar issues arise in attention backward. Multiple queries may attend to the same KV entry. During backpropagation, they all contribute gradients to the same dKV:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">dKV[j] += grad_from_query_1
+dKV[j] += grad_from_query_7
+dKV[j] += grad_from_query_9
+</code></pre></td></tr></table>
+</div>
+</div><p>The naive approach uses <code>atomicAdd</code>. Which thread adds first is not fixed. Change the order, and the last few bits may change.</p>
+<p>V4&rsquo;s approach: each SM first writes to its own accumulation buffer, then performs a deterministic reduction in a fixed order. This sacrifices some buffer space and extra reduction work but gains stable results. The same pattern appears in MoE backward — token order preprocessing and buffer isolation prevent multiple ranks from simultaneously writing to the same receive location in undefined order. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>If a production request causes a problem and you reproduce it in isolation, but get a different result because it was originally batched with other requests — you can&rsquo;t debug that bug. Batch-invariant kernels are exactly what solves this problem.</p>
+<hr>
+<h2 id="4-low-precision-debt-fp4-must-hit-the-right-targets-not-be-applied-everywhere">4. Low-Precision Debt: FP4 Must Hit the Right Targets, Not Be Applied Everywhere</h2>
+<p>Low precision is tempting. Cutting from 16-bit to 4-bit reduces both memory and bandwidth pressure. But V4&rsquo;s FP4 QAT is notable for not pursuing &ldquo;whole-model 4-bit&rdquo; as a goal. Instead, it places FP4 at exactly two positions where compression is most valuable.</p>
+<p>The first is <strong>MoE expert weights</strong>.</p>
+<p>MoE&rsquo;s total parameter count is large, but each token activates only a subset of experts. Expert weights are one of the largest contributors to memory. Compressing them yields direct benefits.</p>
+<p>The second is <strong>the CSA indexer QK path</strong>.</p>
+<p>At 1M context, CSA&rsquo;s indexer repeatedly computes QK relevance scores to select top-k compressed entries. This path carries the core cost of long-context retrieval — different in nature from ordinary model weights. V4 runs the indexer QK&rsquo;s activations, cache, loads, and multiplications at FP4, compressing the cost of &ldquo;long-context retrieval at every step.&rdquo;</p>
+<p><img src="./part2_03_fp4_qat_excalidraw.svg" alt="FP4 QAT"></p>
+<p>The training path for MoE expert weights is also engineered carefully. V4 maintains FP32 master weights, quantizes to FP4 during the forward pass, then dequantizes to FP8 for computation. The paper explains that FP4-to-FP8 dequantization can be lossless because FP8 E4M3 has a larger dynamic range than FP4 E2M1, absorbing the variation from FP4 sub-block scale. This lets the backward pass reuse the existing FP8 mixed-precision training framework without rewriting the entire training system for FP4. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>This matters. In many low-precision approaches, the real challenge is whether the training system can absorb the change — whether the forward pass runs is almost secondary. V4&rsquo;s path is essentially embedding FP4 into the existing FP8 framework, minimizing system intrusion.</p>
+<p>V4 also reduces index scores from FP32 to BF16 for the top-k selector. The paper reports a 2× speedup in the top-k selector while KV entry recall stays at 99.7%. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>This is targeted precision reduction: FP4 doesn&rsquo;t spread everywhere. It lands on the two actual system bottlenecks — large expert weights and long-context indexer QK — leaving everything else unchanged.</p>
+<hr>
+<h2 id="5-optimizer-debt-muon-needs-intact-matrices-zero-wants-to-shard-them">5. Optimizer Debt: Muon Needs Intact Matrices; ZeRO Wants to Shard Them</h2>
+<p>The Muon section is easy to gloss over as &ldquo;used a new optimizer.&rdquo; But it imposes a very specific requirement on the training framework: it needs to see complete matrices.</p>
+<p>Optimizers like AdamW are essentially element-wise updates. Each parameter has its own moment state; parameter matrices can be sharded across ranks with no fundamental issue.</p>
+<p>Muon is different. It applies approximate orthogonalization to the matrix gradient or momentum. The core operation relates to Newton-Schulz iterations. Recent theoretical analysis of Muon focuses on momentum orthogonalization with a few Newton-Schulz steps and its relationship to the ideal SVD-polar update. (<a href="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz" title="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz">Muon</a>)</p>
+<p>This means a weight matrix should ideally participate in updates as a complete matrix.</p>
+<p>But ZeRO&rsquo;s fundamental goal is memory savings: sharding optimizer states, gradients, and parameters across ranks. It naturally prefers to split things up.</p>
+<p>The conflict is direct: Muon needs complete matrices for orthogonalization, while ZeRO&rsquo;s instinct is to shard matrices to save memory — they collide head-on over parameter sharding granularity. V4&rsquo;s approach is neither to simply abandon ZeRO nor to simply abandon Muon. For dense parameters, it limits Muon ZeRO parallelism scale, using a knapsack algorithm to assign complete matrices to different ranks such that each rank manages a roughly equal total matrix volume. For MoE parameters, where there are many expert matrices, it flattens and distributes down/up/gate projections separately, but still ensures no logically independent matrix is split. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p><img src="./part2_04_training_kv_debts_excalidraw.svg" alt="Training debts"></p>
+<p>Think of it this way: ordinary ZeRO splits W1 into pieces, with rank0/1/2/3 each holding a shard; V4&rsquo;s Muon-ZeRO instead assigns all of W1 to rank0, all of W2 to rank1, all of W3 to rank2 — sacrificing distribution flexibility to preserve the matrix structure that Muon requires.</p>
+<p>V4 also mentions a small detail: consecutively same-shape parameters are automatically merged, allowing Newton-Schulz to use batched execution, improving hardware utilization. MoE gradients are randomly rounded to BF16 when synchronized across data-parallel ranks to reduce communication, but to avoid low-precision accumulation error, rather than using tree/ring reduce-scatter directly, ranks first exchange local gradients via all-to-all, then each rank sums locally in FP32. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>Muon isn&rsquo;t an isolated algorithmic choice; it constrains how the distributed system must shard parameters. This bidirectional constraint between optimizer and training framework is stated clearly in V4. Any future optimizer that doesn&rsquo;t rely on element-wise updates will encounter the same tension.</p>
+<hr>
+<h2 id="6-mhc-debt-more-expressiveness-more-activation-and-pipeline-communication">6. mHC Debt: More Expressiveness, More Activation and Pipeline Communication</h2>
+<p>mHC — manifold-constrained hyper-connections — is the structure in V4 that replaces ordinary residual connections. We won&rsquo;t expand its mathematics here; we look only at the system consequences.</p>
+<p>mHC means the residual stream is no longer a single path but multiple residual streams. In V4, <code>n_hc = 4</code>. This enhances model expressiveness and signal flow, but introduces two training system costs: activation memory increases, and data transferred between pipeline stages increases. Left unaddressed, mHC&rsquo;s benefits could be consumed by training overhead.</p>
+<p>V4 addresses this in three ways.</p>
+<p>First, writing fused mHC kernels. mHC includes pre-block mixing, post-block mixing, residual mixing, and similar operations. Decomposing them into many small operators would incur extra launches and HBM traffic.</p>
+<p>Second, selective recomputation. Not all activations are stored, and not all are recomputed. Cheap intermediate quantities can be recomputed during the backward pass; expensive operations are avoided in recomputation.</p>
+<p>Third, adjusting the DualPipe 1F1B overlap. mHC increases pipeline communication; the existing overlap schedule needs to be adapted so that some mHC operations can run concurrently. The paper reports these optimizations limit mHC&rsquo;s wall-time overhead to 6.7% of an overlapped 1F1B pipeline stage. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>) One additional expression path, and 6.7% is the invoice it leaves for the training system.</p>
+<hr>
+<h2 id="7-context-parallelism-debt-csahcas-compression-windows-cross-rank-boundaries">7. Context Parallelism Debt: CSA/HCA&rsquo;s Compression Windows Cross Rank Boundaries</h2>
+<p>Long-context training typically requires Context Parallelism. When a sequence is too long for a single GPU, the sequence dimension is split across multiple ranks:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">rank0: t0      ~ t249999
+rank1: t250000 ~ t499999
+rank2: t500000 ~ t749999
+rank3: t750000 ~ t999999
+</code></pre></td></tr></table>
+</div>
+</div><p>Standard attention can be built around this split with appropriate communication. But CSA/HCA add compression windows.</p>
+<p>CSA compresses every m tokens into one entry. HCA compresses every m' tokens into one entry. The problem: compression windows may cross rank boundaries.</p>
+<p>For example, with m=4:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">rank0 tail: t996, t997
+rank1 head: t998, t999
+</code></pre></td></tr></table>
+</div>
+</div><p>These 4 tokens should be compressed together, but they&rsquo;re distributed across two ranks. If rank1 only looks at its own local tokens, it can&rsquo;t produce the correct entry.</p>
+<p>V4&rsquo;s solution has two steps.</p>
+<p>Step 1: neighbor communication. Rank i sends its last m uncompressed KV entries to rank i+1. This lets the next rank correctly handle cross-boundary compression blocks.</p>
+<p>Step 2: each rank compresses locally, then all-gather compressed KV. Each rank first produces fixed-length compressed entries locally, then performs an all-gather. A fused select-and-pad operator then organizes everything into a globally visible compressed KV structure, with padding at the tail. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>This is the same class of problem as sharding and aggregation in distributed databases: slicing data isn&rsquo;t enough — you must also ensure that cross-shard group-by semantics aren&rsquo;t broken. Ordinary CP only slices sequences; CSA/HCA must also ensure that compression groups aren&rsquo;t truncated at rank boundaries.</p>
+<hr>
+<h2 id="8-activation-checkpointing-debt-cant-use-coarse-module-level-granularity">8. Activation Checkpointing Debt: Can&rsquo;t Use Coarse Module-Level Granularity</h2>
+<p>During large model training, activation memory is one of the primary GPU memory pressures. Standard activation checkpointing: during the forward pass, don&rsquo;t store certain intermediate results; recompute them during the backward pass.</p>
+<p>The problem: many frameworks checkpoint at module granularity. A Transformer block is either fully stored or fully recomputed. That granularity is too coarse.</p>
+<p>Within a single module, some tensors are large but cheap to recompute; some are small but expensive to recompute; some are just reshapes sharing the same storage. Module-level checkpointing can&rsquo;t be optimal.</p>
+<p>Hand-writing forward/backward can be more fine-grained, but the development cost is high and error-prone.</p>
+<p>V4&rsquo;s approach is tensor-level activation checkpointing. Developers write only the forward pass and annotate individual tensors. The framework uses TorchFX to trace the computation graph, performs backward traversal from annotated tensors, finds the minimal recomputation subgraph, and inserts recomputation logic into the backward pass. The paper also mentions that recomputation reuses the original storage pointer to avoid extra GPU memory copies; tensors sharing underlying storage (e.g., reshape input and output) are automatically deduplicated. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>Think of it this way: module-level checkpointing is either photographing the whole room or rebuilding the whole room; tensor-level checkpointing marks only a few pieces of furniture and finds the minimal steps needed to restore those pieces. The more complex the structure, the more intermediate tensors exist, and the more wasteful coarse-grained checkpointing becomes.</p>
+<hr>
+<h2 id="9-inference-debt-kv-cache-is-already-a-small-memory-manager">9. Inference Debt: KV Cache Is Already a Small Memory Manager</h2>
+<p>The first article explained that V4&rsquo;s Hybrid Attention produces multiple types of KV: CSA main/indexer compressed KV, HCA compressed KV, SWA&rsquo;s uncompressed recent window, and the tail states in the compression branch where the group of m/m' tokens isn&rsquo;t yet complete. These have different sizes, different lifetimes, and different access patterns. Traditional PagedAttention is designed to manage a pool of homogeneous KV blocks. V4&rsquo;s KV cache is heterogeneous.</p>
+<p>So V4 splits inference cache into two categories: <strong>classical KV cache</strong> stores CSA/HCA&rsquo;s already-compressed entries and handles long-term history; <strong>state cache</strong> stores SWA&rsquo;s recent window and the uncompressed tail states where compression blocks aren&rsquo;t yet complete, handling the current sequence state. Tails that haven&rsquo;t completed m or m' groups can&rsquo;t be directly written into the compressed cache — they&rsquo;re not a complete compressed block yet.</p>
+<p>V4 also unifies classical KV cache block granularity using <code>lcm(m, m')</code>. With m=4 and m'=128, one block covers 128 raw tokens, producing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">CSA compressed entries: 128 / 4 = 32
+HCA compressed entries: 128 / 128 = 1
+</code></pre></td></tr></table>
+</div>
+</div><p>One logical block simultaneously fits both CSA and HCA. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>V4 also supports on-disk KV cache storage for shared-prefix requests. CSA/HCA compressed KV for the shared prefix can be persisted and reused; on a cache hit, the compressed KV is read directly and most of the prefill is skipped. Incomplete compression block tails are still recomputed.</p>
+<p>SWA is a special case. It&rsquo;s uncompressed and present at every layer — far larger in volume than compressed KV. The paper offers three strategies: Full SWA Caching (store everything — minimal recomputation but large write volume), Periodic Checkpointing (store at intervals — balanced between storage and recomputation), and Zero SWA Caching (don&rsquo;t store SWA — on a cache hit, recompute the tail to restore the window).</p>
+<p>V4 manages a collection of objects at inference time, each with different restoration cost, different reuse value, and different lifetime. This already looks less like cache management and more like memory management. We can call it KV Cache OS — with a concrete basis: it&rsquo;s genuinely doing memory-manager-like work — what states persist, what can be spilled to disk, what can be recomputed, what aligns to blocks, what stays only within a window.</p>
+<p>This problem isn&rsquo;t unique to V4: any system that makes KV complex enough will eventually encounter the same layered management problem.</p>
+<hr>
+<h2 id="10-looking-at-all-the-ious-together">10. Looking at All the IOUs Together</h2>
+<p>Looking back, V4&rsquo;s &ldquo;control&rdquo; system compresses to a single table:</p>
+<table>
+<thead>
+<tr>
+<th>IOU</th>
+<th>Left unpaid, what breaks</th>
+<th>V4&rsquo;s handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kernel debt</td>
+<td>PyTorch small ops too fragmented, host overhead large</td>
+<td>TileLang + Host Codegen + fused kernels</td>
+</tr>
+<tr>
+<td>Index safety debt</td>
+<td>Complex kernels hard to prove safe, optimizations conservative</td>
+<td>SMT-assisted integer analysis</td>
+</tr>
+<tr>
+<td>Reproducibility debt</td>
+<td>Loss spikes / production bugs hard to reproduce</td>
+<td>Batch-invariant + deterministic kernels</td>
+</tr>
+<tr>
+<td>Low-precision debt</td>
+<td>Blunt 4-bit compression degrades capability or breaks training</td>
+<td>FP4 QAT targeting expert weights and CSA indexer</td>
+</tr>
+<tr>
+<td>Optimizer debt</td>
+<td>Muon needs intact matrices, ZeRO wants to shard them</td>
+<td>Hybrid Muon-ZeRO, matrix-level assignment</td>
+</tr>
+<tr>
+<td>mHC debt</td>
+<td>Activation and pipeline communication grow</td>
+<td>Fused kernels + selective recompute + pipeline overlap</td>
+</tr>
+<tr>
+<td>CP debt</td>
+<td>Compression windows cross rank boundaries</td>
+<td>Neighbor communication + all-gather compressed KV</td>
+</tr>
+<tr>
+<td>Inference debt</td>
+<td>KV cache types heterogeneous, traditional layout insufficient</td>
+<td>Classical cache + state cache + on-disk prefix</td>
+</tr>
+</tbody>
+</table>
+<p>Behind every technique is a unified goal: preventing the model architecture&rsquo;s complexity from leaking into uncontrollable training and inference complexity.</p>
+<p>If the first article&rsquo;s keyword was &ldquo;memory,&rdquo; this article&rsquo;s keyword is &ldquo;control.&rdquo;</p>
+<hr>
+<h2 id="11-boundaries-of-this-control-system">11. Boundaries of This Control System</h2>
+<p>Again, this can&rsquo;t be only about strengths.</p>
+<h3 id="111-host-codegen-increases-compiler-system-complexity">11.1 Host Codegen Increases Compiler System Complexity</h3>
+<p>Moving checks from Python to C/C++ host launchers makes runtime faster but makes the compiler and ABI design heavier. Error messages, debugging experience, and cross-framework compatibility all depend on the toolchain to ensure.</p>
+<h3 id="112-smt-solvers-arent-omnipotent">11.2 SMT Solvers Aren&rsquo;t Omnipotent</h3>
+<p>SMT can prove many integer relationships, but complex nonlinear integer problems may be very difficult. Compilers still need timeouts, fallbacks, and conservative paths. Having a solver doesn&rsquo;t mean &ldquo;all optimizations can be automatically proven.&rdquo;</p>
+<h3 id="113-determinism-usually-sacrifices-some-performance">11.3 Determinism Usually Sacrifices Some Performance</h3>
+<p>PyTorch documentation explicitly states that deterministic operations are typically slower. V4&rsquo;s challenge is minimizing the performance cost — determinism isn&rsquo;t free.  (<a href="https://docs.pytorch.org/docs/stable/notes/randomness" title="https://docs.pytorch.org/docs/stable/notes/randomness">PyTorch</a>)</p>
+<h3 id="114-fp4s-effectiveness-depends-on-distribution-and-implementation">11.4 FP4&rsquo;s Effectiveness Depends on Distribution and Implementation</h3>
+<p>V4&rsquo;s FP4-to-FP8 lossless dequantization depends on specific formats, scale design, and weight distribution. Switching models, hardware, or block sizes doesn&rsquo;t allow directly copying the conclusions.</p>
+<h3 id="115-muons-distributed-implementation-affects-load-balance">11.5 Muon&rsquo;s Distributed Implementation Affects Load Balance</h3>
+<p>Assigning complete matrices to ranks is more sensitive to matrix size distribution than arbitrary sharding. V4 uses knapsack and padding to control imbalance, but this remains a system trade-off. The largest few matrices in the model determine how well the knapsack can be solved — the friction between algorithm and distributed system grows with model scale.</p>
+<h3 id="116-kv-cache-os-transfers-problems-to-storage-and-scheduling">11.6 KV Cache OS Transfers Problems to Storage and Scheduling</h3>
+<p>On-disk KV cache, SWA checkpointing, and state cache management all require scheduler cooperation. Long-context serving isn&rsquo;t just about optimizing kernels — it also requires managing cache hits, disk spills, recovery, and eviction policy.</p>
+<p>These boundaries say one thing: V4&rsquo;s control system isn&rsquo;t a collection of silver bullets. It&rsquo;s more like a set of engineering balancing acts.</p>
+<hr>
+<h2 id="12-conclusion-controlling-complexity-is-the-actually-hard-part-of-v4">12. Conclusion: Controlling Complexity Is the Actually Hard Part of V4</h2>
+<p>Many model papers emphasize architectural innovation. But for a model like V4, the difficult part is that architectural innovation rapidly becomes system debt.</p>
+<p>Introduce Hybrid Attention → must rewrite KV cache layout and Context Parallelism.<br>
+Introduce mHC → must handle activation memory and pipeline communication.<br>
+Use Muon → must redesign ZeRO parameter sharding.<br>
+Use FP4 → must align training and inference paths.<br>
+Pursue agentic long context → must ensure deterministic, batch-invariant, recoverable, debuggable behavior.<br>
+Write complex kernels → must make research iteration speed and production performance both work.</p>
+<p>So the core of this article can be summarized in one sentence:</p>
+<blockquote>
+<p>DeepSeek‑V4&rsquo;s control system solves the problem of overall complexity spinning out of control. The local optimum of each individual module comes second.</p>
+</blockquote>
+<p>The first two articles answered memory (how the model handles one million tokens of history) and control (how something this complex can be trained and deployed). The third will answer action: how the model enters real environments, calls tools, runs sandboxes, recovers from interruptions, and makes every trajectory recordable and evaluable. That&rsquo;s where OPD, GRM, Quick Instruction, Rollout WAL, DSec, EROFS, trajectory log, and real-world tasks come in — the part of DeepSeek‑V4 that most resembles an &ldquo;Agent operating system.&rdquo;</p>
+<hr>
+<h2 id="further-reading">Further Reading</h2>
+<ol>
+<li>Hugging Face, <em>DeepSeek‑V4: a million-token context that agents can actually use</em>, 2026. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</li>
+<li>DeepSeek-AI, <em>DeepSeek‑V4: Towards Highly Efficient Million‑Token Context Intelligence</em>, technical report, 2026. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</li>
+<li>TileLang documentation, <em>Tensor Checks (Host-Side Auto-Validation)</em>. (<a href="https://www.tilelang.com/compiler_internals/tensor_checks.html" title="https://www.tilelang.com/compiler_internals/tensor_checks.html">TileLang</a>)</li>
+<li>Apache TVM FFI documentation, <em>Tensor and DLPack</em>. (<a href="https://tvm.apache.org/ffi/concepts/tensor.html" title="https://tvm.apache.org/ffi/concepts/tensor.html">TVM-FFI</a>)</li>
+<li>Microsoft Research, <em>Z3 theorem prover</em>. (<a href="https://www.microsoft.com/en-us/research/project/z3-3/" title="https://www.microsoft.com/en-us/research/project/z3-3/">Z3</a>)</li>
+<li>PyTorch documentation, <em>Reproducibility</em>. (<a href="https://docs.pytorch.org/docs/stable/notes/randomness" title="https://docs.pytorch.org/docs/stable/notes/randomness">PyTorch</a>)</li>
+<li>PyTorch documentation, <em>torch.use_deterministic_algorithms</em>. (<a href="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html" title="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html">PyTorch Det</a>)</li>
+<li>Kim and Oh, <em>Convergence of Muon with Newton-Schulz</em>, 2026. (<a href="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz" title="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz">Muon</a>)</li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#DeepSeek</span>
+      
+      <span class="tag">#LLM</span>
+      
+      <span class="tag">#Training</span>
+      
+      <span class="tag">#FP4</span>
+      
+      <span class="tag">#MoE</span>
+      
+      <span class="tag">#KV Cache</span>
+      
+      <span class="tag">#AI Infrastructure</span>
+      
+      <span class="tag">#TileLang</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">Share this post on:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-control-part2%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-control-part2%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=DeepSeek%e2%80%91V4%27s%20Hidden%20Thread%20II%3a%20Training%20a%20Trillion-Parameter%20Machine%20Without%20Losing%20Control&body=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-control-part2%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">Back to Top</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/deepseek-v4-memory-part1/" class="prev-post">
+        <span class="nav-label">Previous Post</span>
+        <span class="nav-title">DeepSeek‑V4&#39;s Hidden Thread I: 1M Context is not a length, but a memory system.</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/en/deepseek-v4-action-part3/" class="next-post">
+        <span class="nav-label">Next Post</span>
+        <span class="nav-title">DeepSeek‑V4&#39;s Hidden Thread III: From Language Model to Agent Operating System</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+
+
+
+  
+
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+
+    </main>
+  </div>
+  
+<div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="search-input" class="search-input" placeholder="Search posts..." autocomplete="off" />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">
+        Type to start searching
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/fuse.js@7"></script>
+  <script src="/js/search.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

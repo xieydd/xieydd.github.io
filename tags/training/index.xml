@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Training on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/tags/training/</link>
+    <description>Recent content in Training on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Sun, 26 Apr 2026 21:00:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/training/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器</title>
+      <link>https://blog.xieydd.top/deepseek-v4-control-part2/</link>
+      <pubDate>Sun, 26 Apr 2026 21:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/deepseek-v4-control-part2/</guid>
+      <description>第一篇讲的是记忆：为什么 V4 能用 1M 上下文，关键不在输入框够大，而在它把历史分成几种形态——最近的保留原文，中距离的压缩后检索，远距离的重压缩后</description>
+    </item>
+    
+  </channel>
+</rss>

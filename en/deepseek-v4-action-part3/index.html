@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+      
+    
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek‑V4&#39;s Hidden Thread III: From Language Model to Agent Operating System | Xieydd&#39;s Blog</title>
+  <meta name="description" content="OPD, GRM, Quick Instruction, Rollout WAL, DSec, and real-world task evaluation. DeepSeek-V4&#39;s action system treats every step of an Agent as a trajectory that needs to be saved, restored, evaluated, and audited — not merely adding a tool-call format.">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="DeepSeek‑V4&#39;s Hidden Thread III: From Language Model to Agent Operating System | Xieydd&#39;s Blog">
+  <meta property="og:description" content="OPD, GRM, Quick Instruction, Rollout WAL, DSec, and real-world task evaluation. DeepSeek-V4&#39;s action system treats every step of an Agent as a trajectory that needs to be saved, restored, evaluated, and audited — not merely adding a tool-call format.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/deepseek-v4-action-part3/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://blog.xieydd.top/en/deepseek-v4-action-part3/part3_00_header_action_excalidraw.svg">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DeepSeek‑V4&#39;s Hidden Thread III: From Language Model to Agent Operating System | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="OPD, GRM, Quick Instruction, Rollout WAL, DSec, and real-world task evaluation. DeepSeek-V4&#39;s action system treats every step of an Agent as a trajectory that needs to be saved, restored, evaluated, and audited — not merely adding a tool-call format.">
+  <meta name="twitter:image" content="https://blog.xieydd.top/en/deepseek-v4-action-part3/part3_00_header_action_excalidraw.svg">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-04-26T21:20:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-04-27T18:49:16&#43;08:00">
+  
+  <meta property="article:tag" content="DeepSeek">
+  
+  <meta property="article:tag" content="LLM">
+  
+  <meta property="article:tag" content="Agent">
+  
+  <meta property="article:tag" content="RL">
+  
+  <meta property="article:tag" content="Sandbox">
+  
+  <meta property="article:tag" content="Tool Calling">
+  
+  <meta property="article:tag" content="AI Infrastructure">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/en/deepseek-v4-action-part3/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/deepseek-v4-action-part3/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/deepseek-v4-action-part3/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/deepseek-v4-action-part3/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-04-27T18:49:16+08:00","datePublished":"2026-04-26T21:20:00+08:00","description":"OPD, GRM, Quick Instruction, Rollout WAL, DSec, and real-world task evaluation. DeepSeek-V4's action system treats every step of an Agent as a trajectory that needs to be saved, restored, evaluated, and audited — not merely adding a tool-call format.","headline":"DeepSeek‑V4's Hidden Thread III: From Language Model to Agent Operating System","image":"https://blog.xieydd.top/en/deepseek-v4-action-part3/part3_00_header_action_excalidraw.svg","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/deepseek-v4-action-part3/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/deepseek-v4-action-part3/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/en/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/en/posts/">Posts</a>
+        <a href="https://blog.xieydd.top/en/about/">About</a>
+        
+        <div class="nav-icons">
+          <button id="search-toggle" class="theme-toggle" title="Search (Ctrl+K)" aria-label="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/deepseek-v4-action-part3/" class="lang-link">中文</a>
+          
+        
+      
+      
+      
+    
+  
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.en">DeepSeek‑V4&#39;s Hidden Thread III: From Language Model to Agent Operating System</h1>
+    <div class="post-meta">
+      <span>Published: 26 Apr, 2026</span>
+      <span>• 20 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-the-first-step-in-action-dont-let-one-model-be-pulled-in-ten-directions-at-once">1. The First Step in Action: Don&rsquo;t Let One Model Be Pulled in Ten Directions at Once</a></li>
+    <li><a href="#2-grm-in-hard-to-verify-tasks-the-reward-function-must-explain-itself">2. GRM: In Hard-to-Verify Tasks, the Reward Function Must Explain Itself</a></li>
+    <li><a href="#3-quick-instruction-fold-front-end-small-decisions-into-the-main-model">3. Quick Instruction: Fold Front-End Small Decisions into the Main Model</a></li>
+    <li><a href="#4-rollout-wal-continue-the-original-trajectory-after-interruption">4. Rollout WAL: Continue the Original Trajectory After Interruption</a></li>
+    <li><a href="#5-dsec-agents-need-a-real-isolated-recoverable-environment">5. DSec: Agents Need a Real, Isolated, Recoverable Environment</a></li>
+    <li><a href="#6-erofs--overlaybd-environments-cant-download-completely-every-time">6. EROFS / overlaybd: Environments Can&rsquo;t Download Completely Every Time</a></li>
+    <li><a href="#7-trajectory-log-dont-re-execute-already-executed-commands">7. trajectory log: Don&rsquo;t Re-execute Already-Executed Commands</a></li>
+    <li><a href="#8-when-sandbox-scale-grows-infrastructure-itself-becomes-the-bottleneck">8. When Sandbox Scale Grows: Infrastructure Itself Becomes the Bottleneck</a></li>
+    <li><a href="#9-real-world-tasks-in-the-end-the-question-is-whether-it-can-do-real-work">9. Real-world tasks: In the End, the Question Is Whether It Can Do Real Work</a></li>
+    <li><a href="#10-viewing-the-action-system-as-a-whole">10. Viewing the Action System as a Whole</a></li>
+    <li><a href="#11-boundaries-of-this-action-system">11. Boundaries of This Action System</a></li>
+    <li><a href="#12-conclusion-the-core-object-of-an-agent-is-the-trajectory">12. Conclusion: The Core Object of an Agent Is the Trajectory</a></li>
+    <li><a href="#further-reading">Further Reading</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p><img src="./part3_00_header_action_excalidraw.svg" alt="DeepSeek‑V4&rsquo;s Hidden Thread III: From Language Model to Agent Operating System"></p>
+<p>The first two articles each covered one topic.</p>
+<p>The first covered memory: why DeepSeek‑V4 can handle 1M context. It splits history into layers — raw text for recent history, compressed-then-retrieved for mid-range, heavily-compressed-then-scanned for distant.</p>
+<p>The second covered control: how something this complex is trained and deployed. TileLang, deterministic kernels, FP4 QAT, Muon-ZeRO, Context Parallelism, KV Cache OS — all aimed at preventing complexity from spinning out of control.</p>
+<p>This third article covers action.</p>
+<p>Action is different from answering. Answering means the model outputs a block of text. Action means the model enters an environment, calls tools, runs commands, modifies files, fails, recovers, and continues. Once an Agent starts acting, the system problems change: it generates a trajectory, faces a continuously changing environment, and failure isn&rsquo;t just a wrong answer — it could also be a tool call error, corrupted sandbox state, repeated command execution, or rollout data distribution drift.</p>
+<p>So this article&rsquo;s question is:</p>
+<blockquote>
+<p>How does DeepSeek‑V4 turn a language model into a system capable of long-horizon action?</p>
+</blockquote>
+<p>This can&rsquo;t be explained by &ldquo;support for tool calling.&rdquo; V4 contains at least several layers of design:</p>
+<ol>
+<li><strong>OPD</strong>: first train multiple specialists, then distill their capabilities back into a unified model;</li>
+<li><strong>GRM</strong>: in hard-to-verify tasks, the reward function doesn&rsquo;t just score — it must also generate evaluations;</li>
+<li><strong>Quick Instruction</strong>: fold front-end small decisions — whether to search, what to search for, whether to read a URL — into the main model;</li>
+<li><strong>Rollout WAL</strong>: when an RL rollout is preempted, continue the original trajectory rather than re-sampling from scratch;</li>
+<li><strong>DSec</strong>: give the Agent a real, isolated, recoverable, replayable execution environment;</li>
+<li><strong>EROFS / overlaybd / trajectory log</strong>: let massive sandboxes start quickly, load on-demand, and remain auditable;</li>
+<li><strong>Real-world tasks</strong>: finally verify with actual writing, search, office work, and code agent tasks whether the system can do real work.</li>
+</ol>
+<p>Hugging Face&rsquo;s analysis of V4 also places Agent capabilities at the center: V4&rsquo;s value lies in making long-horizon agentic workloads more practical; 1M context is just the entry point. It specifically mentions interleaved thinking across tool calls, the <code>|DSML|</code> tool-call format, and DSec, the sandbox platform built for RL rollouts. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</p>
+<hr>
+<h2 id="1-the-first-step-in-action-dont-let-one-model-be-pulled-in-ten-directions-at-once">1. The First Step in Action: Don&rsquo;t Let One Model Be Pulled in Ten Directions at Once</h2>
+<p>The most common mistake in post-training is mixing all tasks together for RL.</p>
+<p>Math wants long reasoning.<br>
+Chat wants brevity.<br>
+Code wants strict test execution.<br>
+Agent wants willingness to try multi-step approaches.<br>
+Writing wants natural style.<br>
+Instruction following wants less creativity.</p>
+<p>When these goals all pull on one model simultaneously, they easily interfere with each other.</p>
+<p>V4&rsquo;s approach is more like specialized training by subject.</p>
+<p>First, train multiple specialist experts. Each specialist does SFT in its own domain, then applies GRPO for RL. The math model trains on math tasks, the code model trains on code tasks, the Agent model trains on tool and environment interaction, the instruction-following model trains on conversation quality.</p>
+<p>Then OPD is used to merge these specialists' capabilities back into a unified model.</p>
+<p><img src="./part3_01_opd_grm_excalidraw.svg" alt="OPD and GRM"></p>
+<p>OPD stands for On-Policy Distillation. The key word is &ldquo;on-policy&rdquo;; &ldquo;distillation&rdquo; is just the surface description.</p>
+<p>Ordinary offline distillation starts from a fixed dataset, has the teacher provide answers or logits, and has the student follow along. OPD inverts this order: the student first generates its own trajectories, teacher experts provide distributions on those trajectories, and the student learns those distributions.</p>
+<p>This difference matters more than it appears: the student learns from states it would actually reach, not states in a static dataset. This is especially important for Agents, because Agents have many intermediate states: tool returns, command failures, file changes, environment anomalies. If the model only trains on offline answers, it easily misses the pitfalls it would actually encounter during real action.</p>
+<p>V4 also emphasizes full-vocabulary logit distillation. Many distillation approaches approximate KL only over sampled tokens to save resources — cheaper, but with higher gradient variance. V4 chooses the more expensive full-vocab KL because it more stably transfers teacher distribution information to the student. The cost is enormous: multiple teachers, very large vocabularies, long trajectories. If logits were stored directly, memory and storage would overflow. V4&rsquo;s engineering approach caches only teacher hidden states, rebuilds logits on demand by passing through the teacher prediction head during training, and sorts mini-batches by teacher index so that at most one teacher head resides on the GPU at any moment. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>V4&rsquo;s approach doesn&rsquo;t hard-merge the weights of several models. It has the unified model learn the judgment distributions of multiple experts along its own behavioral trajectories. This is especially critical for Agents, because the distribution differences between experts are themselves something the Agent needs to learn to navigate.</p>
+<hr>
+<h2 id="2-grm-in-hard-to-verify-tasks-the-reward-function-must-explain-itself">2. GRM: In Hard-to-Verify Tasks, the Reward Function Must Explain Itself</h2>
+<p>Math and code have one advantage: they can be verified.</p>
+<p>Math can compare final answers.<br>
+Code can run unit tests.<br>
+Wrong answer means low reward; tests pass means high reward.</p>
+<p>But Agent and office tasks often aren&rsquo;t like this.</p>
+<p>For example: write a market analysis, plan a research process, locate a hidden bug in a codebase, make a judgment based on multiple web pages. These tasks have no single correct answer. Whether a response is good often depends on multiple criteria: completeness, adherence to user constraints, factual accuracy, format correctness, reasonable tool calls, absence of key risks.</p>
+<p>Traditional scalar reward models compress all of this into a single number:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">reward = 0.82
+</code></pre></td></tr></table>
+</div>
+</div><p>This number can train, but it&rsquo;s hard to debug. Why did the model get a high score? Because the facts are correct? Because the tone is good? Because it catered to some preference of the reward model? Hard to tell.</p>
+<p>V4 introduces Generative Reward Model. GRM can be understood as &ldquo;a reward model that writes evaluations.&rdquo; It reads the prompt, answer, and rubric, then generates a critique/verdict, and converts the verdict into the reward that RL needs. The paper also explains that for hard-to-verify tasks, V4 uses rubric-guided RL data and lets the actor network itself serve as the GRM, optimizing both generation and evaluation capabilities together. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>A simple example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Rubric:
+- Did it address all user constraints?
+- Are there any factual errors?
+- Is the format correct?
+- Are actionable steps provided?
+
+GRM:
+The response covers constraints 1 and 2;
+but omits the time range;
+step 3 is not actionable;
+overall rated as medium.
+</code></pre></td></tr></table>
+</div>
+</div><p>This is easier to debug than a black-box score. It also suits Agents better, because an Agent&rsquo;s output isn&rsquo;t just the final answer — it includes intermediate actions: what was searched, what was run, why the file was modified, how failure was recovered from.</p>
+<p>GRM also has risks. If the actor serves as its own judge, it may self-reinforce. The model might learn to satisfy the surface form of the rubric rather than genuinely improve. This requires human annotation, blind evaluation, independent validation sets, and reward version control for calibration.</p>
+<p>When tasks have no standard answer, the reward can&rsquo;t just score — it should ideally also explain why. That&rsquo;s exactly the problem GRM addresses.</p>
+<hr>
+<h2 id="3-quick-instruction-fold-front-end-small-decisions-into-the-main-model">3. Quick Instruction: Fold Front-End Small Decisions into the Main Model</h2>
+<p>Real chat systems often need to make many small judgments before formally answering: should we search the web? What&rsquo;s the search query? Does it need authoritative sources? Which domain does it belong to? Did the user paste a URL to read? What should the conversation be titled?</p>
+<p>The traditional approach might call additional small models or classifiers. The problem: small models must re-read the prompt. For long contexts, repeated prefill is expensive.</p>
+<p>V4&rsquo;s Quick Instruction uses special tokens to trigger these internal tasks. For example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">&lt;|action|&gt;      decide whether to search / use tools
+&lt;|query|&gt;       generate search query
+&lt;|authority|&gt;   assess authority requirements
+&lt;|domain|&gt;      identify domain
+&lt;|title|&gt;       generate conversation title
+&lt;|read_url|&gt;    decide whether to read the URL
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="./part3_02_quick_instruction_excalidraw.svg" alt="Quick Instruction"></p>
+<p>The main model has already read the context — don&rsquo;t let multiple small models each read it again. Instead, give the main model a task card and have it output short results.</p>
+<p>This isn&rsquo;t the same as tool calling. Quick Instruction is more like routing/gating before tool calls: first decide whether to search, then generate a query, then decide which URLs to read, and only then enter the formal answer or tool call.</p>
+<p>V4 also introduces the <code>|DSML|</code> special token and an XML-style tool call format. Hugging Face&rsquo;s analysis also notes that V4&rsquo;s tool call format uses dedicated tokens and an XML-based schema, reducing escaping failures in JSON-in-string tool calls. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</p>
+<p>Agent systems have many small decisions, and these small decisions aren&rsquo;t worth re-prefilling a small model each time — Quick Instruction folds this cost into one forward pass of the main model. But small decisions are just the beginning of the Agent&rsquo;s reasoning chain; once the model generates a complete RL rollout trajectory, the integrity of that trajectory also needs to be guaranteed.</p>
+<hr>
+<h2 id="4-rollout-wal-continue-the-original-trajectory-after-interruption">4. Rollout WAL: Continue the Original Trajectory After Interruption</h2>
+<p>RL rollouts produce training data, not ordinary chat.</p>
+<p>The model generates a trajectory for a prompt. Then a reward model, teacher, verifier, or environment provides feedback. This trajectory will be used to train the model.</p>
+<p>Large-scale rollouts run on GPU clusters. Tasks may be preempted by preemptive schedulers, and hardware may fail. The brute-force approach: if it fails, regenerate from scratch.</p>
+<p>V4&rsquo;s paper points out this is mathematically wrong because it introduces length bias. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>Why?</p>
+<p>Suppose there are three responses with lengths of 20 tokens, 200 tokens, and 2000 tokens respectively. If machines frequently interrupt, short responses easily complete before interruption, while long responses are more likely to be cut in half. If interrupted responses are re-sampled from scratch, long responses end up being re-sampled multiple times. Re-sampling may produce shorter versions or premature endings. Over time, the data becomes biased toward short completions.</p>
+<p>So V4 does token-granular WAL.</p>
+<p>Every generated token writes a log entry. On a normal preemption, the system saves the KV cache of unfinished requests. On recovery, the WAL and KV cache are used to continue decoding from the interruption point. If it&rsquo;s a fatal hardware error and the KV cache can&rsquo;t be saved in time, the tokens in the WAL can be used to re-prefill, rebuild the KV cache, and then continue decoding.</p>
+<p><img src="./part3_03_rollout_wal_excalidraw.svg" alt="Rollout WAL"></p>
+<p>This is very similar to Write-Ahead Log in databases. In databases, the WAL principle is to write changes to the log before modifying the main state; after a crash, the log can be replayed to recover. In LLM rollouts, the log object changes from &ldquo;database updates&rdquo; to &ldquo;already generated tokens.&rdquo; (<a href="https://www.postgresql.org/docs/current/wal-intro.html" title="https://www.postgresql.org/docs/current/wal-intro.html">WAL</a>)</p>
+<p>It&rsquo;s like a writing app that auto-saves every character — after a power outage, you don&rsquo;t have to rewrite the whole essay, you open the document and continue from the last character. Training interruptions should not change the sampling distribution; this matters more than saving compute. Saving compute is an engineering benefit; avoiding length bias is statistical correctness.</p>
+<p>WAL ensures trajectory integrity. The next question is: where is this trajectory executed?</p>
+<hr>
+<h2 id="5-dsec-agents-need-a-real-isolated-recoverable-environment">5. DSec: Agents Need a Real, Isolated, Recoverable Environment</h2>
+<p>An Agent that can act can&rsquo;t just &ldquo;pretend to operate tools&rdquo; in text. It has to actually run commands, change files, install dependencies, execute tests.</p>
+<p>This requires a sandbox.</p>
+<p>An ordinary sandbox just needs to execute code. A sandbox for Agent training is more complex: it needs safe isolation (the model may run untrusted code), fast startup (RL will create massive numbers of environments), high-density concurrency support, recoverability (training tasks will be preempted), and replayability (failed trajectories need debugging).</p>
+<p>V4&rsquo;s DSec — DeepSeek Elastic Compute — is built for exactly this.</p>
+<p><img src="./part3_04_dsec_sandbox_excalidraw.svg" alt="DSec"></p>
+<p>The paper says DSec consists of three Rust components: Apiserver (API gateway), Edge (agent on each host), and Watcher (cluster monitor). Upward, it exposes interfaces via a unified Python SDK <code>libdsec</code>; downward, it supports four execution substrates: Function Call, Container, microVM, and fullVM.</p>
+<p>Function Call is for lightweight stateless tool calls.<br>
+Container is for most code tasks.<br>
+microVM is based on Firecracker, for stronger isolation of untrusted code.<br>
+fullVM is based on QEMU, for tasks requiring a complete OS.</p>
+<p>Firecracker is a lightweight virtualization technology open-sourced by AWS, based on Linux KVM, aiming to combine the speed and resource efficiency of containers with the security isolation of traditional VMs. AWS&rsquo;s official introduction notes that Firecracker reduces startup time and memory footprint through minimal device emulation while providing a trusted sandbox environment for each container. (<a href="https://aws.amazon.com/about-aws/whats-new/2018/11/firecracker-lightweight-virtualization-for-serverless-computing/" title="https://aws.amazon.com/about-aws/whats-new/2018/11/firecracker-lightweight-virtualization-for-serverless-computing/">Firecracker</a>)</p>
+<p>This maps exactly onto Agent sandbox requirements: the code the model generates is untrusted, but the number of tasks is enormous, so heavy VMs can&rsquo;t be used every time.</p>
+<p>Agent training isn&rsquo;t about language output — it&rsquo;s about model behavior in real environments. This means the training infrastructure must also be able to truly execute: run commands, change state, withstand failure.</p>
+<hr>
+<h2 id="6-erofs--overlaybd-environments-cant-download-completely-every-time">6. EROFS / overlaybd: Environments Can&rsquo;t Download Completely Every Time</h2>
+<p>Agent sandboxes have another very practical problem: images are large, and there are many environments.</p>
+<p>Code tasks may need various dependency environments: Ubuntu + Python, Node + pnpm, Rust toolchain, CUDA libraries, benchmark repos, browser environments, databases. If every sandbox startup requires fully downloading and unpacking an image, RL rollouts will be throttled by environment startup time.</p>
+<p>V4&rsquo;s DSec uses layered, on-demand loading.</p>
+<p>For containers, it turns base images and filesystem commits into 3FS-backed readonly EROFS layers, mounted into overlay lowerdirs. At mount time, metadata is locally visible; actual data blocks are pulled from 3FS on demand. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>EROFS is Linux&rsquo;s Enhanced Read-Only File System. The Linux kernel documentation says it is a general-purpose read-only filesystem solution, emphasizing simplicity, random-access friendliness, and high performance, supporting compact layout, transparent file compression, and direct access — particularly suited for memory-constrained devices and high-density hosts with numerous containers. (<a href="https://www.kernel.org/doc/html/latest/filesystems/erofs.html" title="https://www.kernel.org/doc/html/latest/filesystems/erofs.html">EROFS</a>)</p>
+<p><img src="./part3_05_erofs_overlaybd_excalidraw.svg" alt="EROFS and overlaybd"></p>
+<p>For microVMs, DSec uses overlaybd. Overlaybd is a block-level layered image format providing a virtual block device view composed of multiple block-based layers for containers, secure containers, and VMs, and is one of the open-source implementations from the DADI paper. (<a href="https://github.com/containerd/overlaybd" title="https://github.com/containerd/overlaybd">overlaybd</a>)</p>
+<p>Container side: on-demand fetching — first present the complete directory tree, then pull corresponding data blocks from 3FS only when actually reading a file. microVM side: base layers are shared, writes go into a local copy-on-write layer. The goal is practical: save startup time, storage bandwidth, and memory usage — nothing elegant about it.</p>
+<hr>
+<h2 id="7-trajectory-log-dont-re-execute-already-executed-commands">7. trajectory log: Don&rsquo;t Re-execute Already-Executed Commands</h2>
+<p>Another key point of DSec is the trajectory log.</p>
+<p>An Agent executing tasks in a sandbox might do these things:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">ls
+cat package.json
+pip install
+pytest
+edit src/foo.py
+python reproduce.py
+</code></pre></td></tr></table>
+</div>
+</div><p>Some of these commands aren&rsquo;t idempotent — <code>rm -rf tmp</code>, <code>git commit</code>, <code>pip install</code>, writing to databases, calling external services, modifying files. Re-running them changes state or produces different results. After a training task is preempted and recovers, you can&rsquo;t simply re-execute all commands from the beginning.</p>
+<p>So DSec maintains a globally ordered trajectory log for each sandbox, recording each command invocation and its result. On recovery, already-executed commands can be fast-forwarded, directly returning the logged results; only commands not yet executed continue with real execution. The paper says the trajectory log supports client fast-forwarding, fine-grained provenance, and deterministic replay. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>This is the same idea as rollout WAL, just with different objects:</p>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Logged object</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rollout WAL</td>
+<td>Each generated token</td>
+<td>Continue original sampling trajectory after interruption</td>
+</tr>
+<tr>
+<td>DSec trajectory log</td>
+<td>Each command and result</td>
+<td>Avoid re-running non-idempotent operations after recovery</td>
+</tr>
+</tbody>
+</table>
+<p>So in Agent systems, trajectory is the most important state; the final answer is just one slice of the trajectory.</p>
+<hr>
+<h2 id="8-when-sandbox-scale-grows-infrastructure-itself-becomes-the-bottleneck">8. When Sandbox Scale Grows: Infrastructure Itself Becomes the Bottleneck</h2>
+<p>The paper says: DSec does memory reclamation and duplicate page-cache footprint mitigation to support safe overcommitment; DSec also mitigates container runtime spinlock contention to improve per-host packing density.</p>
+<p>First, page cache.</p>
+<p>Many sandboxes will use the same base image. Ideally, the same read-only image content should be shared. In the worst case, every container/microVM caches a copy, the guest OS caches one, and the host block backend caches another. When sandbox numbers grow large, this wastes enormous amounts of memory.</p>
+<p>EROFS shared read-only layers, overlaybd&rsquo;s shared base layer, and on-demand loading all help reduce duplicate caching. The Linux EROFS documentation explicitly mentions it&rsquo;s suitable for high-density hosts with numerous containers and provides compact layout, compression, and direct access design. (<a href="https://www.kernel.org/doc/html/latest/filesystems/erofs.html" title="https://www.kernel.org/doc/html/latest/filesystems/erofs.html">EROFS</a>)</p>
+<p>The goal of memory reclamation is: under safe overcommit, reclaim memory that can be dropped, re-read, or rebuilt — such as cold cached pages of read-only images, cold pages of idle sandboxes — rather than arbitrarily reclaiming anonymous memory that would break task state.</p>
+<p>Now, spinlock contention.</p>
+<p>When hundreds of thousands of sandboxes start, destroy, and execute commands concurrently, some global locks or hot paths in general container runtimes can become CPU bottlenecks. Many threads can&rsquo;t acquire locks and spin-wait on spinlocks, with CPU spent waiting for locks rather than executing tasks.</p>
+<p>Reasonable directions typically include: warm pools (Function Call uses pre-warmed container pools), state sharding (reduce global locks), batched/async lifecycle (reduce frequency of entering critical sections simultaneously), per-host Edge taking over hot paths (reduce repeated calls to general runtime), pre-mounted/cached image layers (reduce mount and metadata operations at startup).</p>
+<p>When sandbox count grows from hundreds to hundreds of thousands, Docker/runtime itself becomes a system bottleneck — no different in nature from the problems any system encounters when scaling up.</p>
+<hr>
+<h2 id="9-real-world-tasks-in-the-end-the-question-is-whether-it-can-do-real-work">9. Real-world tasks: In the End, the Question Is Whether It Can Do Real Work</h2>
+<p>The real-world tasks section of the V4 paper is worth reading carefully, because it doesn&rsquo;t just report standard benchmarks — it also evaluates tasks closer to real product scenarios: Chinese writing, Search, White-Collar Tasks, and Code Agent.</p>
+<p>Hugging Face&rsquo;s V4 analysis also says V4&rsquo;s benchmark numbers are competitive but not absolute SOTA; the real innovation lies in its design targeting efficient long-context and agentic tasks. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</p>
+<h3 id="91-search-the-difference-between-rag-and-agentic-search">9.1 Search: The Difference Between RAG and Agentic Search</h3>
+<p>DeepSeek web/app&rsquo;s non-think mode uses RAG; thinking mode uses agentic search. In internal evaluations, Agentic Search&rsquo;s overall win rate over RAG is 61.7% vs 18.3%, with 20.0% tie. But it&rsquo;s also more expensive: an average of 16.2 tool calls, 13,649 prefill tokens, 1,526 output tokens. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>This states something very plain: Agentic Search is stronger, but not free. So the system must decide when to use it. Quick Instruction&rsquo;s front-end small decisions are part of this larger problem.</p>
+<h3 id="92-code-agent-not-just-being-able-to-write-code-but-being-able-to-fix-code-in-environments">9.2 Code Agent: Not Just Being Able to Write Code, But Being Able to Fix Code in Environments</h3>
+<p>V4&rsquo;s Code Agent evaluation comes from real R&amp;D tasks provided by internal engineers, covering feature development, bug fixing, refactoring, and diagnostics, with tech stacks including PyTorch, CUDA, Rust, and C++. After rigorous screening, 30 tasks were formed. V4-Pro-Max pass rate is 67%, higher than Claude Sonnet 4.5&rsquo;s 47%, close to Claude Opus 4.5&rsquo;s 70%, but lower than Opus 4.6 Thinking&rsquo;s 80%. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>The significance of this result isn&rsquo;t &ldquo;V4 is already the best.&rdquo; It shows that V4&rsquo;s system design has indeed cashed out some value on real code tasks.</p>
+<p>Because code Agent capability isn&rsquo;t determined only by model output — it&rsquo;s also determined by the environment system: can the sandbox start quickly, can tests be run, can interruptions be recovered from, can trajectories be logged, can non-idempotent environment changes be avoided, can the tool history be preserved in long contexts.</p>
+<h3 id="93-white-collar-tasks-and-chinese-writing">9.3 White-Collar Tasks and Chinese Writing</h3>
+<p>Office tasks and Chinese writing seem further from the sandbox, but they reflect the same direction: the model isn&rsquo;t just answering questions, it&rsquo;s delivering outputs. The paper&rsquo;s white-collar task evaluation includes dimensions like Task Completion, Instruction Following, Content Quality, and Formatting Aesthetics. Chinese writing distinguishes between functional writing and creative writing. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>These tasks are hard to evaluate with a single correct answer, which also explains why GRM and rubric-guided RL data matter.</p>
+<hr>
+<h2 id="10-viewing-the-action-system-as-a-whole">10. Viewing the Action System as a Whole</h2>
+<p>Now the structure of this third article can be compressed into a table:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>If left unaddressed, what breaks</th>
+<th>V4&rsquo;s handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multi-capability interference</td>
+<td>mixed RL objectives conflict</td>
+<td>specialist training + OPD</td>
+</tr>
+<tr>
+<td>Hard-to-verify tasks have no standard answer</td>
+<td>scalar reward is hard to explain</td>
+<td>GRM + rubric-guided RL</td>
+</tr>
+<tr>
+<td>Too many front-end small decisions</td>
+<td>small models repeatedly prefill</td>
+<td>Quick Instruction</td>
+</tr>
+<tr>
+<td>rollout is preempted</td>
+<td>re-sampling from scratch causes length bias</td>
+<td>token-granular WAL + KV restore</td>
+</tr>
+<tr>
+<td>Agent needs a real environment</td>
+<td>pretending to call tools in text</td>
+<td>DSec sandbox</td>
+</tr>
+<tr>
+<td>Sandbox startup is slow</td>
+<td>rollout waits for image download</td>
+<td>3FS + EROFS / overlaybd on-demand loading</td>
+</tr>
+<tr>
+<td>Commands re-run after recovery</td>
+<td>non-idempotent operations corrupt state</td>
+<td>trajectory log + fast-forward</td>
+</tr>
+<tr>
+<td>Too many sandboxes</td>
+<td>page cache / runtime locks become bottlenecks</td>
+<td>memory reclamation + runtime contention mitigation</td>
+</tr>
+</tbody>
+</table>
+<p>The common thread here: they all protect &ldquo;trajectory.&rdquo;</p>
+<p>OPD lets the student learn from experts along its own trajectories.<br>
+GRM evaluates response or action trajectories.<br>
+Rollout WAL preserves the token trajectory.<br>
+DSec trajectory log preserves the command trajectory.<br>
+Interleaved thinking preserves the reasoning history during tool calls.<br>
+Real-world tasks ultimately evaluate whether the model can complete tasks in real workflows.</p>
+<p>So the keyword of this article is action, but more precisely, it&rsquo;s <strong>trajectory management</strong>.</p>
+<hr>
+<h2 id="11-boundaries-of-this-action-system">11. Boundaries of This Action System</h2>
+<p>Again, we can&rsquo;t only cover the strengths.</p>
+<h3 id="111-opd-is-expensive">11.1 OPD Is Expensive</h3>
+<p>Full-vocab KL, multiple teachers, long trajectories — all resource-intensive. V4 uses hidden state caching and teacher scheduling to reduce costs, but this remains a heavy-infrastructure approach.</p>
+<h3 id="112-grm-can-self-reinforce">11.2 GRM Can Self-Reinforce</h3>
+<p>The actor serving as its own GRM can improve sample efficiency but may also introduce judge bias. This requires human annotation, blind evaluation, independent validation sets, and reward version management for calibration.</p>
+<h3 id="113-quick-instruction-depends-on-model-short-output-stability">11.3 Quick Instruction Depends on Model Short-Output Stability</h3>
+<p>If <code>&lt;|action|&gt;</code> misclassifies a query as not needing search, the subsequent answer may be outdated. If <code>&lt;|read_url|&gt;</code> judges incorrectly, the system may miss a key URL. Server-side cannot fully delegate safety and correctness to model short outputs.</p>
+<h3 id="114-wal-and-trajectory-log-bring-write-amplification">11.4 WAL and trajectory log Bring Write Amplification</h3>
+<p>Writing WAL for every token, logging every command — both carry storage costs. The system must decide on log granularity, compression, retention time, and hot/cold tiering.</p>
+<h3 id="115-sandbox-security-isnt-just-about-microvm">11.5 Sandbox Security Isn&rsquo;t Just About microVM</h3>
+<p>Firecracker provides stronger isolation, but real environments also require managing network, filesystem permissions, secrets, external service access, resource limits, and cleanup policies. For Agents executing untrusted code, security boundaries must be multi-layered by design.</p>
+<h3 id="116-real-world-task-evaluation-still-has-subjectivity">11.6 Real-world Task Evaluation Still Has Subjectivity</h3>
+<p>Writing, office work, and agent tasks are more realistic than standard benchmarks but also harder to make fully objective. Rubric quality, reviewer consistency, and task selection all affect conclusions.</p>
+<p>These boundaries say that an Agent operating system is a set of trade-offs among reliability, security, evaluability, and cost — no single module is sufficient to represent it.</p>
+<hr>
+<h2 id="12-conclusion-the-core-object-of-an-agent-is-the-trajectory">12. Conclusion: The Core Object of an Agent Is the Trajectory</h2>
+<p>Reading all three articles together, DeepSeek‑V4&rsquo;s main thread becomes clear.</p>
+<p>The first article covered memory: the key to long context lies in how history is layered for storage and retrieval; window size is just the entry point.</p>
+<p>The second article covered control: the key to complex structure lies in whether training, inference, low-precision, reproducibility, and caching remain controllable; the number of modules is secondary.</p>
+<p>The third article covers action: the key to Agent capability lies in whether every action trajectory can be generated, evaluated, restored, replayed, and audited; whether tool calls can be output is just the baseline threshold.</p>
+<p>V4&rsquo;s most &ldquo;operating system&rdquo;-like aspect is right here.</p>
+<p>An operating system doesn&rsquo;t just compute. It also handles processes, memory, files, recovery, isolation, logs, and security boundaries. V4&rsquo;s Agent system is similar: OPD/GRM decides how the model learns to act and evaluate actions; Quick Instruction decides when and where to act; Rollout WAL ensures generated trajectories aren&rsquo;t distorted after interruption; DSec provides a real, isolated action environment; EROFS/overlaybd makes environments appear quickly; trajectory log makes environment interactions recoverable and replayable; real-world tasks verify whether all of this translates into working capability.</p>
+<p>So this third article can close with one sentence:</p>
+<blockquote>
+<p>DeepSeek‑V4&rsquo;s action system treats every step of an Agent as a trajectory that needs to be saved, restored, evaluated, and audited. Adding a tool-call format to a model is two levels below what this accomplishes.</p>
+</blockquote>
+<p>This is also the conclusion of the entire series.</p>
+<p>DeepSeek‑V4&rsquo;s real change isn&rsquo;t just that the model answers better — it&rsquo;s that the system begins to be designed around the lifecycle of long-horizon Agents. Memory solves how to handle long history, control solves how to train and deploy complex structures, and action solves how to continuously try and fail in real environments while preserving trajectories. Together, these three things make something that resembles a machine rewritten for the Agent era.</p>
+<hr>
+<h2 id="further-reading">Further Reading</h2>
+<ol>
+<li>Hugging Face, <em>DeepSeek‑V4: a million-token context that agents can actually use</em>, 2026. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</li>
+<li>DeepSeek-AI, <em>DeepSeek‑V4: Towards Highly Efficient Million‑Token Context Intelligence</em>, technical report, 2026. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</li>
+<li>Martin Kleppmann, <em>Designing Data-Intensive Applications</em>; PostgreSQL documentation, <em>Write-Ahead Logging</em>. (<a href="https://www.postgresql.org/docs/current/wal-intro.html" title="https://www.postgresql.org/docs/current/wal-intro.html">WAL</a>)</li>
+<li>AWS, <em>Introducing Firecracker</em>, 2018. (<a href="https://aws.amazon.com/about-aws/whats-new/2018/11/firecracker-lightweight-virtualization-for-serverless-computing/" title="https://aws.amazon.com/about-aws/whats-new/2018/11/firecracker-lightweight-virtualization-for-serverless-computing/">Firecracker</a>)</li>
+<li>Linux Kernel documentation, <em>EROFS - Enhanced Read-Only File System</em>. (<a href="https://www.kernel.org/doc/html/latest/filesystems/erofs.html" title="https://www.kernel.org/doc/html/latest/filesystems/erofs.html">EROFS</a>)</li>
+<li>containerd/overlaybd, <em>Overlaybd: a block based remote image format</em>. (<a href="https://github.com/containerd/overlaybd" title="https://github.com/containerd/overlaybd">overlaybd</a>)</li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#DeepSeek</span>
+      
+      <span class="tag">#LLM</span>
+      
+      <span class="tag">#Agent</span>
+      
+      <span class="tag">#RL</span>
+      
+      <span class="tag">#Sandbox</span>
+      
+      <span class="tag">#Tool Calling</span>
+      
+      <span class="tag">#AI Infrastructure</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">Share this post on:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-action-part3%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-action-part3%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=DeepSeek%e2%80%91V4%27s%20Hidden%20Thread%20III%3a%20From%20Language%20Model%20to%20Agent%20Operating%20System&body=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-action-part3%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">Back to Top</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/deepseek-v4-control-part2/" class="prev-post">
+        <span class="nav-label">Previous Post</span>
+        <span class="nav-title">DeepSeek‑V4&#39;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/en/vector-search/" class="next-post">
+        <span class="nav-label">Next Post</span>
+        <span class="nav-title">The internals of Vector Databases</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+
+
+
+  
+
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+
+    </main>
+  </div>
+  
+<div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="search-input" class="search-input" placeholder="Search posts..." autocomplete="off" />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">
+        Type to start searching
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/fuse.js@7"></script>
+  <script src="/js/search.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

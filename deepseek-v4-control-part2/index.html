@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+      
+    
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器 | Xieydd&#39;s Blog</title>
+  <meta name="description" content="TileLang、deterministic kernel、FP4 QAT、Muon 与 KV Cache OS 背后的系统债。DeepSeek-V4 的训练和部署不只是跑通模型，而是逐一偿还复杂结构带来的每一张系统欠条。">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器 | Xieydd&#39;s Blog">
+  <meta property="og:description" content="TileLang、deterministic kernel、FP4 QAT、Muon 与 KV Cache OS 背后的系统债。DeepSeek-V4 的训练和部署不只是跑通模型，而是逐一偿还复杂结构带来的每一张系统欠条。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/deepseek-v4-control-part2/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://blog.xieydd.top/deepseek-v4-control-part2/part2_00_header_control_excalidraw.svg">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器 | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="TileLang、deterministic kernel、FP4 QAT、Muon 与 KV Cache OS 背后的系统债。DeepSeek-V4 的训练和部署不只是跑通模型，而是逐一偿还复杂结构带来的每一张系统欠条。">
+  <meta name="twitter:image" content="https://blog.xieydd.top/deepseek-v4-control-part2/part2_00_header_control_excalidraw.svg">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-04-26T21:00:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-04-27T18:49:16&#43;08:00">
+  
+  <meta property="article:tag" content="DeepSeek">
+  
+  <meta property="article:tag" content="LLM">
+  
+  <meta property="article:tag" content="Training">
+  
+  <meta property="article:tag" content="FP4">
+  
+  <meta property="article:tag" content="MoE">
+  
+  <meta property="article:tag" content="KV Cache">
+  
+  <meta property="article:tag" content="AI Infrastructure">
+  
+  <meta property="article:tag" content="TileLang">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/deepseek-v4-control-part2/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/deepseek-v4-control-part2/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/deepseek-v4-control-part2/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/deepseek-v4-control-part2/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-04-27T18:49:16+08:00","datePublished":"2026-04-26T21:00:00+08:00","description":"TileLang、deterministic kernel、FP4 QAT、Muon 与 KV Cache OS 背后的系统债。DeepSeek-V4 的训练和部署不只是跑通模型，而是逐一偿还复杂结构带来的每一张系统欠条。","headline":"DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器","image":"https://blog.xieydd.top/deepseek-v4-control-part2/part2_00_header_control_excalidraw.svg","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/deepseek-v4-control-part2/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/deepseek-v4-control-part2/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/posts/">文章</a>
+        <a href="https://blog.xieydd.top/about/">关于</a>
+        
+        <div class="nav-icons">
+          <button id="search-toggle" class="theme-toggle" title="Search (Ctrl+K)" aria-label="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/deepseek-v4-control-part2/" class="lang-link">EN</a>
+          
+        
+      
+      
+      
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.zh-cn">DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器</h1>
+    <div class="post-meta">
+      <span>发布于 26 Apr, 2026</span>
+      <span>• 17 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-第一张欠条复杂-kernel-不能靠-python-调度">1. 第一张欠条：复杂 kernel 不能靠 Python 调度</a></li>
+    <li><a href="#2-第二张欠条复杂下标不能靠人脑一直证明">2. 第二张欠条：复杂下标不能靠人脑一直证明</a></li>
+    <li><a href="#3-第三张欠条最后几-bit-也会影响调试">3. 第三张欠条：最后几 bit 也会影响调试</a></li>
+    <li><a href="#4-第四张欠条fp4-不能随便压要打在最疼的地方">4. 第四张欠条：FP4 不能随便压，要打在最疼的地方</a></li>
+    <li><a href="#5-第五张欠条muon-要完整矩阵zero-想切碎矩阵">5. 第五张欠条：Muon 要完整矩阵，ZeRO 想切碎矩阵</a></li>
+    <li><a href="#6-第六张欠条mhc-增强表达力也增加-activation-和-pipeline-通信">6. 第六张欠条：mHC 增强表达力，也增加 activation 和 pipeline 通信</a></li>
+    <li><a href="#7-第七张欠条csahca-的-context-parallelism-不像普通-attention">7. 第七张欠条：CSA/HCA 的 Context Parallelism 不像普通 attention</a></li>
+    <li><a href="#8-第八张欠条activation-checkpointing-不能只按-module-粗切">8. 第八张欠条：Activation Checkpointing 不能只按 module 粗切</a></li>
+    <li><a href="#9-第九张欠条推理时-kv-cache-已经像一个小型内存管理器">9. 第九张欠条：推理时 KV cache 已经像一个小型内存管理器</a></li>
+    <li><a href="#10-把这些欠条放在一起看">10. 把这些欠条放在一起看</a></li>
+    <li><a href="#11-这套控制系统的边界">11. 这套控制系统的边界</a></li>
+    <li><a href="#12-第二篇结论控制复杂性才是-v4-真正难的部分">12. 第二篇结论：控制复杂性，才是 V4 真正难的部分</a></li>
+    <li><a href="#参考阅读">参考阅读</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p><img src="./part2_00_header_control_excalidraw.svg" alt="DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器"></p>
+<p>第一篇讲的是记忆：为什么 V4 能用 1M 上下文，关键不在输入框够大，而在它把历史分成几种形态——最近的保留原文，中距离的压缩后检索，远距离的重压缩后扫全局。</p>
+<p>这一篇讲&quot;控制&quot;。同一个模型的另一面：</p>
+<blockquote>
+<p>这么复杂的结构，怎么训练？怎么复现？怎么部署？怎么让它不变成一堆手写 CUDA 和不可调试的黑盒？</p>
+</blockquote>
+<p>V4 里有很多新东西——CSA/HCA、mHC、MoE、FP4、Muon、长上下文 Context Parallelism、KV cache 分层、deterministic kernel。每一个都会在训练框架里留下一张欠条。如果不还，模型结构再漂亮也只能停在论文图里。</p>
+<p>本文按几张欠条来拆：</p>
+<ol>
+<li>kernel 欠条：复杂算子不能靠 PyTorch 小算子拼，也不能全靠手写 CUDA；</li>
+<li>复现欠条：batch 变化、atomicAdd、split-K 都可能让结果不一样；</li>
+<li>低精度欠条：FP4 不能随便上，要打在最值得压的位置；</li>
+<li>优化器欠条：Muon 想要完整矩阵，ZeRO 想把矩阵切碎；</li>
+<li>长上下文训练欠条：CSA/HCA 的压缩窗口会跨 Context Parallel ranks；</li>
+<li>推理欠条：KV cache 已经演变为一组状态和存储策略，远超传统意义上的单块缓存。</li>
+</ol>
+<p>V4-Pro 是 1.6T 总参数、49B activated，V4-Flash 是 284B 总参数、13B activated，二者都支持 1M context。(<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>) 这个规模下，上面每一张欠条都不是可以推迟的工程选择，而是必须设计清楚的系统约束。</p>
+<hr>
+<h2 id="1-第一张欠条复杂-kernel-不能靠-python-调度">1. 第一张欠条：复杂 kernel 不能靠 Python 调度</h2>
+<p>先从最朴素的问题开始。</p>
+<p>如果你用 PyTorch 写一个复杂 attention 变体，最容易的方式是把它拆成很多小算子：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">reshape
+matmul
+mask
+softmax
+top-k
+gather
+matmul
+cast
+copy
+</code></pre></td></tr></table>
+</div>
+</div><p>这样写起来快，但运行时会有两个问题。</p>
+<p>第一，<strong>中间结果会反复读写 HBM</strong>。<br>
+每个小算子都可能把结果写回显存，再被下一个算子读出来。</p>
+<p>第二，<strong>每个 kernel 调用都有 host-side overhead</strong>。<br>
+Python 要检查参数，框架 dispatcher 要做选择，pybind/ABI 要转换，最后才 launch GPU kernel。</p>
+<p>如果 kernel 本身很大，比如一个大 GEMM 跑几毫秒，几十微秒 host overhead 不明显。但 V4 里很多 kernel 被高度优化后，本身可能很小。此时 CPU 侧固定开销会变成显眼的瓶颈。</p>
+<p>这就是 TileLang 在 V4 里的位置。它不是简单&quot;写 CUDA 的 DSL&quot;。它更像一条生产复杂 kernel 的流水线。</p>
+<p><img src="./part2_01_tilelang_pipeline_excalidraw.svg" alt="TileLang pipeline"></p>
+<p>TileLang 让开发者在较高层描述 tile、layout、pipeline、memory movement。编译时，它生成两类东西：<strong>device kernel</strong>（GPU 上真正执行的代码）和 <strong>host launcher</strong>（CPU 上做检查、参数打包、launch 的轻量代码）。</p>
+<p>V4 把很多原本在 Python 里做的 host-side logic 移到生成的 host code 里。这样 dtype、shape、rank、stride、device 这些检查，不需要每次走 Python 动态属性访问。TileLang 文档也说明，它会在生成的 host stub 里自动插入 argument count、pointer kind、dtype、shape、strides、device 等检查，目标是避免手写 Python checks，降低 Python 解释器和属性访问开销。(<a href="https://www.tilelang.com/compiler_internals/tensor_checks.html" title="https://www.tilelang.com/compiler_internals/tensor_checks.html">TileLang</a>)</p>
+<p>这里有一个简单例子。</p>
+<p>传统方式像这样：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Python:
+  检查 A.dtype
+  检查 A.shape
+  检查 A.stride
+  检查 device
+  打包参数
+  launch GPU kernel
+</code></pre></td></tr></table>
+</div>
+</div><p>Host Codegen 后像这样：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Python:
+  调用生成好的 launcher
+
+C/C++ host launcher:
+  检查 dtype / shape / stride / device
+  打包参数
+  launch GPU kernel
+</code></pre></td></tr></table>
+</div>
+</div><p>这不是&quot;不检查&quot;。恰恰相反，它把检查固化到生成代码里。检查仍然存在，但不再经过 Python 热路径。</p>
+<p>TVM-FFI 和 DLPack 在这里也很重要。TVM-FFI 文档说明，它通过 DLPack 在 PyTorch、JAX、PaddlePaddle 等框架之间共享 tensor 描述与内存；例如从 PyTorch tensor 创建 TVM-FFI tensor 后，可以和原 tensor 共享同一底层 buffer，再转回 PyTorch 也不复制。(<a href="https://tvm.apache.org/ffi/concepts/tensor.html" title="https://tvm.apache.org/ffi/concepts/tensor.html">TVM-FFI</a>)</p>
+<p>复杂 kernel 的优化不能只看 GPU 代码。调用它的 CPU 路径同样是瓶颈，Host Codegen 的意义就在这里。</p>
+<hr>
+<h2 id="2-第二张欠条复杂下标不能靠人脑一直证明">2. 第二张欠条：复杂下标不能靠人脑一直证明</h2>
+<p>手写 CUDA 最容易错的地方，在于下标，矩阵乘法的逻辑反而相对清晰。</p>
+<p>一个长上下文 attention kernel 里，可能同时涉及 <code>block_id</code>、<code>warp_id</code>、<code>lane_id</code>、tile offset、stride、padding、mask、vectorized load width、shared memory swizzle 这些下标和参数。开发者要回答一堆问题：这个 load 会不会越界？地址是不是 16-byte 对齐？shared memory 写入会不会冲突？barrier 能不能省？loop 能不能 vectorize？</p>
+<p>简单表达式，编译器能看懂。复杂表达式，普通规则很容易保守。保守意味着加 mask、不 vectorize、多 barrier，kernel 会慢。人手动证明又容易出错。</p>
+<p>V4 里 TileLang 提到一个很有意思的方向：SMT-solver-assisted formal integer analysis。朴素理解，就是把这些整数约束交给 Z3 这类求解器，让它帮编译器证明某些访问是否安全。Z3 是微软研究院开发的 SMT solver，用来判断带算术、bit-vector、array 等背景理论的一阶逻辑公式是否可满足，常用于程序验证和编译器相关场景。(<a href="https://www.microsoft.com/en-us/research/project/z3-3/" title="https://www.microsoft.com/en-us/research/project/z3-3/">Z3</a>)</p>
+<p>举个简化例子。</p>
+<p>已知：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">0 &lt;= tx &lt; 128
+0 &lt;= block_id &lt; ceildiv(N, 128)
+idx = block_id * 128 + tx
+</code></pre></td></tr></table>
+</div>
+</div><p>要证明：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">idx &lt; padded_N
+</code></pre></td></tr></table>
+</div>
+</div><p>如果 <code>padded_N</code> 是 128 对齐后的长度，solver 可以证明这个访问安全。真实 kernel 的表达式当然更复杂，但思想类似：把&quot;我觉得不会越界&quot;变成&quot;在这些约束下可以证明不会越界&quot;。</p>
+<p>这件事的价值不是炫技。它解决的是复杂 kernel 迭代时的信任问题。没有形式化分析，编译器只能保守，或者开发者只能手写很多特殊 case。有了 solver，更多优化可以自动打开——kernel 不只要算得快，还要让编译器知道自己为什么安全。</p>
+<hr>
+<h2 id="3-第三张欠条最后几-bit-也会影响调试">3. 第三张欠条：最后几 bit 也会影响调试</h2>
+<p>很多人第一次听到 bitwise reproducibility，会觉得这是洁癖。浮点数最后几 bit 不一样，真的那么重要吗？</p>
+<p>在小实验里可能不重要。在万亿参数 MoE 训练里，重要。</p>
+<p>因为训练出问题时，你要复现它。</p>
+<p>如果某一步 loss spike 了，你需要知道是数据问题、routing 问题、某个 expert outlier、某个通信错序、某个 kernel 的 nondeterministic atomicAdd，还是硬件异常。如果同样输入每次跑出来都略有不同，你就很难缩小范围。</p>
+<p>PyTorch 文档也说，完全可复现并不总能跨版本、跨平台保证；deterministic operations 通常更慢，但能节省实验、调试、回归测试时间。PyTorch 提供 <code>torch.use_deterministic_algorithms()</code>，让可用操作走 deterministic 算法，如果只有 nondeterministic 算法则报错。(<a href="https://docs.pytorch.org/docs/stable/notes/randomness" title="https://docs.pytorch.org/docs/stable/notes/randomness">PyTorch</a>)(<a href="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html" title="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html">PyTorch Det</a>)</p>
+<p>V4 关注两个层次。</p>
+<p>第一个是 <strong>deterministic</strong>：同样输入、同样环境、同样 batch，重复跑结果一样。</p>
+<p>第二个是 <strong>batch-invariant</strong>：同一个样本单独跑，和其他样本拼 batch 后跑，输出也一样。</p>
+<p>第二个更难。</p>
+<p>为什么换 batch 会改变结果？一个常见原因是 split-KV 或 split-K。为了提高并行度，系统可能把同一个 sequence 的 KV 或矩阵乘的 K 维拆给多个 SM 或多个 split 并行算，再合并 partial results。合并顺序如果依赖 batch layout 或 runtime 调度，浮点加法顺序就变了。</p>
+<p>浮点加法不满足严格结合律：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">(a + b) + c
+</code></pre></td></tr></table>
+</div>
+</div><p>和：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">a + (b + c)
+</code></pre></td></tr></table>
+</div>
+</div><p>在实数数学里一样，在浮点里可能最后几 bit 不同。</p>
+<p><img src="./part2_02_determinism_excalidraw.svg" alt="Determinism"></p>
+<p>attention backward 里也有类似问题。多个 query 可能都 attend 到同一个 KV entry。反向传播时，它们都会给同一个 dKV 贡献梯度：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">dKV[j] += grad_from_query_1
+dKV[j] += grad_from_query_7
+dKV[j] += grad_from_query_9
+</code></pre></td></tr></table>
+</div>
+</div><p>普通做法可能用 atomicAdd。哪个线程先加、哪个线程后加，不固定。顺序一变，最后 bit 可能变。</p>
+<p>V4 的处理方式是：每个 SM 先写到自己的 accumulation buffer，然后再按固定顺序做 deterministic reduction。这样牺牲一点 buffer 和额外 reduction，但换来结果稳定。MoE backward 里也类似，通过 token order preprocessing 和 buffer isolation，避免多 rank 同时写同一接收位置导致顺序不确定。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>线上某个请求出问题，如果你单独拿它复现，结果和线上不一样，因为线上它当时和别的请求拼了 batch，那么你就没法审问这个 bug。Batch-invariant kernel 解决的就是这种问题。</p>
+<hr>
+<h2 id="4-第四张欠条fp4-不能随便压要打在最疼的地方">4. 第四张欠条：FP4 不能随便压，要打在最疼的地方</h2>
+<p>低精度很诱人。把 16-bit 变成 4-bit，显存和带宽压力都会下降。但 V4 的 FP4 QAT 值得注意的地方是：它没有把&quot;全模型 4-bit&quot;当目标，而是把 FP4 放在两个最值得压的位置。</p>
+<p>第一是 <strong>MoE expert weights</strong>。</p>
+<p>MoE 的总参数很大，但每个 token 只激活一部分 experts。expert weights 是显存占用的大头之一。压它们，收益直接。</p>
+<p>第二是 <strong>CSA indexer QK path</strong>。</p>
+<p>在 1M context 下，CSA 的 indexer 要反复做 QK 相关性打分，用来选 top-k compressed entries。这个路径承载的是长上下文检索的关键成本，与普通模型权重的性质不同。V4 把 indexer QK 的 activations/cache/load/multiply 走 FP4，是在压&quot;每步长上下文检索&quot;的成本。</p>
+<p><img src="./part2_03_fp4_qat_excalidraw.svg" alt="FP4 QAT"></p>
+<p>MoE expert weights 的训练路径也很有工程味。V4 维护 FP32 master weights，forward 时量化到 FP4，再反量化到 FP8 参与计算。论文说 FP4-to-FP8 dequantization 可以做到 lossless，因为 FP8 E4M3 比 FP4 E2M1 有更大的动态范围，可以吸收 FP4 sub-block scale 的变化。这样 backward 可以复用已有 FP8 mixed-precision training framework，不必为了 FP4 重写整套训练系统。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>这点很重要。很多低精度方案，真正的难点在于训练系统能否承受改动，forward 跑不跑得通往往还在其次。V4 的路径像是把 FP4 嵌入现有 FP8 框架，尽量减少系统侵入。</p>
+<p>V4 还把 index scores 从 FP32 降到 BF16，用于 top-k selector。论文报告 top-k selector 获得 2× speedup，同时 KV entry recall 仍保持 99.7%。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>这就是&quot;定点打击&quot;：FP4 并非四处开花，而是落在两个真正的系统瓶颈上——巨大的 expert weights 和长上下文 indexer QK，其他地方不动。</p>
+<hr>
+<h2 id="5-第五张欠条muon-要完整矩阵zero-想切碎矩阵">5. 第五张欠条：Muon 要完整矩阵，ZeRO 想切碎矩阵</h2>
+<p>Muon 这块很容易被一句&quot;用了新优化器&quot;带过。但它对训练框架提出了一个很具体的要求：它要看完整矩阵。</p>
+<p>AdamW 这类优化器基本是逐元素更新。每个参数都有自己的 moment state，参数矩阵被切碎分到不同 rank 上，逻辑上没那么难。</p>
+<p>Muon 不一样。它对矩阵梯度或 momentum 做近似正交化。核心操作和 Newton-Schulz 迭代有关。近期关于 Muon 的理论分析也把重点放在 momentum orthogonalization with a few Newton-Schulz steps，并讨论它和理想 SVD-polar 更新之间的关系。(<a href="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz" title="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz">Muon</a>)</p>
+<p>这意味着一个权重矩阵最好作为完整矩阵参与更新。</p>
+<p>但 ZeRO 的基本思想是省显存：把 optimizer states、gradients、parameters 切到不同 ranks 上。它天然喜欢把东西切碎。</p>
+<p>冲突就来了：Muon 要看完整矩阵才能做正交化，ZeRO 的本能却是把矩阵切碎省显存——两者在参数分片的粒度上直接对撞。V4 的处理方式不是简单放弃 ZeRO，也不是简单放弃 Muon。对 dense parameters，它限制 Muon ZeRO parallelism 的规模，用 knapsack algorithm 把完整矩阵分配给不同 ranks，让每个 rank 管的矩阵总量大致均衡。对 MoE parameters，因为 expert 矩阵数量很多，它把 down/up/gate projection 分别 flatten 后分发，但仍保证不切断一个逻辑独立矩阵。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p><img src="./part2_04_training_kv_debts_excalidraw.svg" alt="Training debts"></p>
+<p>可以这样理解：普通 ZeRO 把 W1 切成几块，rank0/1/2/3 各拿一片；V4 的 Muon-ZeRO 改为把 W1 整块给 rank0，W2 整块给 rank1，W3 整块给 rank2——牺牲的是分配的自由度，保住的是 Muon 需要的矩阵结构。</p>
+<p>V4 还提到一个小细节：连续同 shape 参数会自动合并，让 Newton-Schulz 可以 batched execution，提高硬件利用率。MoE gradients 在 data-parallel ranks 之间同步时会随机舍入到 BF16 减少通信，但为避免低精度累加误差，不直接 tree/ring reduce-scatter，而是先 all-to-all 交换本地 gradients，再每个 rank 本地 FP32 求和。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>Muon 不是一个孤立的算法选择；它反过来规定了分布式系统该怎么切参数。优化器和训练框架之间的这种双向约束，V4 把它说得很明白。任何未来不依赖逐元素更新的优化器，都会遇到同样的张力。</p>
+<hr>
+<h2 id="6-第六张欠条mhc-增强表达力也增加-activation-和-pipeline-通信">6. 第六张欠条：mHC 增强表达力，也增加 activation 和 pipeline 通信</h2>
+<p>mHC，全称 manifold-constrained hyper-connections，是 V4 里替代普通 residual connection 的结构。我们不在这篇展开它的数学，只看系统后果。</p>
+<p>mHC 让 residual stream 不再是一条，而是多个 residual streams。V4 里 <code>n_hc = 4</code>。这会增强模型表达和信号流动，但带来两个训练系统成本：activation memory 增加，pipeline stage 之间要传的数据也增加。如果不处理，mHC 的收益可能被训练开销吃掉。</p>
+<p>V4 的处理方式有三类：</p>
+<p>第一，写 fused mHC kernels。<br>
+mHC 里有 pre-block mixing、post-block mixing、residual mixing 等操作。如果拆成很多小算子，会有额外 launch 和 HBM traffic。</p>
+<p>第二，选择性 recomputation。<br>
+不是所有 activation 都存，也不是所有都重算。便宜的中间量可以 backward 时重算，贵的操作尽量避免重算。</p>
+<p>第三，调整 DualPipe 1F1B overlap。<br>
+mHC 增加了 pipeline communication，原本的 overlap 需要适配，让部分 mHC 操作能并发执行。论文说这些优化把 mHC 的 wall-time overhead 限制到 overlapped 1F1B pipeline stage 的 6.7%。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>) 结构上多一条表达路径，6.7% 就是它留给训练系统的账单。</p>
+<hr>
+<h2 id="7-第七张欠条csahca-的-context-parallelism-不像普通-attention">7. 第七张欠条：CSA/HCA 的 Context Parallelism 不像普通 attention</h2>
+<p>长上下文训练通常要做 Context Parallelism。序列太长，单 GPU 放不下，就把 sequence 维度切给多个 ranks：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">rank0: t0      ~ t249999
+rank1: t250000 ~ t499999
+rank2: t500000 ~ t749999
+rank3: t750000 ~ t999999
+</code></pre></td></tr></table>
+</div>
+</div><p>普通 attention 可以围绕这种切分做通信。但 CSA/HCA 多了压缩窗口。</p>
+<p>CSA 每 m 个 token 压成一个 entry。HCA 每 m' 个 token 压成一个 entry。问题是：压缩窗口可能跨 rank 边界。</p>
+<p>比如 m=4：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">rank0 末尾: t996, t997
+rank1 开头: t998, t999
+</code></pre></td></tr></table>
+</div>
+</div><p>这 4 个 token 应该一起压缩，但它们分布在两个 rank 上。如果 rank1 只看自己的本地 token，它就压不出正确 entry。</p>
+<p>V4 的做法分两步。</p>
+<p>第一步，邻居通信。<br>
+rank i 把自己最后 m 个 uncompressed KV entries 发给 rank i+1。这样下一个 rank 可以正确处理跨边界 compression block。</p>
+<p>第二步，各 rank 本地压缩后 all-gather compressed KV。<br>
+每个 rank 先本地压缩出固定长度的 compressed entries，再做 all-gather。之后用 fused select-and-pad operator 整理成全局可见的 compressed KV，把 padding 放到尾部。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>这和分布式数据库里的分片与聚合是同一类问题：光切开数据不够，还要保证跨分片的 group-by 语义不被破坏。普通 CP 只切序列；CSA/HCA 还必须保证压缩分组不被 rank 边界截断。</p>
+<hr>
+<h2 id="8-第八张欠条activation-checkpointing-不能只按-module-粗切">8. 第八张欠条：Activation Checkpointing 不能只按 module 粗切</h2>
+<p>训练大模型时，activation memory 是主要显存压力之一。常规 activation checkpointing 的思路是：forward 时不存某些中间结果，backward 时重算。</p>
+<p>问题在于，很多框架按 module 粒度 checkpoint。比如一个 Transformer block 要么存，要么重算。这个粒度太粗。</p>
+<p>一个 module 内部，有些 tensor 很大但重算便宜；有些 tensor 小但重算贵；有些 tensor 只是 reshape 后共享 storage。按 module 粗切，很难最优。</p>
+<p>手写 forward/backward 可以更精细，但开发成本太高，而且容易出错。</p>
+<p>V4 的做法是 tensor-level activation checkpointing。开发者只写 forward，并对单个 tensor 做 annotation。框架用 TorchFX trace 计算图，对被标注的 tensor 做 backward traversal，找出最小 recomputation subgraph，在 backward 中插入重算逻辑。论文还提到，重算时会复用原 storage pointer，避免额外 GPU memory copy；对共享底层 storage 的 tensor，例如 reshape 输入输出，也会自动去重。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>就好比：module-level checkpoint 是整间屋子要么全拍照要么全重建；tensor-level checkpoint 只标记几件家具，重建时找出恢复这几件所需的最小步骤。结构越复杂，中间 tensor 越多，粗粒度 checkpoint 越容易浪费。</p>
+<hr>
+<h2 id="9-第九张欠条推理时-kv-cache-已经像一个小型内存管理器">9. 第九张欠条：推理时 KV cache 已经像一个小型内存管理器</h2>
+<p>第一篇讲过，V4 的 Hybrid Attention 产生了多种 KV：CSA main/indexer compressed KV、HCA compressed KV、SWA 未压缩最近窗口，以及 compression branch 里还没凑够 m/m' 的 tail states。这些东西大小不同、生命周期不同、访问方式不同。传统 PagedAttention 更像管理一堆同构 KV blocks。V4 的 KV cache 是异构的。</p>
+<p>所以 V4 把推理 cache 分成两类：<strong>classical KV cache</strong> 存 CSA/HCA 已经压缩好的 entries，负责长期历史；<strong>state cache</strong> 存 SWA 最近窗口和还没凑够压缩块的 uncompressed tail states，负责当前序列状态。未凑够 m 或 m' 的 tail 不能直接写进 compressed cache，因为它还不是完整 compressed block。</p>
+<p>V4 还用 <code>lcm(m, m')</code> 统一 classical KV cache block 粒度。m=4，m'=128，所以一个 block 覆盖 128 个原始 token。它会产生：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">CSA compressed entries: 128 / 4 = 32 个
+HCA compressed entries: 128 / 128 = 1 个
+</code></pre></td></tr></table>
+</div>
+</div><p>这样一个 logical block 同时适配 CSA 和 HCA。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>V4 还支持 on-disk KV cache storage，用于 shared-prefix requests。公共前缀的 CSA/HCA compressed KV 可以落盘复用，命中时直接读取 compressed KV，跳过大部分 prefill。不完整 compression block 的尾部仍然重算。</p>
+<p>SWA 比较特殊。它是未压缩的，而且每层都有，体积比 compressed KV 大得多。论文给了三种策略：Full SWA Caching 全存（重算少但写入量大），Periodic Checkpointing 隔段存一次（存储和重算折中），Zero SWA Caching 不存 SWA（命中时重算尾部恢复窗口）。</p>
+<p>V4 推理时管理的是一组对象，恢复成本不同、复用价值不同、生命周期不同——这已经不像缓存管理，更像内存管理。所以我们可以把它称为 KV Cache OS。这个说法有具体依据：它确实在做类似内存管理的事情——哪些状态常驻、哪些可以落盘、哪些可以重算、哪些按 block 对齐、哪些只在窗口内保留。</p>
+<p>这个问题不只属于 V4：任何把 KV 做得足够复杂的系统，最终都会遇到同样的分层管理问题。</p>
+<hr>
+<h2 id="10-把这些欠条放在一起看">10. 把这些欠条放在一起看</h2>
+<p>现在回头看，V4 的&quot;控制&quot;系统可以压成一张表：</p>
+<table>
+<thead>
+<tr>
+<th>欠条</th>
+<th>如果不还，会怎样</th>
+<th>V4 的处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kernel 欠条</td>
+<td>PyTorch 小算子太碎，host overhead 大</td>
+<td>TileLang + Host Codegen + fused kernels</td>
+</tr>
+<tr>
+<td>下标安全欠条</td>
+<td>复杂 kernel 难证明安全，优化保守</td>
+<td>SMT-assisted integer analysis</td>
+</tr>
+<tr>
+<td>复现欠条</td>
+<td>loss spike / 线上 bug 难复现</td>
+<td>batch-invariant + deterministic kernels</td>
+</tr>
+<tr>
+<td>低精度欠条</td>
+<td>4-bit 粗暴压会损能力或破训练系统</td>
+<td>FP4 QAT 定点压 expert weights 和 CSA indexer</td>
+</tr>
+<tr>
+<td>优化器欠条</td>
+<td>Muon 要完整矩阵，ZeRO 想切碎</td>
+<td>hybrid Muon-ZeRO，矩阵级分配</td>
+</tr>
+<tr>
+<td>mHC 欠条</td>
+<td>activation 和 pipeline 通信变大</td>
+<td>fused kernels + selective recompute + pipeline overlap</td>
+</tr>
+<tr>
+<td>CP 欠条</td>
+<td>压缩窗口跨 rank 边界</td>
+<td>邻居通信 + all-gather compressed KV</td>
+</tr>
+<tr>
+<td>推理欠条</td>
+<td>KV cache 类型异构，传统 layout 不够</td>
+<td>classical cache + state cache + on-disk prefix</td>
+</tr>
+</tbody>
+</table>
+<p>每个技巧背后，有一个统一目标：让模型结构的复杂性，不泄漏成不可控的训练和推理复杂性。</p>
+<p>如果第一篇的关键词是&quot;记忆&quot;，这篇的关键词就是&quot;控制&quot;。</p>
+<hr>
+<h2 id="11-这套控制系统的边界">11. 这套控制系统的边界</h2>
+<p>同样，这里也不能只讲好处。</p>
+<h3 id="111-host-codegen-会增加编译系统复杂度">11.1 Host Codegen 会增加编译系统复杂度</h3>
+<p>把检查从 Python 移到 C/C++ host launcher，运行时更快，但编译器和 ABI 设计更重。错误信息、调试体验、跨框架兼容，都要靠工具链保证。</p>
+<h3 id="112-smt-solver-不是万能">11.2 SMT solver 不是万能</h3>
+<p>SMT 能证明很多整数关系，但复杂非线性整数问题可能很难。编译器仍然需要设置超时、fallback、保守路径。不能把&quot;有 solver&quot;理解成&quot;所有优化都能自动证明&quot;。</p>
+<h3 id="113-determinism-通常会牺牲部分性能">11.3 Determinism 通常会牺牲部分性能</h3>
+<p>PyTorch 文档也明确说，deterministic operations 往往更慢。V4 的难点在于尽量把性能损失压低，而不是免费得到 determinism。(<a href="https://docs.pytorch.org/docs/stable/notes/randomness" title="https://docs.pytorch.org/docs/stable/notes/randomness">PyTorch</a>)</p>
+<h3 id="114-fp4-的有效性依赖分布和实现">11.4 FP4 的有效性依赖分布和实现</h3>
+<p>V4 的 FP4-to-FP8 lossless dequant 依赖特定格式、scale 设计和权重分布。换模型、换硬件、换 block size，不能直接照抄结论。</p>
+<h3 id="115-muon-的分布式实现会影响负载均衡">11.5 Muon 的分布式实现会影响负载均衡</h3>
+<p>完整矩阵分配给 rank，比任意切片更受矩阵大小分布影响。V4 用 knapsack 和 padding 控制不均衡，但这仍是系统 trade-off。模型里最大的几个矩阵决定了 knapsack 能做到多优——算法对分布式系统的摩擦，会随模型规模放大。</p>
+<h3 id="116-kv-cache-os-会把问题转移到存储和调度">11.6 KV Cache OS 会把问题转移到存储和调度</h3>
+<p>on-disk KV cache、SWA checkpointing、state cache 管理，都需要 scheduler 配合。长上下文服务不是只优化 kernel 就够了，还要管缓存命中、落盘、恢复和 eviction policy。</p>
+<p>这些边界说明一件事：V4 的控制系统不是一堆银弹。它更像一套工程平衡术。</p>
+<hr>
+<h2 id="12-第二篇结论控制复杂性才是-v4-真正难的部分">12. 第二篇结论：控制复杂性，才是 V4 真正难的部分</h2>
+<p>很多模型论文会把重点放在结构创新上。但 V4 这类模型的难点在于：结构创新会迅速变成系统债。</p>
+<p>引入 Hybrid Attention，就要重写 KV cache layout 和 Context Parallelism。<br>
+引入 mHC，就要处理 activation memory 和 pipeline communication。<br>
+使用 Muon，就要重新设计 ZeRO 参数分片。<br>
+使用 FP4，就要让训练和推理路径对齐。<br>
+追求 agentic long context，就要保证 deterministic、batch-invariant、可恢复、可 debug。<br>
+写复杂 kernel，就要让研究迭代速度和生产性能同时成立。</p>
+<p>所以第二篇的核心可以用一句话概括：</p>
+<blockquote>
+<p>DeepSeek‑V4 的控制系统，要解决的是整体复杂性失控的问题，各个模块的局部最优排在其次。</p>
+</blockquote>
+<p>前两篇分别回答了记忆（模型怎么承受一百万 token 历史）和控制（这么复杂的模型怎么训练和部署）。第三篇要回答的是行动：模型怎么进入真实环境，调用工具，跑 sandbox，被中断后恢复，并让每条轨迹可以被记录和评价。那里会进入 OPD、GRM、Quick Instruction、Rollout WAL、DSec、EROFS、trajectory log 和 real-world tasks——也就是 DeepSeek‑V4 最像&quot;Agent 操作系统&quot;的部分。</p>
+<hr>
+<h2 id="参考阅读">参考阅读</h2>
+<ol>
+<li>Hugging Face, <em>DeepSeek‑V4: a million-token context that agents can actually use</em>, 2026.（<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>）</li>
+<li>DeepSeek-AI, <em>DeepSeek‑V4: Towards Highly Efficient Million‑Token Context Intelligence</em>, technical report, 2026.（<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>）</li>
+<li>TileLang documentation, <em>Tensor Checks (Host-Side Auto-Validation)</em>.（<a href="https://www.tilelang.com/compiler_internals/tensor_checks.html" title="https://www.tilelang.com/compiler_internals/tensor_checks.html">TileLang</a>）</li>
+<li>Apache TVM FFI documentation, <em>Tensor and DLPack</em>.（<a href="https://tvm.apache.org/ffi/concepts/tensor.html" title="https://tvm.apache.org/ffi/concepts/tensor.html">TVM-FFI</a>）</li>
+<li>Microsoft Research, <em>Z3 theorem prover</em>.（<a href="https://www.microsoft.com/en-us/research/project/z3-3/" title="https://www.microsoft.com/en-us/research/project/z3-3/">Z3</a>）</li>
+<li>PyTorch documentation, <em>Reproducibility</em>.（<a href="https://docs.pytorch.org/docs/stable/notes/randomness" title="https://docs.pytorch.org/docs/stable/notes/randomness">PyTorch</a>）</li>
+<li>PyTorch documentation, <em>torch.use_deterministic_algorithms</em>.（<a href="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html" title="https://docs.pytorch.org/docs/2.9/generated/torch.use_deterministic_algorithms.html">PyTorch Det</a>）</li>
+<li>Kim and Oh, <em>Convergence of Muon with Newton-Schulz</em>, 2026.（<a href="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz" title="https://www.researchgate.net/publication/400118699_Convergence_of_Muon_with_Newton-Schulz">Muon</a>）</li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#DeepSeek</span>
+      
+      <span class="tag">#LLM</span>
+      
+      <span class="tag">#Training</span>
+      
+      <span class="tag">#FP4</span>
+      
+      <span class="tag">#MoE</span>
+      
+      <span class="tag">#KV Cache</span>
+      
+      <span class="tag">#AI Infrastructure</span>
+      
+      <span class="tag">#TileLang</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">分享到:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fdeepseek-v4-control-part2%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fdeepseek-v4-control-part2%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=DeepSeek%e2%80%91V4%20%e7%9a%84%e6%9a%97%e7%ba%bf%e4%b9%8b%e4%ba%8c%ef%bc%9a%e8%ae%ad%e7%bb%83%e4%b8%80%e5%8f%b0%e4%b8%8d%e4%bc%9a%e5%a4%b1%e6%8e%a7%e7%9a%84%e4%b8%87%e4%ba%bf%e5%8f%82%e6%95%b0%e6%9c%ba%e5%99%a8&body=https%3a%2f%2fblog.xieydd.top%2fdeepseek-v4-control-part2%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">返回顶部</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/deepseek-v4-memory-part1/" class="prev-post">
+        <span class="nav-label">上一篇</span>
+        <span class="nav-title">DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/deepseek-v4-action-part3/" class="next-post">
+        <span class="nav-label">下一篇</span>
+        <span class="nav-title">DeepSeek‑V4 的暗线之三：从语言模型到 Agent 操作系统</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+
+
+
+  
+
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-cn"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+
+    </main>
+  </div>
+  
+<div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="search-input" class="search-input" placeholder="搜索文章..." autocomplete="off" />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">
+        输入关键词开始搜索
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/fuse.js@7"></script>
+  <script src="/js/search.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

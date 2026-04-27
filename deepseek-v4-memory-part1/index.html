@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+      
+    
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统 | Xieydd&#39;s Blog</title>
+  <meta name="description" content="DeepSeek-V4 的 1M 上下文不只是更大的输入框。本文从 SWA、CSA、HCA、compressed KV、MoE wave 和硬件带宽公式切入，解释它如何把长程 Agent 的记忆成本拆成分层存储、检索和执行调度问题。">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统 | Xieydd&#39;s Blog">
+  <meta property="og:description" content="DeepSeek-V4 的 1M 上下文不只是更大的输入框。本文从 SWA、CSA、HCA、compressed KV、MoE wave 和硬件带宽公式切入，解释它如何把长程 Agent 的记忆成本拆成分层存储、检索和执行调度问题。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/deepseek-v4-memory-part1/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://blog.xieydd.top/deepseek-v4-memory-part1/part1_00_header_excalidraw.svg">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统 | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="DeepSeek-V4 的 1M 上下文不只是更大的输入框。本文从 SWA、CSA、HCA、compressed KV、MoE wave 和硬件带宽公式切入，解释它如何把长程 Agent 的记忆成本拆成分层存储、检索和执行调度问题。">
+  <meta name="twitter:image" content="https://blog.xieydd.top/deepseek-v4-memory-part1/part1_00_header_excalidraw.svg">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-04-26T20:40:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-04-27T18:49:16&#43;08:00">
+  
+  <meta property="article:tag" content="DeepSeek">
+  
+  <meta property="article:tag" content="LLM">
+  
+  <meta property="article:tag" content="Agent">
+  
+  <meta property="article:tag" content="Long Context">
+  
+  <meta property="article:tag" content="KV Cache">
+  
+  <meta property="article:tag" content="MoE">
+  
+  <meta property="article:tag" content="AI Infrastructure">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/deepseek-v4-memory-part1/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/deepseek-v4-memory-part1/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/deepseek-v4-memory-part1/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/deepseek-v4-memory-part1/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-04-27T18:49:16+08:00","datePublished":"2026-04-26T20:40:00+08:00","description":"DeepSeek-V4 的 1M 上下文不只是更大的输入框。本文从 SWA、CSA、HCA、compressed KV、MoE wave 和硬件带宽公式切入，解释它如何把长程 Agent 的记忆成本拆成分层存储、检索和执行调度问题。","headline":"DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统","image":"https://blog.xieydd.top/deepseek-v4-memory-part1/part1_00_header_excalidraw.svg","inLanguage":"zh-CN","mainEntityOfPage":{"@id":"https://blog.xieydd.top/deepseek-v4-memory-part1/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/deepseek-v4-memory-part1/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/posts/">文章</a>
+        <a href="https://blog.xieydd.top/about/">关于</a>
+        
+        <div class="nav-icons">
+          <button id="search-toggle" class="theme-toggle" title="Search (Ctrl+K)" aria-label="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/en/deepseek-v4-memory-part1/" class="lang-link">EN</a>
+          
+        
+      
+      
+      
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.zh-cn">DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统</h1>
+    <div class="post-meta">
+      <span>发布于 26 Apr, 2026</span>
+      <span>• 16 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>目录</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-普通-attention-的问题历史越长每一步都越重">1. 普通 attention 的问题：历史越长，每一步都越重</a></li>
+    <li><a href="#2-v4-的记忆分层swacsahca-分别解决不同距离的问题">2. V4 的记忆分层：SWA、CSA、HCA 分别解决不同距离的问题</a></li>
+    <li><a href="#3-compressed-kv-entry-到底是什么给-attention-读的向量状态">3. compressed KV entry 到底是什么：给 attention 读的向量状态</a></li>
+    <li><a href="#4-csa-的本质压缩之后还要做召回">4. CSA 的本质：压缩之后还要做召回</a></li>
+    <li><a href="#5-hca-的本质用细节换全局稳定性">5. HCA 的本质：用细节换全局稳定性</a></li>
+    <li><a href="#6-swa-的本质远处可以做笔记现场要看原文">6. SWA 的本质：远处可以做笔记，现场要看原文</a></li>
+    <li><a href="#7-为什么-moe-wave-也该放进记忆篇">7. 为什么 MoE wave 也该放进“记忆篇”</a></li>
+    <li><a href="#8-硬件公式cb-讲的是带宽之外的平衡">8. 硬件公式：C/B 讲的是带宽之外的平衡</a></li>
+    <li><a href="#9-把几块拼起来v4-的记忆观">9. 把几块拼起来：V4 的记忆观</a></li>
+    <li><a href="#10-这套方案的边界">10. 这套方案的边界</a></li>
+    <li><a href="#11-第一篇结论v4-在重新组织历史">11. 第一篇结论：V4 在重新组织历史</a></li>
+    <li><a href="#参考阅读">参考阅读</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p><img src="./part1_00_header_excalidraw.svg" alt="DeepSeek‑V4 的暗线之一：分层记忆比输入框更关键"></p>
+<p>如果一个 Agent 要连续工作 8 小时，读完一个代码仓库、几十轮终端输出、几百次工具返回，智商通常还没到瓶颈，记忆已经先变贵。</p>
+<p>这个说法听起来有点反直觉。我们平时说一个模型“支持 1M context”，很容易把它想成一个更大的输入框。输入框大了，能塞更多文档，问题似乎就解决了。但长上下文的难点会从容量转到边际成本：每一步生成都要带着历史继续往前走。</p>
+<p>对自回归模型来说，历史放进去以后还会反复参与生成。模型每生成一个新 token，都要利用前面的历史状态。上下文越长，历史状态越重。一个 Agent 如果要生成几千、几万 token，这笔成本就从一次性门票变成每走一步都要交的路费。</p>
+<p>所以，DeepSeek‑V4 的 1M context 先别急着问“是否塞得下一百万 token”。更关键的问题是：</p>
+<blockquote>
+<p>这一百万 token 怎么存，怎么读，怎么在每一步生成时不把系统拖死。</p>
+</blockquote>
+<p>官方技术报告给出的数字很直接：DeepSeek‑V4 系列包含 V4‑Pro 和 V4‑Flash，二者都支持 1M token context。V4‑Pro 是 1.6T 总参数、49B 激活参数；V4‑Flash 是 284B 总参数、13B 激活参数。(<a href="https://api-docs.deepseek.com/news/news260424" title="https://api-docs.deepseek.com/news/news260424">DeepSeek API Docs</a>)</p>
+<p>在 1M context 下，报告称 V4‑Pro 的单 token 推理 FLOPs 只有 V3.2 的 27%，KV cache 只有 10%；V4‑Flash 进一步降到 10% FLOPs 和 7% KV cache。足够说明 V4 设计的重心：把百万 token 上下文做成 Agent 任务里更可用的系统能力。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)(<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</p>
+<p>这一篇只讲 V4 的第一条暗线：记忆。</p>
+<p>这里的“记忆”要同时看 attention 和执行路径。长程 Agent 的记忆成本至少有两层：一层是历史怎么存、怎么读；另一层是每个输出 token 经过 MoE 层时，通信和计算怎么别互相等。前者解释 SWA、CSA、HCA，后者解释为什么 MoE wave 也要放进这一篇。</p>
+<p>先把问题拆成七个具体问题：</p>
+<ol>
+<li>普通 attention 为什么在 1M context 下撑不住？</li>
+<li>compressed KV entry 和人类摘要有什么区别？</li>
+<li>为什么 CSA 要先压缩，再检索，再精读？</li>
+<li>为什么有了 CSA 还要 HCA？</li>
+<li>为什么最近窗口必须保留原文？</li>
+<li>MoE wave 属于执行调度，为什么也和长程 Agent 的记忆成本有关？</li>
+<li><code>C/B &lt;= Vcomp/Vcomm</code> 这个硬件公式到底在说什么？</li>
+</ol>
+<hr>
+<h2 id="1-普通-attention-的问题历史越长每一步都越重">1. 普通 attention 的问题：历史越长，每一步都越重</h2>
+<p>先用一个简单比喻。</p>
+<p>假设你在修一个 bug。你面前有一叠便签。每张便签记录一个历史 token 的信息。普通 attention 的直觉是：每次你要写下一句话，都要回头翻这些便签，看看哪些和当前这句话有关。</p>
+<p>便签只有几千张时，这件事可以接受。便签有一百万张时，问题就变了。桌面容量只是开始；真正麻烦的是你每写一个字都要在这堆便签里找线索。</p>
+<p>对 Transformer 来说，历史 token 会留下 KV cache。KV cache 的作用是避免每一步都重新计算历史 token 的 key/value。但 KV cache 本身也要存储，也要被读取。上下文越长，KV cache 越大；每个新 token 对历史做 attention 时，历史越长，注意力计算也越重。</p>
+<p>在长程 Agent 任务里，这个问题会被放大。Agent 会一边读、一边试、一边把新结果继续塞回上下文：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">读文件 → 运行命令 → 看到报错 → 修改代码 → 再跑测试 → 再读日志 → 再修改
+</code></pre></td></tr></table>
+</div>
+</div><p>每一步都会把新信息加进上下文。上下文增长之后，后面的每个 token 都要面对更重的历史。</p>
+<p>所以 1M context 的真正问题是边际成本：历史变长之后，每新增一个输出 token 的成本仍然要可控。</p>
+<p>V4 的基本策略可以先压成三句话：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">最近历史：SWA 保留原文
+中距离历史：压缩后仍然太多，CSA 先检索再精读
+远距离历史：细节可以少一点，HCA 保留全局覆盖
+</code></pre></td></tr></table>
+</div>
+</div><p>这就是 Hybrid Attention 的出发点。</p>
+<hr>
+<h2 id="2-v4-的记忆分层swacsahca-分别解决不同距离的问题">2. V4 的记忆分层：SWA、CSA、HCA 分别解决不同距离的问题</h2>
+<p>DeepSeek‑V4 的 Hybrid Attention 主要由三种机制组成：</p>
+<ul>
+<li>SWA：Sliding Window Attention，保留最近窗口的原文 KV；</li>
+<li>CSA：Compressed Sparse Attention，把历史压缩后做稀疏检索；</li>
+<li>HCA：Heavily Compressed Attention，把历史更重度压缩后全局扫读。</li>
+</ul>
+<p><img src="./part1_01_hybrid_attention_excalidraw.svg" alt="Hybrid Attention"></p>
+<p>先看它们分别解决什么问题：</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>负责的距离</th>
+<th>保留什么</th>
+<th>付出的代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SWA</td>
+<td>最近现场</td>
+<td>原文 KV</td>
+<td>窗口长度受限</td>
+</tr>
+<tr>
+<td>CSA</td>
+<td>中距离细节</td>
+<td>4:1 压缩 KV + top-k 精读</td>
+<td>依赖 indexer 召回</td>
+</tr>
+<tr>
+<td>HCA</td>
+<td>远距离背景</td>
+<td>128:1 重压缩 KV</td>
+<td>细节损失更大</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-最近现场要看原文swa">2.1 最近现场要看原文：SWA</h3>
+<p>最近 token 往往决定局部语法、变量名、括号、缩进、工具输出的最后一行。</p>
+<p>比如代码里刚出现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>下一步生成什么，和最近几个 token 的字面形式强相关。再比如 shell 报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">ModuleNotFoundError: No module named &#39;xxx&#39;
+</code></pre></td></tr></table>
+</div>
+</div><p>Agent 下一步要不要安装依赖，往往取决于最后这一行。这里如果只看摘要，很容易丢细节。</p>
+<p>所以 V4 保留一个 sliding window。窗口内的 token 用未压缩 KV，类似“现场记录”。这个窗口不会无限增长，只负责最近一段。</p>
+<p>一句话理解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">远处可以做笔记，现场要看原文。
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="22-中距离历史要先召回csa">2.2 中距离历史要先召回：CSA</h3>
+<p>如果把每 4 个 token 压成一个 compressed KV entry，那么 1M token 会变成 250K 个 compressed entries。数量少了 4 倍，但每一步全看 250K 个 entry 仍然很贵。</p>
+<p>所以 CSA 还要加一个检索过程。</p>
+<p>CSA 的流程更像：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">原始 token
+  → 每 4 个 token 压成一个 compressed KV entry
+  → Lightning Indexer 给 compressed entries 打相关性分数
+  → 选 top-k
+  → core attention 只精读 top-k entries
+</code></pre></td></tr></table>
+</div>
+</div><p>这里的本质是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">压缩减少候选规模；
+indexer 负责召回；
+attention 负责精读。
+</code></pre></td></tr></table>
+</div>
+</div><p>如果用读书比喻，CSA 更像你读书时做了很多索引卡片：卡片比原文短，查卡片比翻全书快；真正要回答问题时，先找卡片，再精读被选中的卡片。</p>
+<h3 id="23-远距离历史需要全局覆盖hca">2.3 远距离历史需要全局覆盖：HCA</h3>
+<p>CSA 有一个依赖：top-k 检索。如果 indexer 没召回某个重要片段，后面的 attention 就看不到。</p>
+<p>HCA 的设计更粗，但更稳定。它每 128 个 token 压成一个 heavily compressed entry。压缩后 entries 数量很少，所以可以全看，而不必再赌一次 top-k 召回。</p>
+<p>HCA 的作用偏向全局背景，逐字细节要交给别的路径：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">前面大概讨论了哪些模块；
+哪段日志属于哪个阶段；
+之前是否尝试过某条路线；
+整个任务现在处在什么上下文里。
+</code></pre></td></tr></table>
+</div>
+</div><p>CSA 像搜索。搜索能找到细节，但可能漏召回。HCA 像目录或章节摘要。目录很粗，但不太会完全丢掉“这本书有哪些部分”。这就是二者的互补关系：CSA 用召回换细节，HCA 用细节换覆盖。</p>
+<h3 id="24-交替使用是为了让不同层承担不同记忆模式">2.4 交替使用，是为了让不同层承担不同记忆模式</h3>
+<p>V4 让不同层使用不同注意力模式。不同层交替使用 CSA 和 HCA。V4‑Pro 前两层是 HCA，后面 CSA/HCA 交替；V4‑Flash 前两层是 sliding-window，后面也交替使用 CSA/HCA。</p>
+<p>Hugging Face 的解读也提到，V4‑Pro 的 61 层栈里，layers 0–1 是 HCA，layers 2–60 交替 CSA 和 HCA，末尾 MTP block 只走 sliding-window。(<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</p>
+<p>这更像多层网络里的分工：一些层更适合做细节召回，一些层更适合做全局背景融合。SWA 则像每层都带着的“现场记录”，负责最近上下文的字面精度。</p>
+<hr>
+<h2 id="3-compressed-kv-entry-到底是什么给-attention-读的向量状态">3. compressed KV entry 到底是什么：给 attention 读的向量状态</h2>
+<p>这里是最容易误解的点。</p>
+<p>很多人看到“压缩 KV”，会自然想到摘要：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">这 4 个 token 的意思是……
+</code></pre></td></tr></table>
+</div>
+</div><p>但 compressed KV entry 是后续 attention 能继续使用的一组向量状态，人类直接读不到它。</p>
+<p>假设有 4 个 token：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">t0, t1, t2, t3
+</code></pre></td></tr></table>
+</div>
+</div><p>每个 token 都有一个 hidden state。V4 的 compressor 会从这些 hidden states 生成两类东西：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C0, C1, C2, C3  # 内容向量
+Z0, Z1, Z2, Z3  # 压缩权重 logits
+</code></pre></td></tr></table>
+</div>
+</div><p><code>C</code> 表示这个 token 想存进记忆里的内容。<code>Z</code> 表示压缩时这个 token 在不同维度上应该占多少权重。</p>
+<p>最终 compressed KV entry 是几个 <code>C</code> 的加权融合。权重来自 <code>Z</code> 的 softmax。更准确地说，这里给的是逐维权重：同一个 token 在某些维度上权重大，在另一些维度上权重小。</p>
+<p><img src="./part1_02_compressed_kv_excalidraw.svg" alt="Compressed KV Entry"></p>
+<p>一个玩具例子：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C0 = [1, 0, 0]
+C1 = [0, 1, 0]
+C2 = [0, 0, 1]
+C3 = [1, 1, 0]
+</code></pre></td></tr></table>
+</div>
+</div><p>假设 softmax 后的逐维权重大概是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">S0 = [0.6, 0.2, 0.1]
+S1 = [0.2, 0.5, 0.2]
+S2 = [0.1, 0.2, 0.6]
+S3 = [0.1, 0.1, 0.1]
+</code></pre></td></tr></table>
+</div>
+</div><p>那么 compressed entry 类似：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C_comp = S0⊙C0 + S1⊙C1 + S2⊙C2 + S3⊙C3
+</code></pre></td></tr></table>
+</div>
+</div><p>这里 <code>⊙</code> 是逐维相乘。最后得到的是一个新向量：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C_comp = [某个数, 某个数, 某个数]
+</code></pre></td></tr></table>
+</div>
+</div><p>真实模型里维度远高于 3。你可以把它想成一张向量卡片。人读不懂这张卡片，但 attention 能继续读。</p>
+<p>这点很重要。V4 的压缩目标是把 token 序列变成后续 attention 更容易使用的向量状态，目标物是模型内部状态，而非更短的自然语言。</p>
+<p>这个区别决定了我们该怎么理解 CSA/HCA。它们做的是模型内部可读的记忆状态重写，和人类读得懂的文本摘要处在不同层级。</p>
+<hr>
+<h2 id="4-csa-的本质压缩之后还要做召回">4. CSA 的本质：压缩之后还要做召回</h2>
+<p>现在回到 CSA。</p>
+<p>如果只压缩，不检索，会发生什么？</p>
+<p>1M token / 4 = 250K compressed entries。<br>
+对每个新 query 都看 250K entries，还是贵。</p>
+<p>所以 CSA 必须再做一步：选出当前 query 需要看的少量 entries。</p>
+<p>V4 里这个粗选由 Lightning Indexer 完成。它会给 compressed entries 打分，选 top-k。V4‑Pro 的 CSA top-k 是 1024，V4‑Flash 是 512。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>这个数字很有意义。假设原始历史是 1M token：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">原始 token 数：1,000,000
+CSA 压缩后：250,000 entries
+最终精读：约 1,024 entries
+</code></pre></td></tr></table>
+</div>
+</div><p>也就是说，CSA 做了两次降维：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">1,000,000 token
+  → 250,000 compressed entries
+  → top-k 约 1,024 entries
+</code></pre></td></tr></table>
+</div>
+</div><p>第一步减少存储和候选规模。第二步减少 attention 真正精读的对象。</p>
+<p>这和搜索系统很像：先把全网网页变成可检索的索引，再召回候选网页，最后才认真阅读最相关的结果。CSA 里的 indexer 就是召回，core attention 才是精读。</p>
+<p>把 CSA 说成“压缩 attention”还太粗。更准确地说：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">CSA = 压缩记忆 + 快速召回 + 少量精读
+</code></pre></td></tr></table>
+</div>
+</div><p>这就是它适合中距离历史的原因。它保留了比 HCA 更细的粒度，又避免每一步全看所有历史。</p>
+<hr>
+<h2 id="5-hca-的本质用细节换全局稳定性">5. HCA 的本质：用细节换全局稳定性</h2>
+<p>CSA 已经能压缩、检索、精读，HCA 还解决什么问题？</p>
+<p>因为检索有一个问题：召回失败。</p>
+<p>如果某个历史片段漏出 top-k，后面的 attention 就看不到它。CSA 适合找细节，但全局覆盖要靠另一条路径补上。</p>
+<p>HCA 的思路很粗暴：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">每 128 个 token 压成一个 entry；
+压缩后 entries 很少；
+所以全部看。
+</code></pre></td></tr></table>
+</div>
+</div><p>1M token / 128 = 7812.5。粗略看，也就是几千个 heavily compressed entries。这个数量比 CSA 的 250K entries 小得多，已经到了可以全局扫一遍的量级。</p>
+<p>HCA 牺牲了细节，但买到了两个东西：</p>
+<ol>
+<li><strong>便宜的全局覆盖</strong>：不用 top-k，关键片段至少还有一条粗粒度路径能被看见。</li>
+<li><strong>稳定的背景信息</strong>：模型始终能看到整段历史的大致结构。</li>
+</ol>
+<p>可以用读代码的例子理解。CSA 像你用 <code>ripgrep</code> 搜某个变量名，能找到精确位置，但前提是 query 写得好。HCA 像你先看项目目录、README 和模块说明。它不会告诉你某一行 bug 在哪里，但能让你知道项目大概怎么组织。</p>
+<p>Agent 长程任务里，这两种能力都需要。只会搜索，会漏掉上下文结构。只看目录，又找不到细节。</p>
+<p>所以 V4 才把 CSA/HCA 交替放进不同层。</p>
+<hr>
+<h2 id="6-swa-的本质远处可以做笔记现场要看原文">6. SWA 的本质：远处可以做笔记，现场要看原文</h2>
+<p>SWA 的设计最简单，也最容易被低估。</p>
+<p>压缩历史有代价。远处历史更多提供背景，可以承受这个代价。最近历史经常决定下一个 token 的字面形态，需要保留更高精度。</p>
+<p>看几个例子。</p>
+<h3 id="例子-1指代">例子 1：指代</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">小李把报告发给小王，因为他明天要汇报。
+</code></pre></td></tr></table>
+</div>
+</div><p>“他”指谁，可能要看刚刚出现的实体顺序和语义关系。压缩摘要可能保留“有人发报告”，但丢掉局部指代细节。</p>
+<h3 id="例子-2代码">例子 2：代码</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="n">result</span> <span class="o">=</span> <span class="n">parse_config</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
+    <span class="n">strict</span><span class="o">=</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>下一步生成 <code>True</code>、<code>False</code>、<code>)</code>，和最近 token 的字面结构强相关。</p>
+<h3 id="例子-3工具输出">例子 3：工具输出</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">E   AssertionError: expected 42 but got 41
+</code></pre></td></tr></table>
+</div>
+</div><p>Agent 下一步怎么修，往往取决于最后这行里的具体数字。把它压成“大概有个 assertion error”，关键数字就丢了。</p>
+<p>所以 SWA 保留最近窗口原文。它负责现场精确性，全局记忆交给压缩和召回路径。</p>
+<p>这也解释了为什么 CSA/HCA 都会额外拼接 sliding window branch。压缩分支负责远处，SWA 负责近处。二者是互补关系。</p>
+<hr>
+<h2 id="7-为什么-moe-wave-也该放进记忆篇">7. 为什么 MoE wave 也该放进“记忆篇”</h2>
+<p>MoE wave 属于执行调度，为什么这一篇还要讲？</p>
+<p>因为这篇的主题是长程 Agent 的边际成本。1M context 把历史成本压下去之后，如果每个新 token 经过 MoE 层时仍然被通信拖住，Agent 还是跑不长。</p>
+<p>长程 Agent 的成本来自两条路径：一条是“看历史”，另一条是“每一步生成都要过大模型”。V4 是 MoE 模型，每个 token 会路由到部分 experts。Expert parallelism 提高了模型容量和计算利用方式，也带来了跨 GPU 通信。</p>
+<p>一次 MoE 层通常包含：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Dispatch token 到 expert 所在 GPU
+→ Linear1 / Gate-Up GEMM
+→ Activation
+→ Linear2 / Down GEMM
+→ Combine 结果回原 GPU
+</code></pre></td></tr></table>
+</div>
+</div><p>如果所有阶段串行执行，就会出现很浪费的等待：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">通信时，Tensor Core 等；
+计算时，网络等；
+回传时，计算又等。
+</code></pre></td></tr></table>
+</div>
+</div><p>V4 的 wave scheduling 把 expert 侧工作切成多个 wave。某个 wave 的 token 到了，就立刻算；下一 wave 的 token 还在传；上一 wave 的结果开始回传。</p>
+<p><img src="./part1_03_moe_wave_excalidraw.svg" alt="MoE Wave"></p>
+<p>为什么 Linear1 / Linear2 可以这样拆？</p>
+<p>因为矩阵乘可以沿 batch 维切开：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">X = [X1; X2; X3]
+X @ W = [X1 @ W; X2 @ W; X3 @ W]
+</code></pre></td></tr></table>
+</div>
+</div><p><code>X1 @ W</code> 不依赖 <code>X2 @ W</code>。不同 expert、不同 token 子集之间也基本独立。最后 combine 再把输出按 token 和 router 权重合回去。</p>
+<p>Wave 让通信换了出现的位置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">下一批 token 在路上传输时，当前批 expert 已经在做 GEMM。
+</code></pre></td></tr></table>
+</div>
+</div><p>这对 RL rollout 很关键。</p>
+<p>Rollout 是自回归生成。一个 batch 里的请求长度不同。短回答先结束，长回答继续生成。越到后面，活跃请求越少：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">一开始：1024 个请求
+中间：380 个请求
+后面：73 个请求
+尾巴：9 个请求
+</code></pre></td></tr></table>
+</div>
+</div><p>小 batch 下，每个 expert 分到的 token 很少，GEMM 规模偏小，通信固定开销更显眼。V4 论文报告，wave-based scheduling 在一般 inference workload 上带来 1.50–1.73× speedup，在 RL rollout / high-speed agent serving 等延迟敏感场景最高约 1.96×。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>所以 MoE wave 属于这一篇，因为它和 CSA/HCA 解决的是同一类问题：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">上下文越长，生成越久；
+生成越久，系统越容易进入小 batch 长尾；
+长尾阶段要压住通信固定开销。
+</code></pre></td></tr></table>
+</div>
+</div><p>Agent 的记忆体验由多条系统路径共同决定。attention 要降低历史成本，MoE 执行也要减少每步生成成本。</p>
+<hr>
+<h2 id="8-硬件公式cb-讲的是带宽之外的平衡">8. 硬件公式：C/B 讲的是带宽之外的平衡</h2>
+<p>V4 论文里有一段很容易被略过，但它其实很重要。它说，通信是否能被计算完全隐藏，关键不在带宽本身，而在这个条件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C / B &lt;= Vcomp / Vcomm
+</code></pre></td></tr></table>
+</div>
+</div><p>这里：</p>
+<ul>
+<li><code>C</code> 是峰值计算吞吐，比如 FLOP/s；</li>
+<li><code>B</code> 是互联带宽，比如 Byte/s；</li>
+<li><code>Vcomp</code> 是这个 workload 的计算量；</li>
+<li><code>Vcomm</code> 是这个 workload 的通信量。</li>
+</ul>
+<p>推导很简单。</p>
+<p>计算时间：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Tcomp = Vcomp / C
+</code></pre></td></tr></table>
+</div>
+</div><p>通信时间：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Tcomm = Vcomm / B
+</code></pre></td></tr></table>
+</div>
+</div><p>如果希望通信被计算盖住，就要：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Tcomm &lt;= Tcomp
+</code></pre></td></tr></table>
+</div>
+</div><p>代入就是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Vcomm / B &lt;= Vcomp / C
+</code></pre></td></tr></table>
+</div>
+</div><p>整理：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C / B &lt;= Vcomp / Vcomm
+</code></pre></td></tr></table>
+</div>
+</div><p>对 V4‑Pro 的每个 token-expert pair，论文给出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Vcomp = 6 h d FLOPs
+Vcomm = 3 h bytes
+</code></pre></td></tr></table>
+</div>
+</div><p>为什么是 <code>6hd</code>？因为 SwiGLU expert 里有 gate、up、down 三个投影。每个投影的矩阵乘大约是 <code>2hd</code> FLOPs，三个就是 <code>6hd</code>。</p>
+<p>为什么是 <code>3h bytes</code>？因为 dispatch 用 FP8 传 hidden，大约 <code>h</code> bytes；combine 用 BF16 传回，大约 <code>2h</code> bytes；合起来 <code>3h</code> bytes。</p>
+<p>所以：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Vcomp / Vcomm = 6hd / 3h = 2d
+</code></pre></td></tr></table>
+</div>
+</div><p>V4‑Pro 里这个值是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">2d = 6144 FLOPs/Byte
+</code></pre></td></tr></table>
+</div>
+</div><p>这句话可以换成更有数量感的说法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">每 1 GB/s 的互联带宽，大约可以隐藏 6.1 TFLOP/s 的计算。
+</code></pre></td></tr></table>
+</div>
+</div><p>如果某个 MoE kernel 的实际可用算力是 1000 TFLOP/s，那么大致需要：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">1000 / 6.144 ≈ 163 GB/s
+</code></pre></td></tr></table>
+</div>
+</div><p>只要互联带宽已经高于这个量级，继续增加带宽的收益就会下降，因为通信已经能被计算盖住。瓶颈可能转向功耗、调度、内存访问、激活函数后处理等。</p>
+<p>这段话的价值主要在思路：V4 把硬件问题放进算力、带宽、模型结构、kernel fusion 和功耗的平衡里看，跳出了“带宽越大越好”的单变量直觉。</p>
+<p>比如论文还提到：极端 kernel fusion 会让 compute、memory、network 同时高负载，这时 power throttling 可能变成限制。它还提到 pull-based 通信是因为细粒度 push notification 延迟太高；未来如果硬件跨 GPU signaling 更低延迟，push 可能更自然。甚至激活函数也会影响系统：如果替换 SwiGLU，去掉 gate projection，用不含 exp/div 的低成本 element-wise activation，就可能增大 intermediate dimension <code>d</code>，从而进一步放宽带宽要求。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>这已经超出模型论文里常见的“硬件友好”一句话。它更像是在说：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">模型、kernel、互联、功耗、激活函数，是同一个优化问题。
+</code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="9-把几块拼起来v4-的记忆观">9. 把几块拼起来：V4 的记忆观</h2>
+<p>现在我们回到开头那个 Agent 场景。</p>
+<p>一个长程 Agent 至少要同时做三件事：</p>
+<ol>
+<li>保留最近现场；</li>
+<li>从很长历史里找关键片段；</li>
+<li>对整个任务保持全局背景。</li>
+</ol>
+<p>V4 对应给了三种机制：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">SWA：最近现场，保留原文
+CSA：历史细节，压缩后检索
+HCA：全局背景，重压缩后全看
+</code></pre></td></tr></table>
+</div>
+</div><p>还差一步。长程 Agent 会生成很久。生成久了，batch 变小，MoE 通信固定开销变明显。所以 V4 又用 wave scheduling 把通信尽量塞进计算的空隙。</p>
+<p>如果再往下看硬件公式，V4 的思路更清楚：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">各个模块不单独追求最快；
+计算、通信、存储、压缩粒度要一起达到平衡。
+</code></pre></td></tr></table>
+</div>
+</div><p>V4 的记忆观可以总结成一句朴素的话：</p>
+<blockquote>
+<p>该看原文的地方看原文，该压缩的地方压缩，该检索的地方先检索，该全局扫读的地方不要过度追求细节；同时，每一步生成的执行路径也要避免通信和计算互相等待。</p>
+</blockquote>
+<p>这比“1M context”这个标签更重要。</p>
+<p>读完 V4，再看别的长上下文系统，可以带走三个判断：</p>
+<ol>
+<li>看到窗口长度，继续问 decode 时每个新 token 还要付多少历史成本。</li>
+<li>看到压缩率，继续问压缩后靠什么找回关键细节。</li>
+<li>看到 attention 方案，继续问长程生成进入小 batch 长尾后，MoE、通信和 kernel 调度是否一起处理。</li>
+</ol>
+<hr>
+<h2 id="10-这套方案的边界">10. 这套方案的边界</h2>
+<p>写技术文章也要讲边界。V4 的分层记忆有几个地方需要留意。</p>
+<h3 id="101-报告数字需要和复现实测区分">10.1 报告数字需要和复现实测区分</h3>
+<p>这篇用到的 FLOPs、KV cache、top-k、wave speedup 等数字，主要来自 DeepSeek 技术报告和公开模型发布材料。它们能解释设计意图和相对方向；实际部署收益还要看硬件拓扑、batch shape、routing 分布、kernel 实现和 serving 策略。</p>
+<h3 id="102-压缩会丢信息">10.2 压缩会丢信息</h3>
+<p>Compressed KV 是有损压缩。每 4 个 token 融成一个向量，每 128 个 token 融成一个向量，必然会丢一些细节。模型希望丢掉的是后续不重要的信息，但它不可能永远判断正确。</p>
+<h3 id="103-csa-依赖召回">10.3 CSA 依赖召回</h3>
+<p>CSA 的 top-k 如果漏掉关键 compressed entry，core attention 后面就看不到。Indexer 的训练质量很重要。V4 预训练里先有 dense attention warmup，再引入 sparse attention，并给 CSA indexer warmup，这些安排就是为了让检索路径稳定下来。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<h3 id="104-hca-给全局感精确记忆还要靠别的路径">10.4 HCA 给全局感，精确记忆还要靠别的路径</h3>
+<p>HCA 压缩率太高。它适合背景，不适合引用细节。如果一个任务需要精确定位某段长历史中的一行内容，HCA 只能辅助，还要依赖 CSA、SWA 或外部工具路径。</p>
+<h3 id="105-swa-解决不了远处依赖">10.5 SWA 解决不了远处依赖</h3>
+<p>SWA 很精确，但窗口短。它解决局部现场问题，远程记忆还要交给压缩和召回路径。</p>
+<h3 id="106-moe-wave-需要-workload-有足够可流水化空间">10.6 MoE wave 需要 workload 有足够可流水化空间</h3>
+<p>Wave overlap 的收益来自通信和计算可以交叠。如果某个场景计算太少、通信太碎、同步太多，收益也会下降。这类优化依赖 kernel、网络拓扑、batch shape、routing 分布。</p>
+<p>这些边界不削弱 V4 的价值。相反，它们说明 V4 的设计是一组工程取舍：1M context 仍然有成本，只是最贵的部分被换成更可控的近似、召回和流水化执行。</p>
+<hr>
+<h2 id="11-第一篇结论v4-在重新组织历史">11. 第一篇结论：V4 在重新组织历史</h2>
+<p>这篇只讲了 V4 的“记忆”部分。可以用一个更直接的比喻收尾。</p>
+<p>普通长上下文像把所有文件都堆在桌上。桌子变大了，但你每次找东西还是要翻一遍。</p>
+<p>V4 更像整理档案：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">最近正在处理的材料放在桌面上；
+常用片段做成索引卡；
+很久以前的材料做成章节摘要；
+执行任务时让搬运、计算、回传尽量重叠。
+</code></pre></td></tr></table>
+</div>
+</div><p>它的目标是让模型在每一步生成时，以合理成本找到足够有用的历史，并把执行这一步的通信等待压低。</p>
+<p>所以，DeepSeek‑V4 的 1M context 更适合理解成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">窗口大小是表面指标；
+分层记忆才是核心机制；
+边际成本才是决定它能否服务 Agent 的关键。
+</code></pre></td></tr></table>
+</div>
+</div><p>下一篇会讲控制系统如何解决“这么复杂的东西怎么训练、怎么复现、怎么部署”；从 TileLang、SMT solver、batch-invariant kernel、FP4 QAT、Muon 和 KV cache 管理切入。如果第一篇的关键词是<strong>记忆</strong>，第二篇的关键词就是<strong>控制</strong>。</p>
+<hr>
+<h2 id="参考阅读">参考阅读</h2>
+<ol>
+<li>DeepSeek API Docs, <em>DeepSeek V4 Preview Release</em>。(<a href="https://api-docs.deepseek.com/news/news260424" title="https://api-docs.deepseek.com/news/news260424">DeepSeek API Docs</a>)</li>
+<li>DeepSeek-AI, <em>DeepSeek‑V4: Towards Highly Efficient Million‑Token Context Intelligence</em>。(<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</li>
+<li>Hugging Face, <em>DeepSeek‑V4: a million-token context that agents can actually use</em>。(<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#DeepSeek</span>
+      
+      <span class="tag">#LLM</span>
+      
+      <span class="tag">#Agent</span>
+      
+      <span class="tag">#Long Context</span>
+      
+      <span class="tag">#KV Cache</span>
+      
+      <span class="tag">#MoE</span>
+      
+      <span class="tag">#AI Infrastructure</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">分享到:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fdeepseek-v4-memory-part1%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fdeepseek-v4-memory-part1%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=DeepSeek-V4%20%e7%9a%84%e7%ac%ac%e4%b8%80%e6%9d%a1%e6%9a%97%e7%ba%bf%ef%bc%9a1M%20Context%20%e4%b8%8d%e6%98%af%e9%95%bf%e5%ba%a6%ef%bc%8c%e6%98%af%e4%b8%80%e5%a5%97%e8%ae%b0%e5%bf%86%e7%b3%bb%e7%bb%9f&body=https%3a%2f%2fblog.xieydd.top%2fdeepseek-v4-memory-part1%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">返回顶部</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/ai-native-engineering-shift/" class="prev-post">
+        <span class="nav-label">上一篇</span>
+        <span class="nav-title">AI 原生工程栈，正在从“模型中心”转向“执行系统中心”</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/deepseek-v4-control-part2/" class="next-post">
+        <span class="nav-label">下一篇</span>
+        <span class="nav-title">DeepSeek‑V4 的暗线之二：训练一台不会失控的万亿参数机器</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+
+
+
+  
+
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-cn"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+
+    </main>
+  </div>
+  
+<div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="search-input" class="search-input" placeholder="搜索文章..." autocomplete="off" />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">
+        输入关键词开始搜索
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/fuse.js@7"></script>
+  <script src="/js/search.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

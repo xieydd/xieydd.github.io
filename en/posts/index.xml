@@ -8,7 +8,7 @@
     <language>en</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Fri, 27 Mar 2026 21:46:21 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Apr 2026 21:20:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/en/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Everything You Need to Know About LLM Infra</title>
       <link>https://blog.xieydd.top/en/llm-infra/</link>
@@ -57,6 +57,39 @@ Why Topology Awareness is Needed According to the official Kubernetes documentat
       <author>xieydd@gmail.com (xieydd)</author>
       <guid>https://blog.xieydd.top/en/vector-search/</guid>
       <description>It has been over a year since I joined Tensorchord, and I haven&amp;rsquo;t had the time to sit down and write some articles. Mainly because after having my daughter Tongtong, things have become much busier. During this time, I also experienced the pivot of the business from Serverless model inference Modelz to the vector search field VectorChord. The experience of this pivot might be shared in future articles, and those interested can also directly contact me.</description>
+    </item>
+    
+    <item>
+      <title>DeepSeek‑V4&#39;s Hidden Thread III: From Language Model to Agent Operating System</title>
+      <link>https://blog.xieydd.top/en/deepseek-v4-action-part3/</link>
+      <pubDate>Sun, 26 Apr 2026 21:20:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/deepseek-v4-action-part3/</guid>
+      <description>The first two articles each covered one topic.
+The first covered memory: why DeepSeek‑V4 can handle 1M context. It splits history into layers — raw text for recent history, compressed-then-retrieved for mid-range, heavily-compressed-then-scanned for distant.
+The second covered control: how something this complex is trained and deployed. TileLang, deterministic kernels, FP4 QAT, Muon-ZeRO, Context Parallelism, KV Cache OS — all aimed at preventing complexity from spinning out of control.
+This third article covers action.</description>
+    </item>
+    
+    <item>
+      <title>DeepSeek‑V4&#39;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control</title>
+      <link>https://blog.xieydd.top/en/deepseek-v4-control-part2/</link>
+      <pubDate>Sun, 26 Apr 2026 21:00:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/deepseek-v4-control-part2/</guid>
+      <description>The first article covered memory: why V4 can use 1M context, and why the key isn&amp;rsquo;t a larger input box but rather splitting history into different forms — raw text for recent history, compressed-then-retrieved for mid-range, heavily-compressed-then-scanned for distant.
+This article covers &amp;ldquo;control.&amp;rdquo; The other face of the same model:
+ How is something this complex trained? Reproduced? Deployed? How do you keep it from becoming a pile of hand-written CUDA and undebuggable black boxes?</description>
+    </item>
+    
+    <item>
+      <title>DeepSeek‑V4&#39;s Hidden Thread I: 1M Context is not a length, but a memory system.</title>
+      <link>https://blog.xieydd.top/en/deepseek-v4-memory-part1/</link>
+      <pubDate>Sun, 26 Apr 2026 20:40:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/en/deepseek-v4-memory-part1/</guid>
+      <description>If an Agent needs to work continuously for 8 hours — reading an entire codebase, dozens of rounds of terminal output, hundreds of tool returns — intelligence rarely hits its ceiling first. Memory becomes expensive before that happens.
+That sounds counterintuitive. When we say a model &amp;ldquo;supports 1M context,&amp;rdquo; we naturally picture a bigger input box. More room means more documents fit, and the problem seems solved. But the hard part of long context isn&amp;rsquo;t capacity — it&amp;rsquo;s marginal cost: every generation step must carry the entire history forward.</description>
     </item>
     
     <item>

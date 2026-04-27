@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tool Calling on Xieydd&#39;s Blog</title>
+    <link>https://blog.xieydd.top/tags/tool-calling/</link>
+    <description>Recent content in Tool Calling on Xieydd&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
+    <webMaster>xieydd@gmail.com (xieydd)</webMaster>
+    <lastBuildDate>Sun, 26 Apr 2026 21:20:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/tool-calling/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DeepSeek‑V4 的暗线之三：从语言模型到 Agent 操作系统</title>
+      <link>https://blog.xieydd.top/deepseek-v4-action-part3/</link>
+      <pubDate>Sun, 26 Apr 2026 21:20:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/deepseek-v4-action-part3/</guid>
+      <description>前两篇分别讲了两件事。 第一篇讲记忆：DeepSeek‑V4 为什么能承受 1M 上下文。它把历史分层：近处看原文，中距离压缩后检索，远处重压缩后扫全</description>
+    </item>
+    
+  </channel>
+</rss>

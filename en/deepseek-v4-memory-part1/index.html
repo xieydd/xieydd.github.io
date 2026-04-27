@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+      
+    
+  
+  
+  
+    
+      
+    
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek‑V4&#39;s Hidden Thread I: 1M Context is not a length, but a memory system. | Xieydd&#39;s Blog</title>
+  <meta name="description" content="DeepSeek-V4&#39;s 1M context is more than a bigger input box. This article examines SWA, CSA, HCA, compressed KV entries, MoE wave scheduling, and the hardware bandwidth formula to explain how V4 decomposes long-context Agent memory costs into layered storage, retrieval, and execution scheduling.">
+  <meta name="author" content="xieydd">
+  
+  
+  <meta property="og:title" content="DeepSeek‑V4&#39;s Hidden Thread I: 1M Context is not a length, but a memory system. | Xieydd&#39;s Blog">
+  <meta property="og:description" content="DeepSeek-V4&#39;s 1M context is more than a bigger input box. This article examines SWA, CSA, HCA, compressed KV entries, MoE wave scheduling, and the hardware bandwidth formula to explain how V4 decomposes long-context Agent memory costs into layered storage, retrieval, and execution scheduling.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://blog.xieydd.top/en/deepseek-v4-memory-part1/">
+  <meta property="og:site_name" content="Xieydd&#39;s Blog">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://blog.xieydd.top/en/deepseek-v4-memory-part1/part1_00_header_excalidraw.svg">
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DeepSeek‑V4&#39;s Hidden Thread I: 1M Context is not a length, but a memory system. | Xieydd&#39;s Blog">
+  <meta name="twitter:description" content="DeepSeek-V4&#39;s 1M context is more than a bigger input box. This article examines SWA, CSA, HCA, compressed KV entries, MoE wave scheduling, and the hardware bandwidth formula to explain how V4 decomposes long-context Agent memory costs into layered storage, retrieval, and execution scheduling.">
+  <meta name="twitter:image" content="https://blog.xieydd.top/en/deepseek-v4-memory-part1/part1_00_header_excalidraw.svg">
+  
+  <meta name="twitter:creator" content="@xieydd_">
+  
+  
+  <meta property="article:author" content="xieydd">
+  <meta property="article:published_time" content="2026-04-26T20:40:00&#43;08:00">
+  <meta property="article:modified_time" content="2026-04-27T18:49:16&#43;08:00">
+  
+  <meta property="article:tag" content="DeepSeek">
+  
+  <meta property="article:tag" content="LLM">
+  
+  <meta property="article:tag" content="Agent">
+  
+  <meta property="article:tag" content="Long Context">
+  
+  <meta property="article:tag" content="KV Cache">
+  
+  <meta property="article:tag" content="MoE">
+  
+  <meta property="article:tag" content="AI Infrastructure">
+  
+  
+  
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <link rel="canonical" href="https://blog.xieydd.top/en/deepseek-v4-memory-part1/">
+  
+  
+  
+    
+      
+        
+      
+    
+      
+    
+  
+  
+  
+  
+  
+  
+  <link rel="alternate" hreflang="zh-cn" href="https://blog.xieydd.top/deepseek-v4-memory-part1/">
+  
+  <link rel="alternate" hreflang="en" href="https://blog.xieydd.top/en/deepseek-v4-memory-part1/">
+  
+  <link rel="alternate" hreflang="x-default" href="https://blog.xieydd.top/deepseek-v4-memory-part1/">
+
+  
+  
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"xieydd"},"dateModified":"2026-04-27T18:49:16+08:00","datePublished":"2026-04-26T20:40:00+08:00","description":"DeepSeek-V4's 1M context is more than a bigger input box. This article examines SWA, CSA, HCA, compressed KV entries, MoE wave scheduling, and the hardware bandwidth formula to explain how V4 decomposes long-context Agent memory costs into layered storage, retrieval, and execution scheduling.","headline":"DeepSeek‑V4's Hidden Thread I: 1M Context is not a length, but a memory system.","image":"https://blog.xieydd.top/en/deepseek-v4-memory-part1/part1_00_header_excalidraw.svg","inLanguage":"en","mainEntityOfPage":{"@id":"https://blog.xieydd.top/en/deepseek-v4-memory-part1/","@type":"WebPage"},"publisher":{"@type":"Person","name":"xieydd"},"url":"https://blog.xieydd.top/en/deepseek-v4-memory-part1/"}
+  </script>
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  <meta name="view-transition" content="same-origin">
+  
+  
+  <style>
+    @font-face {
+      font-family: 'Monaco';
+      src: local('Monaco'), local('Menlo'), local('Consolas');
+      font-display: swap;
+    }
+  </style>
+  
+  
+</head>
+<body class="antialiased">
+  <div class="container">
+    <header class="top-nav">
+      <a href="https://blog.xieydd.top/en/" class="site-name">xieydd</a>
+      <nav class="nav-links">
+        
+        <a href="https://blog.xieydd.top/en/posts/">Posts</a>
+        <a href="https://blog.xieydd.top/en/about/">About</a>
+        
+        <div class="nav-icons">
+          <button id="search-toggle" class="theme-toggle" title="Search (Ctrl+K)" aria-label="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="language-switcher">
+  
+  
+    
+      
+      
+      
+        
+          <a href="https://blog.xieydd.top/deepseek-v4-memory-part1/" class="lang-link">中文</a>
+          
+        
+      
+      
+      
+    
+  
+    
+  
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="nav-divider"></div>
+    <main class="content swup-transition-main" id="swup">
+      
+<div class="reading-progress" id="reading-progress"></div>
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title" style="view-transition-name: index.en">DeepSeek‑V4&#39;s Hidden Thread I: 1M Context is not a length, but a memory system.</h1>
+    <div class="post-meta">
+      <span>Published: 26 Apr, 2026</span>
+      <span>• 20 min read</span>
+    </div>
+  </header>
+
+  
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-the-problem-with-standard-attention-every-step-gets-heavier-as-history-grows">1. The Problem with Standard Attention: Every Step Gets Heavier as History Grows</a></li>
+    <li><a href="#2-v4s-memory-hierarchy-swa-csa-hca-solve-different-distance-problems">2. V4&rsquo;s Memory Hierarchy: SWA, CSA, HCA Solve Different Distance Problems</a></li>
+    <li><a href="#3-what-a-compressed-kv-entry-actually-is-a-vector-state-for-attention-to-read">3. What a Compressed KV Entry Actually Is: A Vector State for Attention to Read</a></li>
+    <li><a href="#4-the-essence-of-csa-retrieval-after-compression">4. The Essence of CSA: Retrieval After Compression</a></li>
+    <li><a href="#5-the-essence-of-hca-trading-fine-details-for-global-stability">5. The Essence of HCA: Trading Fine Details for Global Stability</a></li>
+    <li><a href="#6-the-essence-of-swa-distant-history-can-be-summarized-the-immediate-scene-needs-the-original">6. The Essence of SWA: Distant History Can Be Summarized; the Immediate Scene Needs the Original</a></li>
+    <li><a href="#7-why-moe-wave-scheduling-also-belongs-in-the-memory-article">7. Why MoE Wave Scheduling Also Belongs in the Memory Article</a></li>
+    <li><a href="#8-the-hardware-formula-cb-is-about-balance-beyond-bandwidth">8. The Hardware Formula: C/B Is About Balance Beyond Bandwidth</a></li>
+    <li><a href="#9-putting-the-pieces-together-v4s-view-of-memory">9. Putting the Pieces Together: V4&rsquo;s View of Memory</a></li>
+    <li><a href="#10-the-boundaries-of-this-approach">10. The Boundaries of This Approach</a></li>
+    <li><a href="#11-conclusion-v4-is-reorganizing-history">11. Conclusion: V4 Is Reorganizing History</a></li>
+    <li><a href="#further-reading">Further Reading</a></li>
+  </ul>
+</nav>
+  </nav>
+  
+
+  <div class="post-content">
+    <p><img src="./part1_00_header_excalidraw.svg" alt="DeepSeek‑V4&rsquo;s Hidden Thread I: Layered Memory Matters More Than a Bigger Input Box"></p>
+<p>If an Agent needs to work continuously for 8 hours — reading an entire codebase, dozens of rounds of terminal output, hundreds of tool returns — intelligence rarely hits its ceiling first. Memory becomes expensive before that happens.</p>
+<p>That sounds counterintuitive. When we say a model &ldquo;supports 1M context,&rdquo; we naturally picture a bigger input box. More room means more documents fit, and the problem seems solved. But the hard part of long context isn&rsquo;t capacity — it&rsquo;s marginal cost: every generation step must carry the entire history forward.</p>
+<p>For autoregressive models, history enters the context and keeps participating in generation. Every new token the model generates must draw on the prior state. The longer the context, the heavier that state. If an Agent generates thousands or tens of thousands of tokens, this cost shifts from a one-time admission fee to a toll paid at every step.</p>
+<p>So the right question for DeepSeek‑V4&rsquo;s 1M context is not &ldquo;can it fit one million tokens?&rdquo; The more important question is:</p>
+<blockquote>
+<p>How are those one million tokens stored, retrieved, and read at each generation step without grinding the system to a halt?</p>
+</blockquote>
+<p>The official technical report is direct about the numbers: the DeepSeek‑V4 series includes V4‑Pro and V4‑Flash, both supporting 1M token context. V4‑Pro has 1.6T total parameters with 49B activated; V4‑Flash has 284B total parameters with 13B activated. DeepSeek&rsquo;s release page and NVIDIA&rsquo;s technical blog list the same specs. (<a href="https://api-docs.deepseek.com/news/news260424" title="https://api-docs.deepseek.com/news/news260424">DeepSeek API Docs</a>)(<a href="https://developer.nvidia.com/blog/build-with-deepseek-v4-using-nvidia-blackwell-and-gpu-accelerated-endpoints/" title="https://developer.nvidia.com/blog/build-with-deepseek-v4-using-nvidia-blackwell-and-gpu-accelerated-endpoints/">NVIDIA Developer</a>)</p>
+<p>At 1M context, the report claims V4‑Pro&rsquo;s per-token inference FLOPs are only 27% of V3.2&rsquo;s, and its KV cache is only 10%; V4‑Flash drops further to 10% FLOPs and 7% KV cache. These numbers come from DeepSeek&rsquo;s technical report and Hugging Face&rsquo;s public analysis — public materials rather than third-party reproductions — but they clearly signal V4&rsquo;s design priority: making million-token context a genuinely usable system capability for Agent tasks. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)(<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</p>
+<p>This first article covers only V4&rsquo;s first hidden thread: memory.</p>
+<p>&ldquo;Memory&rdquo; here means both the attention mechanism and the execution path. The memory cost of long-context Agents has at least two layers: how history is stored and retrieved, and how MoE communication and computation avoid waiting on each other as each output token passes through the MoE layers. The former explains SWA, CSA, and HCA; the latter explains why MoE wave scheduling belongs in this memory article.</p>
+<p>Seven concrete questions to start with:</p>
+<ol>
+<li>Why does standard attention break down at 1M context?</li>
+<li>How does a compressed KV entry differ from a human-written summary?</li>
+<li>Why does CSA compress first, then retrieve, then read closely?</li>
+<li>Why is HCA still needed alongside CSA?</li>
+<li>Why must the recent window preserve raw text?</li>
+<li>MoE wave scheduling is execution-side — why does it belong in the memory discussion?</li>
+<li>What does the hardware formula <code>C/B &lt;= Vcomp/Vcomm</code> actually say?</li>
+</ol>
+<hr>
+<h2 id="1-the-problem-with-standard-attention-every-step-gets-heavier-as-history-grows">1. The Problem with Standard Attention: Every Step Gets Heavier as History Grows</h2>
+<p>Start with a simple analogy.</p>
+<p>Suppose you&rsquo;re fixing a bug. In front of you is a stack of sticky notes. Each note records information about one historical token. Standard attention works like this: every time you write the next sentence, you flip through these notes to find which ones are relevant.</p>
+<p>With a few thousand notes, that&rsquo;s manageable. With a million notes, the problem changes. Storage capacity is just the beginning; the real issue is that finding relevant notes becomes expensive for every single word you write.</p>
+<p>For Transformers, historical tokens leave behind a KV cache. The cache exists to avoid recomputing keys and values for historical tokens at every step. But the cache itself must be stored and read. The longer the context, the larger the KV cache; the longer the history during attention computation, the heavier the computation.</p>
+<p>In long-context Agent tasks, this gets amplified. Agents read, experiment, and continuously push new results back into context:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">read file → run command → see error → edit code → rerun tests → read logs → edit again
+</code></pre></td></tr></table>
+</div>
+</div><p>Each step adds new information to the context. As the context grows, every subsequent token faces an even heavier history.</p>
+<p>So the real problem with 1M context is marginal cost: as history lengthens, the cost of each additional output token must remain controllable.</p>
+<p>V4&rsquo;s basic strategy, compressed to three lines:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Recent history: SWA preserves raw text
+Mid-range history: too much even after compression — CSA retrieves first, then reads closely
+Distant history: fine details matter less — HCA preserves global coverage
+</code></pre></td></tr></table>
+</div>
+</div><p>This is the starting point for Hybrid Attention.</p>
+<hr>
+<h2 id="2-v4s-memory-hierarchy-swa-csa-hca-solve-different-distance-problems">2. V4&rsquo;s Memory Hierarchy: SWA, CSA, HCA Solve Different Distance Problems</h2>
+<p>DeepSeek‑V4&rsquo;s Hybrid Attention primarily consists of three mechanisms:</p>
+<ul>
+<li><strong>SWA</strong>: Sliding Window Attention — keeps raw KV for the recent window</li>
+<li><strong>CSA</strong>: Compressed Sparse Attention — compresses history, then does sparse retrieval</li>
+<li><strong>HCA</strong>: Heavily Compressed Attention — compresses history more aggressively, then reads all of it</li>
+</ul>
+<p><img src="./part1_01_hybrid_attention_excalidraw.svg" alt="Hybrid Attention"></p>
+<p>What each mechanism solves:</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Distance covered</th>
+<th>What it preserves</th>
+<th>The trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SWA</td>
+<td>Recent scene</td>
+<td>Raw KV</td>
+<td>Window length is bounded</td>
+</tr>
+<tr>
+<td>CSA</td>
+<td>Mid-range details</td>
+<td>4:1 compressed KV + top-k close reading</td>
+<td>Depends on indexer recall</td>
+</tr>
+<tr>
+<td>HCA</td>
+<td>Distant background</td>
+<td>128:1 heavy compressed KV</td>
+<td>Larger detail loss</td>
+</tr>
+</tbody>
+</table>
+<p>Keep this table in mind. All the details that follow explain why these three trade-offs hold up.</p>
+<h3 id="21-the-recent-scene-needs-raw-text-swa">2.1 The Recent Scene Needs Raw Text: SWA</h3>
+<p>Recent tokens often determine local grammar, variable names, brackets, indentation, and the last line of tool output.</p>
+<p>For example, code that just appeared:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>What gets generated next is tightly coupled to the literal form of the most recent tokens. Or a shell error:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">ModuleNotFoundError: No module named &#39;xxx&#39;
+</code></pre></td></tr></table>
+</div>
+</div><p>Whether the Agent installs a dependency next often depends entirely on that last line. Reading a summary here is likely to drop the critical detail.</p>
+<p>So V4 keeps a sliding window. Tokens within the window use uncompressed KV — like having the &ldquo;scene notes&rdquo; in front of you. The window doesn&rsquo;t grow unboundedly; it&rsquo;s responsible for the recent segment only.</p>
+<p>One-line intuition:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Distant history can be summarized. The immediate scene needs the original.
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="22-mid-range-history-needs-retrieval-first-csa">2.2 Mid-Range History Needs Retrieval First: CSA</h3>
+<p>If every 4 tokens are compressed into one compressed KV entry, 1M tokens becomes 250K entries. That&rsquo;s 4× fewer, but reading all 250K entries every step is still expensive.</p>
+<p>So CSA adds a retrieval step.</p>
+<p>CSA&rsquo;s pipeline looks more like:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">raw tokens
+  → every 4 tokens compressed into one compressed KV entry
+  → Lightning Indexer scores compressed entries for relevance
+  → select top-k
+  → core attention reads top-k entries closely
+</code></pre></td></tr></table>
+</div>
+</div><p>The essence:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Compression reduces candidate scale.
+The indexer handles recall.
+Attention handles close reading.
+</code></pre></td></tr></table>
+</div>
+</div><p>Analogously: CSA is like the index cards you make while reading a book. Cards are shorter than the original, checking cards is faster than flipping the whole book; when you need to answer a question, find the card first, then re-read the selected cards closely.</p>
+<h3 id="23-distant-history-needs-global-coverage-hca">2.3 Distant History Needs Global Coverage: HCA</h3>
+<p>CSA has a dependency: top-k retrieval. If the indexer misses an important segment, subsequent attention never sees it.</p>
+<p>HCA&rsquo;s design is rougher, but more reliable. It compresses every 128 tokens into one heavily compressed entry. After compression, there are few enough entries to read all of them, without gambling on top-k recall.</p>
+<p>HCA covers global background rather than fine-grained details:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">What modules were discussed earlier
+Which log segment belongs to which phase
+Whether a particular approach was tried before
+The overall context the task is currently in
+</code></pre></td></tr></table>
+</div>
+</div><p>CSA is like search — it can find details, but may miss them. HCA is like a table of contents or chapter summary — coarse, but unlikely to completely lose &ldquo;what sections this book has.&rdquo; This complementarity is the key: CSA trades recall for detail, HCA trades detail for coverage.</p>
+<h3 id="24-alternation-lets-different-layers-handle-different-memory-patterns">2.4 Alternation Lets Different Layers Handle Different Memory Patterns</h3>
+<p>V4 assigns different attention patterns to different layers, alternating CSA and HCA. In V4‑Pro, the first two layers use HCA, then layers alternate CSA/HCA; V4‑Flash starts with sliding-window layers, then also alternates CSA/HCA.</p>
+<p>Hugging Face&rsquo;s analysis notes that in V4‑Pro&rsquo;s 61-layer stack, layers 0–1 are HCA, layers 2–60 alternate CSA and HCA, and the trailing MTP block uses sliding-window only. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</p>
+<p>This reflects a division of labor across the network: some layers are better suited for fine-grained recall, others for global background integration. SWA acts as the &ldquo;scene record&rdquo; each layer carries — responsible for literal precision in the immediate context.</p>
+<hr>
+<h2 id="3-what-a-compressed-kv-entry-actually-is-a-vector-state-for-attention-to-read">3. What a Compressed KV Entry Actually Is: A Vector State for Attention to Read</h2>
+<p>This is the most common point of confusion.</p>
+<p>When people see &ldquo;compressed KV,&rdquo; they naturally think of summarization:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">The meaning of these 4 tokens is...
+</code></pre></td></tr></table>
+</div>
+</div><p>But a compressed KV entry is a set of vector states that subsequent attention can continue to use. Humans can&rsquo;t read it directly.</p>
+<p>Suppose there are 4 tokens:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">t0, t1, t2, t3
+</code></pre></td></tr></table>
+</div>
+</div><p>Each token has a hidden state. V4&rsquo;s compressor generates two types of things from these hidden states:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C0, C1, C2, C3  # content vectors
+Z0, Z1, Z2, Z3  # compression weight logits
+</code></pre></td></tr></table>
+</div>
+</div><p><code>C</code> represents what this token wants to store in memory. <code>Z</code> represents how much weight this token should contribute along each dimension during compression.</p>
+<p>The final compressed KV entry is a per-dimension weighted fusion of the <code>C</code> vectors. Weights come from <code>Z</code>&rsquo;s softmax. More precisely, the weights are dimension-wise: the same token may have large weight on some dimensions and small weight on others.</p>
+<p><img src="./part1_02_compressed_kv_excalidraw.svg" alt="Compressed KV Entry"></p>
+<p>A toy example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C0 = [1, 0, 0]
+C1 = [0, 1, 0]
+C2 = [0, 0, 1]
+C3 = [1, 1, 0]
+</code></pre></td></tr></table>
+</div>
+</div><p>Suppose the per-dimension softmax weights are roughly:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">S0 = [0.6, 0.2, 0.1]
+S1 = [0.2, 0.5, 0.2]
+S2 = [0.1, 0.2, 0.6]
+S3 = [0.1, 0.1, 0.1]
+</code></pre></td></tr></table>
+</div>
+</div><p>The compressed entry is approximately:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C_comp = S0⊙C0 + S1⊙C1 + S2⊙C2 + S3⊙C3
+</code></pre></td></tr></table>
+</div>
+</div><p>where <code>⊙</code> is element-wise multiplication. The result is a new vector:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C_comp = [some value, some value, some value]
+</code></pre></td></tr></table>
+</div>
+</div><p>In real models the dimensionality is far higher than 3. Think of it as a vector card — humans can&rsquo;t read it, but attention can continue to use it.</p>
+<p>This distinction is critical. V4&rsquo;s compression goal is to transform token sequences into vector states that subsequent attention can more efficiently consume. The target is a model-internal state, not a shorter natural language passage.</p>
+<p>This determines how we should understand CSA/HCA. They perform a rewrite of model-internal readable memory states — a completely different layer from human-readable text summaries.</p>
+<hr>
+<h2 id="4-the-essence-of-csa-retrieval-after-compression">4. The Essence of CSA: Retrieval After Compression</h2>
+<p>Return to CSA.</p>
+<p>If you compress without retrieving, what happens?</p>
+<p>1M tokens / 4 = 250K compressed entries.<br>
+Attending to all 250K entries for every new query is still expensive.</p>
+<p>So CSA must add one more step: select the small number of entries the current query actually needs.</p>
+<p>In V4, this coarse selection is performed by the Lightning Indexer. It scores compressed entries and selects top-k. V4‑Pro&rsquo;s CSA top-k is 1024, V4‑Flash&rsquo;s is 512. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>These numbers are meaningful. For 1M tokens of history:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Raw token count: 1,000,000
+After CSA compression: 250,000 entries
+After top-k selection: ~1,024 entries
+</code></pre></td></tr></table>
+</div>
+</div><p>CSA performs two rounds of dimensionality reduction:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">1,000,000 tokens
+  → 250,000 compressed entries
+  → top-k ~1,024 entries
+</code></pre></td></tr></table>
+</div>
+</div><p>The first step reduces storage and candidate scale. The second reduces what attention actually reads closely.</p>
+<p>This closely resembles a search system: the entire web is transformed into searchable index entries, then candidate pages are recalled, and only the most relevant results are read carefully. The indexer in CSA is the recall step; core attention is the close-reading step.</p>
+<p>Calling CSA &ldquo;compressed attention&rdquo; undersells it. More precisely:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">CSA = compressed memory + fast recall + sparse close reading
+</code></pre></td></tr></table>
+</div>
+</div><p>This is exactly why it suits mid-range history. It preserves finer granularity than HCA while avoiding a full scan of all history at every step.</p>
+<hr>
+<h2 id="5-the-essence-of-hca-trading-fine-details-for-global-stability">5. The Essence of HCA: Trading Fine Details for Global Stability</h2>
+<p>CSA can compress, retrieve, and read closely — what does HCA still solve?</p>
+<p>Retrieval has a failure mode: missed recall.</p>
+<p>If an important historical segment falls outside the top-k, subsequent attention never sees it. CSA is good at finding details, but global coverage requires another path.</p>
+<p>HCA&rsquo;s approach is blunt but stable:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Compress every 128 tokens into one entry.
+After compression, there are so few entries that all can be read.
+No gambling on top-k.
+</code></pre></td></tr></table>
+</div>
+</div><p>1M tokens / 128 ≈ 7,812 heavily compressed entries. That&rsquo;s a small enough number to scan globally.</p>
+<p>HCA sacrifices detail but buys two things:</p>
+<ol>
+<li><strong>Cheap global coverage</strong>: no top-k required — critical segments always have at least a coarse path through which they can be seen.</li>
+<li><strong>Stable background information</strong>: the model can always see the approximate structure of the entire history.</li>
+</ol>
+<p>Think of reading code. CSA is like using <code>ripgrep</code> to search for a variable name — precise, but requires a good query. HCA is like reading the project directory, README, and module docs first. It won&rsquo;t tell you where a specific bug is, but it tells you how the project is organized.</p>
+<p>Both capabilities are needed for long-context Agent tasks. Pure search misses contextual structure. Pure overview can&rsquo;t find specifics.</p>
+<p>That&rsquo;s why V4 alternates CSA and HCA across layers.</p>
+<hr>
+<h2 id="6-the-essence-of-swa-distant-history-can-be-summarized-the-immediate-scene-needs-the-original">6. The Essence of SWA: Distant History Can Be Summarized; the Immediate Scene Needs the Original</h2>
+<p>SWA is the simplest of the three, and the easiest to underestimate.</p>
+<p>Compression has a cost. Distant history contributes mainly background — it can absorb that cost. Recent history often determines the literal form of the next token — it needs higher precision.</p>
+<p>A few examples.</p>
+<h3 id="example-1-coreference">Example 1: Coreference</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Alice sent the report to Bob because he needed to present it tomorrow.
+</code></pre></td></tr></table>
+</div>
+</div><p>Who &ldquo;he&rdquo; refers to may require the exact entity order and semantic relationship from just a few tokens back. A compressed summary might retain &ldquo;someone sent a report,&rdquo; but drop the coreference detail.</p>
+<h3 id="example-2-code">Example 2: Code</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="n">result</span> <span class="o">=</span> <span class="n">parse_config</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
+    <span class="n">strict</span><span class="o">=</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Whether the next token is <code>True</code>, <code>False</code>, or <code>)</code> is tightly coupled to the literal structure of the most recent tokens.</p>
+<h3 id="example-3-tool-output">Example 3: Tool output</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">E   AssertionError: expected 42 but got 41
+</code></pre></td></tr></table>
+</div>
+</div><p>How the Agent fixes this often depends on the specific numbers in that last line. Compressing it to &ldquo;there was an assertion error&rdquo; loses the essential information.</p>
+<p>So SWA keeps the recent window as raw text. It handles immediate precision; global memory is delegated to the compression and retrieval paths.</p>
+<p>This also explains why both CSA and HCA always concatenate an additional sliding window branch. The compressed branch handles distance; SWA handles the immediate vicinity. They&rsquo;re complementary.</p>
+<hr>
+<h2 id="7-why-moe-wave-scheduling-also-belongs-in-the-memory-article">7. Why MoE Wave Scheduling Also Belongs in the Memory Article</h2>
+<p>MoE wave scheduling is execution-side. Why does it belong here?</p>
+<p>Because this article&rsquo;s theme is the marginal cost of long-context Agents. Once the history cost is reduced through 1M context, if each new token still gets bottlenecked by MoE communication, Agents still can&rsquo;t run long.</p>
+<p>Long-context Agent costs come from two paths: one is &ldquo;reading history,&rdquo; the other is &ldquo;passing through the large model at every generation step.&rdquo; V4 is a MoE model — each token is routed to a subset of experts. Expert parallelism improves model capacity and compute utilization, but also introduces cross-GPU communication.</p>
+<p>A typical MoE layer involves:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Dispatch tokens to the GPUs where experts reside
+→ Linear1 / Gate-Up GEMM
+→ Activation
+→ Linear2 / Down GEMM
+→ Combine results back to origin GPUs
+</code></pre></td></tr></table>
+</div>
+</div><p>If all stages run serially, wasteful waiting appears:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">During communication, Tensor Cores wait.
+During computation, the network waits.
+During return, computation waits again.
+</code></pre></td></tr></table>
+</div>
+</div><p>V4&rsquo;s wave scheduling splits the expert-side work into multiple waves. Tokens from one wave arrive and immediately get computed; tokens from the next wave are still in transit; results from the previous wave are already being returned.</p>
+<p><img src="./part1_03_moe_wave_excalidraw.svg" alt="MoE Wave"></p>
+<p>Why can Linear1 / Linear2 be split this way?</p>
+<p>Because matrix multiplication can be split along the batch dimension:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">X = [X1; X2; X3]
+X @ W = [X1 @ W; X2 @ W; X3 @ W]
+</code></pre></td></tr></table>
+</div>
+</div><p><code>X1 @ W</code> doesn&rsquo;t depend on <code>X2 @ W</code>. Different experts and different token subsets are also largely independent. The combine step reassembles outputs according to token and router weights.</p>
+<p>Waves displace where communication appears:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">While the next batch of tokens is in transit, the current batch&#39;s experts are already running GEMM.
+</code></pre></td></tr></table>
+</div>
+</div><p>This matters particularly for RL rollout.</p>
+<p>Rollout is autoregressive generation. Requests in a batch have different lengths. Short answers finish first; long answers keep going. As time passes, fewer requests remain active:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Start: 1,024 requests
+Midway: 380 requests
+Later: 73 requests
+Tail: 9 requests
+</code></pre></td></tr></table>
+</div>
+</div><p>With small batches, each expert gets very few tokens. GEMM scale is small; communication fixed costs are proportionally larger. The V4 paper reports that wave-based scheduling delivers 1.50–1.73× speedup on general inference workloads, and up to 1.96× in latency-sensitive scenarios like RL rollout and high-speed Agent serving. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>So MoE wave scheduling belongs here because it addresses the same class of problem as CSA/HCA:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Longer context → longer generation → system enters small-batch long tail
+Long tail → communication fixed costs become visible
+</code></pre></td></tr></table>
+</div>
+</div><p>An Agent&rsquo;s memory experience is shaped by multiple system paths together. Attention must lower history costs; MoE execution must also reduce per-step generation cost.</p>
+<hr>
+<h2 id="8-the-hardware-formula-cb-is-about-balance-beyond-bandwidth">8. The Hardware Formula: C/B Is About Balance Beyond Bandwidth</h2>
+<p>There&rsquo;s a passage in the V4 paper that&rsquo;s easy to skim over, but it matters. It says that whether communication can be fully hidden by computation depends not on bandwidth alone, but on this condition:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C / B &lt;= Vcomp / Vcomm
+</code></pre></td></tr></table>
+</div>
+</div><p>Where:</p>
+<ul>
+<li><code>C</code> is peak compute throughput, e.g., FLOP/s</li>
+<li><code>B</code> is interconnect bandwidth, e.g., Byte/s</li>
+<li><code>Vcomp</code> is the compute volume of this workload</li>
+<li><code>Vcomm</code> is the communication volume of this workload</li>
+</ul>
+<p>The derivation is simple.</p>
+<p>Compute time:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Tcomp = Vcomp / C
+</code></pre></td></tr></table>
+</div>
+</div><p>Communication time:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Tcomm = Vcomm / B
+</code></pre></td></tr></table>
+</div>
+</div><p>For communication to be hidden by computation:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Tcomm &lt;= Tcomp
+</code></pre></td></tr></table>
+</div>
+</div><p>Substituting:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Vcomm / B &lt;= Vcomp / C
+</code></pre></td></tr></table>
+</div>
+</div><p>Rearranging:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">C / B &lt;= Vcomp / Vcomm
+</code></pre></td></tr></table>
+</div>
+</div><p>For each token-expert pair in V4‑Pro, the paper gives:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Vcomp = 6 h d FLOPs
+Vcomm = 3 h bytes
+</code></pre></td></tr></table>
+</div>
+</div><p>Why <code>6hd</code>? Because SwiGLU experts have gate, up, and down projections. Each projection&rsquo;s matrix multiplication is approximately <code>2hd</code> FLOPs; three together is <code>6hd</code>.</p>
+<p>Why <code>3h</code> bytes? Dispatch sends the hidden state via FP8, roughly <code>h</code> bytes; the combine sends back via BF16, roughly <code>2h</code> bytes; total <code>3h</code> bytes.</p>
+<p>So:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Vcomp / Vcomm = 6hd / 3h = 2d
+</code></pre></td></tr></table>
+</div>
+</div><p>In V4‑Pro, this is:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">2d = 6144 FLOPs/Byte
+</code></pre></td></tr></table>
+</div>
+</div><p>This translates to a more intuitive statement:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Every 1 GB/s of interconnect bandwidth can hide roughly 6.1 TFLOP/s of computation.
+</code></pre></td></tr></table>
+</div>
+</div><p>If a given MoE kernel&rsquo;s available compute is 1000 TFLOP/s, it approximately needs:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">1000 / 6.144 ≈ 163 GB/s
+</code></pre></td></tr></table>
+</div>
+</div><p>Once interconnect bandwidth already exceeds this level, adding more bandwidth yields diminishing returns — communication can already be hidden by computation. The bottleneck likely shifts to power, scheduling, memory access, or activation post-processing.</p>
+<p>The value of this passage is primarily the reasoning mode: V4 frames hardware problems within the balance of compute, bandwidth, model architecture, kernel fusion, and power — breaking out of the &ldquo;more bandwidth is always better&rdquo; single-variable intuition.</p>
+<p>For example, the paper notes that extreme kernel fusion can simultaneously drive compute, memory, and network to high utilization, at which point power throttling may become the limit. It also mentions that pull-based communication exists because fine-grained push notification latency is too high; if future hardware provides lower-latency cross-GPU signaling, push would be more natural. Even activation functions have system implications: replacing SwiGLU, removing the gate projection, and using a low-cost element-wise activation without exp/div could increase intermediate dimension <code>d</code>, further relaxing bandwidth requirements. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<p>This goes beyond the typical &ldquo;hardware-friendly&rdquo; one-liner in model papers. It says:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Model, kernel, interconnect, power, and activation functions are one joint optimization problem.
+</code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="9-putting-the-pieces-together-v4s-view-of-memory">9. Putting the Pieces Together: V4&rsquo;s View of Memory</h2>
+<p>Return to the opening Agent scenario.</p>
+<p>A long-context Agent must do at least three things simultaneously:</p>
+<ol>
+<li>Preserve the immediate scene</li>
+<li>Locate critical segments from a very long history</li>
+<li>Maintain global background for the entire task</li>
+</ol>
+<p>V4 provides three mechanisms in response:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">SWA: immediate scene, raw text preserved
+CSA: historical detail, compressed then retrieved
+HCA: global background, heavy compression then full scan
+</code></pre></td></tr></table>
+</div>
+</div><p>One more step. Long-context Agents generate for a long time. As generation continues, batches shrink and MoE communication fixed costs become visible. So V4 uses wave scheduling to pack communication into the gaps left by computation.</p>
+<p>Looking further at the hardware formula, V4&rsquo;s intent becomes even clearer:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Individual modules don&#39;t each chase maximum speed in isolation.
+Compute, communication, storage, and compression granularity must jointly reach balance.
+</code></pre></td></tr></table>
+</div>
+</div><p>V4&rsquo;s view of memory can be compressed to one plain sentence:</p>
+<blockquote>
+<p>Read raw text where raw text is needed; compress where compression works; retrieve before reading where retrieval helps; don&rsquo;t over-pursue fine details where global coverage suffices; and ensure that communication and computation don&rsquo;t wait on each other at every generation step.</p>
+</blockquote>
+<p>That matters more than the &ldquo;1M context&rdquo; label.</p>
+<p>After reading V4, three questions are worth carrying into every subsequent long-context system review:</p>
+<ol>
+<li>When you see a window length, also ask: how much does each new token still cost in the decode phase?</li>
+<li>When you see a compression ratio, also ask: what retrieves the critical details back from that compression?</li>
+<li>When you see an attention scheme, also ask: when long-context generation enters the small-batch tail, are MoE, communication, and kernel scheduling handled together?</li>
+</ol>
+<hr>
+<h2 id="10-the-boundaries-of-this-approach">10. The Boundaries of This Approach</h2>
+<p>Technical articles should also address limitations.</p>
+<h3 id="101-report-numbers-should-be-distinguished-from-reproduced-measurements">10.1 Report Numbers Should Be Distinguished From Reproduced Measurements</h3>
+<p>The FLOPs, KV cache ratios, top-k values, and wave speedup numbers in this article come primarily from DeepSeek&rsquo;s technical report and public model release materials. They explain design intent and directional trade-offs; actual deployment gains depend on hardware topology, batch shape, routing distribution, kernel implementation, and serving strategy.</p>
+<h3 id="102-compression-is-lossy">10.2 Compression Is Lossy</h3>
+<p>Compressed KV is lossy compression. Fusing 4 tokens into one vector, or 128 tokens into one vector, inevitably drops some detail. The model aims to drop unimportant information, but it can&rsquo;t always judge correctly.</p>
+<h3 id="103-csa-depends-on-recall">10.3 CSA Depends on Recall</h3>
+<p>If CSA&rsquo;s top-k misses a critical compressed entry, core attention never sees it. Indexer training quality matters. In V4&rsquo;s pre-training, dense attention warmup comes before sparse attention, with CSA indexer warmup as well — these steps exist to stabilize the retrieval path. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</p>
+<h3 id="104-hca-provides-global-sense-precise-recall-needs-other-paths">10.4 HCA Provides Global Sense; Precise Recall Needs Other Paths</h3>
+<p>HCA&rsquo;s compression ratio is very high. It suits background, not precise citation of details. If a task requires pinpointing a single line from deep in history, HCA can only assist — CSA, SWA, or external tool paths are still needed.</p>
+<h3 id="105-swa-doesnt-solve-long-range-dependencies">10.5 SWA Doesn&rsquo;t Solve Long-Range Dependencies</h3>
+<p>SWA is precise but short-windowed. It addresses immediate scene problems; remote memory still goes to the compression and retrieval paths.</p>
+<h3 id="106-moe-wave-requires-enough-pipelineable-slack-in-the-workload">10.6 MoE Wave Requires Enough Pipelineable Slack in the Workload</h3>
+<p>Wave overlap benefits come from being able to interleave communication and computation. If a particular scenario has too little computation, too fragmented communication, or too many synchronization points, the benefits diminish. This optimization depends on kernels, network topology, batch shape, and routing distribution.</p>
+<p>These limitations don&rsquo;t diminish V4&rsquo;s value. They clarify that V4&rsquo;s design is a set of engineering trade-offs: 1M context still has costs — they&rsquo;ve just been converted into more controllable approximation, retrieval, and pipelined execution.</p>
+<hr>
+<h2 id="11-conclusion-v4-is-reorganizing-history">11. Conclusion: V4 Is Reorganizing History</h2>
+<p>This article covers only the &ldquo;memory&rdquo; part of V4. One more analogy to close.</p>
+<p>Standard long context is like piling all your documents on a desk. The desk got bigger, but you still have to dig through everything to find something.</p>
+<p>V4 is more like organized filing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Materials currently in use stay on the desk surface
+Common passages become index cards
+Older materials become chapter summaries
+When executing tasks, transport, computation, and return overlap as much as possible
+</code></pre></td></tr></table>
+</div>
+</div><p>Its goal is for the model to find sufficiently useful history at each generation step, at reasonable cost, while keeping communication latency during that step low.</p>
+<p>So DeepSeek‑V4&rsquo;s 1M context is better understood as:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">Window size is a surface metric.
+Layered memory is the core mechanism.
+Marginal cost is what determines whether it can actually serve Agents.
+</code></pre></td></tr></table>
+</div>
+</div><p>The next article covers the control system — how something this complex gets trained, reproduced, and deployed — entering TileLang, SMT solvers, batch-invariant kernels, FP4 QAT, Muon, and KV cache management. If this article&rsquo;s keyword is <strong>memory</strong>, the next one&rsquo;s keyword is <strong>control</strong>.</p>
+<hr>
+<h2 id="further-reading">Further Reading</h2>
+<ol>
+<li>DeepSeek API Docs, <em>DeepSeek V4 Preview Release</em>. (<a href="https://api-docs.deepseek.com/news/news260424" title="https://api-docs.deepseek.com/news/news260424">DeepSeek API Docs</a>)</li>
+<li>DeepSeek-AI, <em>DeepSeek‑V4: Towards Highly Efficient Million‑Token Context Intelligence</em>. (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf" title="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf">DeepSeek-AI</a>)</li>
+<li>Hugging Face, <em>DeepSeek‑V4: a million-token context that agents can actually use</em>. (<a href="https://huggingface.co/blog/deepseekv4" title="https://huggingface.co/blog/deepseekv4">Hugging Face</a>)</li>
+<li>NVIDIA Technical Blog, <em>Build with DeepSeek V4 Using NVIDIA Blackwell and GPU-Accelerated Endpoints</em>. (<a href="https://developer.nvidia.com/blog/build-with-deepseek-v4-using-nvidia-blackwell-and-gpu-accelerated-endpoints/" title="https://developer.nvidia.com/blog/build-with-deepseek-v4-using-nvidia-blackwell-and-gpu-accelerated-endpoints/">NVIDIA Developer</a>)</li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <div class="post-footer-divider"></div>
+
+    
+    <div class="post-tags">
+      
+      <span class="tag">#DeepSeek</span>
+      
+      <span class="tag">#LLM</span>
+      
+      <span class="tag">#Agent</span>
+      
+      <span class="tag">#Long Context</span>
+      
+      <span class="tag">#KV Cache</span>
+      
+      <span class="tag">#MoE</span>
+      
+      <span class="tag">#AI Infrastructure</span>
+      
+    </div>
+    
+
+    <div class="share-section">
+      <span class="share-label">Share this post on:</span>
+      <div class="share-buttons">
+        <a href="https://x.com/intent/post?url=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-memory-part1%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-memory-part1%2f" target="_blank" rel="noopener noreferrer" class="share-btn" title="Share on LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 11v5" />
+            <path d="M8 8v.01" />
+            <path d="M12 16v-5" />
+            <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+            <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+          </svg>
+        </a>
+        <a href="mailto:?subject=DeepSeek%e2%80%91V4%27s%20Hidden%20Thread%20I%3a%201M%20Context%20is%20not%20a%20length%2c%20but%20a%20memory%20system.&body=https%3a%2f%2fblog.xieydd.top%2fen%2fdeepseek-v4-memory-part1%2f" class="share-btn" title="Share via Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+            <path d="M3 7l9 6l9 -6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <a href="#" class="back-to-top">Back to Top</a>
+
+    <div class="post-footer-divider"></div>
+
+    <div class="post-nav">
+      
+      <a href="https://blog.xieydd.top/en/ai-native-engineering-shift/" class="prev-post">
+        <span class="nav-label">Previous Post</span>
+        <span class="nav-title">AI-Native Engineering Is Moving from Models to Execution Systems</span>
+      </a>
+      
+      
+      <a href="https://blog.xieydd.top/en/deepseek-v4-control-part2/" class="next-post">
+        <span class="nav-label">Next Post</span>
+        <span class="nav-title">DeepSeek‑V4&#39;s Hidden Thread II: Training a Trillion-Parameter Machine Without Losing Control</span>
+      </a>
+      
+    </div>
+  </footer>
+</article>
+
+
+
+
+  
+
+
+<div class="giscus-container" style="margin-top: 3rem;">
+  <script src="https://giscus.app/client.js"
+        data-repo="[ENTER REPO HERE]"
+        data-repo-id="[ENTER REPO ID HERE]"
+        data-category="[ENTER CATEGORY NAME HERE]"
+        data-category-id="[ENTER CATEGORY ID HERE]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+</div>
+
+
+
+    </main>
+  </div>
+  
+<div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="search-input" class="search-input" placeholder="Search posts..." autocomplete="off" />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">
+        Type to start searching
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/code-copy.js"></script>
+  <script src="https://unpkg.com/fuse.js@7"></script>
+  <script src="/js/search.js"></script>
+  <script src="https://unpkg.com/swup@4"></script>
+  <script>
+    (function() {
+      function initThemeToggle() {
+        var toggle = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        }
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+          });
+        }
+      }
+
+      function initReadingProgress() {
+        var progress = document.getElementById('reading-progress');
+        if (!progress) return;
+        function updateProgress() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progress.style.width = percent + '%';
+        }
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+      }
+
+      function initBackToTop() {
+        var backToTop = document.querySelector('.back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      initThemeToggle();
+      initReadingProgress();
+      initBackToTop();
+
+      var swup = new Swup({
+        animationSelector: '[class*="swup-transition-"]',
+        containers: ['#swup', '.top-nav'],
+        cache: true
+      });
+
+      swup.hooks.on('content:replace', function() {
+        initThemeToggle();
+        initReadingProgress();
+        initBackToTop();
+        
+        document.querySelectorAll('.highlight').forEach(block => {
+          if (!block.closest('.code-block-wrapper')) {
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const controls = document.createElement('div');
+            controls.className = 'window-controls';
+            ['red', 'yellow', 'green'].forEach(color => {
+              const dot = document.createElement('span');
+              dot.className = 'window-dot ' + color;
+              controls.appendChild(dot);
+            });
+            header.appendChild(controls);
+
+            let langName = '';
+            const code = block.querySelector('code[data-lang]');
+            if (code) {
+              langName = code.getAttribute('data-lang');
+            } else {
+              const codeClass = block.querySelector('code');
+              if (codeClass) {
+                const match = codeClass.className.match(/language-(\w+)/);
+                if (match) langName = match[1];
+              }
+            }
+
+            if (langName) {
+              const langLabel = document.createElement('span');
+              langLabel.className = 'lang-label';
+              langLabel.textContent = langName;
+              header.appendChild(langLabel);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            `;
+
+            copyBtn.addEventListener('click', async () => {
+              let codeText = '';
+              const table = block.querySelector('table');
+              if (table) {
+                const codeTd = table.querySelector('td:last-child');
+                if (codeTd) codeText = codeTd.innerText;
+              } else {
+                codeText = block.querySelector('code').innerText;
+              }
+
+              try {
+                await navigator.clipboard.writeText(codeText);
+                copyBtn.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Copied!</span>
+                `;
+                setTimeout(() => {
+                  copyBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  `;
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy!', err);
+              }
+            });
+
+            header.appendChild(copyBtn);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(header);
+            wrapper.appendChild(block);
+          }
+        });
+        window.scrollTo(0, 0);
+      });
+    })();
+  </script>
+</body>
+</html>

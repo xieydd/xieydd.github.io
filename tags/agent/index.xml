@@ -8,7 +8,25 @@
     <language>zh-CN</language>
     <managingEditor>xieydd@gmail.com (xieydd)</managingEditor>
     <webMaster>xieydd@gmail.com (xieydd)</webMaster>
-    <lastBuildDate>Thu, 19 Mar 2026 10:00:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/agent/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Apr 2026 21:20:00 +0800</lastBuildDate><atom:link href="https://blog.xieydd.top/tags/agent/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DeepSeek‑V4 的暗线之三：从语言模型到 Agent 操作系统</title>
+      <link>https://blog.xieydd.top/deepseek-v4-action-part3/</link>
+      <pubDate>Sun, 26 Apr 2026 21:20:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/deepseek-v4-action-part3/</guid>
+      <description>前两篇分别讲了两件事。 第一篇讲记忆：DeepSeek‑V4 为什么能承受 1M 上下文。它把历史分层：近处看原文，中距离压缩后检索，远处重压缩后扫全</description>
+    </item>
+    
+    <item>
+      <title>DeepSeek-V4 的第一条暗线：1M Context 不是长度，是一套记忆系统</title>
+      <link>https://blog.xieydd.top/deepseek-v4-memory-part1/</link>
+      <pubDate>Sun, 26 Apr 2026 20:40:00 +0800</pubDate>
+      <author>xieydd@gmail.com (xieydd)</author>
+      <guid>https://blog.xieydd.top/deepseek-v4-memory-part1/</guid>
+      <description>如果一个 Agent 要连续工作 8 小时，读完一个代码仓库、几十轮终端输出、几百次工具返回，智商通常还没到瓶颈，记忆已经先变贵。 这个说法听起来有点反直觉。</description>
+    </item>
+    
     <item>
       <title>为什么我在 Agent 项目里只认 PostgreSQL：全文检索篇</title>
       <link>https://blog.xieydd.top/postgres-fts-agent/</link>

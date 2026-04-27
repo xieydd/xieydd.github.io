@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+<defs>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+    <path d="M2,2 L10,6 L2,10" fill="#1F2937"/>
+  </marker>
+  <style>
+    .title { font: 700 44px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #1F2937; }
+    .subtitle { font: 500 22px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #6B7280; }
+    .label { font: 700 24px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #1F2937; }
+    .small { font: 500 17px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #6B7280; }
+    .tiny { font: 500 14px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #6B7280; }
+    .mono { font: 600 18px "SFMono-Regular", Consolas, monospace; fill: #1F2937; }
+    .note { font: 600 19px "Virgil", "Comic Sans MS", "Inter", Arial, sans-serif; fill: #1F2937; }
+  </style>
+</defs>
+<rect width="1400" height="900" fill="#FFFDF7"/>
+<path d="M40 70 C210 35, 390 55, 620 38" stroke="#FBBF24" stroke-width="16" opacity=".28" fill="none" stroke-linecap="round"/>
+<text x="54" y="76" class="title">Compressed KV Entry：不是摘要文字，而是向量胶囊</text>
+<text x="58" y="112" class="subtitle">每个 token 先生成内容 C 和压缩权重 Z，再逐维加权融合。</text>
+
+<rect x="133" y="194" width="115" height="80" rx="18" fill="#FFFFFF" stroke="none" opacity="0.45"/>
+<rect x="130" y="190" width="115" height="80" rx="18" fill="#FFFFFF" stroke="#4B5563" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M148 192 C 168.33333333333334 188, 206.66666666666669 193, 227 191" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".45"/>
+<path d="M132 252 C 129 230.0, 133 216.66666666666666, 131 208" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".35"/>
+<text x="165" y="240" class="label">t0</text><path d="M188 270 C 188.0 270, 188.0 340, 188 340" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="118" y="344" width="145" height="70" rx="16" fill="#DBEAFE" stroke="none" opacity="0.45"/>
+<rect x="115" y="340" width="145" height="70" rx="16" fill="#DBEAFE" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M131 342 C 163.33333333333334 338, 211.66666666666669 343, 244 341" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".45"/>
+<path d="M117 394 C 114 375.0, 118 363.3333333333333, 116 356" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".35"/>
+<text x="154" y="383" class="label">C0</text>
+<rect x="118" y="444" width="145" height="70" rx="16" fill="#FFEDD5" stroke="none" opacity="0.45"/>
+<rect x="115" y="440" width="145" height="70" rx="16" fill="#FFEDD5" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M131 442 C 163.33333333333334 438, 211.66666666666669 443, 244 441" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".45"/>
+<path d="M117 494 C 114 475.0, 118 463.3333333333333, 116 456" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".35"/>
+<text x="154" y="483" class="label">Z0</text>
+<rect x="303" y="194" width="115" height="80" rx="18" fill="#FFFFFF" stroke="none" opacity="0.45"/>
+<rect x="300" y="190" width="115" height="80" rx="18" fill="#FFFFFF" stroke="#4B5563" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M318 192 C 338.3333333333333 188, 376.6666666666667 193, 397 191" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".45"/>
+<path d="M302 252 C 299 230.0, 303 216.66666666666666, 301 208" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".35"/>
+<text x="335" y="240" class="label">t1</text><path d="M358 270 C 358.0 270, 358.0 340, 358 340" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="288" y="344" width="145" height="70" rx="16" fill="#DBEAFE" stroke="none" opacity="0.45"/>
+<rect x="285" y="340" width="145" height="70" rx="16" fill="#DBEAFE" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M301 342 C 333.3333333333333 338, 381.6666666666667 343, 414 341" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".45"/>
+<path d="M287 394 C 284 375.0, 288 363.3333333333333, 286 356" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".35"/>
+<text x="324" y="383" class="label">C1</text>
+<rect x="288" y="444" width="145" height="70" rx="16" fill="#FFEDD5" stroke="none" opacity="0.45"/>
+<rect x="285" y="440" width="145" height="70" rx="16" fill="#FFEDD5" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M301 442 C 333.3333333333333 438, 381.6666666666667 443, 414 441" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".45"/>
+<path d="M287 494 C 284 475.0, 288 463.3333333333333, 286 456" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".35"/>
+<text x="324" y="483" class="label">Z1</text>
+<rect x="473" y="194" width="115" height="80" rx="18" fill="#FFFFFF" stroke="none" opacity="0.45"/>
+<rect x="470" y="190" width="115" height="80" rx="18" fill="#FFFFFF" stroke="#4B5563" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M488 192 C 508.3333333333333 188, 546.6666666666666 193, 567 191" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".45"/>
+<path d="M472 252 C 469 230.0, 473 216.66666666666666, 471 208" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".35"/>
+<text x="505" y="240" class="label">t2</text><path d="M528 270 C 528.0 270, 528.0 340, 528 340" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="458" y="344" width="145" height="70" rx="16" fill="#DBEAFE" stroke="none" opacity="0.45"/>
+<rect x="455" y="340" width="145" height="70" rx="16" fill="#DBEAFE" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M471 342 C 503.3333333333333 338, 551.6666666666666 343, 584 341" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".45"/>
+<path d="M457 394 C 454 375.0, 458 363.3333333333333, 456 356" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".35"/>
+<text x="494" y="383" class="label">C2</text>
+<rect x="458" y="444" width="145" height="70" rx="16" fill="#FFEDD5" stroke="none" opacity="0.45"/>
+<rect x="455" y="440" width="145" height="70" rx="16" fill="#FFEDD5" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M471 442 C 503.3333333333333 438, 551.6666666666666 443, 584 441" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".45"/>
+<path d="M457 494 C 454 475.0, 458 463.3333333333333, 456 456" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".35"/>
+<text x="494" y="483" class="label">Z2</text>
+<rect x="643" y="194" width="115" height="80" rx="18" fill="#FFFFFF" stroke="none" opacity="0.45"/>
+<rect x="640" y="190" width="115" height="80" rx="18" fill="#FFFFFF" stroke="#4B5563" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M658 192 C 678.3333333333334 188, 716.6666666666666 193, 737 191" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".45"/>
+<path d="M642 252 C 639 230.0, 643 216.66666666666666, 641 208" fill="none" stroke="#4B5563" stroke-width="1.2" opacity=".35"/>
+<text x="675" y="240" class="label">t3</text><path d="M698 270 C 698.0 270, 698.0 340, 698 340" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="628" y="344" width="145" height="70" rx="16" fill="#DBEAFE" stroke="none" opacity="0.45"/>
+<rect x="625" y="340" width="145" height="70" rx="16" fill="#DBEAFE" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M641 342 C 673.3333333333334 338, 721.6666666666666 343, 754 341" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".45"/>
+<path d="M627 394 C 624 375.0, 628 363.3333333333333, 626 356" fill="none" stroke="#2563EB" stroke-width="1.2" opacity=".35"/>
+<text x="664" y="383" class="label">C3</text>
+<rect x="628" y="444" width="145" height="70" rx="16" fill="#FFEDD5" stroke="none" opacity="0.45"/>
+<rect x="625" y="440" width="145" height="70" rx="16" fill="#FFEDD5" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M641 442 C 673.3333333333334 438, 721.6666666666666 443, 754 441" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".45"/>
+<path d="M627 494 C 624 475.0, 628 463.3333333333333, 626 456" fill="none" stroke="#EA580C" stroke-width="1.2" opacity=".35"/>
+<text x="664" y="483" class="label">Z3</text>
+<rect x="263" y="594" width="430" height="120" rx="24" fill="#DCFCE7" stroke="none" opacity="0.45"/>
+<rect x="260" y="590" width="430" height="120" rx="24" fill="#DCFCE7" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M284 592 C 403.33333333333337 588, 546.6666666666667 593, 666 591" fill="none" stroke="#16A34A" stroke-width="1.2" opacity=".45"/>
+<path d="M262 686 C 259 650.0, 263 630.0, 261 614" fill="none" stroke="#16A34A" stroke-width="1.2" opacity=".35"/>
+<text x="300" y="642" class="label">softmax(Z) 逐维加权</text><text x="300" y="678" class="small">不是平均，也不是自然语言摘要</text><path d="M188 510 C 331.5 510, 331.5 590, 475 590" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 8" marker-end="url(#arrow)"/><path d="M358 510 C 416.5 510, 416.5 590, 475 590" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 8" marker-end="url(#arrow)"/><path d="M528 510 C 501.5 510, 501.5 590, 475 590" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 8" marker-end="url(#arrow)"/><path d="M698 510 C 586.5 510, 586.5 590, 475 590" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 8" marker-end="url(#arrow)"/><path d="M690 650 C 785.0 650, 785.0 650, 880 650" fill="none" stroke="#1F2937" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="883" y="564" width="360" height="190" rx="28" fill="#EDE9FE" stroke="none" opacity="0.45"/>
+<rect x="880" y="560" width="360" height="190" rx="28" fill="#EDE9FE" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M908 562 C 1000.0 558, 1120.0 563, 1212 561" fill="none" stroke="#7C3AED" stroke-width="1.2" opacity=".45"/>
+<path d="M882 722 C 879 655.0, 883 623.3333333333334, 881 588" fill="none" stroke="#7C3AED" stroke-width="1.2" opacity=".35"/>
+<text x="915" y="615" class="label">C_comp</text><text x="915" y="653" class="mono">[0.13, −0.42, ...]</text><text x="915" y="692" class="small">后续既当 Key 也当 Value</text>
+<rect x="853" y="209" width="420" height="180" rx="24" fill="#FEF3C7" stroke="none" opacity="0.45"/>
+<rect x="850" y="205" width="420" height="180" rx="24" fill="#FEF3C7" stroke="#D97706" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M874 207 C 990.0 203, 1130.0 208, 1246 206" fill="none" stroke="#D97706" stroke-width="1.2" opacity=".45"/>
+<path d="M852 361 C 849 295.0, 853 265.0, 851 229" fill="none" stroke="#D97706" stroke-width="1.2" opacity=".35"/>
+<text x="885" y="260" class="label">小白版理解</text><text x="885" y="298" class="small">4 句话 → 一张向量卡片</text><text x="885" y="332" class="small">模型自己决定哪部分更重要</text></svg>
